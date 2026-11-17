@@ -110,3 +110,65 @@ export function printDryRunMessage(dry: boolean, json: boolean, data?: any): voi
     }
 }
 
+export interface E2CaptureResult {
+    timestamp: string;
+    config: { repetitions: number; headless: boolean };
+    arms: {
+        A: { name: string; patch: Record<string, unknown>; caseResults: any[] };
+        B: { name: string; patch: Record<string, unknown>; caseResults: any[] };
+    };
+    comparison: {
+        mcNemar: { pValue: number; significant: boolean; discordantPairs: number };
+        wilcoxon: { pValue: number; significant: boolean; medianDiff: number };
+        correctionsDiff: number;
+        verdict: { status: string; reason: string };
+    };
+}
+
+export interface E13AblationResult {
+    timestamp: string;
+    qualityCases: number;
+    repetitions: number;
+    results: Array<{
+        variant: string;
+        macroF1: number;
+        macroPrecision: number;
+        macroRecall: number;
+        macroECE: number;
+        caseResults: any[];
+    }>;
+    winner: string;
+}
+
+export async function loadE2CaptureResult(outputDir: string): Promise<E2CaptureResult | null> {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    try {
+        const entries = await fs.readdir(outputDir);
+        const e2Files = entries.filter(e => e.startsWith('e2-capture') && e.endsWith('.json'));
+        if (e2Files.length === 0) return null;
+        // Get the most recent
+        e2Files.sort().reverse();
+        const content = await fs.readFile(path.join(outputDir, e2Files[0]), 'utf-8');
+        return JSON.parse(content) as E2CaptureResult;
+    } catch {
+        return null;
+    }
+}
+
+export async function loadE13AblationResult(outputDir: string): Promise<E13AblationResult | null> {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    try {
+        const entries = await fs.readdir(outputDir);
+        const e13Files = entries.filter(e => e.startsWith('e13-ablation') && e.endsWith('.json'));
+        if (e13Files.length === 0) return null;
+        // Get the most recent
+        e13Files.sort().reverse();
+        const content = await fs.readFile(path.join(outputDir, e13Files[0]), 'utf-8');
+        return JSON.parse(content) as E13AblationResult;
+    } catch {
+        return null;
+    }
+}
+
