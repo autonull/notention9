@@ -132,7 +132,18 @@
     "chooseTemplate": "Vorlage wählen",
     "noTemplate": "Keine Vorlage ausgewählt",
     "customTemplate": "Benutzerdefinierte Vorlage",
-    "saveAsTemplate": "Als Vorlage speichern"
+    "saveAsTemplate": "Als Vorlage speichern",
+    "keyboardShortcuts": {
+      "save": "Speichern (Strg+S)",
+      "publish": "Veröffentlichen (Strg+Enter)",
+      "newNote": "Neue Notiz (Strg+N)",
+      "focusTitle": "Titel fokussieren (Alt+T)",
+      "focusContent": "Inhalt fokussieren (Alt+C)",
+      "focusProperties": "Eigenschaften fokussieren (Alt+P)",
+      "togglePreview": "Vorschau umschalten (Strg+Umschalt+P)",
+      "undo": "Rückgängig (Strg+Z)",
+      "redo": "Wiederholen (Strg+Umschalt+Z)"
+    }
   },
   "matching": {
     "matches": "Treffer",

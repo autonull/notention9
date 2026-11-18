@@ -22,6 +22,7 @@ import {
     PerfBudgetCommand,
     MigrateCommand,
     LLMTelemetryCommand,
+    I18nAuditCommand,
 } from './cli/commands/index.js';
 
 // Import to register journeys
@@ -48,6 +49,7 @@ commandRegistry.register(new EvalConfidenceCommand());
 commandRegistry.register(new PerfBudgetCommand());
 commandRegistry.register(new MigrateCommand());
 commandRegistry.register(new LLMTelemetryCommand());
+commandRegistry.register(new I18nAuditCommand());
 
 interface ParsedFlags {
     positionals: string[];

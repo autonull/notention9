@@ -132,7 +132,18 @@
     "chooseTemplate": "Elige una plantilla",
     "noTemplate": "No hay plantilla seleccionada",
     "customTemplate": "Plantilla personalizada",
-    "saveAsTemplate": "Guardar como plantilla"
+    "saveAsTemplate": "Guardar como plantilla",
+    "keyboardShortcuts": {
+      "save": "Guardar (Ctrl+S)",
+      "publish": "Publicar (Ctrl+Enter)",
+      "newNote": "Nueva nota (Ctrl+N)",
+      "focusTitle": "Enfocar título (Alt+T)",
+      "focusContent": "Enfocar contenido (Alt+C)",
+      "focusProperties": "Enfocar propiedades (Alt+P)",
+      "togglePreview": "Alternar vista previa (Ctrl+Shift+P)",
+      "undo": "Deshacer (Ctrl+Z)",
+      "redo": "Rehacer (Ctrl+Shift+Z)"
+    }
   },
   "matching": {
     "matches": "Coincidencias",

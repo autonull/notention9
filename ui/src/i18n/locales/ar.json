@@ -132,7 +132,18 @@
     "chooseTemplate": "اختر قالباً",
     "noTemplate": "لم يتم اختيار قالب",
     "customTemplate": "قالب مخصص",
-    "saveAsTemplate": "حفظ كقالب"
+    "saveAsTemplate": "حفظ كقالب",
+    "keyboardShortcuts": {
+      "save": "حفظ (Ctrl+S)",
+      "publish": "نشر (Ctrl+Enter)",
+      "newNote": "ملاحظة جديدة (Ctrl+N)",
+      "focusTitle": "التركيز على العنوان (Alt+T)",
+      "focusContent": "التركيز على المحتوى (Alt+C)",
+      "focusProperties": "التركيز على الخصائص (Alt+P)",
+      "togglePreview": "تبديل المعاينة (Ctrl+Shift+P)",
+      "undo": "تراجع (Ctrl+Z)",
+      "redo": "إعادة (Ctrl+Shift+Z)"
+    }
   },
   "matching": {
     "matches": "المطابقات",

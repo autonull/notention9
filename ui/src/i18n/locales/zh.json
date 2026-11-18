@@ -132,7 +132,18 @@
     "chooseTemplate": "选择模板",
     "noTemplate": "未选择模板",
     "customTemplate": "自定义模板",
-    "saveAsTemplate": "保存为模板"
+    "saveAsTemplate": "保存为模板",
+    "keyboardShortcuts": {
+      "save": "保存 (Ctrl+S)",
+      "publish": "发布 (Ctrl+Enter)",
+      "newNote": "新建笔记 (Ctrl+N)",
+      "focusTitle": "聚焦标题 (Alt+T)",
+      "focusContent": "聚焦内容 (Alt+C)",
+      "focusProperties": "聚焦属性 (Alt+P)",
+      "togglePreview": "切换预览 (Ctrl+Shift+P)",
+      "undo": "撤销 (Ctrl+Z)",
+      "redo": "重做 (Ctrl+Shift+Z)"
+    }
   },
   "matching": {
     "matches": "匹配",
