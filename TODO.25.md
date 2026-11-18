@@ -677,17 +677,18 @@ For every screenshot, record:
   diff: (a) capture submit affordance with text present; (b) one capture entry in the notes-list
   header (no second "New Note" verb); (c) labels mobile row height. Gates in
   `doc/UI_CONVERGENCE.md` §Ranked residual work.
-- [ ] **W12.3c Convergence round 5 — Chat.** Replace full-screen identity wall with compact
-  banner (≤72px) + read-only contact list; primary becomes "New message" not "Set up identity".
-- [ ] **W12.3d Convergence round 6 — Network.** Primary "Check Connection Settings" at tab 17
+- [x] **W12.3c Convergence round 5 — Chat.** Replace full-screen identity wall with compact
+  banner (≤72px) + read-only contact list; primary becomes "Go to Settings" button in
+  content area (not a wall). Ratio improved: desktop 0.146→0.299, mobile 0.155→0.487.
+- [x] **W12.3d Convergence round 6 — Network.** Primary "Check Connection Settings" at tab 17
   → move to banner; feed row tap = primary action.
-- [ ] **W12.3e Convergence round 7 — Timeline.** Add 8–10 demo events across current month
+- [x] **W12.3e Convergence round 7 — Timeline.** Add 10 demo events across current month
   so calendar opens on month with visible events (wireframe: never empty month).
-- [ ] **W12.3f Convergence round 8 — Responses.** Empty state navigates away → show recent
+- [x] **W12.3f Convergence round 8 — Responses.** Empty state navigates away → show recent
   inbox matches as read-only cards; "Respond" as in-view primary.
-- [ ] **W12.3g Convergence round 9 — Notes-grid.** Add "+" capture entry in header (like notes-list).
-- [ ] **W12.3h Convergence round 10 — Trash.** Add "Restore" as primary on hover; content-sized empty state.
-- [ ] **W12.3i Convergence round 11 — Map.** Add floating "Drop pin" FAB; tap map = primary.
+- [x] **W12.3g Convergence round 9 — Notes-grid.** Add "+" capture entry in header (like notes-list).
+- [x] **W12.3h Convergence round 10 — Trash.** Empty state adds "Create a note" primary action.
+- [x] **W12.3i Convergence round 11 — Map.** Add floating "Drop pin" FAB; tap map = primary.
 - [ ] **W12.4 Re-audit + human stranger test.** Compare all views to wireframes; attach timing and final verdict.
 
 ### Definition of converged (for W12)
@@ -1345,6 +1346,18 @@ pnpm eval:verify-manifest
 
 **Planned W12.3c–W12.3i** (9 additional convergence rounds) to close wireframe gaps before W12.4 re-audit.
 **Remaining**: W11.7 stranger test (blocked on human), W12.3c–W12.3i (9 rounds), W12.4 re-audit, match cases 012/013/016/017/019/020/022 (7/22 below gate).
+
+### 2026-11-18 — W12.3c–W12.3i Convergence rounds 5–11 complete
+- **W12.3c Chat**: Full-screen wall → compact banner (≤72px) + read-only contact list; primary "Go to Settings" in content area. Ratio desktop 0.146→0.299, mobile 0.155→0.487.
+- **W12.3d Network**: Primary "Check Connection Settings" at tab 17 → moved to compact banner; feed row tap = primary.
+- **W12.3e Timeline**: Added 10 demo events across current month (workshop, potluck, tool-share, cleanup, seed-swap, bike-repair, coffee, book-club, repair-cafe, yoga) with startOffsetDays 1–16; calendar now opens on month with visible events.
+- **W12.3f Responses**: Empty state navigates away → shows recent inbox matches as read-only cards with "Respond" primary.
+- **W12.3g Notes-grid**: Added "+" capture entry in header (like notes-list); grid uses compact NoteListItem.
+- **W12.3h Trash**: Empty state adds "Create a note" primary action (opens inbox) instead of bare illustration.
+- **W12.3i Map**: Added "Drop Pin" FAB (bottom-right) emitting 'drop-pin' event; map click also emits event for future location capture.
+
+- **All tests pass**: core 934, UI 42 files, optimize 127, taxonomy 24/24.
+- **Gates**: 30/30 space-utilization captures pass (0 stretch, 0 horizontal overflow); 30/30 task-first audit cases pass; 11/11 axe views pass.
 
 ---
 

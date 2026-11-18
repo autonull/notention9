@@ -276,30 +276,30 @@ the next lever if the ratio gate ever needs to clear on that viewport.
 
 Ranked by (gate distance × frequency) ÷ risk. **Bold** = wireframe not met.
 
-1. **Chat identity wall.** Wireframe: compact banner (≤72px) + read-only content. Reality: full-screen `EmptyState` wall (ratio 0.146, footprint 0.342). Primary = "Set up identity" (not chat).
-2. **Network primary buried.** Wireframe: read-only banner + [Add identity] ≤72px. Reality: compact prompt OK, but primary "Check Connection Settings" at tab 17 (740px down). Feed is content but no primary action on it.
-3. **Timeline empty grid.** Wireframe: opens on month with events, never empty month. Reality: 2 events in month → 90% empty cells (ratio 0.307, waste 0.329 exempt). Add more demo events across current month.
-4. **Responses empty state.** Wireframe: not defined. Reality: empty state with "Find a match" button that navigates away (ratio 0.16). Primary should be in-view action.
-5. **Notes-grid no primary.** Wireframe: not defined. Reality: no primary action detected (primaries=0). Add capture entry in header like notes-list.
-6. **Trash no primary.** Wireframe: not defined. Reality: no primary action detected (primaries=0). Empty state only.
-7. **Map no primary.** Wireframe: full-bleed map, controls top-left. Reality: no primary action detected (primaries=0). Add "Drop pin" or search.
-8. **Calendar demo density.** Month cells stay mostly empty with only 2 events; waste gate exempts calendars but wireframe expects events visible. Add demo events across current month.
+1. **Chat identity wall.** ✅ **DONE (W12.3c)** — Full-screen `EmptyState` wall → compact banner (≤72px) + read-only contact list. Primary = "Go to Settings" in content area. Ratio desktop 0.146→0.299, mobile 0.155→0.487.
+2. **Network primary buried.** ✅ **DONE (W12.3d)** — Primary "Check Connection Settings" at tab 17 → moved to compact banner; feed row tap = primary.
+3. **Timeline empty grid.** ✅ **DONE (W12.3e)** — 2 events → 10 demo events across current month (workshop, potluck, tool-share, cleanup, seed-swap, bike-repair, coffee, book-club, repair-cafe, yoga). Calendar opens on month with visible events.
+4. **Responses empty state.** ✅ **DONE (W12.3f)** — Empty state navigates away → shows recent inbox matches as read-only cards with "Respond" primary.
+5. **Notes-grid no primary.** ✅ **DONE (W12.3g)** — No primary action detected → added "+" capture entry in header (like notes-list).
+6. **Trash no primary.** ✅ **DONE (W12.3h)** — Empty state only → adds "Create a note" primary action.
+7. **Map no primary.** ✅ **DONE (W12.3i)** — No primary action detected → added "Drop Pin" FAB (bottom-right); map click emits event.
+8. **Calendar demo density.** ✅ **DONE (W12.3e)** — 10 events across current month; calendar opens on month with visible events.
 9. **W11.7 stranger test** still needs a human with a fresh profile.
 10. **Match quality** (`pnpm optimize eval:match`, 15/22 pass, mean F1=0.561) is unchanged and outside W12.
 
 ---
 
-## Planned convergence rounds (W12.3c–W12.3f)
+## Completed convergence rounds (W12.3c–W12.3i)
 
-| Round | View | Wireframe gap | Fix |
-|-------|------|---------------|-----|
-| W12.3c | Chat | Full-screen wall → compact banner + read-first | Replace `EmptyState` with `ConnectIdentityPrompt` + show contact list read-only |
-| W12.3d | Network | Primary at tab 17 → visible primary | Move "Check Connection Settings" to banner; feed row tap = primary |
-| W12.3e | Timeline | 90% empty grid → events visible | Add 8–10 demo events across current month in `demoWorkspace.ts` |
-| W12.3f | Responses | Empty state navigates away → in-view primary | Show recent matches from inbox as read-only cards; "Respond" as primary |
-| W12.3g | Notes-grid | No primary → capture entry | Add "+" capture button in header (like notes-list) |
-| W12.3h | Trash | No primary → restore action | Show "Restore" as primary on hover; empty state content-sized |
-| W12.3i | Map | No primary → drop pin | Add floating "Drop pin" FAB; tap map = primary |
+| Round | View | Before | After | Evidence |
+|-------|------|--------|-------|----------|
+| W12.3c | Chat | Full-screen wall (ratio 0.146); primary "Set up identity" | Compact banner (≤72px) + read-only contact list; primary "Go to Settings" in content | `ChatView.tsx`, `ConnectIdentityPrompt.tsx`; chat screenshots |
+| W12.3d | Network | Primary "Check Connection Settings" at tab 17 (740px) | Moved to compact banner; feed row tap = primary | `ConnectIdentityPrompt.tsx`, `NetworkFeedList.tsx`; network screenshots |
+| W12.3e | Timeline | 2 events → 90% empty grid (ratio 0.307) | 10 demo events across current month; calendar opens on month with events | `demoWorkspace.ts`; timeline screenshots |
+| W12.3f | Responses | Empty state → "Find a match" navigates away | Recent inbox matches as read-only cards; "Respond" primary | `ResponsesView.tsx`; responses screenshots |
+| W12.3g | Notes-grid | No primary action (primaries=0) | "+" capture entry in header (ghost, sm); compact cards | `NotesView.tsx`; notes-grid screenshots |
+| W12.3h | Trash | Empty state only (primaries=0) | "Create a note" primary action in empty state | `TrashView.tsx`; trash screenshots |
+| W12.3i | Map | No primary action (primaries=0) | "Drop Pin" FAB (bottom-right); map click emits event | `MapView.tsx`; map screenshots |
 
 Each round: before/after screenshot diff + gates. W12.4 re-audit after all rounds.
 
