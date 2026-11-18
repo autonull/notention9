@@ -1,0 +1,16 @@
+// strobe.json - Configuration for strobe performance measurements
+{
+  "$schema": "./node_modules/@hona/strobe/schema/strobe.v1.json",
+  "build": {
+    "cwd": ".",
+    "command": "pnpm build",
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "serve": {
+    "cwd": ".",
+    "command": "node simple-server.mjs",
+    "ready": "ready"
+  }
+}
