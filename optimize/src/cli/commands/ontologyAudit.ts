@@ -10,6 +10,10 @@ import { dirname, join } from 'node:path';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { getOntology, collectOntologyKeysInTree, type OntologyNode } from '@notention/core';
+
+function getOntologyArray(): OntologyNode[] {
+    return Array.from(getOntology().nodes.values());
+}
 import { readManifest } from '@notention/core/eval/caseManifest';
 import { QUALITY_CASE_NOTES } from '@notention/core/fixtures';
 
@@ -49,16 +53,26 @@ interface OntologyAuditResult {
 }
 
 function getProjectRoot(): string {
-    let root = process.cwd();
-    while (root !== '/') {
-        try {
-            require.resolve(`${root}/pnpm-workspace.yaml`);
-            break;
-        } catch {
-            root = join(root, '..');
+    // Use the __dirname which is the compiled output directory
+    // Navigate up to find the project root
+    let root = join(__dirname, '..', '..', '..');
+    // Verify by checking for pnpm-workspace.yaml
+    try {
+        require.resolve(`${root}/pnpm-workspace.yaml`);
+        return root;
+    } catch {
+        // Fallback to cwd
+        root = process.cwd();
+        while (root !== '/') {
+            try {
+                require.resolve(`${root}/pnpm-workspace.yaml`);
+                break;
+            } catch {
+                root = join(root, '..');
+            }
         }
+        return root;
     }
-    return root;
 }
 
 function flattenKeys(keys: Iterable<string>): string[] {
@@ -236,8 +250,7 @@ export class OntologyAuditCommand extends Command {
             this.printInfo('📊 Running ontology coverage audit...');
 
             // Get all ontology keys
-            const ontology = getOntology();
-            const allOntologyKeys = new Set(flattenKeys(collectOntologyKeysInTree(ontology.nodes)));
+            const allOntologyKeys = new Set(flattenKeys(collectOntologyKeysInTree(getOntologyArray())));
             this.printInfo(`Ontology has ${allOntologyKeys.size} leaf keys`);
 
             // Analyze extraction cases

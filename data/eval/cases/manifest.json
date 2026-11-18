@@ -1,6 +1,6 @@
 {
-  "version": 4,
-  "generatedAt": "2026-11-18T19:37:43.190Z",
+  "version": 1,
+  "generatedAt": "2026-11-18T20:19:54.638Z",
   "counts": {
     "intent": {
       "search": 21,
@@ -1378,6 +1378,579 @@
       ]
     },
     {
+      "id": "quality-extract-061",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-061.json",
+      "hash": "3485a52d4d1aae47",
+      "tags": [
+        "gig",
+        "home-repair",
+        "urgent",
+        "budget",
+        "licensed"
+      ]
+    },
+    {
+      "id": "quality-extract-062",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-062.json",
+      "hash": "7c532a986ed141b3",
+      "tags": [
+        "freelance",
+        "tech",
+        "automation",
+        "budget",
+        "deadline"
+      ]
+    },
+    {
+      "id": "quality-extract-063",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-063.json",
+      "hash": "0b156100b9046dd9",
+      "tags": [
+        "gig",
+        "pet-care",
+        "schedule",
+        "references"
+      ]
+    },
+    {
+      "id": "quality-extract-064",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-064.json",
+      "hash": "5f07fd7d41f08c1f",
+      "tags": [
+        "freelance-offer",
+        "tech",
+        "devops",
+        "remote",
+        "senior"
+      ]
+    },
+    {
+      "id": "quality-extract-065",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-065.json",
+      "hash": "0af81be7fd7445cf",
+      "tags": [
+        "gig",
+        "furniture",
+        "urgent",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-066",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-066.json",
+      "hash": "a4c58c68697d49ae",
+      "tags": [
+        "freelance",
+        "tech-writing",
+        "api",
+        "budget",
+        "deadline"
+      ]
+    },
+    {
+      "id": "quality-extract-067",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-067.json",
+      "hash": "ae1502f1c77cdd5d",
+      "tags": [
+        "gig",
+        "cleaning",
+        "recurring",
+        "budget",
+        "eco-friendly"
+      ]
+    },
+    {
+      "id": "quality-extract-068",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-068.json",
+      "hash": "847d93cca48bd069",
+      "tags": [
+        "freelance-offer",
+        "design",
+        "branding",
+        "flat-rate"
+      ]
+    },
+    {
+      "id": "quality-extract-069",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-069.json",
+      "hash": "770bb1ff66dbcef5",
+      "tags": [
+        "event",
+        "workshop",
+        "food",
+        "education",
+        "schedule",
+        "paid"
+      ]
+    },
+    {
+      "id": "quality-extract-070",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-070.json",
+      "hash": "2a0e308a5932e94b",
+      "tags": [
+        "event",
+        "meetup",
+        "tech",
+        "education",
+        "free",
+        "recurring"
+      ]
+    },
+    {
+      "id": "quality-extract-071",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-071.json",
+      "hash": "09e4fcb539a557b1",
+      "tags": [
+        "event",
+        "webinar",
+        "finance",
+        "freelance",
+        "paid",
+        "virtual"
+      ]
+    },
+    {
+      "id": "quality-extract-072",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-072.json",
+      "hash": "438c0be8850edeb9",
+      "tags": [
+        "event",
+        "conference",
+        "tech",
+        "hybrid",
+        "paid"
+      ]
+    },
+    {
+      "id": "quality-extract-073",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-073.json",
+      "hash": "1598be45df7e7842",
+      "tags": [
+        "event",
+        "hackathon",
+        "climate",
+        "tech",
+        "prizes",
+        "free"
+      ]
+    },
+    {
+      "id": "quality-extract-074",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-074.json",
+      "hash": "d806d1f2bf1eef5d",
+      "tags": [
+        "event",
+        "community",
+        "social",
+        "free",
+        "family"
+      ]
+    },
+    {
+      "id": "quality-extract-075",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-075.json",
+      "hash": "174e4d85393f11bb",
+      "tags": [
+        "event",
+        "training",
+        "certification",
+        "health",
+        "paid"
+      ]
+    },
+    {
+      "id": "quality-extract-076",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-076.json",
+      "hash": "3e52515db951bbd6",
+      "tags": [
+        "event",
+        "retreat",
+        "team-building",
+        "budget",
+        "all-inclusive"
+      ]
+    },
+    {
+      "id": "quality-extract-077",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-077.json",
+      "hash": "881ffeabedd68a82",
+      "tags": [
+        "education",
+        "mentorship",
+        "tech",
+        "paid",
+        "recurring"
+      ]
+    },
+    {
+      "id": "quality-extract-078",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-078.json",
+      "hash": "9e57bb741ff4de63",
+      "tags": [
+        "education",
+        "study-group",
+        "ml",
+        "research",
+        "free",
+        "virtual"
+      ]
+    },
+    {
+      "id": "quality-extract-079",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-079.json",
+      "hash": "64de2ebab5a44ba8",
+      "tags": [
+        "education",
+        "course",
+        "photography",
+        "paid",
+        "arts"
+      ]
+    },
+    {
+      "id": "quality-extract-080",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-080.json",
+      "hash": "b14b7dd089dc2ee6",
+      "tags": [
+        "education",
+        "tutoring",
+        "stem",
+        "paid",
+        "in-person"
+      ]
+    },
+    {
+      "id": "quality-extract-081",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-081.json",
+      "hash": "77f69a81cd6e0e07",
+      "tags": [
+        "education",
+        "workshop",
+        "digital-literacy",
+        "seniors",
+        "free",
+        "volunteer"
+      ]
+    },
+    {
+      "id": "quality-extract-082",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-082.json",
+      "hash": "426525f36a16d5a8",
+      "tags": [
+        "education",
+        "language-exchange",
+        "free",
+        "virtual",
+        "recurring"
+      ]
+    },
+    {
+      "id": "quality-extract-083",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-083.json",
+      "hash": "9115c3390e7161ee",
+      "tags": [
+        "governance",
+        "hoa",
+        "meeting",
+        "recurring",
+        "quorum"
+      ]
+    },
+    {
+      "id": "quality-extract-084",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-084.json",
+      "hash": "2aa902ea248d1c41",
+      "tags": [
+        "governance",
+        "nonprofit",
+        "bylaws",
+        "vote",
+        "board"
+      ]
+    },
+    {
+      "id": "quality-extract-085",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-085.json",
+      "hash": "7973dcdb246a8503",
+      "tags": [
+        "governance",
+        "zoning",
+        "city-council",
+        "public-hearing",
+        "land-use"
+      ]
+    },
+    {
+      "id": "quality-extract-086",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-086.json",
+      "hash": "7d4bb0ca07cc9275",
+      "tags": [
+        "governance",
+        "cooperative",
+        "vote",
+        "profit-sharing",
+        "democracy"
+      ]
+    },
+    {
+      "id": "quality-extract-087",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-087.json",
+      "hash": "69efa60b9a82c772",
+      "tags": [
+        "governance",
+        "labor",
+        "cba",
+        "union",
+        "negotiation",
+        "mediation"
+      ]
+    },
+    {
+      "id": "quality-extract-088",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-088.json",
+      "hash": "d66c8dd074f19bba",
+      "tags": [
+        "governance",
+        "legal",
+        "data-protection",
+        "dpa",
+        "gdpr",
+        "healthcare"
+      ]
+    },
+    {
+      "id": "quality-extract-089",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-089.json",
+      "hash": "28a3bc581b0d5395",
+      "tags": [
+        "mutual-aid",
+        "crisis-response",
+        "volunteer",
+        "grocery",
+        "health",
+        "free"
+      ]
+    },
+    {
+      "id": "quality-extract-090",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-090.json",
+      "hash": "13ca6d75f28dc0de",
+      "tags": [
+        "crisis-response",
+        "shelter",
+        "disaster-relief",
+        "volunteer",
+        "capacity"
+      ]
+    },
+    {
+      "id": "quality-extract-091",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-091.json",
+      "hash": "7a6a136193caac0b",
+      "tags": [
+        "crisis-response",
+        "medical",
+        "emergency",
+        "power",
+        "urgent",
+        "budget"
+      ]
+    },
+    {
+      "id": "quality-extract-092",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-092.json",
+      "hash": "c5cab8fe3b449395",
+      "tags": [
+        "mutual-aid",
+        "food-security",
+        "community",
+        "volunteer",
+        "24-7"
+      ]
+    },
+    {
+      "id": "quality-extract-093",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-093.json",
+      "hash": "15373bd70fad886a",
+      "tags": [
+        "crisis-response",
+        "evacuation",
+        "elderly",
+        "medical",
+        "accessibility",
+        "transport"
+      ]
+    },
+    {
+      "id": "quality-extract-094",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-094.json",
+      "hash": "afa16d5af0d0f2f9",
+      "tags": [
+        "crisis-response",
+        "warming-center",
+        "homelessness",
+        "winter",
+        "city-funded",
+        "volunteer"
+      ]
+    },
+    {
+      "id": "quality-extract-095",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-095.json",
+      "hash": "0a085d8abeea160f",
+      "tags": [
+        "work",
+        "job-share",
+        "part-time",
+        "tech",
+        "benefits"
+      ]
+    },
+    {
+      "id": "quality-extract-096",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-096.json",
+      "hash": "abba909079eb9381",
+      "tags": [
+        "work",
+        "apprenticeship",
+        "trades",
+        "union",
+        "certification"
+      ]
+    },
+    {
+      "id": "quality-extract-097",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-097.json",
+      "hash": "eefa8467bbeb7880",
+      "tags": [
+        "work",
+        "barter",
+        "trade",
+        "web-design",
+        "accounting",
+        "no-cash"
+      ]
+    },
+    {
+      "id": "quality-extract-098",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-098.json",
+      "hash": "2190ce6851de7b54",
+      "tags": [
+        "food",
+        "subscription",
+        "csa",
+        "organic",
+        "recurring",
+        "seasonal"
+      ]
+    },
+    {
+      "id": "quality-extract-099",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-099.json",
+      "hash": "ca565a33ea40d06e",
+      "tags": [
+        "housing",
+        "co-housing",
+        "cooperative",
+        "consensus",
+        "community",
+        "shared-space"
+      ]
+    },
+    {
+      "id": "quality-extract-100",
+      "family": "quality",
+      "qualityFamily": "extraction",
+      "path": "quality/extraction/quality-extract-100.json",
+      "hash": "6fa9a146faf24f20",
+      "tags": [
+        "mutual-aid",
+        "timebank",
+        "barter",
+        "services",
+        "community",
+        "equal-value"
+      ]
+    },
+    {
       "id": "quality-match-001",
       "family": "quality",
       "qualityFamily": "match",
@@ -1655,620 +2228,7 @@
         "free",
         "volunteering"
       ]
-    },
-    {
-      "id": "quality-extract-061",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-061.json",
-      "hash": "generated",
-      "tags": [
-        "gig",
-        "home-repair",
-        "urgent",
-        "budget",
-        "licensed"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-062",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-062.json",
-      "hash": "generated",
-      "tags": [
-        "freelance",
-        "tech",
-        "automation",
-        "budget",
-        "deadline"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-063",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-063.json",
-      "hash": "generated",
-      "tags": [
-        "gig",
-        "pet-care",
-        "schedule",
-        "references"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-064",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-064.json",
-      "hash": "generated",
-      "tags": [
-        "freelance-offer",
-        "tech",
-        "devops",
-        "remote",
-        "senior"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-065",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-065.json",
-      "hash": "generated",
-      "tags": [
-        "gig",
-        "furniture",
-        "urgent",
-        "budget"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-066",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-066.json",
-      "hash": "generated",
-      "tags": [
-        "freelance",
-        "tech-writing",
-        "api",
-        "budget",
-        "deadline"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-067",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-067.json",
-      "hash": "generated",
-      "tags": [
-        "gig",
-        "cleaning",
-        "recurring",
-        "budget",
-        "eco-friendly"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-068",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-068.json",
-      "hash": "generated",
-      "tags": [
-        "freelance-offer",
-        "design",
-        "branding",
-        "flat-rate"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-069",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-069.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "workshop",
-        "food",
-        "education",
-        "schedule",
-        "paid"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-070",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-070.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "meetup",
-        "tech",
-        "education",
-        "free",
-        "recurring"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-071",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-071.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "webinar",
-        "finance",
-        "freelance",
-        "paid",
-        "virtual"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-072",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-072.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "conference",
-        "tech",
-        "hybrid",
-        "paid"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-073",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-073.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "hackathon",
-        "climate",
-        "tech",
-        "prizes",
-        "free"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-074",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-074.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "community",
-        "social",
-        "free",
-        "family"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-075",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-075.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "training",
-        "certification",
-        "health",
-        "paid"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-076",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-076.json",
-      "hash": "generated",
-      "tags": [
-        "event",
-        "retreat",
-        "team-building",
-        "budget",
-        "all-inclusive"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-077",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-077.json",
-      "hash": "generated",
-      "tags": [
-        "education",
-        "mentorship",
-        "tech",
-        "paid",
-        "recurring"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-078",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-078.json",
-      "hash": "generated",
-      "tags": [
-        "education",
-        "study-group",
-        "ml",
-        "research",
-        "free",
-        "virtual"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-079",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-079.json",
-      "hash": "generated",
-      "tags": [
-        "education",
-        "course",
-        "photography",
-        "paid",
-        "arts"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-080",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-080.json",
-      "hash": "generated",
-      "tags": [
-        "education",
-        "tutoring",
-        "stem",
-        "paid",
-        "in-person"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-081",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-081.json",
-      "hash": "generated",
-      "tags": [
-        "education",
-        "workshop",
-        "digital-literacy",
-        "seniors",
-        "free",
-        "volunteer"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-082",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-082.json",
-      "hash": "generated",
-      "tags": [
-        "education",
-        "language-exchange",
-        "free",
-        "virtual",
-        "recurring"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-083",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-083.json",
-      "hash": "generated",
-      "tags": [
-        "governance",
-        "hoa",
-        "meeting",
-        "recurring",
-        "quorum"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-084",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-084.json",
-      "hash": "generated",
-      "tags": [
-        "governance",
-        "nonprofit",
-        "bylaws",
-        "vote",
-        "board"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-085",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-085.json",
-      "hash": "generated",
-      "tags": [
-        "governance",
-        "zoning",
-        "city-council",
-        "public-hearing",
-        "land-use"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-086",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-086.json",
-      "hash": "generated",
-      "tags": [
-        "governance",
-        "cooperative",
-        "vote",
-        "profit-sharing",
-        "democracy"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-087",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-087.json",
-      "hash": "generated",
-      "tags": [
-        "governance",
-        "labor",
-        "cba",
-        "union",
-        "negotiation",
-        "mediation"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-088",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-088.json",
-      "hash": "generated",
-      "tags": [
-        "governance",
-        "legal",
-        "data-protection",
-        "dpa",
-        "gdpr",
-        "healthcare"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-089",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-089.json",
-      "hash": "generated",
-      "tags": [
-        "mutual-aid",
-        "crisis-response",
-        "volunteer",
-        "grocery",
-        "health",
-        "free"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-090",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-090.json",
-      "hash": "generated",
-      "tags": [
-        "crisis-response",
-        "shelter",
-        "disaster-relief",
-        "volunteer",
-        "capacity"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-091",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-091.json",
-      "hash": "generated",
-      "tags": [
-        "crisis-response",
-        "medical",
-        "emergency",
-        "power",
-        "urgent",
-        "budget"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-092",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-092.json",
-      "hash": "generated",
-      "tags": [
-        "mutual-aid",
-        "food-security",
-        "community",
-        "volunteer",
-        "24-7"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-093",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-093.json",
-      "hash": "generated",
-      "tags": [
-        "crisis-response",
-        "evacuation",
-        "elderly",
-        "medical",
-        "accessibility",
-        "transport"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-094",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-094.json",
-      "hash": "generated",
-      "tags": [
-        "crisis-response",
-        "warming-center",
-        "homelessness",
-        "winter",
-        "city-funded",
-        "volunteer"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-095",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-095.json",
-      "hash": "generated",
-      "tags": [
-        "work",
-        "job-share",
-        "part-time",
-        "tech",
-        "benefits"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-096",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-096.json",
-      "hash": "generated",
-      "tags": [
-        "work",
-        "apprenticeship",
-        "trades",
-        "union",
-        "certification"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-097",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-097.json",
-      "hash": "generated",
-      "tags": [
-        "work",
-        "barter",
-        "trade",
-        "web-design",
-        "accounting",
-        "no-cash"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-098",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-098.json",
-      "hash": "generated",
-      "tags": [
-        "food",
-        "subscription",
-        "csa",
-        "organic",
-        "recurring",
-        "seasonal"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-099",
-      "family": "quality",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-099.json",
-      "hash": "generated",
-      "tags": [
-        "housing",
-        "co-housing",
-        "cooperative",
-        "consensus",
-        "community",
-        "shared-space"
-      ],
-      "qualityFamily": "extraction"
-    },
-    {
-      "id": "quality-extract-100",
-      "family": "quality",
-      "qualityFamily": "extraction",
-      "split": "extraction",
-      "path": "quality/extraction/quality-extract-100.json",
-      "hash": "generated",
-      "tags": [
-        "mutual-aid",
-        "timebank",
-        "barter",
-        "services",
-        "community",
-        "equal-value"
-      ]
     }
   ],
-  "hash": "e9d01245b059ad82"
+  "hash": "12cf5329a8e9366d"
 }

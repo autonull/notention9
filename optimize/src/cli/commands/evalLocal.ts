@@ -6,16 +6,21 @@
 import { Command } from '../Command.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { readFile, writeFile, mkdir, existsSync } from 'node:fs/promises';
+import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { existsSync, readFileSync } from 'node:fs';
 import { MatchEngine } from '@notention/core/matching';
 import { ExtractionPipeline, createNote, type Note, type Property, type OntologyNode } from '@notention/core';
-import { getOntology } from '@notention/core/ontology';
+import { getOntology, collectOntologyKeysInTree } from '@notention/core/ontology';
 import { QUALITY_CASE_NOTES } from '@notention/core/fixtures';
 import { evaluateExtraction, evaluateMatch } from '@notention/core/eval/verdict';
 import { readManifest, type QualityCase, type ExtractionExpectation, type MatchExpectation } from '@notention/core/eval/caseManifest';
-import { loadGoldenCases, evaluateGoldenSet, type GoldenCase, type Provider, DeterministicProvider, normalizeProperty, scoreExtraction } from '../../prompts/evaluate.js';
+import { evaluateGoldenSet, type GoldenCase, type Provider, DeterministicProvider, type EvaluationResult } from '../../prompts/evaluate.js';
 import { LlamaCppProvider as NewLlamaCppProvider, type LlamaCppProviderOptions } from '../../prompts/providers/llamaCppProvider.js';
-import { toFewShotBank } from '../../prompts/cli.js';
+import { normalizeProperty, scoreExtraction } from '../../prompts/policy.js';
+import type { LabelledCase } from '../../prompts/fewShot.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 interface CacheEntry {
     caseId: string;
@@ -58,20 +63,29 @@ const DEFAULT_PASS_THRESHOLD = 0.75;
 const CACHE_DIR = join(process.cwd(), 'data', 'eval', 'cache');
 
 function getProjectRoot(): string {
-    let root = process.cwd();
-    while (root !== '/') {
-        try {
-            require.resolve(`${root}/pnpm-workspace.yaml`);
-            break;
-        } catch {
-            root = join(root, '..');
+    // Use the __dirname which is the compiled output directory
+    // Navigate up to find the project root
+    let root = join(__dirname, '..', '..', '..');
+    // Verify by checking for pnpm-workspace.yaml
+    try {
+        require.resolve(`${root}/pnpm-workspace.yaml`);
+        return root;
+    } catch {
+        // Fallback to cwd
+        root = process.cwd();
+        while (root !== '/') {
+            try {
+                require.resolve(`${root}/pnpm-workspace.yaml`);
+                break;
+            } catch {
+                root = join(root, '..');
+            }
         }
+        return root;
     }
-    return root;
 }
 
 function getProviderHash(options: LlamaCppProviderOptions): string {
-    // Simple hash based on model path and key settings
     const keyParts = [
         options.modelPath || 'default',
         options.contextSize?.toString() || '2048',
@@ -103,6 +117,24 @@ async function saveCache(cacheDir: string, providerHash: string, cache: Map<stri
     const cachePath = join(cacheDir, `${providerHash}.json`);
     const entries = Array.from(cache.values());
     await writeFile(cachePath, JSON.stringify(entries, null, 2));
+}
+
+async function loadGoldenCases(): Promise<GoldenCase[]> {
+    const goldenPath = join(__dirname, '..', '..', 'prompts', 'property-extraction.golden.json');
+    const content = readFileSync(goldenPath, 'utf-8');
+    return JSON.parse(content);
+}
+
+function toFewShotBank(cases: GoldenCase[]): LabelledCase[] {
+    return cases.map(testCase => ({
+        id: testCase.name,
+        input: testCase.input,
+        expected: testCase.expected,
+    }));
+}
+
+function getOntologyArray(): OntologyNode[] {
+    return Array.from(getOntology().nodes.values());
 }
 
 export class EvalLocalCommand extends Command {
@@ -153,7 +185,6 @@ export class EvalLocalCommand extends Command {
             const fewShotCount = args.fewShot ?? 3;
             const useCache = !args.noCache;
 
-            // Initialize cache
             const providerOptions: LlamaCppProviderOptions = {
                 modelPath: args.modelPath,
                 serverUrl: args.serverUrl,
@@ -190,13 +221,12 @@ export class EvalLocalCommand extends Command {
                 const goldenCases = await loadGoldenCases();
                 this.printInfo(`Loaded ${goldenCases.length} golden cases`);
 
-                // Create provider
                 const provider = this.createProvider(providerName, providerOptions, undefined);
                 const goldenProvider = provider instanceof NewLlamaCppProvider
                     ? new NewLlamaCppProvider({ ...providerOptions, fewShotBank: undefined })
                     : provider;
 
-                const results = await evaluateGoldenSet(goldenCases, goldenProvider, getOntology().nodes);
+                const results = await evaluateGoldenSet(goldenCases, goldenProvider, getOntologyArray());
 
                 let passed = 0;
                 const caseResults = [];
@@ -204,8 +234,7 @@ export class EvalLocalCommand extends Command {
                     const f1 = scoreExtraction(result.expected, result.actual).f1;
                     if (result.passed) passed++;
                     caseResults.push({
-                        caseId: result.name,
-                        input: result.input,
+                        caseId: result.caseName,
                         expected: result.expected,
                         actual: result.actual,
                         f1,
@@ -240,7 +269,7 @@ export class EvalLocalCommand extends Command {
                 const matchLimit = args.qualityLimit ?? matchCases.length;
 
                 // --- Extraction Quality ---
-                const extractionEngine = this.createExtractionEngine(providerName, providerOptions, fewShotCount, cache, useCache);
+                const extractionEngine = this.createExtractionEngine(providerName, providerOptions);
                 const extractionCasesToRun = extractionCases.slice(0, extractionLimit);
                 const extractionResults = [];
 
@@ -297,7 +326,7 @@ export class EvalLocalCommand extends Command {
                 this.printInfo(`Quality Extraction: ${extractionPassed}/${extractionResults.length} passed, avg F1: ${avgF1.toFixed(3)}`);
 
                 // --- Match Quality ---
-                const matchEngine = new MatchEngine(getOntology().nodes);
+                const matchEngine = new MatchEngine(getOntologyArray());
                 const candidateNotesByPrefix = new Map<string, Note[]>();
                 for (const note of QUALITY_CASE_NOTES) {
                     const prefix = note.id.split('-')[1];
@@ -333,9 +362,8 @@ export class EvalLocalCommand extends Command {
                         result = cache.get(cacheKey)!.result;
                         cacheHits++;
                     } else {
-                        // Create request note from input
                         const pipeline = new ExtractionPipeline();
-                        const extractionResult = await pipeline.extract(caseData.input, getOntology().nodes, {
+                        const extractionResult = await pipeline.extract(caseData.input, getOntologyArray(), {
                             intents: true, patterns: true, ontologyKeys: true, fuzzy: true, price: true, dates: true, roles: true,
                         });
                         const requestNote = createNote({
@@ -422,8 +450,7 @@ export class EvalLocalCommand extends Command {
                 this.printSummary(result, reportPath, passThreshold);
             }
 
-            // Exit code: pass if golden passes (if run) AND quality passes
-            const goldenPassed = args.qualityOnly || goldenResult.passed >= 9; // 9/10 gate
+            const goldenPassed = args.qualityOnly || goldenResult.passed >= 9;
             const qualityPassed = args.goldenOnly || (qualityExtractionResult.avgF1 >= passThreshold && qualityMatchResult.avgF1 >= passThreshold);
             return (goldenPassed && qualityPassed) ? 0 : 1;
 
@@ -432,7 +459,7 @@ export class EvalLocalCommand extends Command {
         }
     }
 
-    private createProvider(name: string, options: LlamaCppProviderOptions, fewShotBank?: any[]): Provider {
+    private createProvider(name: string, options: LlamaCppProviderOptions, fewShotBank?: LabelledCase[]): Provider {
         switch (name) {
             case 'llama-cpp-embedded':
                 return new NewLlamaCppProvider({ ...options, fewShotBank, serverUrl: undefined });
@@ -446,16 +473,13 @@ export class EvalLocalCommand extends Command {
 
     private createExtractionEngine(
         providerName: string,
-        options: LlamaCppProviderOptions,
-        fewShotCount: number,
-        cache: Map<string, CacheEntry>,
-        useCache: boolean
+        options: LlamaCppProviderOptions
     ): { extract: (input: string) => Promise<Record<string, string[]>> } {
         const provider = this.createProvider(providerName, options, undefined);
 
         return {
             async extract(input: string): Promise<Record<string, string[]>> {
-                const props = await provider.extract(input, getOntology().nodes);
+                const props = await provider.extract(input, getOntologyArray());
                 const extracted: Record<string, string[]> = {};
                 for (const prop of props) {
                     extracted[prop.key] = prop.values;

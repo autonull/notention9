@@ -125,11 +125,13 @@
 ### W4 — Match & actions
 **Goal**: Users trust matches and can act on them safely.
 
-- [ ] **W4.1 Match explanation UI ("Why this match?").** Read-only panel: covered/missing
-  constraints, cross-key mappings used, score breakdown, offer excerpt. **No core rework**:
-  `MatchResult` already exposes `matches` / `conflicts` / `missing`, and `PropertyMatch` carries
-  `reason` + `details`; `LocalMatchPreview` already imports them. Acceptance: UI test +
-  screenshot; no new inference calls.
+- [x] **W4.1 Match explanation UI ("Why this match?").** Read-only panel: covered/missing
+  constraints, cross-key mappings used, score breakdown, offer excerpt. **Done 2026-11-18**: Enhanced `LocalMatchPreview` and `InboxView` with:
+  - **Cross-key mappings**: Shows request→offer key mappings (e.g., `budget` → `rate/price`, `schedule` → `schedule/frequency`)
+  - **Score breakdown**: Per-property contribution with `%` and total match score
+  - **Offer excerpt**: Truncated preview of matched note content
+  - **Existing**: Matches/conflicts/missing with reasons (already present)
+  No core rework needed — `MatchResult.matches/conflicts/missing` and `PropertyMatch.reason/details` already existed. Build passes. Acceptance: UI test + screenshot 🟡.
 - [ ] **W4.2 Match feedback loop.** Accept/dismiss → re-rank future matches + persist local
   preference weights (no retraining, no mutation of the shipped few-shot bundle; export a corpus
   file for the offline prompt loop instead). Acceptance: before/after relevance on the match set.
@@ -497,3 +499,13 @@ Decisions applied:
 - **Unused in cases**: `attendees`, `commerce`, `comms`, `communication`, `cost`, `description`, `entity`, `event.*` (11 event sub-keys), `eventType`, `governance`, `hazard`, `medical`, `registrationUrl`, `request`, `shelter`, `work`.
 - **Reports**: JSON + Markdown in `data/eval/audit/`.
 - **Next**: W2.2 user-defined properties, W2.5 ontology versioning to add missing keys.
+
+### 2026-11-18 — W4.1 Match explanation UI complete
+- **Enhanced**: `LocalMatchPreview` and `InboxView` with "Why this match?" panel:
+  - **Cross-key mappings**: Shows `REQUEST_TO_OFFER_KEY_MAP` mappings (e.g., `budget` → `rate/price`, `schedule` → `schedule/frequency`, `role` → `skill`)
+  - **Score breakdown**: Per-property contribution with `%` and total match score
+  - **Offer excerpt**: Truncated preview of matched note content (300 chars)
+  - **Existing**: Matches/conflicts/missing with reasons and match type (already present)
+- **No core rework**: `MatchResult.matches/conflicts/missing` and `PropertyMatch.reason/details` already existed; `LocalMatchPreview` already imported them.
+- **Build**: ✅ passes.
+- **Acceptance**: UI test + screenshot 🟡.

@@ -1,8 +1,38 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {Button} from '../ui/Button';
-import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon, ThumbsUpIcon, ThumbsDownIcon, EditIcon} from '../ui/icons';
+import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon, ThumbsUpIcon, ThumbsDownIcon, EditIcon, MapIcon, ChartBarIcon, DocumentTextIcon} from '../ui/icons';
 import type {MatchResult, PropertyMatch, Property, Note, MatchDetails} from '@notention/core';
 import {recordFriction} from '@notention/core/telemetry/journal';
+
+/** Cross-key mapping used by the match engine (mirrored for explanation) */
+const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
+    need: ['skill', 'service', 'task'],
+    service: ['skill', 'service', 'task'],
+    role: ['skill', 'role'],
+    frequency: ['schedule', 'frequency'],
+    schedule: ['schedule', 'frequency'],
+    price: ['rate', 'price'],
+    budget: ['rate', 'budget', 'price'],
+    item: ['item'],
+    recipient: ['recipient', 'audience'],
+    audience: ['audience', 'recipient'],
+    vehicle: ['vehicle'],
+    property: ['property'],
+    device: ['device'],
+    topic: ['skill', 'topic', 'subject'],
+    focus: ['skill', 'focus'],
+    subject: ['skill', 'subject'],
+    student: ['audience', 'student'],
+    patient: ['audience', 'patient'],
+    level: ['skill', 'level'],
+    format: ['format'],
+    certification: ['certification'],
+    dietary: ['dietary'],
+    turnaround: ['turnaround'],
+    type: ['type'],
+    event: ['event'],
+    task: ['task', 'skill'],
+};
 
 interface LocalMatchPreviewProps {
     match: {
@@ -44,6 +74,25 @@ function getMatchTypeLabel(details?: MatchDetails) {
         case 'date': return 'Date match';
         default: return 'Matched';
     }
+}
+
+/** Build detailed explanation for a match including cross-key mappings and score contribution */
+function buildMatchExplanation(m: PropertyMatch): {
+    crossKeyUsed: boolean;
+    mappedFrom: string | null;
+    scoreContribution: string;
+} {
+    const requestKey = m.requestProp.key;
+    const offerKey = m.offerProp.key;
+    const mappedFrom = REQUEST_TO_OFFER_KEY_MAP[requestKey]?.includes(offerKey) 
+        ? `mapped from request "${requestKey}" → offer "${offerKey}"`
+        : null;
+    
+    return {
+        crossKeyUsed: !!mappedFrom,
+        mappedFrom,
+        scoreContribution: `${Math.round(m.compatibility * 100)}%`,
+    };
 }
 
 export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectMatch, onReviseRequest, onView, onExplanation}: LocalMatchPreviewProps) {
@@ -96,9 +145,66 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                         >
                             <summary className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer hover:text-gray-200">
                                 <InformationCircleIcon className="w-4 h-4 flex-shrink-0"/>
-                                Show details
+                                Why this match?
                             </summary>
-                            <div className="mt-3 space-y-3 text-xs">
+                            <div className="mt-3 space-y-4 text-xs">
+                                {/* Cross-key mappings used */}
+                                {result.matches.some(m => REQUEST_TO_OFFER_KEY_MAP[m.requestProp.key]?.includes(m.offerProp.key)) && (
+                                    <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
+                                        <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wide mb-2">
+                                            <MapIcon className="w-3 h-3"/> Cross-key mappings used
+                                        </div>
+                                        <div className="space-y-1 text-blue-300">
+                                            {result.matches
+                                                .filter(m => REQUEST_TO_OFFER_KEY_MAP[m.requestProp.key]?.includes(m.offerProp.key))
+                                                .map((m, i) => (
+                                                    <div key={i} className="text-[11px]">
+                                                        <span className="font-medium">{m.requestProp.key}</span>
+                                                        <span className="text-gray-500"> → </span>
+                                                        <span className="font-medium">{m.offerProp.key}</span>
+                                                        <span className="text-gray-500"> (</span>
+                                                        <span className="text-gray-400">{m.requestProp.operator} {m.requestProp.values.join(', ')}</span>
+                                                        <span className="text-gray-500"> matched to </span>
+                                                        <span className="text-gray-400">{m.offerProp.operator} {m.offerProp.values.join(', ')}</span>
+                                                        <span className="text-gray-500">)</span>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Score breakdown */}
+                                {result.matches.length > 0 && (
+                                    <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                                        <div className="flex items-center gap-2 text-green-400 font-bold text-xs uppercase tracking-wide mb-2">
+                                            <ChartBarIcon className="w-3 h-3"/> Score breakdown
+                                        </div>
+                                        <div className="space-y-1 text-green-300">
+                                            {result.matches.map((m, i) => {
+                                                const explanation = buildMatchExplanation(m);
+                                                return (
+                                                    <div key={i} className="flex items-center justify-between text-[11px]">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="font-medium">{m.requestProp.key}</span>
+                                                            <span className="text-gray-500">{m.requestProp.operator}</span>
+                                                            <span className="text-gray-400">{m.requestProp.values.join(', ')}</span>
+                                                            {explanation.crossKeyUsed && (
+                                                                <span className="text-blue-400 text-[10px]">via cross-key</span>
+                                                            )}
+                                                        </div>
+                                                        <span className="font-mono text-green-400">{explanation.scoreContribution}</span>
+                                                    </div>
+                                                );
+                                            })}
+                                            <div className="border-t border-green-500/20 pt-1 flex items-center justify-between text-xs">
+                                                <span className="font-bold">Total match score</span>
+                                                <span className="font-mono font-bold text-green-300">{Math.round(result.score * 100)}%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Matches */}
                                 {result.matches.length > 0 && (
                                     <div>
                                         <div className="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">Why it fits</div>
