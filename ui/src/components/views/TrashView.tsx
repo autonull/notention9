@@ -101,7 +101,7 @@ export function TrashView() {
                 onClose={() => setNoteToDelete(null)}
                 onConfirm={handleDeleteConfirm}
                 title="Delete note permanently?"
-                message={`"${noteToDelete?.title || 'Untitled Note'}" will be removed forever. This cannot be undone.`}
+                message={`"${noteToDelete?.title || 'Untitled Note'}" will be removed forever. If it was published, a NIP-09 deletion request is sent to relays, which may ignore it.`}
                 confirmLabel="Delete forever"
                 isDestructive
             />

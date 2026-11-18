@@ -58,21 +58,7 @@ describe('Nostr Phase 2.2 Privacy Levels', () => {
         expect(tags[0]).toEqual(['property', 'role', 'is', 'engineer']);
     });
 
-    it('should generate hashed tags in protected mode', async () => {
-        const tags = await getPrivacyTags(mockNote.properties, 'protected');
-        expect(tags).toHaveLength(1);
-        expect(tags[0][0]).toBe('property-hash');
-        expect(tags[0][1]).toBe('role');
-        expect(tags[0][2]).not.toBe('engineer'); // Should be hashed
-
-        // Check hash consistency
-        if (typeof crypto !== 'undefined') {
-            const expectedHash = await hashValue('engineer');
-            expect(tags[0][2]).toBe(expectedHash);
-        }
-    });
-
-    it('should generate secret tags in secret mode', async () => {
+    it('should generate secret tags in private mode', async () => {
         const tags = await getPrivacyTags(mockNote.properties, 'private');
         expect(tags).toHaveLength(1);
         expect(tags[0][0]).toBe('property-secret');

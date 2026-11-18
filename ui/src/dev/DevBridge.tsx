@@ -60,7 +60,7 @@ export function DevBridge() {
                 properties: selectedNote.properties,
                 propertyIndex: buildPropertyIndex(selectedNote.properties),
                 tags: selectedNote.tags,
-                privacy: selectedNote.privacy === 'protected' ? 'private' : selectedNote.privacy,
+                privacy: selectedNote.privacy,
                 saveStatus: 'idle',
                 publishReadiness: { ready: selectedNote.privacy === 'public', blocking: [] },
             },

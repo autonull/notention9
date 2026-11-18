@@ -7,10 +7,18 @@ import { Logger } from '../../utils/logging.js';
 import { DEFAULT_RELAYS, resolveRelays } from '../../config/nostr.js';
 import { queryEventsWithTimeout } from '../../utils/nostrQuery.js';
 import { withTimeout } from '../../utils/async.js';
+import { redactPIIForTransport } from '../../utils/piiRedaction.js';
 
 export { DEFAULT_RELAYS, resolveRelays };
 export const KIND_TEXT_NOTE = 1;
 export const KIND_SEMANTIC_NOTE = 35000;
+/** NIP-09 deletion request. */
+export const KIND_DELETION = 5;
+
+export interface PublishOptions {
+  /** Mask emails, phones, and SSNs in the event body before signing. */
+  redactPII?: boolean;
+}
 
 interface NIP07Window extends Window {
   nostr?: {
@@ -129,7 +137,8 @@ export async function publishNoteToNostr(
   relays: string[] = DEFAULT_RELAYS,
   promptUserCallback?: (msg: string) => Promise<boolean>,
   privacyMode: PrivacyLevel = 'public',
-  signer?: NostrSigner
+  signer?: NostrSigner,
+  options: PublishOptions = {}
 ): Promise<string> {
   const canPublish = await networkGate.canTransmit(
     note,
@@ -142,16 +151,67 @@ export async function publishNoteToNostr(
   }
 
   const activeSigner = signer ?? DefaultSignerFactory.getSigner(privkeyHex);
-  const signedEvent = await prepareAndSignEvent(note, activeSigner, privacyMode);
+  const signedEvent = await prepareAndSignEvent(note, activeSigner, privacyMode, options);
 
-  // Publish
-  const pubs = pool.publish(relays, signedEvent);
+  await publishEventToRelays(signedEvent, relays);
+
+  note.nostrEventId = signedEvent.id;
+  note.publishedAt = new Date().toISOString();
+  note.author = signedEvent.pubkey;
+  return signedEvent.id;
+}
+
+/**
+ * NIP-09: ask relays to delete a published note.
+ * Best-effort: relays may ignore the request, and the local copy is separate.
+ * Returns the deletion event id, or `null` when the note was never published.
+ */
+export function buildDeletionRequest(note: Note): { kind: number; tags: string[][]; content: string; created_at: number } | null {
+  if (!note.nostrEventId) return null;
+
+  const deletedKind = note.properties.length > 0 ? KIND_SEMANTIC_NOTE : KIND_TEXT_NOTE;
+  const tags: string[][] = [
+    ['e', note.nostrEventId],
+    ['k', String(deletedKind)],
+  ];
+
+  // Addressable (30000–39999) events need an `a` tag to retract every version.
+  if (deletedKind === KIND_SEMANTIC_NOTE && note.author) {
+    tags.push(['a', `${KIND_SEMANTIC_NOTE}:${note.author}:${note.id}`]);
+  }
+
+  return {
+    kind: KIND_DELETION,
+    tags,
+    content: '',
+    created_at: Math.floor(Date.now() / 1000),
+  };
+}
+
+export async function publishDeletionRequest(
+  note: Note,
+  privkeyHex: string | undefined,
+  relays: string[] = DEFAULT_RELAYS,
+  signer?: NostrSigner
+): Promise<string | null> {
+  const payload = buildDeletionRequest(note);
+  if (!payload) return null;
+
+  const activeSigner = signer ?? DefaultSignerFactory.getSigner(privkeyHex);
+  const deletion = await activeSigner.signEvent(payload);
+
+  await publishEventToRelays(deletion, relays);
+  return deletion.id;
+}
+
+async function publishEventToRelays(event: NostrEvent, relays: string[]): Promise<void> {
+  const pubs = pool.publish(relays, event);
 
   try {
     const outcomes = await withTimeout(
       Promise.allSettled(pubs),
       PUBLISH_TIMEOUT_MS,
-      'No relay accepted the note. Check the relay connection and try again.'
+      'No relay accepted the event. Check the relay connection and try again.'
     );
 
     // nostr-tools resolves with a "connection failure" string instead of
@@ -169,28 +229,25 @@ export async function publishNoteToNostr(
           ? (outcome.reason instanceof Error ? outcome.reason.message : String(outcome.reason))
           : String(outcome.value)
       );
-      throw new Error(reasons.filter(Boolean).join('; ') || 'No relay accepted the note');
+      throw new Error(reasons.filter(Boolean).join('; ') || 'No relay accepted the event');
     }
   } catch (e: any) {
     Logger.getInstance().warn('Failed to publish to any relay', e);
     throw e;
   }
-
-  note.nostrEventId = signedEvent.id;
-  note.publishedAt = new Date().toISOString();
-  return signedEvent.id;
 }
 
 async function prepareAndSignEvent(
     note: Note,
     signer: NostrSigner,
-    privacyMode: PrivacyLevel
+    privacyMode: PrivacyLevel,
+    options: PublishOptions = {}
 ): Promise<NostrEvent> {
-    const payload = await prepareEventPayload(note, privacyMode);
+    const payload = await prepareEventPayload(note, privacyMode, options);
     return signer.signEvent(payload);
 }
 
-async function prepareEventPayload(note: Note, privacyMode: PrivacyLevel) {
+async function prepareEventPayload(note: Note, privacyMode: PrivacyLevel, options: PublishOptions = {}) {
     // Calculate privacy tags
     const propertyTags = await getPrivacyTags(note.properties, privacyMode);
 
@@ -221,7 +278,7 @@ async function prepareEventPayload(note: Note, privacyMode: PrivacyLevel) {
 
     const created_at = Math.floor(Date.now() / 1000);
     const kind = note.properties.length > 0 ? KIND_SEMANTIC_NOTE : KIND_TEXT_NOTE;
-    const content = note.content;
+    const content = options.redactPII ? redactPIIForTransport(note.content) : note.content;
 
     return { tags: uniqueTags, kind, created_at, content };
 }

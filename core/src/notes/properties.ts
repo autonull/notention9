@@ -73,8 +73,17 @@ export const arePropertiesEqual = (p1: Property | null, p2: Property | null): bo
 export const arePropertyArraysEqual = (a: Property[], b: Property[]): boolean =>
   a === b || (a.length === b.length && a.every((p, i) => arePropertiesEqual(p, b[i])));
 
+/**
+ * Coerce a stored privacy value to the current two-level model.
+ * Removed levels (e.g. the old `protected`) become `private`, the safer side.
+ */
+export const normalizePrivacyLevel = (privacy: unknown): Note['privacy'] =>
+  privacy === 'public' ? 'public' : 'private';
+
 export const normalizeNoteProperties = (note: Note, ontology: OntologyNode[]): Note => {
-  if (!ontology?.length) return note;
+  const privacy = normalizePrivacyLevel(note.privacy);
+  const withPrivacy = privacy === note.privacy ? note : {...note, privacy};
+  if (!ontology?.length) return withPrivacy;
   // Properties are already canonical; no alias resolution needed
-  return note;
+  return withPrivacy;
 };

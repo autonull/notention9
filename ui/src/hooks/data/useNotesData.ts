@@ -77,8 +77,13 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
 
     // Consolidated persistence logic
     const persistence = useMemo(
-        () => createNotePersistence({ settingsOntology: settings.ontology || [] }),
-        [settings.ontology]
+        () => createNotePersistence({
+            settingsOntology: settings.ontology || [],
+            settingsNostr: settings.nostr
+                ? {...settings.nostr, privkey: settings.nostr.privkey ?? undefined}
+                : undefined,
+        }),
+        [settings.ontology, settings.nostr]
     );
 
     // --- Sync Logic ---
@@ -155,9 +160,10 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
     }, [setNotes, persistence]);
 
     const permanentlyDeleteNote = useCallback((id: string) => {
-        setNotes((prev) => prev.filter((note) => note.id !== id));
-        persistence.persistHardDelete(id);
-    }, [setNotes, persistence]);
+        const note = notes.find((candidate) => candidate.id === id);
+        setNotes((prev) => prev.filter((candidate) => candidate.id !== id));
+        persistence.persistHardDelete(note ?? id);
+    }, [notes, setNotes, persistence]);
 
     // --- Optimized Filtering & Sorting ---
     const getSortedFilteredNotes = useCallback((

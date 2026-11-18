@@ -15,7 +15,9 @@ export async function hashValue(value: string): Promise<string> {
 }
 
 /**
- * Generate Nostr tags based on privacy level
+ * Generate Nostr tags for a note.
+ * Public notes expose key/operator/value. Private notes never leave the device,
+ * but if a caller transmits one it only gets a hash of `key:value`.
  */
 export async function getPrivacyTags(properties: Property[], level: PrivacyLevel): Promise<string[][]> {
     if (level === 'public') {
@@ -26,24 +28,12 @@ export async function getPrivacyTags(properties: Property[], level: PrivacyLevel
 
     for (const p of properties) {
         const valueTags = await Promise.all(p.values.map(async (v) => {
-            if (level === 'protected') {
-                // Level 1: Protected - [property-hash, key, hash(value)]
-                // Reveals the Key (Ontology), hides the Value.
-                const hashedVal = await hashValue(v);
-                return ['property-hash', p.key, hashedVal];
-            } else if (level === 'private') {
-                // Level 2: Secret - [property-secret, hash(key:value)]
-                // Hides both Key and Value. Only exact matches can identify this.
-                const secretPayload = `${p.key}:${v}`;
-                const hashedSecret = await hashValue(secretPayload);
-                return ['property-secret', hashedSecret];
-            }
-            return null;
+            const secretPayload = `${p.key}:${v}`;
+            const hashedSecret = await hashValue(secretPayload);
+            return ['property-secret', hashedSecret];
         }));
 
-        for (const tag of valueTags) {
-            if (tag) tags.push(tag);
-        }
+        for (const tag of valueTags) tags.push(tag);
     }
 
     return tags;

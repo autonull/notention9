@@ -88,7 +88,8 @@ export interface ExtractedProperty {
   originalText: string;
 }
 
-export type PrivacyLevel = 'private' | 'protected' | 'public';
+/** Local-only (`private`) or published to relays (`public`). */
+export type PrivacyLevel = 'private' | 'public';
 export type PropertyType = 'quantity' | 'number' | 'date' | 'datetime' | 'geo' | 'string' | 'enum' | 'boolean';
 
 export interface OntologyNode {

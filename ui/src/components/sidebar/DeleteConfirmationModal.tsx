@@ -11,7 +11,7 @@ export function DeleteConfirmationModal() {
             onClose={() => setIsDeleteModalOpen(false)}
             onConfirm={handleDeleteConfirmed}
             title="Permanently Delete Note"
-            message="Are you sure you want to permanently delete this note? This action cannot be undone."
+            message="Permanently delete this note? This cannot be undone. If it was published, a NIP-09 deletion request is sent to relays, which may ignore it."
             confirmLabel="Delete Forever"
             isDestructive
         />

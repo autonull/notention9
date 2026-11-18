@@ -217,10 +217,14 @@ export {
     resolveRelays,
     convertEventToNote,
     publishNoteToNostr,
+    publishDeletionRequest,
+    buildDeletionRequest,
+    KIND_DELETION,
     extractPropertiesFromTags,
     formatNpub,
     queryEvents,
 } from './network/nostr/nostr.js';
+export type { PublishOptions } from './network/nostr/nostr.js';
 
 // Encoding - from utils/encoding.js
 export {
