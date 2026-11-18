@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T03:35:05.099Z",
+  "generatedAt": "2026-11-18T03:47:40.728Z",
   "cases": [
     {
       "id": "inbox-empty",
@@ -540,24 +540,32 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.146,
-        "wastedSpace": 0,
-        "wastedRatio": 0,
-        "trailingSpace": 560,
-        "contentHeight": 158,
+        "contentRatio": 0.299,
+        "wastedSpace": 107,
+        "wastedRatio": 0.119,
+        "trailingSpace": 371,
+        "contentHeight": 448,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": {
-          "element": "flex flex-col items-center justify-center py-8 px-4 text-cen",
-          "height": 308,
-          "footprint": 0.342
+          "element": "flex flex-col items-center justify-center py-6 px-4 text-cen",
+          "height": 216,
+          "footprint": 0.24
         },
-        "density": 6.3,
+        "density": 6.7,
         "actions": [
           {
-            "label": "Set up identity",
-            "top": 292
+            "label": "Add identity",
+            "top": 83
+          },
+          {
+            "label": "Add Contact",
+            "top": 243
+          },
+          {
+            "label": "Go to Settings",
+            "top": 260
           }
         ],
         "facts": 0
@@ -1194,24 +1202,32 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.155,
-        "wastedSpace": 0,
-        "wastedRatio": 0,
-        "trailingSpace": 504,
-        "contentHeight": 158,
+        "contentRatio": 0.487,
+        "wastedSpace": 102,
+        "wastedRatio": 0.121,
+        "trailingSpace": 155,
+        "contentHeight": 572,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": {
-          "element": "flex flex-col items-center justify-center py-8 px-4 text-cen",
-          "height": 308,
-          "footprint": 0.365
+          "element": "flex flex-col items-center justify-center py-6 px-4 text-cen",
+          "height": 260,
+          "footprint": 0.308
         },
-        "density": 6.3,
+        "density": 5.2,
         "actions": [
           {
-            "label": "Set up identity",
-            "top": 292
+            "label": "Add identity",
+            "top": 201
+          },
+          {
+            "label": "Add Contact",
+            "top": 359
+          },
+          {
+            "label": "Go to Settings",
+            "top": 368
           }
         ],
         "facts": 0

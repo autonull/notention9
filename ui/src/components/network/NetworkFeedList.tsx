@@ -40,17 +40,8 @@ export function NetworkFeedList({
                 variant="illustrated"
                 illustration={<NetworkEmptyIllustration/>}
                 title="No network notes found"
-                description="We couldn't find any notes from your connected relays. Publish a note to share it with the network, or check your connection settings."
+                description="We couldn't find any notes from your connected relays. Publish a note to share it with the network."
                 action={
-                    <Button
-                        variant="primary"
-                        leftIcon={<SettingsIcon className="w-4 h-4"/>}
-                        onClick={() => setActiveView('settings')}
-                    >
-                        Check Connection Settings
-                    </Button>
-                }
-                secondaryAction={
                     <Button variant="ghost" size="sm" onClick={() => setActiveView('notes')}>
                         Create a note to publish
                     </Button>

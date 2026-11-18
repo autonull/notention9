@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T03:27:23.048Z",
+  "generatedAt": "2026-11-18T03:50:03.800Z",
   "cases": [
     {
       "view": "inbox",
@@ -215,16 +215,16 @@
       "metrics": {
         "primaries": [
           {
-            "label": "Set up identity",
-            "top": 292,
-            "tabStops": 0,
+            "label": "Go to Settings",
+            "top": 260,
+            "tabStops": 3,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 1,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 4,
+        "firstContentTop": 303,
+        "tabStopsToContent": 2
       }
     },
     {
@@ -479,16 +479,16 @@
       "metrics": {
         "primaries": [
           {
-            "label": "Set up identity",
-            "top": 292,
-            "tabStops": 0,
+            "label": "Go to Settings",
+            "top": 368,
+            "tabStops": 3,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 1,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 4,
+        "firstContentTop": 419,
+        "tabStopsToContent": 2
       }
     },
     {
