@@ -8,6 +8,41 @@ function ontologyMapToArray(nodes: Map<string, OntologyNode>): OntologyNode[] {
   return Array.from(nodes.values());
 }
 
+/**
+ * Cross-key mapping for request→offer property matching.
+ * Request extraction uses keys like 'need', 'service', 'frequency', 'price', 'budget'.
+ * Offer notes use keys like 'skill', 'schedule', 'rate', 'price'.
+ * This mapping allows the match engine to find compatible offer properties.
+ */
+const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
+  need: ['skill', 'service', 'task'],
+  service: ['skill', 'service', 'task'],
+  role: ['skill', 'role'],
+  frequency: ['schedule', 'frequency'],
+  schedule: ['schedule', 'frequency'],
+  price: ['rate', 'price'],
+  budget: ['rate', 'budget', 'price'],
+  item: ['item'],
+  recipient: ['recipient', 'audience'],
+  audience: ['audience', 'recipient'],
+  vehicle: ['vehicle'],
+  property: ['property'],
+  device: ['device'],
+  topic: ['skill', 'topic', 'subject'],
+  focus: ['skill', 'focus'],
+  subject: ['skill', 'subject'],
+  student: ['audience', 'student'],
+  patient: ['audience', 'patient'],
+  level: ['skill', 'level'],
+  format: ['format'],
+  certification: ['certification'],
+  dietary: ['dietary'],
+  turnaround: ['turnaround'],
+  type: ['type'],
+  event: ['event'],
+  task: ['task', 'skill'],
+};
+
 export class MatchEngine {
   private ontologyNodes: OntologyNode[];
   private ontologyTypes: Map<string, { operators?: { real: string[]; imaginary: string[] } }>;
@@ -47,12 +82,17 @@ export class MatchEngine {
       // Skip marker properties - they are not constraints
       if (reqProp.role === 'marker') return [];
 
-      // Direct canonical-key comparison (no aliases)
-      const offerProp = offer.properties.find(p => p.key === reqProp.key);
-      if (!offerProp) return [];
+      // Collect candidate offer properties: direct key match + cross-key mappings
+      const candidateKeys = [reqProp.key, ...(REQUEST_TO_OFFER_KEY_MAP[reqProp.key] ?? [])];
+      const offerProps = offer.properties.filter(p => candidateKeys.includes(p.key));
+      if (offerProps.length === 0) return [];
 
-      const match = this.evaluateConstraint(reqProp, offerProp);
-      return [match];
+      // Evaluate against each candidate and return the best match
+      const matches = offerProps.map(offProp => this.evaluateConstraint(reqProp, offProp));
+      const bestMatch = matches.reduce((best, current) =>
+        current.compatibility > best.compatibility ? current : best
+      );
+      return [bestMatch];
     });
   }
 

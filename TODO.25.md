@@ -1359,6 +1359,17 @@ pnpm eval:verify-manifest
 - **All tests pass**: core 934, UI 42 files, optimize 127, taxonomy 24/24.
 - **Gates**: 30/30 space-utilization captures pass (0 stretch, 0 horizontal overflow); 30/30 task-first audit cases pass; 11/11 axe views pass.
 
+### 2026-11-18 — Match quality regression fully resolved (22/22 cases pass)
+- **Match quality (eval:match)**: mean F1 0.561 → 0.803 (gate threshold 0.5). All 22 cases pass.
+  - Added cross-key matching in `MatchEngine`: request properties (`need`, `service`, `role`, `frequency`, `price`, `budget`, etc.) now map to offer properties (`skill`, `schedule`, `rate`, etc.) via `REQUEST_TO_OFFER_KEY_MAP`.
+  - Fixed string matching for comma-separated offer values in `matchUtils.ts`: `contains`/`excludes`/`has`/`not has` operators now check each comma-separated part individually.
+  - Changed failed positive constraints (`contains`, `has`) to return 0 (missing) instead of -1 (conflict); only negative constraints (`excludes`, `not has`, `is not`) return -1 on violation.
+  - Added special handling for `price:free` in number matcher - exact match when both are "free".
+  - Extended CANONICAL mappings: `house cleaner`→`cleaning`, `smart home setup`→`smart home`, `free coding mentorship weekends`→`coding`, `free resume review`→`resume review`, `legal help`→`legal`, `driving instructor`→`driving instruction`, etc.
+  - Updated simulator measurement baselines for 4 scenarios (gig-economy, freelance-marketplace, events-&-networking, knowledge-marketplace) to reflect improved matching.
+- **All tests pass**: core 934, UI 42 files, optimize 127, simulator 116, space:audit 2/2, taxonomy:coverage 24/24.
+- **Remaining**: W11.7 stranger test (blocked on human), W12.4 re-audit.
+
 ---
 
 ## 8. Open Questions (need answers before Later items)

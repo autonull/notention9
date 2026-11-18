@@ -64,6 +64,16 @@ const isRangeRequest = (request: Property): boolean =>
  * Number matcher - handles numeric comparisons and ranges
  */
 export const evaluateNumber = (request: Property, offer: Property): PropertyMatch => {
+    // Handle 'free' as a special case - matches if both are 'free'
+    const reqVal = request.values[0]?.toLowerCase().trim();
+    const offVal = offer.values[0]?.toLowerCase().trim();
+    if (reqVal === 'free' && offVal === 'free') {
+        return createMatch(request, offer, 1, 'Both free', { type: 'exact', valueMatch: 'free' });
+    }
+    if (reqVal === 'free' || offVal === 'free') {
+        return createMatch(request, offer, 0, 'One free, one not', { type: 'exact', valueMatch: 'mismatch' });
+    }
+
     // Try to parse as quantities first (for dimensional comparison)
     const requestQuantity = request.quantity ?? parseQuantity(request.values[0]);
     const offerQuantity = offer.quantity ?? parseQuantity(offer.values[0]);

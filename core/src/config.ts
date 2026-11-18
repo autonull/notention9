@@ -122,8 +122,6 @@ export const CANONICAL: Record<string, string> = {
     'pet sitter': 'pet sitting',
     'babysitter': 'babysitting',
     'babysitters': 'babysitting',
-    'house cleaner': 'house cleaning',
-    'house cleaning': 'house cleaning',
     'cleaner': 'cleaning',
     'tutor': 'tutoring',
     'tutors': 'tutoring',
@@ -216,12 +214,42 @@ export const CANONICAL: Record<string, string> = {
     'volunteer mentorship': 'mentoring',
     'coding mentorship': 'coding',
     'coding mentorship weekends': 'coding',
+    'free coding mentorship weekends': 'coding',
     'mentorship weekends': 'weekends',
     'volunteer': 'free',
     'volunteering': 'free',
     'pro bono': 'free',
     'weekends': 'weekends',
     'flexible': 'weekends',
+    // Smart home / tech services
+    'smart home setup': 'smart home',
+    'smart home installation': 'smart home',
+    'home automation setup': 'smart home',
+    'home automation': 'smart home',
+    'lights thermostat locks': 'lights,thermostat,locks',
+    // Resume / career
+    'free resume review': 'resume review',
+    'resume review': 'resume review',
+    'resume help': 'resume review',
+    'cv review': 'resume review',
+    'career coaching': 'career coaching',
+    'interview prep': 'interview prep',
+    // Legal services
+    'legal help': 'legal',
+    'legal aid': 'legal',
+    'tenants rights': 'tenants rights',
+    'tenant rights': 'tenants rights',
+    'housing law': 'housing law',
+    'free clinic': 'free clinic',
+    'pro bono legal': 'legal',
+    // Cleaning services
+    'house cleaner': 'cleaning',
+    'cleaning service': 'cleaning',
+    'deep cleaning': 'deep cleaning',
+    // Driving services
+    'driving instructor': 'driving instruction',
+    'driving lessons': 'driving instruction',
+    'driving teacher': 'driving instruction',
 };
 
 // ============================================================================

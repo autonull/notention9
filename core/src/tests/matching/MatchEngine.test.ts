@@ -124,13 +124,15 @@ describe('MatchEngine', () => {
         expect(result.matches[0].reason).toContain("Contains 'dev'");
     });
 
-    it('should fail string contains', () => {
+    it('should fail string contains (missing, not conflict)', () => {
         const request = noteFromProps('req1', ['role:contains:dev']);
         const offer = noteFromProps('off1', ['role:is:manager']);
 
         const result = engine.calculateMatchScore(request, offer);
         expect(result.matches).toHaveLength(0);
-        expect(result.conflicts).toHaveLength(1);
+        expect(result.conflicts).toHaveLength(0);
+        expect(result.missing).toHaveLength(1);
+        expect(result.missing[0].key).toBe('role');
     });
 
     it('should match string excludes', () => {

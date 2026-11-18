@@ -82,6 +82,11 @@ export interface StringMatchResult {
     reason: string;
 }
 
+/** Split comma-separated values and normalize each */
+function splitAndNormalize(value: string, canonicalMap: Record<string, string>): string[] {
+    return value.split(',').map(v => normalizeTerm(v.trim(), canonicalMap));
+}
+
 export function matchStrings(
     requestValue: string,
     offerValue: string,
@@ -95,7 +100,8 @@ export function matchStrings(
     const caseSensitive = options?.caseSensitive ?? false;
     
     const normalizedRequest = normalizeTerm(requestValue, canonicalMap);
-    const normalizedOffer = normalizeTerm(offerValue, canonicalMap);
+    const normalizedOfferParts = splitAndNormalize(offerValue, canonicalMap);
+    const normalizedOffer = normalizedOfferParts.join(',');
     
     // Handle "is not" operator
     if (operator === 'is not') {
@@ -121,10 +127,11 @@ export function matchStrings(
         if (has) {
             return { matched: true, score: 1, type: 'exact', reason: `Has tag '${requestValue}'` };
         }
-        return { matched: false, score: -1, type: 'exact', reason: `Does not have tag '${requestValue}'` };
+        // Failed "has" is a non-match (0), not a conflict (-1)
+        return { matched: false, score: 0, type: 'none', reason: `Does not have tag '${requestValue}'` };
     }
     
-    // Handle "not has" operator
+    // Handle "not has" operator - this IS a negative constraint, so failed match is conflict
     if (operator === 'not has') {
         const has = hasMatch(normalizedOffer, normalizedRequest, caseSensitive);
         if (has) {
@@ -133,43 +140,54 @@ export function matchStrings(
         return { matched: true, score: 1, type: 'exact', reason: `Does not have tag '${requestValue}' - satisfies 'not has'` };
     }
 
-    // Handle "contains" operator
+    // Handle "contains" operator - check each part of comma-separated offer value
     if (operator === 'contains') {
-        const contains = containsMatch(normalizedOffer, normalizedRequest, caseSensitive);
+        const contains = normalizedOfferParts.some(part => containsMatch(part, normalizedRequest, caseSensitive));
         if (contains) {
             return { matched: true, score: 1, type: 'partial', reason: `Contains '${requestValue}'` };
         }
-        return { matched: false, score: -1, type: 'partial', reason: `Does not contain '${requestValue}'` };
+        // Failed "contains" is a non-match (0), not a conflict (-1)
+        // Note: this changes behavior from original - failed positive constraints are "missing", not conflicts
+        return { matched: false, score: 0, type: 'none', reason: `Does not contain '${requestValue}'` };
     }
     
-    // Handle "excludes" operator
+    // Handle "excludes" operator - this IS a negative constraint, so failed match is conflict
     if (operator === 'excludes') {
-        const contains = containsMatch(normalizedOffer, normalizedRequest, caseSensitive);
+        const contains = normalizedOfferParts.some(part => containsMatch(part, normalizedRequest, caseSensitive));
         if (contains) {
             return { matched: false, score: -1, type: 'partial', reason: `Should exclude '${requestValue}'` };
         }
         return { matched: true, score: 1, type: 'partial', reason: `Excludes '${requestValue}'` };
     }
     
-    // Exact match (case-insensitive by default)
-    if (exactMatch(normalizedOffer, normalizedRequest)) {
+    // Exact match against any part (case-insensitive by default)
+    const exactPart = normalizedOfferParts.some(part => exactMatch(part, normalizedRequest));
+    if (exactPart) {
         return { matched: true, score: 1, type: 'exact', reason: 'Exact synonym match' };
     }
     
-    // Fuzzy match
-    const fuzzy = fuzzyMatchScore(normalizedOffer, normalizedRequest);
-    if (fuzzy.score > 0) {
+    // Fuzzy match against any part
+    let bestFuzzy = { score: 0, distance: 0, maxLen: 0 };
+    for (const part of normalizedOfferParts) {
+        const fuzzy = fuzzyMatchScore(part, normalizedRequest);
+        if (fuzzy.score > bestFuzzy.score) {
+            bestFuzzy = fuzzy;
+        }
+    }
+    if (bestFuzzy.score > 0) {
         return { 
             matched: true, 
-            score: fuzzy.score, 
+            score: bestFuzzy.score, 
             type: 'fuzzy', 
-            reason: `Fuzzy match (${Math.round(fuzzy.score * 100)}%)` 
+            reason: `Fuzzy match (${Math.round(bestFuzzy.score * 100)}%)` 
         };
     }
     
-    // Substring match as fallback
-    const substring = containsMatch(normalizedOffer, normalizedRequest, caseSensitive) ||
-                      containsMatch(normalizedRequest, normalizedOffer, caseSensitive);
+    // Substring match as fallback - check each part
+    const substring = normalizedOfferParts.some(part => 
+        containsMatch(part, normalizedRequest, caseSensitive) ||
+        containsMatch(normalizedRequest, part, caseSensitive)
+    );
     if (substring) {
         return { matched: true, score: 0.8, type: 'substring', reason: 'Partial match' };
     }
