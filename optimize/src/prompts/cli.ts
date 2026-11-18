@@ -144,9 +144,12 @@ program
     .option('--quality-limit <n>', 'Evaluate only the first N quality cases (iteration aid)')
     .option('--few-shot <n>', 'Retrieved examples per input (0 disables)', '3')
     .option('--provider <name>', 'Provider to use: deterministic | registry | webllm | llamacpp | llama-cpp-embedded | llama-cpp-server', 'deterministic')
-.option('--model-path <path>', 'GGUF model path for embedded llama.cpp')
-.option('--server-url <url>', 'OpenAI-compatible server URL for llama.cpp server mode')
-.option('--model-name <name>', 'Model name for server mode')
+    .option('--model-path <path>', 'GGUF model path for embedded llama.cpp')
+    .option('--server-url <url>', 'OpenAI-compatible server URL for llama.cpp server mode')
+    .option('--model-name <name>', 'Model name for server mode')
+    .option('--context-size <n>', 'Context window size (n_ctx) for embedded llama.cpp', '2048')
+    .option('--gpu-layers <n>', 'GPU layers to offload (number, "max", or "auto")', 'max')
+    .option('--dispose-between-cases', 'Dispose model between extractions to free VRAM (slower but fits larger models)')
     .action(async (options) => {
         console.log('🔬 Notention Prompt Evaluation');
         console.log('===============================');
@@ -172,6 +175,11 @@ program
             modelName: options.modelName,
             fewShotBank,
             fewShotCount: Number(options.fewShot ?? 3),
+            contextSize: Number(options.contextSize ?? 2048),
+            gpuLayers: options.gpuLayers === 'auto' || options.gpuLayers === 'max' 
+                ? options.gpuLayers 
+                : Number(options.gpuLayers ?? 'max'),
+            disposeBetweenCases: Boolean(options.disposeBetweenCases),
         };
 
         function createProvider(): Provider {
@@ -337,6 +345,9 @@ program
     .option('--model-path <path>', 'GGUF model path for embedded llama.cpp')
     .option('--server-url <url>', 'OpenAI-compatible server URL for llama.cpp server mode')
     .option('--model-name <name>', 'Model name for server mode')
+    .option('--context-size <n>', 'Context window size (n_ctx) for embedded llama.cpp', '2048')
+    .option('--gpu-layers <n>', 'GPU layers to offload (number, "max", or "auto")', 'max')
+    .option('--dispose-between-cases', 'Dispose model between extractions to free VRAM (slower but fits larger models)')
     .action(async (options) => {
         console.log('🧪 Notention Prompt Ablation Study (E13)');
         console.log('==========================================\n');
@@ -370,26 +381,29 @@ program
         for (const variant of PROMPT_VARIANTS) {
             console.log(`\n--- Evaluating ${variant.version} ---`);
             
+            const llamaCppOptions = {
+                modelPath: options.modelPath,
+                serverUrl: options.serverUrl,
+                modelName: options.modelName,
+                fewShotBank: [],
+                fewShotCount: 0,
+                systemPrompt: variant.template,
+                contextSize: Number(options.contextSize ?? 2048),
+                gpuLayers: options.gpuLayers === 'auto' || options.gpuLayers === 'max' 
+                    ? options.gpuLayers 
+                    : Number(options.gpuLayers ?? 'max'),
+                disposeBetweenCases: Boolean(options.disposeBetweenCases),
+            };
+
             let provider: any;
             if (options.provider === 'deterministic') {
                 provider = new VariantProvider(variant.version, variant.template);
             } else if (options.provider === 'llamacpp' || options.provider === 'llama-cpp-embedded') {
                 const { LlamaCppProvider } = await import('./providers/llamaCppProvider.js');
-                provider = new LlamaCppProvider({
-                    modelPath: options.modelPath,
-                    fewShotBank: [],
-                    fewShotCount: 0,
-                    systemPrompt: variant.template,
-                });
+                provider = new LlamaCppProvider({ ...llamaCppOptions, serverUrl: undefined });
             } else if (options.provider === 'llama-cpp-server') {
                 const { LlamaCppProvider } = await import('./providers/llamaCppProvider.js');
-                provider = new LlamaCppProvider({
-                    serverUrl: options.serverUrl,
-                    modelName: options.modelName,
-                    fewShotBank: [],
-                    fewShotCount: 0,
-                    systemPrompt: variant.template,
-                });
+                provider = new LlamaCppProvider({ ...llamaCppOptions, modelPath: undefined });
             } else {
                 throw new Error(`Unknown provider: ${options.provider}`);
             }
@@ -499,6 +513,9 @@ program
     .option('--limit <n>', 'Number of quality cases to test', '20')
     .option('--few-shot <n>', 'Retrieved examples per input (0 disables)', '3')
     .option('--output <file>', 'Output results JSON file')
+    .option('--context-size <n>', 'Context window size (n_ctx) for embedded llama.cpp', '2048')
+    .option('--gpu-layers <n>', 'GPU layers to offload (number, "max", or "auto")', 'max')
+    .option('--dispose-between-cases', 'Dispose model between extractions to free VRAM (slower but fits larger models)')
     .action(async (options) => {
         console.log('⚖️  Pipeline Comparison: 1-step vs 2-step');
         console.log('============================================\n');
@@ -535,7 +552,15 @@ program
         const fewShotCount = parseInt(options.fewShot);
         console.log(`Testing ${inputs.length} cases with ${fewShotCount}-shot...\n`);
 
-        const results = await comparePipelines(inputs, expectedList, modelPath, allQualityCases, fewShotCount);
+        const results = await comparePipelines(inputs, expectedList, {
+            modelPath,
+            fewShotBank: allQualityCases,
+            fewShotCount,
+            contextSize: Number(options.contextSize ?? 2048),
+            gpuLayers: options.gpuLayers === 'auto' || options.gpuLayers === 'max' 
+                ? options.gpuLayers 
+                : Number(options.gpuLayers ?? 'max'),
+        });
 
         // Summary
         let oneStepWins = 0;

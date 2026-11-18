@@ -127,7 +127,7 @@ Examples:
 ${examples}`;
 }
 
-async function runFocusedExtraction(text: string, routerResult: RouterResult, modelPath: string, fewShotBank?: any[], fewShotCount = 0): Promise<Property[]> {
+async function runFocusedExtraction(text: string, routerResult: RouterResult, modelPath: string, fewShotBank?: any[], fewShotCount = 0, contextSize = 2048, gpuLayers: number | 'max' | 'auto' = 'max'): Promise<Property[]> {
     const systemPrompt = buildFocusedSystemPrompt(routerResult.keys, routerResult.operators);
     return extractWithLlamaCpp(text, DEFAULT_ONTOLOGY, {
         modelPath,
@@ -136,6 +136,8 @@ async function runFocusedExtraction(text: string, routerResult: RouterResult, mo
         maxTokens: 512,
         fewShotBank,
         fewShotCount,
+        contextSize,
+        gpuLayers,
     });
 }
 
@@ -143,10 +145,10 @@ async function runFocusedExtraction(text: string, routerResult: RouterResult, mo
 // PIPELINE ENTRY POINT
 // ============================================================================
 
-async function runRouterRaw(text: string, modelPath: string): Promise<RouterResult> {
+async function runRouterRaw(text: string, modelPath: string, contextSize = 2048, gpuLayers: number | 'max' | 'auto' = 'max'): Promise<RouterResult> {
     const llama = await getLlama({ gpu: 'cuda' });
-    const model = await llama.loadModel({ modelPath, gpuLayers: resolveGpuLayers() });
-    const context = await model.createContext({ contextSize: 2048 });
+    const model = await llama.loadModel({ modelPath, gpuLayers });
+    const context = await model.createContext({ contextSize });
     const session = new (await import('node-llama-cpp')).LlamaChatSession({
         contextSequence: context.getSequence(),
         systemPrompt: ROUTER_SYSTEM_PROMPT,
@@ -183,10 +185,12 @@ export async function runTwoStepExtraction(
     text: string,
     modelPath: string,
     fewShotBank?: any[],
-    fewShotCount = 0
+    fewShotCount = 0,
+    contextSize = 2048,
+    gpuLayers: number | 'max' | 'auto' = 'max'
 ): Promise<{ router: RouterResult; extraction: Property[] }> {
-    const router = await runRouterRaw(text, modelPath);
-    const extraction = await runFocusedExtraction(text, router, modelPath, fewShotBank, fewShotCount);
+    const router = await runRouterRaw(text, modelPath, contextSize, gpuLayers);
+    const extraction = await runFocusedExtraction(text, router, modelPath, fewShotBank, fewShotCount, contextSize, gpuLayers);
     return { router, extraction };
 }
 
@@ -205,13 +209,20 @@ export interface ComparisonResult {
     twoStepF1: number;
 }
 
+export interface PipelineCompareOptions {
+    modelPath: string;
+    fewShotBank?: any[];
+    fewShotCount?: number;
+    contextSize?: number;
+    gpuLayers?: number | 'max' | 'auto';
+}
+
 export async function comparePipelines(
     inputs: string[],
     expectedList: Property[][],
-    modelPath: string,
-    fewShotBank?: any[],
-    fewShotCount = 0
+    options: PipelineCompareOptions
 ): Promise<ComparisonResult[]> {
+    const { modelPath, fewShotBank, fewShotCount = 0, contextSize = 2048, gpuLayers = 'max' } = options;
     const results: ComparisonResult[] = [];
 
     for (let i = 0; i < inputs.length; i++) {
@@ -219,11 +230,11 @@ export async function comparePipelines(
         const expected = expectedList[i];
 
         // 1-step (current)
-        const oneStep = await extractWithLlamaCpp(text, DEFAULT_ONTOLOGY, { modelPath, temperature: 0, fewShotBank, fewShotCount });
+        const oneStep = await extractWithLlamaCpp(text, DEFAULT_ONTOLOGY, { modelPath, temperature: 0, fewShotBank, fewShotCount, contextSize, gpuLayers });
         const oneStepScore = scoreExtraction(expected, oneStep);
 
         // 2-step
-        const twoStep = await runTwoStepExtraction(text, modelPath, fewShotBank, fewShotCount);
+        const twoStep = await runTwoStepExtraction(text, modelPath, fewShotBank, fewShotCount, contextSize, gpuLayers);
         const twoStepScore = scoreExtraction(expected, twoStep.extraction);
 
         results.push({

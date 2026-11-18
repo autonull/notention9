@@ -27,6 +27,8 @@ export interface LlamaCppProviderOptions {
     fewShotCount?: number;
     /** Custom system prompt (overrides default ontology-derived prompt) */
     systemPrompt?: string;
+    /** Dispose model between extractions to free VRAM (slower but fits larger models) */
+    disposeBetweenCases?: boolean;
 }
 
 export class LlamaCppProvider implements Provider {
@@ -34,6 +36,7 @@ export class LlamaCppProvider implements Provider {
     private options: LlamaCppProviderOptions;
     private bridgeProvider: LlamaCppBridgeProvider | null = null;
     private serverMode = false;
+    private fallbackCount = 0;
 
     constructor(options: LlamaCppProviderOptions = {}) {
         this.options = options;
@@ -44,7 +47,15 @@ export class LlamaCppProvider implements Provider {
         if (this.serverMode) {
             return this.extractViaServer(text, ontology);
         }
-        return this.extractEmbedded(text, ontology);
+        const result = await this.extractEmbedded(text, ontology);
+        
+        // Dispose model between cases if requested (frees VRAM for larger models)
+        if (this.options.disposeBetweenCases && this.bridgeProvider) {
+            await this.bridgeProvider.close();
+            this.bridgeProvider = null;
+        }
+        
+        return result;
     }
 
     private async extractEmbedded(text: string, ontology: OntologyNode[]): Promise<Property[]> {
@@ -52,7 +63,7 @@ export class LlamaCppProvider implements Provider {
             if (!this.bridgeProvider) {
                 const bridgeOptions: LlamaCppBridgeOptions = {
                     modelPath: this.options.modelPath ?? process.env.LLAMA_MODEL_PATH ?? '/home/me/notention9/models/Qwen_Qwen3.5-0.8B-Q4_K_M.gguf',
-                    contextSize: this.options.contextSize ?? 4096,
+                    contextSize: this.options.contextSize ?? 2048,
                     gpuLayers: this.options.gpuLayers ?? 'max',
                     temperature: this.options.temperature ?? 0,
                     fewShotCount: this.options.fewShotCount ?? 3,
@@ -66,10 +77,23 @@ export class LlamaCppProvider implements Provider {
             }
             return await this.bridgeProvider.extract(text, ontology);
         } catch (error) {
-            console.warn(`Llama.cpp embedded extraction failed: ${error}`);
+            this.fallbackCount++;
+            console.warn(`[FALLBACK #${this.fallbackCount}] Llama.cpp embedded extraction failed: ${error}. Falling back to deterministic extraction.`);
             const { alignToOntology } = await import('@notention/core');
-            return alignToOntology(text, ontology);
+            const fallbackProps = alignToOntology(text, ontology);
+            // Mark fallback properties with provenance for visibility
+            return fallbackProps.map(p => ({ ...p, provenance: 'deterministic' as const }));
         }
+    }
+
+    /** Returns the number of times the provider fell back to deterministic extraction */
+    getFallbackCount(): number {
+        return this.fallbackCount;
+    }
+
+    /** Resets the fallback counter */
+    resetFallbackCount(): void {
+        this.fallbackCount = 0;
     }
 
     private async extractViaServer(text: string, ontology: OntologyNode[]): Promise<Property[]> {

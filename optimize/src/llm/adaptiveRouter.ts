@@ -41,7 +41,7 @@ export const DEFAULT_MODEL_CONFIGS: ModelConfig[] = [
     {
         size: '2B',
         modelPath: '/home/me/notention9/models/Qwen_Qwen3.5-2B-Q4_K_M.gguf',
-        contextSize: 4096,
+        contextSize: 2048,
         gpuLayers: 'max',
         maxTokens: 512,
         temperature: 0,
@@ -50,20 +50,20 @@ export const DEFAULT_MODEL_CONFIGS: ModelConfig[] = [
     {
         size: '4B',
         modelPath: '/home/me/notention9/models/Qwen_Qwen3.5-4B-Q4_K_M.gguf',
-        contextSize: 8192,
-        gpuLayers: 'max',
+        contextSize: 2048,
+        gpuLayers: 32,
         maxTokens: 512,
         temperature: 0,
-        description: 'Balanced extraction for standard notes',
+        description: 'Balanced extraction for standard notes (reduced ctx/GPU layers for 10GB VRAM)',
     },
     {
         size: '9B',
         modelPath: '/home/me/notention9/models/Qwen_Qwen3.5-9B-Q4_K_M.gguf',
-        contextSize: 8192,
-        gpuLayers: 'max',
+        contextSize: 2048,
+        gpuLayers: 24,
         maxTokens: 1024,
         temperature: 0,
-        description: 'High-quality extraction for complex/governance notes',
+        description: 'High-quality extraction for complex/governance notes (reduced ctx/GPU layers for 10GB VRAM)',
     },
 ];
 

@@ -121,7 +121,7 @@ export function getGrammarModeStats(): GrammarModeState[] {
     return Array.from(loadGrammarModes().values());
 }
 
-const DEFAULT_CONTEXT_SIZE = 4096;
+const DEFAULT_CONTEXT_SIZE = 2048;
 const DEFAULT_GPU_LAYERS: GpuLayerSetting = 'max'; // Use the GPU when one is available
 const DEFAULT_TEMPERATURE = 0; // Greedy decoding: the golden gate must be reproducible
 const DEFAULT_TIMEOUT = 120000;
@@ -546,5 +546,9 @@ export class LlamaCppBridgeProvider {
             const { alignToOntology } = await import('@notention/core');
             return alignToOntology(text, ontology);
         }
+    }
+
+    async close(): Promise<void> {
+        await closeLlamaCpp();
     }
 }
