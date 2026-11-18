@@ -27,7 +27,7 @@ interface MainViewProps {
 }
 
 export function MainView({sortedNotes}: MainViewProps) {
-    const {activeView, matchingNoteId} = useView();
+    const {activeView, matchingNoteId, sidebarViewMode} = useView();
     const {settingsLoading} = useSettings();
     const {notes, loading: notesLoading} = useNotes();
 
@@ -49,7 +49,7 @@ export function MainView({sortedNotes}: MainViewProps) {
             case 'inbox':
                 return <InboxView sortedNotes={sortedNotes}/>;
             case 'notes':
-                return <NotesView sortedNotes={sortedNotes}/>;
+                return <NotesView sortedNotes={sortedNotes} sidebarViewMode={sidebarViewMode}/>;
             case 'trash':
                 return <TrashView/>;
             case 'actions':

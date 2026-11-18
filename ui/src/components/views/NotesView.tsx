@@ -11,9 +11,10 @@ import {Button} from '../ui/Button';
 
 interface NotesViewProps {
     sortedNotes?: Note[];
+    sidebarViewMode?: 'list' | 'grid';
 }
 
-export function NotesView({sortedNotes = []}: NotesViewProps) {
+export function NotesView({sortedNotes = [], sidebarViewMode = 'list'}: NotesViewProps) {
     const {selectedNote, updateNote} = useNotesView();
 
     if (selectedNote) {
@@ -27,10 +28,10 @@ export function NotesView({sortedNotes = []}: NotesViewProps) {
         );
     }
 
-    return <NotesList notes={sortedNotes}/>;
+    return <NotesList notes={sortedNotes} viewMode={sidebarViewMode}/>;
 }
 
-function NotesList({notes}: {notes: Note[]}) {
+function NotesList({notes, viewMode}: {notes: Note[]; viewMode: 'list' | 'grid'}) {
     const {selectedNoteId, setSelectedNoteId, setActiveView, searchTerm} = useView();
 
     const openCapture = () => {
@@ -42,6 +43,8 @@ function NotesList({notes}: {notes: Note[]}) {
         setSelectedNoteId(id);
         setActiveView('notes');
     };
+
+    const isGrid = viewMode === 'grid';
 
     return (
         <div className="h-full overflow-y-auto bg-gray-950 text-white p-4 md:p-6 lg:p-8">
@@ -63,16 +66,30 @@ function NotesList({notes}: {notes: Note[]}) {
                 </header>
 
                 {notes.length > 0 ? (
-                    <div className="space-y-2" role="list">
-                        {notes.map(note => (
-                            <NoteListItem
-                                key={note.id}
-                                note={note}
-                                isSelected={selectedNoteId === note.id}
-                                onSelect={() => selectNote(note.id)}
-                            />
-                        ))}
-                    </div>
+                    isGrid ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" role="list">
+                            {notes.map(note => (
+                                <NoteListItem
+                                    key={note.id}
+                                    note={note}
+                                    isSelected={selectedNoteId === note.id}
+                                    onSelect={() => selectNote(note.id)}
+                                    compact
+                                />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="space-y-2" role="list">
+                            {notes.map(note => (
+                                <NoteListItem
+                                    key={note.id}
+                                    note={note}
+                                    isSelected={selectedNoteId === note.id}
+                                    onSelect={() => selectNote(note.id)}
+                                />
+                            ))}
+                        </div>
+                    )
                 ) : (
                     <EmptyState
                         variant="illustrated"

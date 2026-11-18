@@ -1,5 +1,5 @@
 import React from 'react';
-import {KeyIcon, SettingsIcon, WifiIcon} from '../ui/icons';
+import {KeyIcon, SettingsIcon, SignalIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 
 interface ConnectIdentityPromptProps {
@@ -26,7 +26,7 @@ export function ConnectIdentityPrompt({onNavigateToSettings, compact = false, sh
                             onClick={onNavigateToSettings}
                             variant="secondary"
                             size="sm"
-                            leftIcon={<WifiIcon className="w-4 h-4"/>}
+                            leftIcon={<SignalIcon className="w-4 h-4"/>}
                         >
                             Check Connection Settings
                         </Button>
@@ -60,7 +60,7 @@ export function ConnectIdentityPrompt({onNavigateToSettings, compact = false, sh
                         onClick={onNavigateToSettings}
                         variant="secondary"
                         size="lg"
-                        leftIcon={<WifiIcon className="w-4 h-4"/>}
+                        leftIcon={<SignalIcon className="w-4 h-4"/>}
                     >
                         Check Connection Settings
                     </Button>

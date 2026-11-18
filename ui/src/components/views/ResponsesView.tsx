@@ -4,7 +4,7 @@ import {useView} from '../../hooks/useViewContext';
 import {Button} from '../ui/Button';
 import {Card} from '../ui/Card';
 import {getTextFromHtml, Note} from '@notention/core';
-import {CheckCircleIcon, ResponseIcon, XCircleIcon} from '../ui/icons';
+import {CheckCircleIcon, ResponseIcon, XCircleIcon, SparklesIcon} from '../ui/icons';
 import {EmptyState} from '../ui/Primitives';
 import {logMatchWithdrawn, createWithdrawalNote} from '@notention/core';
 import {useFrictionRecorder} from '../../hooks/useFrictionRecorder';
@@ -39,6 +39,16 @@ export function ResponsesView() {
         return { request, offer };
     };
 
+    // Find recent inbox matches (requests/offers with matchScore but no response yet)
+    const recentMatches = notes.filter(n => {
+        const isRequestOrOffer = n.properties.some(p => 
+            p.key === 'intent' && (p.values.includes('request') || p.values.includes('offer'))
+        );
+        const hasMatchScore = n.properties.some(p => p.key === 'matchScore');
+        const isNotResponse = !n.properties.some(p => p.key === 'intent' && p.values.includes('response'));
+        return isRequestOrOffer && hasMatchScore && isNotResponse;
+    }).slice(0, 5);
+
     const handleWithdraw = (response: Note) => {
         // Create withdrawal note
         const withdrawalNote = createWithdrawalNote(response);
@@ -59,6 +69,12 @@ export function ResponsesView() {
         recordResponseViewed();
         setSelectedNoteId(id);
         setActiveView('notes');
+    };
+
+    const handleRespondToMatch = (matchNote: Note) => {
+        // Navigate to inbox with this note as match target
+        setActiveView('inbox');
+        // The inbox will show this match
     };
 
     const renderResponseCard = (response: Note) => {
@@ -112,6 +128,42 @@ export function ResponsesView() {
         );
     };
 
+    const renderMatchCard = (match: Note) => {
+        const matchScore = match.properties.find(p => p.key === 'matchScore')?.values[0];
+        const intent = match.properties.find(p => p.key === 'intent')?.values[0];
+        
+        return (
+            <Card 
+                key={match.id} 
+                className="mb-2 p-3 cursor-pointer hover:bg-gray-800 transition-colors border-l-4 border-blue-500 bg-gray-800/30"
+                onClick={() => handleRespondToMatch(match)}
+            >
+                <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 text-sm">
+                            <SparklesIcon className="w-4 h-4 text-blue-400"/>
+                            <span className="text-blue-400 font-bold">{intent === 'request' ? 'Request' : 'Offer'}</span>
+                            {matchScore && <span className="text-blue-500 font-mono">{Number(matchScore) * 100}%</span>}
+                        </div>
+                        <div className="font-semibold truncate">{match.title || 'Untitled'}</div>
+                        <div className="text-sm text-gray-500 mt-1 truncate">{getTextFromHtml(match.content).slice(0, 150)}</div>
+                    </div>
+                    <Button
+                        size="sm"
+                        variant="primary"
+                        className="flex-shrink-0"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            handleRespondToMatch(match);
+                        }}
+                    >
+                        Respond
+                    </Button>
+                </div>
+            </Card>
+        );
+    };
+
     return (
         <div className="h-full bg-gray-900 p-4 flex flex-col overflow-y-auto text-gray-200">
             <div className="flex justify-between items-center mb-6">
@@ -121,11 +173,27 @@ export function ResponsesView() {
             </div>
 
             {activeResponses.length === 0 && withdrawals.length === 0 ? (
-                <EmptyState
-                    title="No responses yet"
-                    description="Accept a match in the inbox to create a response."
-                    action={<Button variant="primary" onClick={() => setActiveView('inbox')}>Find a match</Button>}
-                />
+                <>
+                    {recentMatches.length > 0 && (
+                        <div className="mb-6">
+                            <h2 className="text-lg font-bold mb-3 text-gray-300 flex items-center gap-2">
+                                <SparklesIcon className="w-5 h-5 text-blue-400"/>
+                                Recent Matches ({recentMatches.length})
+                            </h2>
+                            <p className="text-sm text-gray-500 mb-3">Tap a match to respond from the inbox.</p>
+                            {recentMatches.map(renderMatchCard)}
+                        </div>
+                    )}
+                    <EmptyState
+                        title={recentMatches.length > 0 ? 'No responses yet' : 'No responses or matches yet'}
+                        description={recentMatches.length > 0 
+                            ? 'Respond to a match above to create a response.' 
+                            : 'Accept a match in the inbox to create a response.'}
+                        action={recentMatches.length === 0 && (
+                            <Button variant="primary" onClick={() => setActiveView('inbox')}>Find a match</Button>
+                        )}
+                    />
+                </>
             ) : (
                 <>
                     {activeResponses.length > 0 && (
