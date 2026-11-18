@@ -34,9 +34,9 @@ function main(): void {
         process.exit(1);
     }
     
-    // 2. Check that PropertyForm component uses isAdding to change render
-    console.log('\n2. Checking PropertyForm component uses isAdding...');
-    const formOutput = run('cat ui/src/components/editor/PropertyForm.tsx');
+    // 2. Check that PropertyEditor component uses isAdding to change render
+    console.log('\n2. Checking PropertyEditor component uses isAdding...');
+    const formOutput = run('cat ui/src/components/editor/PropertyEditor.tsx');
     
     if (formOutput.includes('isAdding ? \'New Property\' : \'Edit Property\'')) {
         console.log('   ✅ Component changes header text based on isAdding');

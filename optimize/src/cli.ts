@@ -102,8 +102,8 @@ function parseCommandArgs(rawArgs: string[], command: Command): ParsedFlags {
         }
     }
 
-    const { values } = parseArgs({ args: rawArgs, options, allowPositionals: true, strict: false });
-    const flags: ParsedFlags = { positionals: [] };
+    const { values, positionals } = parseArgs({ args: rawArgs, options, allowPositionals: true, strict: false });
+    const flags: ParsedFlags = { positionals };
 
     for (const [name, value] of Object.entries(values)) {
         if (value === undefined) continue;

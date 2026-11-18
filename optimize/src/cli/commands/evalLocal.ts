@@ -62,27 +62,17 @@ interface EvalLocalResult {
 const DEFAULT_PASS_THRESHOLD = 0.75;
 const CACHE_DIR = join(process.cwd(), 'data', 'eval', 'cache');
 
-function getProjectRoot(): string {
-    // Use the __dirname which is the compiled output directory
-    // Navigate up to find the project root
-    let root = join(__dirname, '..', '..', '..');
-    // Verify by checking for pnpm-workspace.yaml
-    try {
-        require.resolve(`${root}/pnpm-workspace.yaml`);
-        return root;
-    } catch {
-        // Fallback to cwd
-        root = process.cwd();
-        while (root !== '/') {
-            try {
-                require.resolve(`${root}/pnpm-workspace.yaml`);
-                break;
-            } catch {
-                root = join(root, '..');
-            }
+async function getProjectRoot(): Promise<string> {
+    let root = process.cwd();
+    while (root !== '/') {
+        try {
+            await import.meta.resolve(`${root}/pnpm-workspace.yaml`);
+            break;
+        } catch {
+            root = join(root, '..');
         }
-        return root;
     }
+    return root;
 }
 
 function getProviderHash(options: LlamaCppProviderOptions): string {
@@ -196,7 +186,8 @@ export class EvalLocalCommand extends Command {
                 disposeBetweenCases: args.disposeBetweenCases,
             };
             const providerHash = getProviderHash(providerOptions);
-            const cacheDir = join(getProjectRoot(), CACHE_DIR);
+            const projectRoot = await getProjectRoot();
+            const cacheDir = join(projectRoot, CACHE_DIR);
 
             let cache = new Map<string, CacheEntry>();
             let cacheHits = 0;
@@ -276,7 +267,7 @@ export class EvalLocalCommand extends Command {
                 this.printInfo(`Running ${extractionCasesToRun.length} extraction quality cases...`);
 
                 for (const caseRef of extractionCasesToRun) {
-                    const casePath = join(getProjectRoot(), 'data', 'eval', 'cases', caseRef.path);
+                    const casePath = join(projectRoot, 'data', 'eval', 'cases', caseRef.path);
                     const caseContent = await readFile(casePath, 'utf-8');
                     const caseData = JSON.parse(caseContent) as QualityCase;
 
@@ -351,7 +342,7 @@ export class EvalLocalCommand extends Command {
                 this.printInfo(`Running ${matchCasesToRun.length} match quality cases...`);
 
                 for (const caseRef of matchCasesToRun) {
-                    const casePath = join(getProjectRoot(), 'data', 'eval', 'cases', caseRef.path);
+                    const casePath = join(projectRoot, 'data', 'eval', 'cases', caseRef.path);
                     const caseContent = await readFile(casePath, 'utf-8');
                     const caseData = JSON.parse(caseContent) as QualityCase;
 

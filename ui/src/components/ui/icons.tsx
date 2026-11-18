@@ -877,6 +877,16 @@ export function BoltIcon(props: IconProps) { return (
     </OutlineIcon>
 ); }
 
+export function BrainIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 3a6 6 0 0 0 0 12H6a6 6 0 0 0 0-12h6zM18 3a6 6 0 0 1 0 12h6a6 6 0 0 1 0-12h-6zM6 15a6 6 0 0 0 12 0M6 15a6 6 0 0 1 12 0"
+        />
+    </OutlineIcon>
+); }
+
 export function ChartBarIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path

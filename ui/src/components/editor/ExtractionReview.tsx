@@ -1,5 +1,5 @@
 import React from 'react';
-import {CheckIcon, SparklesIcon, XMarkIcon} from '../ui/icons';
+import {CheckIcon, SparklesIcon, XMarkIcon, CpuChipIcon, BrainIcon} from '../ui/icons';
 import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
 import {Button} from '../ui/Button';
 
@@ -9,8 +9,36 @@ interface ExtractionReviewProps {
     onReject: (item: PropertyReviewItem) => void;
 }
 
+function ProvenanceBadge({provenance}: {provenance?: Property['provenance']}) {
+    if (!provenance) return null;
+    
+    const isDeterministic = provenance === 'deterministic' || provenance === 'pattern';
+    const isAI = provenance === 'ai';
+    
+    return (
+        <span
+            className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${isDeterministic 
+                ? 'bg-amber-900/30 text-amber-300 border border-amber-800' 
+                : isAI 
+                    ? 'bg-green-900/30 text-green-300 border border-green-800' 
+                    : 'bg-gray-800 text-gray-300'}`}
+            title={`Property source: ${provenance}`}
+        >
+            {isDeterministic && <CpuChipIcon className="w-2.5 h-2.5" />}
+            {isAI && <BrainIcon className="w-2.5 h-2.5" />}
+            {provenance}
+            {isDeterministic && <span className="text-amber-400" aria-label="Degraded: fallback extraction">⚠</span>}
+        </span>
+    );
+}
+
 export function ExtractionReview({items, onAccept, onReject}: ExtractionReviewProps) {
     if (items.length === 0) return null;
+
+    // Check if any items have deterministic provenance (degraded)
+    const hasDegraded = items.some(item => 
+        item.property.provenance === 'deterministic' || item.property.provenance === 'pattern'
+    );
 
     return (
         <div className="pt-3 border-t border-gray-800 mt-2" data-testid="extraction-review">
@@ -18,6 +46,12 @@ export function ExtractionReview({items, onAccept, onReject}: ExtractionReviewPr
                 <SparklesIcon className="w-3 h-3 text-purple-400"/>
                 <span className="text-xs font-bold text-gray-400 uppercase">Review suggestions</span>
                 <span className="text-[10px] text-gray-600">{items.length}</span>
+                {hasDegraded && (
+                    <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-900/30 border border-amber-800 text-amber-300 text-[10px] font-medium">
+                        <CpuChipIcon className="w-3 h-3" />
+                        Degraded mode (fallback)
+                    </span>
+                )}
             </div>
             <div className="space-y-2">
                 {items.map(item => (
@@ -30,6 +64,7 @@ export function ExtractionReview({items, onAccept, onReject}: ExtractionReviewPr
                                 <span className="font-semibold text-purple-200 truncate">{item.property.key}</span>
                                 <span className="text-gray-500">{item.property.operator}</span>
                                 <span className="text-gray-300 truncate">{item.property.values.join(', ')}</span>
+                                <ProvenanceBadge provenance={item.property.provenance} />
                             </div>
                             <div className="flex items-center gap-2 mt-1.5">
                                 <div className="h-1 w-14 bg-gray-700 rounded-full overflow-hidden">

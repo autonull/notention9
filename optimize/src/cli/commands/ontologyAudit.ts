@@ -52,27 +52,17 @@ interface OntologyAuditResult {
     recommendations: string[];
 }
 
-function getProjectRoot(): string {
-    // Use the __dirname which is the compiled output directory
-    // Navigate up to find the project root
-    let root = join(__dirname, '..', '..', '..');
-    // Verify by checking for pnpm-workspace.yaml
-    try {
-        require.resolve(`${root}/pnpm-workspace.yaml`);
-        return root;
-    } catch {
-        // Fallback to cwd
-        root = process.cwd();
-        while (root !== '/') {
-            try {
-                require.resolve(`${root}/pnpm-workspace.yaml`);
-                break;
-            } catch {
-                root = join(root, '..');
-            }
+async function getProjectRoot(): Promise<string> {
+    let root = process.cwd();
+    while (root !== '/') {
+        try {
+            await import.meta.resolve(`${root}/pnpm-workspace.yaml`);
+            break;
+        } catch {
+            root = join(root, '..');
         }
-        return root;
     }
+    return root;
 }
 
 function flattenKeys(keys: Iterable<string>): string[] {
@@ -94,7 +84,7 @@ function extractKeysFromProperties(properties: Array<{ key: string; operator?: s
 async function analyzeExtractionCases(): Promise<{ keysUsed: Set<string>; casesAnalyzed: number }> {
     const manifest = readManifest();
     const extractionCases = manifest.cases.filter((c: any) => c.qualityFamily === 'extraction');
-    const projectRoot = getProjectRoot();
+    const projectRoot = await getProjectRoot();
     
     const keysUsed = new Set<string>();
     let casesAnalyzed = 0;
@@ -131,7 +121,7 @@ async function analyzeExtractionCases(): Promise<{ keysUsed: Set<string>; casesA
 async function analyzeMatchCases(): Promise<{ keysUsed: Set<string>; casesAnalyzed: number }> {
     const manifest = readManifest();
     const matchCases = manifest.cases.filter((c: any) => c.qualityFamily === 'match');
-    const projectRoot = getProjectRoot();
+    const projectRoot = await getProjectRoot();
     
     const keysUsed = new Set<string>();
     let casesAnalyzed = 0;
@@ -245,7 +235,7 @@ export class OntologyAuditCommand extends Command {
     }): Promise<number> {
         try {
             const outputDir = args.output ?? join(process.cwd(), 'data', 'eval', 'ontology');
-            const projectRoot = getProjectRoot();
+            const projectRoot = await getProjectRoot();
 
             this.printInfo('📊 Running ontology coverage audit...');
 
