@@ -44,22 +44,26 @@
 - [ ] **W1.1 Fix the Qwen 3.5 4B regression.** **Diagnosed 2026-11-18**: every extraction
   fails with `A context size of 4096 is too large for the available VRAM`, so the pipeline
   silently falls back to deterministic properties (`provenance: deterministic`); measured
-  golden **4/10, F1 0.440**. Next: lower context (`n_ctx`) and/or GPU layers, free VRAM on the
-  target machine, and assert zero fallbacks. Acceptance: golden ≥ 9/10, quality pass ≥ 50/70,
-  no fallback in logs.
+  golden **4/10, F1 0.440**. Next: lower context (`n_ctx`), cap GPU layers, dispose the model
+  between cases, and assert zero fallbacks. A silent fallback is a trust bug, so it must also be
+  **visible** (status badge; slice of W6.5). Acceptance: golden ≥ 9/10, quality pass ≥ 50/70,
+  zero fallbacks, badge shown when degraded.
   Command: `pnpm prompts:eval eval --provider llama-cpp-embedded --model-path models/Qwen_Qwen3.5-4B-Q4_K_M.gguf --few-shot 0`.
 - [ ] **W1.2 Structured-output reliability.** JSON repair + schema validation *before* grammar
-  retry; log repair rate. Acceptance: repair success ≥ 99% on quality corpus; zero silent drops.
+  retry; log repair rate. Run **together with W1.1**: the 4B golden gate cannot reach ≥ 9/10
+  while parse failures silently drop properties. Acceptance: repair success ≥ 99% on quality
+  corpus; zero silent drops.
 - [ ] **W1.3 CoT scratchpad, flag-gated.** Measure CoT on 2B and 4B only (no 9B); keep the flag
   off by default unless it wins on quality at equal latency. Acceptance: A/B table committed.
 - [ ] **W1.4 Few-shot corpus v3 + prompt loop.** Expand retrieval corpus with domain-holdout
-  cases; run `pnpm loop run` manually after each prompt change. Acceptance: quality F1 ↑,
-  golden unchanged; loop report archived under `data/loop/runs/`.
+  cases; run `pnpm loop run` manually after each prompt change. **Depends on W1.6** (retrieval
+  tuning on 60 cases overfits). Acceptance: quality F1 ↑, golden unchanged; loop report archived
+  under `data/loop/runs/`.
 - [ ] **W1.5 Latency budget on 4B.** Progressive extraction: first properties < 300 ms,
   LLM refinement p50 < 800 ms, p95 < 1500 ms. Acceptance: `pnpm perf:budget` report.
 - [ ] **W1.6 Quality corpus expansion (60 → 100 cases).** Balance across gig, freelance,
-  events, knowledge, governance; add holdout split. Acceptance: manifest verified; per-domain
-  F1 table in `doc/EVAL_HOWTO.md`.
+  events, knowledge, governance; add holdout split. Do this **before W1.4**. Acceptance:
+  manifest verified; per-domain F1 table in `doc/EVAL_HOWTO.md`.
 
 ### W2 — Ontology & local knowledge graph
 **Goal**: The ontology describes real captures; notes connect to each other locally.
@@ -85,23 +89,26 @@
   (connect latency, publish success), auto-failover, surface state in `RelayStatusBanner`.
   Acceptance: 3-relay simulator scenario (one dead) → publish succeeds; state visible.
 - [ ] **W3.2 Sync protocol v1 (multi-device notes).** Version vectors + deterministic merge;
-  conflict policy per open question Q7. Acceptance: two-client simulator scenario with
+  conflict policy per open question Q6. Acceptance: two-client simulator scenario with
   concurrent edits converges; conflict audit trail.
 - [ ] **W3.3 Relay discovery & bootstrap.** Well-known relay lists + user-added + latency
   selection; no hardcoded single relay. Acceptance: discovery test with seeded candidates.
 - [ ] **W3.4 Bandwidth & battery budgets.** Delta-only sync, compression, batching, WiFi-only
   mode. Acceptance: payload size report (bytes/note) before/after.
-- [ ] **W3.5 Private groups / encrypted DMs (NIP-17/44).** Deferred to Later pending Q2/Q9.
+- [ ] **W3.5 Private groups / encrypted DMs (NIP-17/44).** Deferred to Later pending Q2.
   Acceptance: private pool test; no plaintext metadata leakage.
 
 ### W4 — Match & actions
 **Goal**: Users trust matches and can act on them safely.
 
 - [ ] **W4.1 Match explanation UI ("Why this match?").** Read-only panel: covered/missing
-  constraints, cross-key mappings used, score breakdown, offer excerpt. Data already exists in
-  `MatchEngine`. Acceptance: UI test + screenshot; no new inference calls.
-- [ ] **W4.2 Match feedback loop.** Accept/dismiss → re-rank future matches + append to the
-  few-shot corpus (no retraining). Acceptance: before/after relevance on the match set.
+  constraints, cross-key mappings used, score breakdown, offer excerpt. **No core rework**:
+  `MatchResult` already exposes `matches` / `conflicts` / `missing`, and `PropertyMatch` carries
+  `reason` + `details`; `LocalMatchPreview` already imports them. Acceptance: UI test +
+  screenshot; no new inference calls.
+- [ ] **W4.2 Match feedback loop.** Accept/dismiss → re-rank future matches + persist local
+  preference weights (no retraining, no mutation of the shipped few-shot bundle; export a corpus
+  file for the offline prompt loop instead). Acceptance: before/after relevance on the match set.
 - [ ] **W4.3 Action approval & audit.** Preview "what will happen" + capability scope →
   approve/deny → audit entry → undo window. Acceptance: an action cannot execute without an
   approval record; audit is exportable.
@@ -114,11 +121,14 @@
 ### W5 — UI/UX, accessibility & i18n
 **Goal**: Calm surface, keyboard-first, accessible in every shipped locale.
 
-- [ ] **W5.1 Command palette v2.** Fuzzy search over actions *and* notes (`#tag`, `key:value`),
-  keybindings shown per command, recent/frequent section, max 100 rows. Acceptance: keyboard-only
-  journey test; palette open < 50 ms on 10k notes.
-- [ ] **W5.2 Keyboard shortcuts manager.** View/edit/export shortcuts, conflict detection,
-  reset-to-default. Acceptance: persisted overrides; conflict warning test.
+- [ ] **W5.1 Command palette v2.** First introduce a small **action registry** (id, label,
+  shortcut, run) — the prerequisite that keeps keybindings and the palette in sync without a
+  plugin API. Then fuzzy search over actions *and* notes (`#tag`, `key:value`), keybindings shown,
+  recent/frequent, max 100 rows. Acceptance: keyboard-only journey test; palette open < 50 ms on
+  10k notes.
+- [ ] **W5.2 Keyboard shortcuts manager.** Built on the W5.1 action registry: view/edit/export
+  shortcuts, conflict detection, reset-to-default. Acceptance: persisted overrides; conflict
+  warning test.
 - [ ] **W5.3 i18n completeness audit.** 6 locales + RTL `ar`: missing keys, orphan keys,
   pseudo-locale expansion test; fix layout leaks in RTL. Acceptance: `pnpm i18n:audit` report 0 gaps.
 - [ ] **W5.4 Screen-reader smoke script.** Documented NVDA/VoiceOver checklist per view;
@@ -132,12 +142,15 @@
 ### W6 — Security, data & reliability
 **Goal**: Data survives loss, theft, and bugs; failures are visible and recoverable.
 
-- [ ] **W6.1 Encryption at rest + auto-lock.** Encrypt IndexedDB/local storage with a key from
-  OS keychain or user passphrase (per Q6); idle auto-lock with explicit unlock. Acceptance:
+- [ ] **W6.1 Encryption at rest + auto-lock.** **Shares one storage-envelope design with W6.6**
+  (versioned payload + checksum + optional cipher) so the storage layer is migrated once, not
+  twice. Key source per Q5; idle auto-lock with explicit unlock and a documented recovery key.
+  **Gate: W6.2a restore verification is green before any storage migration.** Acceptance:
   raw-storage inspection shows no plaintext notes; unlock flow test.
-- [ ] **W6.2 Scheduled backup + restore verification.** Auto-backup on interval/change with
-  rotation; `pnpm restore:verify` restores a backup into a scratch profile and diffs note counts,
-  properties, tags, revisions. Acceptance: green restore report; failure alerts in UI.
+- [ ] **W6.2 Scheduled backup + restore verification.** Split: **(a) `pnpm restore:verify` first**
+  — restore a backup into a scratch profile and diff note counts, properties, tags, revisions;
+  this is the safety net for every storage change. **(b) Auto-backup** on interval/change with
+  rotation, built on the envelope. Acceptance: green restore report; failure alerts in UI.
 - [ ] **W6.3 Retention policies.** Trash auto-purge (default 30 d), revision pruning (50/note),
   backup rotation (7). Acceptance: virtual-clock tests; dry-run CLI (`pnpm retention:run --dry`).
 - [ ] **W6.4 Import interop (Markdown).** Import Obsidian-style frontmatter/tags + body into
@@ -146,9 +159,10 @@
 - [ ] **W6.5 Error boundaries & degraded mode.** Offline/LLM-timeout/storage-full paths show
   status and retry; no dead ends. Acceptance: fault-injection tests; state visible in UI.
 - [ ] **W6.6 Data integrity.** Per-store checksums on write, detect corruption at startup,
-  auto-repair from the newest valid backup. Acceptance: corruption fixture → repaired + reported.
+  auto-repair from the newest valid backup. **Same envelope as W6.1**; depends on W6.2a.
+  Acceptance: corruption fixture → repaired + reported.
 - [x] **W6.7 Test-infra hardening.** (a) ✅ migrate deprecated `poolOptions` to Vitest 5
-  top-level (`ui`: `maxWorkers: 1` + `isolate: false`; `simulator`: default parallel forks);
+  top-level (`ui`: `maxWorkers: 1`, isolation kept; `simulator`: default parallel forks);
   (b) ✅ relay binds ephemeral `port: 0` and reports the bound port (`url` getter +
   `start()`; 5 new tests); (c) ✅ test helpers return the bound URL, no fixed 100 ms sleep;
   (d) ✅ the calibration suite ran on every `pnpm test` (doubling work) — now gated behind
@@ -165,7 +179,9 @@
 - [ ] **W7.1 Type-safe config schema.** Zod/Valibot for all settings; generate the Settings UI
   from the schema; migrate stored settings. Acceptance: unknown key is a type error; migration test.
 - [ ] **W7.2 Local eval harness.** `pnpm eval:local` runs golden + quality + match offline,
-  prints one table, writes artifacts. Acceptance: one command, no network, < 5 min for golden+match.
+  prints one table, writes artifacts, and **caches per-case results** so 4B iterations stay
+  < 5 min. Force multiplier for W1 — do it before prompt tuning, not at the end.
+  Acceptance: one command, no network, < 5 min for golden+match.
 - [ ] **W7.3 Architecture & contributor guide refresh.** `ARCHITECTURE.md` is stale (GSS/GeoLibre
   vs the current packages); document packages, data flow, and the local-first constraints. Also fix
   the workspace manifest drift: `pnpm-workspace.yaml` lists `packages/conformance`, but the package
@@ -179,36 +195,71 @@
 ## 4. Prioritization
 
 Score = **impact** (trust, value, risk reduction) × **confidence** ÷ **effort**, with data-loss,
-security, and feedback-speed risks weighted up. Now items are independent of the open questions.
+security, and feedback-speed risks weighted up.
 
-### Now (start immediately)
-| # | Task | Why now |
-|---|------|---------|
-| 1 | **W1.1** Fix 4B regression | The stated cap is 4B; today 4B fails golden 3/10 → the cap is unusable |
-| 2 | **W6.7** Test-infra hardening | 16–21 min feedback blocks every other task; two live defects found |
-| 3 | **W6.1** Encryption at rest + auto-lock | Largest unmitigated risk: notes are plaintext on disk |
-| 4 | **W2.1** Ontology coverage audit | Cheap, deterministic evidence that steers W2.2/W2.4 and W1.6 |
-| 5 | **W4.1** Match explanation UI | Trust win on data that already exists; no inference cost |
+### 4.1 Simulation of the original order (what would actually happen)
 
-### Next (after the Now items land)
-| # | Task | Depends on |
-|---|------|------------|
-| 6 | **W1.2** Structured-output reliability | W1.1 diagnosis |
-| 7 | **W2.4** Related notes & backlinks | W2.1 audit |
-| 8 | **W3.1** Multi-relay failover | — |
-| 9 | **W5.1** Command palette v2 | — |
-| 10 | **W4.2** Match feedback loop | W4.1 (needs the explanation data model) |
-| 11 | **W6.2** Auto-backup + restore verification | W6.1 key management |
+| Task in old order | What the simulation reveals |
+|---|---|
+| 1. W1.1 | Fixing `n_ctx` exposes the next failure: parse/schema drops. W1.1's own acceptance (≥ 9/10) is unreachable without W1.2, so it silently expands. Model runs take minutes, so iteration needs W7.2 first. |
+| 2. W6.7 | Already done; correctly first. |
+| 3. W6.1 | Contradicts "Now items are independent": it is gated by Q5. Forced start = passphrase MVP, a storage migration with **no tested restore path**, and W6.6 later reaches into the same layer → migrate twice. |
+| 4. W2.1 | Cheap and high-information, but arrives after two long tasks. Note the corpus is nested (`data/eval/cases/{intent,quality}`), so the audit needs a walker, not a flat glob. |
+| 5. W4.1 | The cheapest trust win in the plan: `MatchResult` already exposes `matches/conflicts/missing`, `PropertyMatch.reason/details`, and `LocalMatchPreview` imports them → UI-only, ~1 day. Last in the old order. |
 
-### Later (needs decisions or larger effort)
-| # | Task | Gate |
-|---|------|------|
-| 12 | **W3.2** Sync v1 | Q7 (merge policy) |
-| 13 | **W3.5** Private groups NIP-17/44 | Q2 / Q9 (remote policy) |
-| 14 | **W4.3** Action approval flow | Q3 (auto vs manual) |
-| 15 | **W5.3–W5.6** i18n, a11y script, theming, PWA | Q4 (shipped locales) |
-| 16 | **W6.3–W6.6** Retention, import, error states, integrity | Q8 (retention defaults) |
-| 17 | **W7.1–W7.4** DX, docs, ADRs | — |
+Net effect of the old order: ~2 weeks for one quality fix, one risky rewrite, and two delayed
+cheap wins.
+
+### 4.2 Cross-cutting simulation findings
+
+- **W1.1 + W1.2 are one milestone.** A 4B golden gate cannot pass while parse failures drop
+  properties. Silent fallback is itself a trust defect → show a degraded-status badge.
+- **W7.2 is a force multiplier**, not cleanup. Each 4B quality run is minutes; caching +
+  `--quality-limit` is what makes W1.4/W1.6 affordable.
+- **W2.1 audit before W1.6/W2.2/W2.4.** It is the evidence base for corpus balance, custom keys,
+  and backlinks.
+- **W1.6 before W1.4.** Retrieval tuning on 60 cases overfits; expand and add a holdout first.
+- **W6.1 and W6.6 share a storage envelope.** Doing them separately migrates the storage layer
+  twice. Design once: versioned payload + checksum + optional cipher.
+- **W6.2a (restore verification) must precede any storage migration.** It is the safety net and
+  today it does not exist.
+- **W4.2 as written is not implementable**: it appends to the shipped few-shot corpus, which is a
+  read-only bundle. Persist local preference weights and export a corpus file instead.
+- **W5.1 needs an action registry first**; then W5.2 (shortcuts) is cheap. Avoid drifting into the
+  deferred plugin API — the registry is internal only.
+- **W3.2 is the largest technical risk.** Choosing last-write-wins + audit trail (Q6) keeps it at
+  3–5 days; full CRDT is ~2 weeks. Decide before starting.
+- **Write ADRs as decisions happen** (W7.4), not in a batch at the end.
+
+### 4.3 Revised sequence — milestones with exit criteria
+
+| Milestone | Tasks | Exit criteria | Est. |
+|---|---|---|---|
+| **M0 — Fast feedback** ✅ | W6.7, W4.5 | Local gates trustworthy; suite ≈ 8 min | done |
+| **M1 — Make 4B real** | W1.1 + W1.2 + degraded badge | 4B golden ≥ 9/10, quality baseline recorded, zero silent fallbacks | 2–3 d |
+| **M2 — Evidence & iteration speed** (parallel with M1 model runs) | W7.2, W2.1, W5.3 audit, W6.8 baseline | One offline eval command; ontology + i18n reports; startup baseline | 1–2 d |
+| **M3 — Data safety** | W6.2a → envelope design (W6.1+W6.6) → W6.1 → W6.2b | Restore verification green; no plaintext at rest; corruption fixture repaired | 3–4 d |
+| **M4 — Match trust** | W4.1 → W4.2 (local weights) | Explanation panel shipped; feedback measurably re-ranks | 1–2 d |
+| **M5 — Discovery UX** | action registry → W5.1 → W5.2 | Palette < 50 ms on 10k notes; rebindable shortcuts | 2–3 d |
+| **M6 — Quality push** | W1.6 → W1.4 → W1.3 → W1.5 | Holdout F1 table; loop archive; latency budget | 3–5 d |
+| **M7 — Network resilience** | W3.1 → W3.3 | 3-relay scenario with one dead relay passes | 3–4 d |
+| **M8 — Ontology echoes** | W2.2 → W2.4 → W2.5 | Custom key round-trip; backlinks indexed; idempotent ontology migration | 3–4 d |
+| **M9 — Decision-gated** | W3.2 (Q6), W3.5 (Q2), W4.3 (Q3), W4.4 (Q1), W5.4–W5.6 (Q4), W6.3–W6.5 (Q7), W7.1/W7.3/W7.4 | — | — |
+
+**Execution order at a glance:**
+`M1 → M2 (overlaps) → M3 → M4 → M5 → M6 → M7 → M8 → M9`
+
+**Why this order:** unblock and measure first (M1/M2), protect the data before changing storage
+(M3), harvest the cheap trust win (M4), then build leverage (M5) and push quality (M6). Network
+and ontology work follow because they depend on stable storage and evidence.
+
+### 4.4 Decisions needed to unblock M3
+
+- **Q5 (key source)**: recommend passphrase-first with an explicit recovery key; OS keychain is
+  not portable to the browser target.
+- **Q6 (merge policy)**: recommend last-write-wins + audit trail first; CRDT only if real
+  concurrent-edit conflicts appear.
+- Q1/Q3/Q4/Q2 do not block M1–M8; answer them before M9.
 
 ---
 
@@ -290,6 +341,18 @@ pnpm sim:calibrate
 
 ## 9. Progress Log
 
+### 2026-11-18 — Forward simulation; sequence reworked into milestones
+- Simulated the original Now order. Three structural flaws surfaced:
+  1. W1.1 cannot meet its own acceptance without W1.2 (parse drops) → merged into M1.
+  2. W6.1 was listed as Now but is gated by Q5, and it rewrites the same storage layer as W6.6
+     with no tested restore path → moved to M3, after W6.2a and behind a shared envelope design.
+  3. Two cheap high-value items (W2.1 audit, W4.1 explanation) sat behind long tasks; W7.2
+     (eval harness) was buried in Later despite gating all quality iteration.
+- Verified W4.1 needs **no core rework**: `MatchResult.matches/conflicts/missing` and
+  `PropertyMatch.reason/details` already exist.
+- Sequence is now M1 → M2 (overlaps) → M3 → M4 → M5 → M6 → M7 → M8 → M9 (see §4.3).
+- Fixed stale question references (Q5/Q6/Q7) across W3/W6 and the Later table.
+
 ### 2026-11-18 — W1.1 diagnosis (4B regression)
 - Reproduced with `--provider llama-cpp-embedded` on `Qwen_Qwen3.5-4B-Q4_K_M.gguf`.
 - Root cause: `A context size of 4096 is too large for the available VRAM` on **every** case;
@@ -333,6 +396,7 @@ pnpm sim:calibrate
 - **Discovered defects** (Now #2): Vitest v5 ignores deprecated `poolOptions.forks.singleFork` in
   `simulator/vitest.config.ts`; `NostrRelay` builds `ws://…:0` when given `port: 0` because of
   `options.port ?? bound`. Suite takes 16–21 min.
-- **Prioritization**: Now = 4B fix → test-infra → encryption → ontology audit → match explanation.
+- **Prioritization** (superseded by the 2026-11-18 simulation entry): 4B fix → test-infra →
+  encryption → ontology audit → match explanation.
 - **Open questions** reduced from 5 to 7 (2 resolved by constraints, 4 added: key source, merge
   policy, retention defaults, remote provider disposition).
