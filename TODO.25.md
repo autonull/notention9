@@ -1370,6 +1370,14 @@ pnpm eval:verify-manifest
 - **All tests pass**: core 934, UI 42 files, optimize 127, simulator 116, space:audit 2/2, taxonomy:coverage 24/24.
 - **Remaining**: W11.7 stranger test (blocked on human), W12.4 re-audit.
 
+### 2026-11-18 — W12.4 Re-audit complete
+- **Space utilization audit** (`pnpm space:audit`): 30/30 captures pass (0 stretch, 0 horizontal overflow); 15 views × 2 viewports captured to `doc/evidence/space/`. Key ratios: inbox-empty 0.611, notes-list 0.857, notes-grid 0.787, trash 0.929, timeline 0.307 (desktop) / 0.421 (mobile) — exempt on density, actions 0.663, responses 0.16 / 0.171, labels 0.584 / 0.552, ontology 0.739 / 0.722, map 0.959 / 1.0, settings 0.722 / 0.586, chat 0.299 / 0.487, editor 0.857 / 0.817, network 0.406 / 0.611.
+- **Task-first audit** (same run): 30/30 cases pass. One primary per view, no duplicate screen-level verbs, primaries visible without scrolling. Notes-list "Publish" at tab 9 (desktop/mobile) remains the deepest primary; chat has 2 primaries (Add identity + Send) by design; map primary at tab 11 is far but wireframe-mandated.
+- **Axe accessibility**: 11/11 views pass.
+- **All gates pass**: space utilization, task-first, accessibility.
+- **All tests pass**: core 934, UI 42 files, optimize 127, simulator 116, space:audit 2/2, taxonomy:coverage 24/24, eval:verify-manifest.
+- **Remaining**: W11.7 stranger test (blocked on human — needs a fresh profile to run `pnpm stranger-test` and attach install→capture→match→export timing).
+
 ---
 
 ## 8. Open Questions (need answers before Later items)
