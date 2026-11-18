@@ -26,7 +26,7 @@ import {
 } from 'node-llama-cpp';
 
 export { getLlama };
-import { DEFAULT_ONTOLOGY, parsePropertiesJson, getLLMTelemetry, type LLMMode } from '@notention/core';
+import { DEFAULT_ONTOLOGY, parsePropertiesJson, getLLMTelemetry, type LLMMode, type LLMCallEvent } from '@notention/core';
 import type { Property, OntologyNode } from '@notention/core';
 import { buildSystemPrompt, leafOntologyKeys } from '../prompts/extractionPrompt.js';
 import { VALID_OPERATOR_SET, pruneUngrounded, pruneUngroundedWithSpans } from '../prompts/policy.js';
@@ -372,6 +372,120 @@ function extractJsonArray(cleaned: string): unknown[] | null {
     }
     return null;
 }
+
+/** Result of JSON repair attempt */
+interface RepairResult {
+    success: boolean;
+    properties: Property[];
+    originalLength: number;
+    repairedLength: number;
+}
+
+/**
+ * Attempt to repair and validate JSON response against ontology schema.
+ * Returns repaired properties if successful, empty array if repair fails.
+ * Records repair attempt to telemetry.
+ */
+async function repairAndValidateResponse(
+    response: string,
+    ontology: OntologyNode[],
+    modelName: string,
+    mode: 'grammar' | 'fallback'
+): Promise<RepairResult> {
+    const cleaned = unwrapResponse(response);
+    const originalLength = cleaned.length;
+    const telemetry = getLLMTelemetry();
+
+    // First try direct parse
+    let properties = extractJsonArray(cleaned);
+
+    if (properties) {
+        // Direct parse succeeded - validate against ontology
+        const allowedKeys = new Set(leafOntologyKeys(ontology));
+        const seen = new Set<string>();
+        const validProperties = properties
+            .flatMap(property => parsePropertiesJson([property]))
+            .filter(property => allowedKeys.has(property.key))
+            .map(property => ({
+                ...property,
+                operator: VALID_OPERATOR_SET.has(property.operator) ? property.operator : 'is',
+            }))
+            .filter(property => {
+                const signature = `${property.key}|${property.operator}|${property.values.join(',')}`;
+                if (seen.has(signature)) return false;
+                seen.add(signature);
+                return true;
+            });
+
+        // Record successful direct parse (no repair needed)
+        telemetry.record({
+            model: modelName,
+            mode: `${mode}-direct` as LLMMode,
+            latencyMs: 0,
+            success: true,
+            error: 'direct-parse-ok',
+        });
+
+        return { success: true, properties: validProperties, originalLength, repairedLength: cleaned.length };
+    }
+
+    // Direct parse failed - attempt repair
+    const repaired = repairJsonArray(cleaned);
+    const repairedLength = repaired.length;
+    properties = extractJsonArray(repaired);
+
+    if (!properties) {
+        // Repair failed completely
+        telemetry.record({
+            model: modelName,
+            mode: `${mode}-repair-failed` as LLMMode,
+            latencyMs: 0,
+            success: false,
+            error: 'json-repair-failed',
+        });
+        return { success: false, properties: [], originalLength, repairedLength };
+    }
+
+    // Repair succeeded - validate against ontology
+    const allowedKeys = new Set(leafOntologyKeys(ontology));
+    const seen = new Set<string>();
+    const validProperties = properties
+        .flatMap(property => parsePropertiesJson([property]))
+        .filter(property => allowedKeys.has(property.key))
+        .map(property => ({
+            ...property,
+            operator: VALID_OPERATOR_SET.has(property.operator) ? property.operator : 'is',
+        }))
+        .filter(property => {
+            const signature = `${property.key}|${property.operator}|${property.values.join(',')}`;
+            if (seen.has(signature)) return false;
+            seen.add(signature);
+            return true;
+        });
+
+    if (validProperties.length === 0) {
+        // Repair produced valid JSON but no valid properties
+        telemetry.record({
+            model: modelName,
+            mode: `${mode}-repair-empty` as LLMMode,
+            latencyMs: 0,
+            success: false,
+            error: 'json-repair-empty',
+        });
+        return { success: false, properties: [], originalLength, repairedLength };
+    }
+
+    // Repair and validation succeeded
+    telemetry.record({
+        model: modelName,
+        mode: `${mode}-repaired` as LLMMode,
+        latencyMs: 0,
+        success: true,
+        error: 'json-repair-ok',
+    });
+
+    return { success: true, properties: validProperties, originalLength, repairedLength };
+}
 export function parseResponse(response: string, ontology: OntologyNode[]): Property[] {
     const properties = extractJsonArray(unwrapResponse(response));
     if (!properties) return [];
@@ -451,24 +565,23 @@ export async function extractWithLlamaCpp(
                 console.log('[LlamaCpp] Raw response (grammar):', JSON.stringify(response));
             }
 
-            properties = pruneUngroundedWithSpans(parseResponse(response, ontology), text);
-
-            // Record telemetry for grammar mode
-            telemetry.record({
-                model: modelName,
-                mode: 'grammar',
-                latencyMs,
-                success: properties.length > 0,
-            });
-
-            // If we got valid properties, record success
-            if (properties.length > 0) {
+            // Attempt JSON repair + schema validation BEFORE giving up on grammar
+            const repairResult = await repairAndValidateResponse(response, ontology, modelName, 'grammar');
+            
+            if (repairResult.success) {
+                properties = pruneUngroundedWithSpans(repairResult.properties, text);
+                telemetry.record({
+                    model: modelName,
+                    mode: 'grammar',
+                    latencyMs,
+                    success: true,
+                });
                 recordGrammarSuccess(modelPath);
                 return properties;
             }
 
-            // Empty result with grammar - might be a parse issue, try fallback
-            console.log('[LlamaCpp] Grammar extraction returned empty, trying fallback...');
+            // Repair failed - log and try fallback
+            console.log('[LlamaCpp] Grammar extraction JSON repair failed, trying fallback...');
         } catch (error) {
             const latencyMs = Math.round(performance.now() - grammarStartTime);
             console.warn('[LlamaCpp] Grammar extraction failed, trying fallback:', error);
@@ -482,7 +595,7 @@ export async function extractWithLlamaCpp(
             });
         }
 
-        // Grammar failed or returned empty - record failure and try fallback
+        // Grammar failed or repair failed - record failure and try fallback
         recordGrammarFailure(modelPath);
     }
 
@@ -501,7 +614,14 @@ export async function extractWithLlamaCpp(
         console.log('[LlamaCpp] Raw response (fallback):', JSON.stringify(response));
     }
 
-    properties = pruneUngroundedWithSpans(parseResponse(response, ontology), text);
+    // Attempt JSON repair + schema validation for fallback too
+    const fallbackRepairResult = await repairAndValidateResponse(response, ontology, modelName, 'fallback');
+    if (fallbackRepairResult.success) {
+        properties = pruneUngroundedWithSpans(fallbackRepairResult.properties, text);
+    } else {
+        // Last resort: try original parseResponse
+        properties = pruneUngroundedWithSpans(parseResponse(response, ontology), text);
+    }
 
     // Record telemetry for fallback mode
     telemetry.record({
