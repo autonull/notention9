@@ -1,6 +1,6 @@
 # TODO.26 — Next Phase: Depth & Breadth at ≤4B, Local-First
 
-> **Baseline**: TODO.25 complete (W1–W12). Gates green: core 934, UI 42 files, optimize 127,
+> **Baseline**: TODO.25 complete (W1–W12). Gates green: core 945, UI 42 files, optimize 127,
 > simulator 116, space/task-first/axe all pass. Extraction golden 10/10, quality 39/70 (2B),
 > match F1 0.803 (22/22). **Blocked**: W11.7 stranger test (needs a human).
 >
@@ -23,6 +23,8 @@
 | Multi-modal (image→properties) | Needs ontology extension + vision model | A ≤4B vision model fits the VRAM budget |
 | 24h soak test | 30-min leak check already green | A leak escapes the 30-min check |
 | WebLLM GPU CI, server-side batching | Parked in TODO.25 | Downloaded by real usage |
+| CRDT merge | Events are immutable; prefer LWW + keep-both | Real concurrent-edit conflicts prove LWW insufficient |
+| Silent in-browser auto-backup | Browsers cannot write files without a gesture | A platform grants unattended file access |
 
 ---
 
@@ -33,6 +35,10 @@
 3. **Human gates stay human.** W11.7 and subjective verdicts are never self-certified.
 4. **No new native deps** without `pnpm check:purity`; no fabricated paths (`pnpm lint:fabricated`).
 5. **Fast feedback first.** Test-suite runtime is a first-class defect class.
+6. **Two privacy levels.** A note is `private` (local) or `public` (published). Anything in
+   between must be earned by a real mechanism, not a label.
+7. **The LLM is optional.** Capture, edit, export, and deterministic extraction work with AI off.
+   No model runtime may load on startup, and no fallback may be silent.
 
 ---
 
@@ -64,6 +70,10 @@
 - [ ] **W1.6 Quality corpus expansion (60 → 100 cases).** Balance across gig, freelance,
   events, knowledge, governance; add holdout split. Do this **before W1.4**. Acceptance:
   manifest verified; per-domain F1 table in `doc/EVAL_HOWTO.md`.
+- [x] **W1.7 The LLM is an add-on.** `@mlc-ai/web-llm` is imported dynamically; the model
+  catalogue is a lightweight module. The build precaches the app shell without the model chunk,
+  and capture/edit/export work with AI off. Acceptance: `vendor-mlc` is not precached; a
+  build with AI disabled works. **Done 2026-11-18.**
 
 ### W2 — Ontology & local knowledge graph
 **Goal**: The ontology describes real captures; notes connect to each other locally.
@@ -88,15 +98,21 @@
 - [ ] **W3.1 Multi-relay publish with failover.** Publish to N configured relays, score health
   (connect latency, publish success), auto-failover, surface state in `RelayStatusBanner`.
   Acceptance: 3-relay simulator scenario (one dead) → publish succeeds; state visible.
-- [ ] **W3.2 Sync protocol v1 (multi-device notes).** Version vectors + deterministic merge;
-  conflict policy per open question Q6. Acceptance: two-client simulator scenario with
-  concurrent edits converges; conflict audit trail.
+- [ ] **W3.2 Sync protocol v1 (multi-device notes).** **No CRDT.** Events are immutable, so
+  sync is a revision log: last-write-wins for the default, and on a real conflict keep both
+  versions and ask the user. Acceptance: two-client simulator scenario with concurrent edits
+  converges without discarding either edit; conflict audit trail.
 - [ ] **W3.3 Relay discovery & bootstrap.** Well-known relay lists + user-added + latency
   selection; no hardcoded single relay. Acceptance: discovery test with seeded candidates.
 - [ ] **W3.4 Bandwidth & battery budgets.** Delta-only sync, compression, batching, WiFi-only
   mode. Acceptance: payload size report (bytes/note) before/after.
 - [ ] **W3.5 Private groups / encrypted DMs (NIP-17/44).** Deferred to Later pending Q2.
   Acceptance: private pool test; no plaintext metadata leakage.
+- [x] **W3.6 Publish safety.** Two privacy levels (`private` / `public`); the old `protected`
+  level was removed. Publishing shows an exact body preview, a relay count, and an optional
+  PII-redaction checkbox (default on). Deleting a published note sends a NIP-09 request
+  (`e`, `k`, and `a` tags) and states that relays may ignore it. Switching a published note
+  back to private offers a NIP-09 retraction. **Done 2026-11-18.**
 
 ### W4 — Match & actions
 **Goal**: Users trust matches and can act on them safely.
@@ -136,8 +152,12 @@
 - [ ] **W5.5 Theming & density.** Compact/comfortable density, light/dark/auto, accent color;
   respects `prefers-reduced-motion` and `prefers-color-scheme`. Acceptance: screenshot matrix
   (2 densities × 3 themes) + contrast check.
-- [ ] **W5.6 Mobile PWA install.** Installable manifest, offline capture queue, background
-  sync on reconnect. Acceptance: Lighthouse installability + offline capture test (no push).
+- [~] **W5.6 Mobile PWA install.** ✅ Service worker enabled (`vite-plugin-pwa`, app shell
+  precached at 6.5 MB, model chunk excluded); installable manifest. ⏳ Offline capture queue
+  and background sync on reconnect remain. Acceptance: Lighthouse installability + offline
+  capture test (no push).
+- [x] **W5.7 Local assets.** Removed Google Fonts; the UI uses a system font stack and loads
+  no third-party stylesheet. **Done 2026-11-18.**
 
 ### W6 — Security, data & reliability
 **Goal**: Data survives loss, theft, and bugs; failures are visible and recoverable.
@@ -150,7 +170,9 @@
 - [ ] **W6.2 Scheduled backup + restore verification.** Split: **(a) `pnpm restore:verify` first**
   — restore a backup into a scratch profile and diff note counts, properties, tags, revisions;
   this is the safety net for every storage change. **(b) Auto-backup** on interval/change with
-  rotation, built on the envelope. Acceptance: green restore report; failure alerts in UI.
+  rotation, **destination = a downloaded file** (browsers cannot write files unattended, so the
+  flow is a reminder + one-click download, not a silent write). Acceptance: green restore
+  report; failure alerts in UI.
 - [ ] **W6.3 Retention policies.** Trash auto-purge (default 30 d), revision pruning (50/note),
   backup rotation (7). Acceptance: virtual-clock tests; dry-run CLI (`pnpm retention:run --dry`).
 - [ ] **W6.4 Import interop (Markdown).** Import Obsidian-style frontmatter/tags + body into
@@ -235,16 +257,16 @@ cheap wins.
 
 | Milestone | Tasks | Exit criteria | Est. |
 |---|---|---|---|
-| **M0 — Fast feedback** ✅ | W6.7, W4.5 | Local gates trustworthy; suite ≈ 8 min | done |
+| **M0 — Product contract & fast feedback** ✅ | W6.7, W4.5, W1.7, W3.6, W5.7 | Two privacy levels; publish preview + NIP-09; LLM optional and lazy; local fonts; suite ≈ 8 min | done |
 | **M1 — Make 4B real** | W1.1 + W1.2 + degraded badge | 4B golden ≥ 9/10, quality baseline recorded, zero silent fallbacks | 2–3 d |
 | **M2 — Evidence & iteration speed** (parallel with M1 model runs) | W7.2, W2.1, W5.3 audit, W6.8 baseline | One offline eval command; ontology + i18n reports; startup baseline | 1–2 d |
 | **M3 — Data safety** | W6.2a → envelope design (W6.1+W6.6) → W6.1 → W6.2b | Restore verification green; no plaintext at rest; corruption fixture repaired | 3–4 d |
 | **M4 — Match trust** | W4.1 → W4.2 (local weights) | Explanation panel shipped; feedback measurably re-ranks | 1–2 d |
 | **M5 — Discovery UX** | action registry → W5.1 → W5.2 | Palette < 50 ms on 10k notes; rebindable shortcuts | 2–3 d |
 | **M6 — Quality push** | W1.6 → W1.4 → W1.3 → W1.5 | Holdout F1 table; loop archive; latency budget | 3–5 d |
-| **M7 — Network resilience** | W3.1 → W3.3 | 3-relay scenario with one dead relay passes | 3–4 d |
+| **M7 — Network resilience** | W3.1 → W3.2 → W3.3 | 3-relay scenario with one dead relay passes; concurrent edits keep both versions | 4–6 d |
 | **M8 — Ontology echoes** | W2.2 → W2.4 → W2.5 | Custom key round-trip; backlinks indexed; idempotent ontology migration | 3–4 d |
-| **M9 — Decision-gated** | W3.2 (Q6), W3.5 (Q2), W4.3 (Q3), W4.4 (Q1), W5.4–W5.6 (Q4), W6.3–W6.5 (Q7), W7.1/W7.3/W7.4 | — | — |
+| **M9 — Decision-gated** | W3.5 (Q2), W4.3 (Q3), W4.4 (Q1), W5.4/W5.6 (Q4), W6.3–W6.5 (Q7), W7.1/W7.3/W7.4 | — | — |
 
 **Execution order at a glance:**
 `M1 → M2 (overlaps) → M3 → M4 → M5 → M6 → M7 → M8 → M9`
@@ -257,8 +279,8 @@ and ontology work follow because they depend on stable storage and evidence.
 
 - **Q5 (key source)**: recommend passphrase-first with an explicit recovery key; OS keychain is
   not portable to the browser target.
-- **Q6 (merge policy)**: recommend last-write-wins + audit trail first; CRDT only if real
-  concurrent-edit conflicts appear.
+- ~~Q6 (merge policy)~~ → **resolved 2026-11-18**: no CRDT; revision log + LWW + keep-both on
+  conflict.
 - Q1/Q3/Q4/Q2 do not block M1–M8; answer them before M9.
 
 ---
@@ -268,6 +290,7 @@ and ontology work follow because they depend on stable storage and evidence.
 | Risk | Likelihood | Impact | Mitigation (task) |
 |------|-----------|--------|-------------------|
 | Local data loss / theft (plaintext) | High | Severe | W6.1, W6.2, W6.6 |
+| User believes a published note is retractable | Medium | Severe | Publish preview + NIP-09 (W3.6); state that relays may ignore it |
 | 4B quality ceiling stalls the cap | Medium | High | W1.1–W1.6 with holdout corpus |
 | Sync conflicts corrupt notes | Medium | Severe | W3.2 version vectors + audit trail, W6.2 restore |
 | Slow suite hides regressions | High | Medium | W6.7 runtime budget + canaries (W4.5) |
@@ -281,6 +304,8 @@ and ontology work follow because they depend on stable storage and evidence.
 **Resolved by this phase's constraints**
 - ~~9B default acceptable?~~ → **No**: 4B is the cap.
 - ~~Remote inference allowed?~~ → **Local-first**; remote stays opt-in and PII-redacted only.
+- ~~Sync merge policy~~ → **No CRDT**: revision log + LWW + keep-both on conflict.
+- ~~Protected privacy level~~ → **Removed**: only `private` and `public` remain.
 
 **Open (gate Later work)**
 1. **Primary user**: solo knowledge worker / mutual-aid organizer / agent operator? → W4.4, W5.6.
@@ -288,8 +313,7 @@ and ontology work follow because they depend on stable storage and evidence.
 3. **Match actions**: auto-execute with approval, or always manual? → W4.3.
 4. **Shipped locales**: which of the 6 + RTL `ar` actually ship? → W5.3, W5.5.
 5. **Encryption at rest key source**: OS keychain, per-session passphrase, or both? → W6.1.
-6. **Sync merge policy**: last-write-wins with an audit trail, or full CRDT? → W3.2.
-7. **Retention defaults**: trash 30 d, revisions 50/note, backups 7? → W6.3.
+6. **Retention defaults**: trash 30 d, revisions 50/note, backups 7? → W6.3.
 
 ---
 
@@ -340,6 +364,27 @@ pnpm sim:calibrate
 ---
 
 ## 9. Progress Log
+
+### 2026-11-18 — Privacy contract fixed; local-first hygiene
+Decisions applied:
+- **Removed `protected`.** `PrivacyLevel` is `private | public`; stored legacy values coerce to
+  `private` (`normalizePrivacyLevel`). Removed the level from `getPrivacyTags`, the publish
+  control, the dev bridge, and tests.
+- **Publishing is previewed.** The publish dialog shows the exact body, property count, relay
+  count, and a permanence warning. PII redaction is a checkbox, on by default, applied only to
+  the published copy (`publishNoteToNostr(..., {redactPII})`).
+- **NIP-09 deletion.** `publishDeletionRequest` signs a kind-5 event with `e`, `k`, and `a`
+  tags; permanent delete fires it best-effort for published notes only, and the modal says
+  relays may ignore it. Switching a published note back to private offers the same retraction.
+- **No third-party fonts.** Google Fonts removed; system font stack only.
+- **Service worker enabled.** `vite-plugin-pwa` precaches the app shell (24 entries, 6.5 MB),
+  registers `/registerSW.js`, and excludes `vendor-mlc`/`WebLLMProvider` so the model is
+  fetched only on demand. Installability still comes from `public/manifest.json`.
+- **LLM is optional.** `@mlc-ai/web-llm` is a dynamic import; `AVAILABLE_MODELS` moved to
+  `services/ai/models.ts`, so settings do not pull the 6.5 MB runtime. Capture/edit/export run
+  with AI off.
+- **No CRDT.** W3.2 is now a revision log with LWW + keep-both on conflict.
+- Gates: core 945, UI 42 files, UI typecheck clean, `ui` build OK, precache 6.5 MB.
 
 ### 2026-11-18 — Forward simulation; sequence reworked into milestones
 - Simulated the original Now order. Three structural flaws surfaced:
