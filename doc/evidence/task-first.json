@@ -1,14 +1,21 @@
 {
-  "generatedAt": "2026-11-17T23:33:47.227Z",
+  "generatedAt": "2026-11-18T02:24:45.946Z",
   "cases": [
     {
       "view": "inbox",
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Create note",
+            "top": 120,
+            "tabStops": 1,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 5,
+        "focusableCount": 6,
         "firstContentTop": 113,
         "tabStopsToContent": 0
       }
@@ -18,9 +25,16 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Create note",
+            "top": 120,
+            "tabStops": 1,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 11,
+        "focusableCount": 12,
         "firstContentTop": 113,
         "tabStopsToContent": 0
       }
@@ -51,9 +65,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 6,
-        "firstContentTop": 140,
-        "tabStopsToContent": 0
+        "focusableCount": 7,
+        "firstContentTop": 160,
+        "tabStopsToContent": 1
       }
     },
     {
@@ -237,11 +251,18 @@
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Check Connection Settings",
+            "top": 740,
+            "tabStops": 17,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 23,
+        "focusableCount": 19,
         "firstContentTop": 386,
-        "tabStopsToContent": 17
+        "tabStopsToContent": 16
       }
     },
     {
@@ -249,9 +270,16 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Create note",
+            "top": 104,
+            "tabStops": 1,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 5,
+        "focusableCount": 6,
         "firstContentTop": 97,
         "tabStopsToContent": 0
       }
@@ -261,9 +289,16 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Create note",
+            "top": 104,
+            "tabStops": 1,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 10,
+        "focusableCount": 11,
         "firstContentTop": 97,
         "tabStopsToContent": 0
       }
@@ -382,7 +417,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 13,
+        "focusableCount": 15,
         "firstContentTop": 229,
         "tabStopsToContent": 0
       }
@@ -480,11 +515,18 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Check Connection Settings",
+            "top": 774,
+            "tabStops": 17,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 21,
+        "focusableCount": 19,
         "firstContentTop": 520,
-        "tabStopsToContent": 17
+        "tabStopsToContent": 16
       }
     }
   ]

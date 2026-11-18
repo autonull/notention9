@@ -10,11 +10,18 @@ interface DemoNoteInput {
     offsetHours: number;
     geo?: {lat: number; lng: number};
     pinned?: boolean;
+    // Relative date offsets (days from now) for date-like properties
+    startOffsetDays?: number;
+    deadlineOffsetDays?: number;
 }
 
 const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
 
 const property = (key: string, values: string[], operator = 'is', role?: 'constraint' | 'fact' | 'marker', unit?: string): Property => ({key, operator, values, role, unit});
+
+const formatDate = (date: Date): string => date.toISOString().split('T')[0];
+const formatDateTime = (date: Date): string => date.toISOString().slice(0, 16);
 
 const buildNote = (
     input: DemoNoteInput,
@@ -22,6 +29,17 @@ const buildNote = (
 ): Note => {
     const updatedAt = new Date(now - input.offsetHours * HOUR).toISOString();
     const properties = [...input.properties];
+
+    // Add relative dates if specified
+    if (input.startOffsetDays !== undefined) {
+        const startDate = new Date(now + input.startOffsetDays * DAY);
+        properties.push(property('start', [formatDateTime(startDate)], 'is', 'constraint'));
+    }
+    if (input.deadlineOffsetDays !== undefined) {
+        const deadlineDate = new Date(now + input.deadlineOffsetDays * DAY);
+        properties.push(property('deadline', [formatDate(deadlineDate)], 'is', 'constraint'));
+    }
+
     if (input.geo) {
         properties.push(property('location', [`${input.geo.lat.toFixed(5)},${input.geo.lng.toFixed(5)}`]));
     }
@@ -95,12 +113,12 @@ const DEMO_NOTES: DemoNoteInput[] = [
         tags: ['event', 'community'],
         properties: [
             property('type', ['event'], 'is', 'marker'),
-            property('start', ['2026-11-28T18:00'], 'is', 'constraint'),
             property('location', ['Community Hall, Berlin'], 'is', 'constraint'),
         ],
         privacy: 'public',
         offsetHours: 14,
         geo: {lat: 52.512, lng: 13.421},
+        startOffsetDays: 10,
     },
     {
         id: 'demo-task-flyers',
@@ -109,10 +127,10 @@ const DEMO_NOTES: DemoNoteInput[] = [
         tags: ['task'],
         properties: [
             property('status', ['todo'], 'is', 'marker'),
-            property('deadline', ['2026-11-27'], 'is', 'constraint'),
             property('type', ['task'], 'is', 'marker'),
         ],
         offsetHours: 20,
+        deadlineOffsetDays: 9,
     },
     {
         id: 'demo-person-john',

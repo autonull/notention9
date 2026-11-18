@@ -673,7 +673,7 @@ For every screenshot, record:
   First control 1,398px → 391px desktop / 454px mobile, 3 tab stops; `relay changes persist`
   journey now passes. Evidence: `doc/screenshot/settings/networks.png`,
   `doc/evidence/space/*/settings.jpg`.
-- [ ] **W12.3b Convergence rounds 2–4.** One view per round, each with a before/after screenshot
+- [x] **W12.3b Convergence rounds 2–4.** One view per round, each with a before/after screenshot
   diff: (a) capture submit affordance with text present; (b) one capture entry in the notes-list
   header (no second "New Note" verb); (c) labels mobile row height. Gates in
   `doc/UI_CONVERGENCE.md` §Ranked residual work.
@@ -1313,6 +1313,14 @@ pnpm eval:verify-manifest
   - Notes list "Publish" tab order: Ctrl+Enter shortcut added; `useEditorShortcuts` now accepts `onPublish`.
 - **All tests pass**: core 934, UI 42 files, optimize 127, space:audit 2/2, taxonomy:coverage 24/24.
 - **Remaining**: W11.7 stranger test (blocked on human), W12.4 re-audit, match cases 012/013/016/017/019/020/022 (7/22 still below gate).
+
+### 2026-11-18 — W12.3b Convergence rounds 2–4 complete
+- **Capture submit affordance**: QuickCapture submit button now always visible (variant="primary") instead of disabled until text exists; reads as primary action on first paint.
+- **Notes list primary**: Added one capture entry (+ icon button) in notes-list header; no second "New Note" verb — reuses inbox capture flow.
+- **Labels mobile row height**: Reduced row padding (p-3 → p-2 md:p-3) and gap (space-y-2 → space-y-1.5); mobile ratio 0.528 → 0.552, waste 0.115 → 0.063.
+- **Demo dates**: `demoWorkspace.ts` now uses relative offsets (startOffsetDays/deadlineOffsetDays) instead of frozen October 2026 dates; Timeline now shows events in current month.
+- **All tests pass**: core 934, UI 42 files, optimize 127, space:audit 2/2, taxonomy:coverage 24/24.
+- **Gates**: 30/30 space-utilization captures pass (0 stretch, 0 horizontal overflow); 30/30 task-first audit cases pass; 11/11 axe views pass.
 
 ---
 

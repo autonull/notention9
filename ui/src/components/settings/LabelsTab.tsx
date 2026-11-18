@@ -155,9 +155,9 @@ export function LabelsTab() {
                             description={<>Create one, or add a tag inline with <code className="text-blue-400">#tag</code> in a note.</>}
                         />
                     ) : (
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             {sortedTags.map(({tag, count}) => (
-                                <div key={tag} className="flex items-center justify-between p-3 bg-gray-900/50 rounded-lg border border-gray-700/30">
+                                <div key={tag} className="flex items-center justify-between p-2 md:p-3 bg-gray-900/50 rounded-lg border border-gray-700/30">
                                     {editingTag === tag ? (
                                         <div className="flex-1 flex items-center gap-2">
                                             <input

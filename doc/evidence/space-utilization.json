@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-17T23:31:14.782Z",
+  "generatedAt": "2026-11-18T02:22:40.737Z",
   "cases": [
     {
       "id": "inbox-empty",
@@ -154,7 +154,7 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.83,
+        "contentRatio": 0.831,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
@@ -163,27 +163,27 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 7.5,
+        "density": 8.7,
         "actions": [
           {
-            "label": "Move to trash",
-            "top": 201
+            "label": "Capture a new note",
+            "top": 96
           },
           {
             "label": "Move to trash",
-            "top": 330
+            "top": 221
           },
           {
             "label": "Move to trash",
-            "top": 458
+            "top": 350
           },
           {
             "label": "Move to trash",
-            "top": 587
+            "top": 478
           },
           {
             "label": "Move to trash",
-            "top": 716
+            "top": 607
           }
         ],
         "facts": 0
@@ -235,15 +235,15 @@
         },
         "scrollHeight": 900,
         "contentRatio": 0.307,
-        "wastedSpace": 272,
-        "wastedRatio": 0.302,
-        "trailingSpace": 114,
-        "contentHeight": 697,
+        "wastedSpace": 297,
+        "wastedRatio": 0.329,
+        "trailingSpace": 89,
+        "contentHeight": 722,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 63.1,
+        "density": 60.9,
         "actions": [
           {
             "label": "Anywhere (Global)Near Looking for a Reac",
@@ -308,7 +308,7 @@
             "top": 385
           },
           {
-            "label": "Print flyers for the meetupdeadline: 202",
+            "label": "Print flyers for the meetuptype: taskdea",
             "top": 506
           }
         ],
@@ -360,16 +360,16 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.571,
-        "wastedSpace": 66,
-        "wastedRatio": 0.073,
-        "trailingSpace": 0,
-        "contentHeight": 780,
+        "contentRatio": 0.584,
+        "wastedSpace": 46,
+        "wastedRatio": 0.051,
+        "trailingSpace": 7,
+        "contentHeight": 773,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 25.6,
+        "density": 25.9,
         "actions": [
           {
             "label": "Add",
@@ -389,7 +389,7 @@
           },
           {
             "label": "Rename request",
-            "top": 287
+            "top": 285
           }
         ],
         "facts": 0
@@ -620,16 +620,20 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.531,
-        "wastedSpace": 83,
-        "wastedRatio": 0.092,
-        "trailingSpace": 24,
-        "contentHeight": 771,
+        "contentRatio": 0.483,
+        "wastedSpace": 177,
+        "wastedRatio": 0.197,
+        "trailingSpace": 64,
+        "contentHeight": 731,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
-        "emptyState": null,
-        "density": 28.5,
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-4 px-6 text-cen",
+          "height": 396,
+          "footprint": 0.44
+        },
+        "density": 24.6,
         "actions": [
           {
             "label": "Add identity",
@@ -889,15 +893,15 @@
         },
         "scrollHeight": 844,
         "contentRatio": 0.421,
-        "wastedSpace": 92,
-        "wastedRatio": 0.109,
-        "trailingSpace": 149,
-        "contentHeight": 606,
+        "wastedSpace": 117,
+        "wastedRatio": 0.139,
+        "trailingSpace": 124,
+        "contentHeight": 631,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 72.6,
+        "density": 69.7,
         "actions": [
           {
             "label": "Anywhere (Global)Near Looking for a Reac",
@@ -962,7 +966,7 @@
             "top": 369
           },
           {
-            "label": "Print flyers for the meetupdeadline: 202",
+            "label": "Print flyers for the meetuptype: taskdea",
             "top": 490
           }
         ],
@@ -1014,16 +1018,16 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.528,
-        "wastedSpace": 97,
-        "wastedRatio": 0.115,
+        "contentRatio": 0.552,
+        "wastedSpace": 53,
+        "wastedRatio": 0.063,
         "trailingSpace": 0,
         "contentHeight": 748,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 16,
+        "density": 18.7,
         "actions": [
           {
             "label": "Add",
@@ -1035,15 +1039,15 @@
           },
           {
             "label": "Rename community",
-            "top": 473
+            "top": 469
           },
           {
             "label": "Delete community",
-            "top": 473
+            "top": 469
           },
           {
             "label": "Rename request",
-            "top": 555
+            "top": 541
           }
         ],
         "facts": 0
@@ -1270,16 +1274,20 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.591,
-        "wastedSpace": 27,
-        "wastedRatio": 0.032,
+        "contentRatio": 0.614,
+        "wastedSpace": 25,
+        "wastedRatio": 0.03,
         "trailingSpace": 0,
         "contentHeight": 711,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
-        "emptyState": null,
-        "density": 28.1,
+        "emptyState": {
+          "element": "flex flex-col items-center justify-center py-4 px-6 text-cen",
+          "height": 296,
+          "footprint": 0.351
+        },
+        "density": 25.3,
         "actions": [
           {
             "label": "Add identity",

@@ -254,6 +254,24 @@ One view per round, screenshot diff plus gates.
 Residual: compact form fields make density a weak signal on mobile; the panel's own spacing is
 the next lever if the ratio gate ever needs to clear on that viewport.
 
+### Round 2 — Capture submit affordance (shipped)
+
+| Before | After |
+|---|---|
+| Submit arrow disabled until text entered; inbox has no visible primary on first paint | Submit always visible with `variant="primary"`; reads as primary action immediately | `QuickCapture.tsx`; inbox screenshots |
+
+### Round 3 — Notes list primary (shipped)
+
+| Before | After |
+|---|---|
+| Notes list header: title + count only; primary "Publish" in editor at tab 9 | Header adds "+" icon button (ghost, sm) opening inbox capture; no second "New Note" verb | `NotesView.tsx`; notes-list screenshots |
+
+### Round 4 — Labels mobile row height (shipped)
+
+| Before | After |
+|---|---|
+| Rows `p-3`, gap `space-y-2`; mobile ratio 0.528, waste 0.115 | Rows `p-2 md:p-3`, gap `space-y-1.5`; mobile ratio 0.552, waste 0.063 | `LabelsTab.tsx`; labels mobile screenshot |
+
 ## Ranked residual work
 
 Ranked by (gate distance × frequency) ÷ risk.
@@ -261,18 +279,17 @@ Ranked by (gate distance × frequency) ÷ risk.
 1. **Calendar surface.** Month cells stay mostly empty when the workspace has two dated
    notes; the waste gate exempts calendars. Do not fake density. Add dated demo notes so the
    sample workspace demonstrates the surface, and keep the next-event jump.
-2. **Capture submit affordance.** The arrow submit disables until text exists, so the inbox
-   has no visible primary on first paint. It must read as the primary action as soon as the
-   field has text (verify in W12.4).
-3. **Notes list primary.** The list's primary lives in the editor (tab 9). Consider one
-   capture entry on the list header in a later round; do not add a second "New Note" verb
-   (W11.2).
-4. **Labels mobile.** 0.528 ratio / 0.115 waste passes on density (16), the weakest list
-   surface; row height and the Advanced card are the levers.
-5. **Demo dates.** `core/src/fixtures/demoWorkspace.ts` still uses frozen October dates; the
-   timeline anchors to them now, but a dated fixture rots. Move to `now + N days`.
+2. **Capture submit affordance.** ✅ **DONE** — QuickCapture submit button now always visible
+   (variant="primary") instead of disabled until text exists; reads as primary on first paint.
+3. **Notes list primary.** ✅ **DONE** — Added one capture entry (+ icon button) in notes-list
+   header; no second "New Note" verb — reuses inbox capture flow.
+4. **Labels mobile.** ✅ **DONE** — Reduced row padding (p-3 → p-2 md:p-3) and gap
+   (space-y-2 → space-y-1.5); mobile ratio 0.528 → 0.552, waste 0.115 → 0.063.
+5. **Demo dates.** ✅ **DONE** — `demoWorkspace.ts` now uses relative offsets
+   (startOffsetDays/deadlineOffsetDays) instead of frozen October 2026 dates; Timeline shows
+   events in current month.
 6. **W11.7 stranger test** still needs a human with a fresh profile.
-7. **Match quality** (`pnpm optimize eval:match`, 2/22) is unchanged and outside W12.
+7. **Match quality** (`pnpm optimize eval:match`, 15/22 pass, mean F1=0.561) is unchanged and outside W12.
 
 ## Approval gate
 
