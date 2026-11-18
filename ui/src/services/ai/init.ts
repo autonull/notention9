@@ -1,6 +1,6 @@
 import {LocalAIProvider} from './LocalProvider';
 import {RemoteAIProvider, isGeminiApiKeyAvailable} from './RemoteProvider';
-import {WebLLMProvider, AVAILABLE_MODELS} from './WebLLMProvider';
+import {AVAILABLE_MODELS} from './models';
 import {inferenceRouter, type ProviderConfig, type ModelCapabilities} from './inference';
 
 const HEURISTIC_CAPABILITIES: ModelCapabilities = {
@@ -97,8 +97,10 @@ async function applyProviders(options: AIInitOptions): Promise<void> {
     }
 
     // 2. WebLLM (in-browser local model) - medium priority
+    // Loaded dynamically: the LLM is optional and must not cost startup bandwidth.
     if (enableWebLLM) {
         try {
+            const {WebLLMProvider} = await import('./WebLLMProvider');
             const webllmProvider = new WebLLMProvider(webllmModelId);
             // Test if WebGPU is available
             if (typeof navigator !== 'undefined' && navigator.gpu) {

@@ -74,7 +74,6 @@ function NotesList({notes, viewMode}: {notes: Note[]; viewMode: 'list' | 'grid'}
                                     note={note}
                                     isSelected={selectedNoteId === note.id}
                                     onSelect={() => selectNote(note.id)}
-                                    compact
                                 />
                             ))}
                         </div>

@@ -4,11 +4,7 @@ import type {InferredAttribute} from './types';
 import {BaseAIProvider} from './BaseProvider.js';
 import {Logger, collectOntologyKeysInTree, parsePropertiesJson, pruneUngroundedWithSpans} from '@notention/core';
 
-export const AVAILABLE_MODELS = [
-    {id: "Llama-3.2-3B-Instruct-q4f16_1-MLC", label: "Llama 3.2 3B (Balanced)"},
-    {id: "Llama-3.2-1B-Instruct-q4f16_1-MLC", label: "Llama 3.2 1B (Fast, Lower Quality)"},
-    {id: "RedPajama-INCITE-Chat-3B-v1-q4f16_1-MLC", label: "RedPajama 3B"}
-];
+export {AVAILABLE_MODELS} from "./models";
 
 export class WebLLMProvider extends BaseAIProvider {
     readonly name = 'WebLLM (In-Browser)';

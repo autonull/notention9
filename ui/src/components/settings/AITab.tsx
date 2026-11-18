@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {CheckIcon, CpuChipIcon, SparklesIcon} from '../ui/icons';
 import {isGeminiApiKeyAvailable} from '@/services/ai/RemoteProvider';
-import {AVAILABLE_MODELS} from '@/services/ai/WebLLMProvider';
+import {AVAILABLE_MODELS} from '@/services/ai/models';
 import type {AppSettings} from '@notention/core';
 import {useToast} from '../../hooks/useToast';
 import {Toggle} from '../ui/Primitives';

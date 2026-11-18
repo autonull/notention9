@@ -4,7 +4,7 @@ import {defineConfig, loadEnv} from 'vite';
 import {configDefaults} from 'vitest/config';
 import react from '@vitejs/plugin-react';
 import nodePolyfills from 'rollup-plugin-node-polyfills';
-// import {VitePWA} from 'vite-plugin-pwa'; // Temporarily disabled due to Node.js module resolution issues
+import {VitePWA} from 'vite-plugin-pwa';
 
 // Plugin to exclude test files from production build
 const createExcludeTestsPlugin = (isDev: boolean) => ({
@@ -294,53 +294,23 @@ export default defineConfig(({mode}) => {
             namePolyfillPlugin,
             preserveReactExportsPlugin,
             isDev && namePolyfillDevPlugin,
-            // removeDevOnlyPlugin disabled - namePolyfillPlugin handles __name
-            // VitePWA temporarily disabled due to Node.js module resolution issues with eval/telemetry
-            // VitePWA({
-            //     registerType: 'autoUpdate',
-            //     includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
-            //     manifest: {
-            //         name: 'Notention',
-            //         short_name: 'Notention',
-            //         description: 'The Decentralized Super App',
-            //         theme_color: '#111827',
-            //         background_color: '#111827',
-            //         display: 'standalone',
-            //         scope: '/',
-            //         start_url: '/',
-            //         orientation: 'portrait',
-            //         icons: [
-            //             {
-            //                 src: 'pwa-64x64.png',
-            //                 sizes: '64x64',
-            //                 type: 'image/png'
-            //             },
-            //             {
-            //                 src: 'pwa-192x192.png',
-            //                 sizes: '192x192',
-            //                 type: 'image/png'
-            //             },
-            //             {
-            //                 src: 'pwa-512x512.png',
-            //                 sizes: '512x512',
-            //                 type: 'image/png'
-            //             },
-            //             {
-            //                 src: 'maskable-icon-512x512.png',
-            //                 sizes: '512x512',
-            //                 type: 'image/png',
-            //                 purpose: 'any'
-            //             }
-            //         ]
-            //     },
-            //     devOptions: {
-            //         enabled: true
-            //     },
-            //     workbox: {
-            //         maximumFileSizeToCacheInBytes: 10 * 1024 * 1024, // 10MB
-            //         exclude: [/\/@notention\/core\/eval/, /\/@notention\/core\/telemetry/],
-            //     }
-            // })
+            // Manifest lives in public/manifest.json; only register the SW here.
+            VitePWA({
+                registerType: 'autoUpdate',
+                injectRegister: 'auto',
+                manifest: false,
+                workbox: {
+                    maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+                    globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+                    // The model runtime is optional: fetch it on first use, never precache it.
+                    globIgnores: ['**/vendor-mlc-*.js', '**/WebLLMProvider-*.js'],
+                    navigateFallback: 'index.html',
+                    navigateFallbackDenylist: [/^\/api\//],
+                },
+                devOptions: {
+                    enabled: false,
+                },
+            }),
         ],
         build: {
             cssCodeSplit: true,
