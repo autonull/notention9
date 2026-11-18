@@ -22,9 +22,9 @@ import { startRelay, stopRelay, clearRelayEvents, resetRelay } from '../testRela
  * - Statistical assertions with confidence intervals
  */
 
-// Test configuration
-const RELAY_PORT = 14444;
-const RELAY_URL = `ws://localhost:${RELAY_PORT}`;
+// Test configuration: ephemeral relay port so parallel files never collide
+const RELAY_PORT = 0;
+let relayUrl = '';
 const REPETITIONS = 10; // Per scenario, for stable baselines (use 30 for CI)
 const CONFIDENCE_LEVEL = 0.95; // 95% CI
 
@@ -386,13 +386,13 @@ async function runScenarioMeasurement(
     repetitions: number
 ): Promise<ScenarioStatistics> {
     // Reset relay completely before each scenario to prevent cross-contamination
-    await resetRelay(RELAY_PORT);
-    
+    relayUrl = await resetRelay(RELAY_PORT);
+
     const runs: MeasurementRun[] = [];
 
     for (let i = 0; i < repetitions; i++) {
         clearRelayEvents(RELAY_PORT);
-        const runner = new ScenarioRunner(RELAY_URL, DEFAULT_ONTOLOGY);
+        const runner = new ScenarioRunner(relayUrl, DEFAULT_ONTOLOGY);
         runner.setFastMode(true);
         const collector = attachMetricsCollector(runner);
 
@@ -443,7 +443,7 @@ const ALL_SCENARIOS = [
 
 describe('Measurement Suite (B2.5) — Seeded Statistical Baselines', () => {
     beforeAll(async () => {
-        await startRelay(RELAY_PORT);
+        relayUrl = await startRelay(RELAY_PORT);
     }, 30000);
 
     afterAll(async () => {
@@ -493,9 +493,9 @@ describe('Measurement Suite (B2.5) — Seeded Statistical Baselines', () => {
  * This test ONLY updates baselines - it does not assert.
  * Use when MatchEngine or scenarios change significantly.
  */
-describe('Measurement Suite — Baseline Calibration (run manually)', () => {
+describe.skipIf(process.env.CALIBRATE !== '1')('Measurement Suite — Baseline Calibration (run manually)', () => {
     beforeAll(async () => {
-        await startRelay(RELAY_PORT);
+        relayUrl = await startRelay(RELAY_PORT);
     }, 30000);
 
     afterAll(async () => {

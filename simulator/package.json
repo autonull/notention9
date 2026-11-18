@@ -16,7 +16,8 @@
     "build": "tsc && npm run build:ui",
     "build:ui": "vite build --config vite.config.ts",
     "ui:dev": "vite dev --config vite.config.ts",
-    "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run --passWithNoTests"
+    "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run --passWithNoTests",
+    "test:calibrate": "CALIBRATE=1 NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run src/scenarios/measurementSuite.test.ts --reporter=verbose"
   },
   "dependencies": {
     "@notention/core": "workspace:*",

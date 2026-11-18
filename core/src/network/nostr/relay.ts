@@ -40,22 +40,48 @@ export class NostrRelay {
     private readonly subscriptions = new Map<WebSocket, Map<string, Subscription>>();
     private readonly limits: RelayLimits;
     private readonly ownsServer: boolean;
-    readonly url: string;
+    private readonly host: string;
+    private readonly path: string;
+    private readonly requestedPort: number;
+    #url: string;
 
     constructor(options: RelayOptions = {}) {
         this.limits = { ...DEFAULT_LIMITS, ...options.limits };
-        const path = options.path ?? '/';
+        this.path = options.path === '/' ? '' : options.path ?? '';
+        this.host = options.host ?? '127.0.0.1';
+        this.requestedPort = options.port ?? 7000;
         this.ownsServer = !options.server;
+        const path = options.path ?? '/';
 
         this.wss = options.server
             ? new WebSocketServer({ server: options.server, path })
-            : new WebSocketServer({ port: options.port ?? 7000, host: options.host ?? '127.0.0.1', path });
+            : new WebSocketServer({ port: this.requestedPort, host: this.host, path });
 
+        this.#url = this.#buildUrl();
+        this.wss.once('listening', () => {
+            this.#url = this.#buildUrl();
+        });
         this.wss.on('connection', ws => this.handleConnection(ws));
+    }
 
-        const port = options.port ?? (this.wss.address() as { port?: number })?.port ?? 7000;
-        const host = options.host ?? '127.0.0.1';
-        this.url = `ws://${host}:${port}${path === '/' ? '' : path}`;
+    /** Current relay URL. A `port: 0` relay reports its bound port once listening. */
+    get url(): string {
+        return this.#url;
+    }
+
+    /** Resolves once the relay is listening, with the final URL. */
+    start(): Promise<string> {
+        if (this.wss.address()) return Promise.resolve(this.url);
+        return new Promise((resolve, reject) => {
+            this.wss.once('listening', () => resolve(this.url));
+            this.wss.once('error', reject);
+        });
+    }
+
+    #buildUrl(): string {
+        const address = this.wss.address();
+        const port = typeof address === 'object' && address ? address.port : this.requestedPort;
+        return `ws://${this.host}:${port}${this.path}`;
     }
 
     async close(): Promise<void> {

@@ -50,12 +50,7 @@ export default defineConfig({
         include: ['src/tests/**/*.test.ts', 'src/tests/**/*.test.tsx'],
         exclude: ['**/node_modules/**', '**/dist/**', 'test/**', '**/visual/**'],
         pool: 'threads',
-        poolOptions: {
-            threads: {
-                singleThread: true,
-                isolate: false,
-            },
-        },
+        maxWorkers: 1,
         testTimeout: 10000,
         hookTimeout: 10000,
         sequence: {

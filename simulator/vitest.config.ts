@@ -7,11 +7,6 @@ export default defineConfig({
         globals: true,
         environment: 'node',
         pool: 'forks',
-        poolOptions: {
-            forks: {
-                singleFork: true,
-            },
-        },
     },
     resolve: {
         alias: {

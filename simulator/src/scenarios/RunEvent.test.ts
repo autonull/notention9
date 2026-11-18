@@ -4,8 +4,8 @@ import { DEFAULT_ONTOLOGY } from '@notention/core';
 import { startRelay, stopRelay } from '../testRelay.js';
 import type { RunEvent, RunEventSink, Scenario } from '../types.js';
 
-const RELAY_PORT = 14447;
-const RELAY_URL = `ws://localhost:${RELAY_PORT}`;
+const RELAY_PORT = 0;
+let relayUrl = '';
 
 function createTestScenario(): Scenario {
     return {
@@ -44,7 +44,7 @@ describe('RunEvent sink (Q2)', () => {
     };
 
     beforeAll(async () => {
-        await startRelay(RELAY_PORT);
+        relayUrl = await startRelay(RELAY_PORT);
     }, 10000);
 
     afterAll(async () => {
@@ -53,7 +53,7 @@ describe('RunEvent sink (Q2)', () => {
 
     beforeEach(() => {
         events = [];
-        runner = new ScenarioRunner(RELAY_URL, DEFAULT_ONTOLOGY);
+        runner = new ScenarioRunner(relayUrl, DEFAULT_ONTOLOGY);
         runner.runEventSink = sink;
     });
 
@@ -181,7 +181,7 @@ describe('RunEvent sink (Q2)', () => {
     });
 
     it('should not emit events when sink is not set', async () => {
-        const runnerWithoutSink = new ScenarioRunner(RELAY_URL, DEFAULT_ONTOLOGY);
+        const runnerWithoutSink = new ScenarioRunner(relayUrl, DEFAULT_ONTOLOGY);
         // Don't set a sink
         
         const scenario = createTestScenario();
