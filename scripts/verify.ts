@@ -36,6 +36,9 @@ async function main(): Promise<void> {
     // L1 continued: UI unit tests (batched)
     run('pnpm test:ui', 'L1: UI unit tests (batched)');
 
+    // L1: Match quality canary (mean F1 gate)
+    run('pnpm eval:match --pass-threshold 0.75', 'L1: Match quality canary (mean F1 >= 0.75)');
+
     // L1: Param visibility check
     run('pnpm exec tsx scripts/verify-param-visibility.ts', 'L1: Strategy param visibility check');
 

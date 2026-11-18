@@ -3,7 +3,7 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
-import { commandRegistry } from './cli/Command.js';
+import { commandRegistry, type Command } from './cli/Command.js';
 import {
     OptimizeCommand,
     ReplayCommand,
@@ -46,102 +46,77 @@ commandRegistry.register(new MigrateCommand());
 commandRegistry.register(new LLMTelemetryCommand());
 
 interface ParsedFlags {
-    json: boolean;
-    a11y: boolean;
-    allowDraft: boolean;
-    simulator: boolean;
-    headless: boolean;
-    status?: string;
-    commitSha?: string;
-    scenarios?: string;
-    output?: string;
-    noReport?: boolean;
     positionals: string[];
     [key: string]: unknown;
 }
 
-function parseFlags(args: string[]): ParsedFlags {
-    const json = args.includes('--json');
-    const a11y = args.includes('--a11y');
-    const allowDraft = args.includes('--allow-draft');
-    const simulator = args.includes('--simulator');
-    const headless = args.includes('--headless');
+type OptionType = 'boolean' | 'string' | 'number';
 
-    let status: string | undefined;
-    const statusIndex = args.findIndex((r) => r === '--status');
-    if (statusIndex !== -1 && statusIndex + 1 < args.length) {
-        status = args[statusIndex + 1];
-    } else {
-        const statusFlag = args.find((r) => r.startsWith('--status='));
-        if (statusFlag) status = statusFlag.split('=')[1];
+const GLOBAL_OPTIONS: Record<string, { type: OptionType; short?: string }> = {
+    json: { type: 'boolean' },
+    a11y: { type: 'boolean' },
+    'allow-draft': { type: 'boolean' },
+    simulator: { type: 'boolean' },
+    headless: { type: 'boolean' },
+    'no-report': { type: 'boolean' },
+    status: { type: 'string' },
+    commit: { type: 'string' },
+    scenarios: { type: 'string' },
+    output: { type: 'string' },
+    input: { type: 'string' },
+};
+
+const toCamelCase = (name: string): string => name.replace(/-([a-z])/g, (_, char: string) => char.toUpperCase());
+
+/**
+ * Parse every declared option (kebab-case) and expose both spellings, because
+ * commands read either `args['allow-draft']` or `args.allowDraft`.
+ */
+function parseCommandArgs(rawArgs: string[], command: Command): ParsedFlags {
+    const types = new Map<string, OptionType>(Object.entries(GLOBAL_OPTIONS).map(([name, option]) => [name, option.type]));
+    const options: Record<string, { type: 'boolean' | 'string'; short?: string }> = Object.fromEntries(
+        Object.entries(GLOBAL_OPTIONS).map(([name, option]) => [
+            name,
+            { type: option.type === 'boolean' ? 'boolean' : 'string', ...(option.short ? { short: option.short } : {}) },
+        ])
+    );
+
+    for (const option of command.options) {
+        options[option.name] = {
+            type: option.type === 'boolean' ? 'boolean' : 'string',
+            ...(option.short ? { short: option.short } : {}),
+        };
+        types.set(option.name, option.type);
     }
 
-    let commitSha: string | undefined;
-    const commitIndex = args.findIndex((r) => r === '--commit');
-    if (commitIndex !== -1 && commitIndex + 1 < args.length) {
-        commitSha = args[commitIndex + 1];
-    } else {
-        const commitFlag = args.find((r) => r.startsWith('--commit='));
-        if (commitFlag) commitSha = commitFlag.split('=')[1];
-    }
-
-    let input: string | undefined;
-    const inputIndex = args.findIndex((r) => r === '--input');
-    if (inputIndex !== -1 && inputIndex + 1 < args.length) {
-        input = args[inputIndex + 1];
-    } else {
-        const inputFlag = args.find((r) => r.startsWith('--input='));
-        if (inputFlag) input = inputFlag.split('=')[1];
-    }
-
-    const flagSet = new Set([
-        '--json',
-        '--a11y',
-        '--allow-draft',
-        '--simulator',
-        '--headless',
-        '--status',
-        '--commit',
-        '--scenarios',
-        '--output',
-        '--input',
-        '--no-report',
-        '--threshold-match-relevance',
-        '--threshold-time-to-match',
-        '--threshold-acceptance-rate',
-        '--threshold-engagement',
-        '--threshold-dashboard-clarity',
-    ]);
-    const positionals = args.filter((r, i) => {
-        if (flagSet.has(r)) return false;
-        if (r.startsWith('--status=') || r.startsWith('--commit=')) return false;
-        if (r.startsWith('--scenarios=') || r.startsWith('--output=') || r.startsWith('--input=')) return false;
-        if (r.startsWith('--threshold-')) return false;
-        if (i === statusIndex + 1 && args[statusIndex] === '--status') return false;
-        if (i === commitIndex + 1 && args[commitIndex] === '--commit') return false;
-        if (i === inputIndex + 1 && args[inputIndex] === '--input') return false;
-        return true;
-    });
-
-    // Parse flag values into an object for easy access
-    const flags: Record<string, unknown> = { json, a11y, allowDraft, simulator, headless, status, commitSha, input };
-    const specialFlags = new Set(['status', 'commit', 'scenarios', 'output', 'input']);
-    for (const arg of args) {
-        if (arg.startsWith('--')) {
-            const [key, value] = arg.split('=');
-            const flagName = key.slice(2).replace(/-/g, '');
-            if (specialFlags.has(flagName)) continue;
-            if (value !== undefined) {
-                flags[flagName] = isNaN(Number(value)) ? value : Number(value);
-            } else if (!key.includes('=')) {
-                flags[flagName] = true;
-            }
+    // `ux-evaluate` accepts arbitrary `--threshold-<metric>` pairs.
+    for (const arg of rawArgs) {
+        if (arg.startsWith('--threshold-')) {
+            const name = arg.split('=')[0].slice(2);
+            options[name] = { type: 'string' };
+            types.set(name, 'number');
         }
     }
 
-    return { json, a11y, allowDraft, simulator, headless, status, commitSha, input, positionals, ...flags };
+    const { values } = parseArgs({ args: rawArgs, options, allowPositionals: true, strict: false });
+    const flags: ParsedFlags = { positionals: [] };
+
+    for (const [name, value] of Object.entries(values)) {
+        if (value === undefined) continue;
+        const parsed = types.get(name) === 'number' && typeof value === 'string' ? Number(value) : value;
+        flags[name] = parsed;
+        flags[toCamelCase(name)] = parsed;
+    }
+
+    return flags;
 }
 
+/** First positional is the subcommand; everything else is an argument. */
+function splitCommand(rawArgs: string[]): { subcommand?: string; rest: string[] } {
+    const { positionals } = parseArgs({ args: rawArgs, options: {}, allowPositionals: true, strict: false });
+    const [subcommand, ...rest] = positionals;
+    return { subcommand, rest };
+}
 function printHelp(): void {
     console.log(`
 Usage: pnpm optimize <command> [args]
@@ -167,27 +142,19 @@ Run 'pnpm optimize <command> --help' for command-specific options.
 
 async function main(): Promise<number> {
     const rawArgs = process.argv.slice(2);
+    const { subcommand } = splitCommand(rawArgs);
 
-    const flags = parseFlags(rawArgs);
-
-    if (flags.positionals.length === 0) {
+    if (!subcommand) {
         printHelp();
         return 0;
     }
 
-    const [subcommand, ...rest] = flags.positionals;
-
-    // Handle help for specific command
-    if (rest.includes('--help') || rest.includes('-h')) {
-        const cmd = commandRegistry.get(subcommand);
-        if (cmd) {
-            cmd.printHelp();
+    if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
+        const helpCommand = commandRegistry.get(subcommand);
+        if (helpCommand) {
+            helpCommand.printHelp();
             return 0;
         }
-    }
-
-    // Global help only if no subcommand or explicit --help with no subcommand
-    if (rawArgs.includes('--help') || rawArgs.includes('-h')) {
         printHelp();
         return 0;
     }
@@ -198,8 +165,8 @@ async function main(): Promise<number> {
         return 1;
     }
 
-    // Set positionals for the command
-    flags.positionals = rest;
+    const flags = parseCommandArgs(rawArgs, command);
+    flags.positionals = flags.positionals.slice(1);
 
     try {
         return await command.execute(flags);
