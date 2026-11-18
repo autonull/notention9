@@ -105,7 +105,37 @@ const nodeEntries = [
   'src/ontology/domains.ts',
   'src/ontology/domains.facets.ts',
   'src/ontology/schema.ts',
+  'src/ontology/ontology.default.ts',
+  'src/routing/index.ts',
   'src/network/index.ts',
+  'src/identity/index.ts',
+  // Telemetry
+  'src/telemetry/syncHealth.ts',
+  'src/telemetry/matchDigest.ts',
+  'src/telemetry/llmTelemetry.ts',
+  'src/telemetry/types.ts',
+  'src/telemetry/revisionDriver.ts',
+  // Extensibility
+  'src/suggestions/index.ts',
+  'src/validation/index.ts',
+  'src/config/index.ts',
+  'src/events/index.ts',
+  'src/ui/index.ts',
+  // Optimizer
+  'src/optimizer/index.ts',
+  // Schemas
+  'src/schemas/index.ts',
+  // Nostr
+  'src/network/nostr/nostr.ts',
+  'src/network/nostr/privacy.ts',
+  'src/network/nostr/discovery.ts',
+  'src/network/nostr/relay.ts',
+  'src/network/nostr/protocol.ts',
+  // Fixtures & Feedback
+  'src/fixtures/index.ts',
+  'src/feedback/index.ts',
+  // Root config
+  'src/config.ts',
   'src/skills/index.ts',
   'src/extraction/index.ts',
   'src/constants/index.ts',

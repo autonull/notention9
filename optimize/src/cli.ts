@@ -16,6 +16,8 @@ import {
     MatchDigestCommand,
     EvalCanaryCommand,
     EvalMatchCommand,
+    EvalLocalCommand,
+    OntologyAuditCommand,
     EvalConfidenceCommand,
     PerfBudgetCommand,
     MigrateCommand,
@@ -40,6 +42,8 @@ commandRegistry.register(new FrictionDigestCommand());
 commandRegistry.register(new MatchDigestCommand());
 commandRegistry.register(new EvalCanaryCommand());
 commandRegistry.register(new EvalMatchCommand());
+commandRegistry.register(new EvalLocalCommand());
+commandRegistry.register(new OntologyAuditCommand());
 commandRegistry.register(new EvalConfidenceCommand());
 commandRegistry.register(new PerfBudgetCommand());
 commandRegistry.register(new MigrateCommand());

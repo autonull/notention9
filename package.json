@@ -50,6 +50,8 @@
     "optimize:check": "node scripts/check-optimize-locators.mjs",
     "loop": "tsx optimize/src/loop/cli.ts",
     "eval:match": "tsx optimize/src/cli.ts eval:match",
+    "eval:local": "tsx optimize/src/cli.ts eval:local",
+    "ontology:audit": "tsx optimize/src/cli.ts ontology:audit",
     "sim:calibrate": "pnpm --filter @notention/simulator test:calibrate",
     "prompts:eval": "tsx optimize/src/prompts/cli.ts",
     "friction:digest": "tsx optimize/src/cli.ts friction:digest",

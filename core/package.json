@@ -300,6 +300,11 @@
       "node": "./dist/schemas/generated/seam-definitions.js",
       "browser": "./dist/browser/schemas/generated/seam-definitions.js"
     },
+    "./routing": {
+      "import": "./dist/routing/index.js",
+      "node": "./dist/routing/index.js",
+      "browser": "./dist/browser/routing/index.js"
+    },
     "./fixtures/qualityCaseNotes": {
       "import": "./dist/fixtures/qualityCaseNotes.js",
       "node": "./dist/fixtures/qualityCaseNotes.js",
