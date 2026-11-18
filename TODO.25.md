@@ -1375,8 +1375,9 @@ pnpm eval:verify-manifest
 - **Task-first audit** (same run): 30/30 cases pass. One primary per view, no duplicate screen-level verbs, primaries visible without scrolling. Notes-list "Publish" at tab 9 (desktop/mobile) remains the deepest primary; chat has 2 primaries (Add identity + Send) by design; map primary at tab 11 is far but wireframe-mandated.
 - **Axe accessibility**: 11/11 views pass.
 - **All gates pass**: space utilization, task-first, accessibility.
-- **All tests pass**: core 934, UI 42 files, optimize 127, simulator 116, space:audit 2/2, taxonomy:coverage 24/24, eval:verify-manifest.
-- **Remaining**: W11.7 stranger test (blocked on human — needs a fresh profile to run `pnpm stranger-test` and attach install→capture→match→export timing).
+- **Tests pass**: core 934, UI 42 files, optimize 127, space:audit 2/2, taxonomy:coverage 24/24, eval:verify-manifest.
+- **Simulator tests**: 7/38 measurement baseline tests fail (regression, golden-path, gig-economy, freelance-marketplace, hiring-pipeline, project-collaboration, mentorship-network) — the improved match quality (F1 0.561→0.803) produces more matches than stored baselines expect. Baselines for 4 scenarios were updated on 2026-11-18; 5 scenarios need baseline updates. EADDRINUSE port conflicts also occur (relay port 14444).
+- **Remaining**: W11.7 stranger test (blocked on human — needs a fresh profile to run `pnpm stranger-test` and attach install→capture→match→export timing); simulator baseline updates for 5 scenarios.
 
 ---
 
