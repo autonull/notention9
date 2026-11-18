@@ -272,24 +272,36 @@ the next lever if the ratio gate ever needs to clear on that viewport.
 |---|---|
 | Rows `p-3`, gap `space-y-2`; mobile ratio 0.528, waste 0.115 | Rows `p-2 md:p-3`, gap `space-y-1.5`; mobile ratio 0.552, waste 0.063 | `LabelsTab.tsx`; labels mobile screenshot |
 
-## Ranked residual work
+## Ranked residual work (wireframe vs reality)
 
-Ranked by (gate distance × frequency) ÷ risk.
+Ranked by (gate distance × frequency) ÷ risk. **Bold** = wireframe not met.
 
-1. **Calendar surface.** Month cells stay mostly empty when the workspace has two dated
-   notes; the waste gate exempts calendars. Do not fake density. Add dated demo notes so the
-   sample workspace demonstrates the surface, and keep the next-event jump.
-2. **Capture submit affordance.** ✅ **DONE** — QuickCapture submit button now always visible
-   (variant="primary") instead of disabled until text exists; reads as primary on first paint.
-3. **Notes list primary.** ✅ **DONE** — Added one capture entry (+ icon button) in notes-list
-   header; no second "New Note" verb — reuses inbox capture flow.
-4. **Labels mobile.** ✅ **DONE** — Reduced row padding (p-3 → p-2 md:p-3) and gap
-   (space-y-2 → space-y-1.5); mobile ratio 0.528 → 0.552, waste 0.115 → 0.063.
-5. **Demo dates.** ✅ **DONE** — `demoWorkspace.ts` now uses relative offsets
-   (startOffsetDays/deadlineOffsetDays) instead of frozen October 2026 dates; Timeline shows
-   events in current month.
-6. **W11.7 stranger test** still needs a human with a fresh profile.
-7. **Match quality** (`pnpm optimize eval:match`, 15/22 pass, mean F1=0.561) is unchanged and outside W12.
+1. **Chat identity wall.** Wireframe: compact banner (≤72px) + read-only content. Reality: full-screen `EmptyState` wall (ratio 0.146, footprint 0.342). Primary = "Set up identity" (not chat).
+2. **Network primary buried.** Wireframe: read-only banner + [Add identity] ≤72px. Reality: compact prompt OK, but primary "Check Connection Settings" at tab 17 (740px down). Feed is content but no primary action on it.
+3. **Timeline empty grid.** Wireframe: opens on month with events, never empty month. Reality: 2 events in month → 90% empty cells (ratio 0.307, waste 0.329 exempt). Add more demo events across current month.
+4. **Responses empty state.** Wireframe: not defined. Reality: empty state with "Find a match" button that navigates away (ratio 0.16). Primary should be in-view action.
+5. **Notes-grid no primary.** Wireframe: not defined. Reality: no primary action detected (primaries=0). Add capture entry in header like notes-list.
+6. **Trash no primary.** Wireframe: not defined. Reality: no primary action detected (primaries=0). Empty state only.
+7. **Map no primary.** Wireframe: full-bleed map, controls top-left. Reality: no primary action detected (primaries=0). Add "Drop pin" or search.
+8. **Calendar demo density.** Month cells stay mostly empty with only 2 events; waste gate exempts calendars but wireframe expects events visible. Add demo events across current month.
+9. **W11.7 stranger test** still needs a human with a fresh profile.
+10. **Match quality** (`pnpm optimize eval:match`, 15/22 pass, mean F1=0.561) is unchanged and outside W12.
+
+---
+
+## Planned convergence rounds (W12.3c–W12.3f)
+
+| Round | View | Wireframe gap | Fix |
+|-------|------|---------------|-----|
+| W12.3c | Chat | Full-screen wall → compact banner + read-first | Replace `EmptyState` with `ConnectIdentityPrompt` + show contact list read-only |
+| W12.3d | Network | Primary at tab 17 → visible primary | Move "Check Connection Settings" to banner; feed row tap = primary |
+| W12.3e | Timeline | 90% empty grid → events visible | Add 8–10 demo events across current month in `demoWorkspace.ts` |
+| W12.3f | Responses | Empty state navigates away → in-view primary | Show recent matches from inbox as read-only cards; "Respond" as primary |
+| W12.3g | Notes-grid | No primary → capture entry | Add "+" capture button in header (like notes-list) |
+| W12.3h | Trash | No primary → restore action | Show "Restore" as primary on hover; empty state content-sized |
+| W12.3i | Map | No primary → drop pin | Add floating "Drop pin" FAB; tap map = primary |
+
+Each round: before/after screenshot diff + gates. W12.4 re-audit after all rounds.
 
 ## Approval gate
 

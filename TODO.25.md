@@ -677,7 +677,18 @@ For every screenshot, record:
   diff: (a) capture submit affordance with text present; (b) one capture entry in the notes-list
   header (no second "New Note" verb); (c) labels mobile row height. Gates in
   `doc/UI_CONVERGENCE.md` §Ranked residual work.
-- [ ] **W12.4 Re-audit + human stranger test.** Same artifacts; attach timing and final verdict.
+- [ ] **W12.3c Convergence round 5 — Chat.** Replace full-screen identity wall with compact
+  banner (≤72px) + read-only contact list; primary becomes "New message" not "Set up identity".
+- [ ] **W12.3d Convergence round 6 — Network.** Primary "Check Connection Settings" at tab 17
+  → move to banner; feed row tap = primary action.
+- [ ] **W12.3e Convergence round 7 — Timeline.** Add 8–10 demo events across current month
+  so calendar opens on month with visible events (wireframe: never empty month).
+- [ ] **W12.3f Convergence round 8 — Responses.** Empty state navigates away → show recent
+  inbox matches as read-only cards; "Respond" as in-view primary.
+- [ ] **W12.3g Convergence round 9 — Notes-grid.** Add "+" capture entry in header (like notes-list).
+- [ ] **W12.3h Convergence round 10 — Trash.** Add "Restore" as primary on hover; content-sized empty state.
+- [ ] **W12.3i Convergence round 11 — Map.** Add floating "Drop pin" FAB; tap map = primary.
+- [ ] **W12.4 Re-audit + human stranger test.** Compare all views to wireframes; attach timing and final verdict.
 
 ### Definition of converged (for W12)
 
@@ -1321,6 +1332,19 @@ pnpm eval:verify-manifest
 - **Demo dates**: `demoWorkspace.ts` now uses relative offsets (startOffsetDays/deadlineOffsetDays) instead of frozen October 2026 dates; Timeline now shows events in current month.
 - **All tests pass**: core 934, UI 42 files, optimize 127, space:audit 2/2, taxonomy:coverage 24/24.
 - **Gates**: 30/30 space-utilization captures pass (0 stretch, 0 horizontal overflow); 30/30 task-first audit cases pass; 11/11 axe views pass.
+
+### 2026-11-18 — Wireframe vs reality audit (post-W12.3b)
+**Metrics pass but wireframes not met for 7 views:**
+- Chat: full-screen wall (ratio 0.146) vs wireframe compact banner + read-first
+- Network: primary buried at tab 17 (740px) vs wireframe banner + feed primary
+- Timeline: 90% empty grid (ratio 0.307) vs wireframe month with events
+- Responses: empty state navigates away (ratio 0.16) vs in-view primary
+- Notes-grid: no primary (primaries=0) vs wireframe capture entry
+- Trash: no primary (primaries=0) vs wireframe restore action
+- Map: no primary (primaries=0) vs wireframe drop pin FAB
+
+**Planned W12.3c–W12.3i** (9 additional convergence rounds) to close wireframe gaps before W12.4 re-audit.
+**Remaining**: W11.7 stranger test (blocked on human), W12.3c–W12.3i (9 rounds), W12.4 re-audit, match cases 012/013/016/017/019/020/022 (7/22 below gate).
 
 ---
 
