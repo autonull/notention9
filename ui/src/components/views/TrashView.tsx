@@ -72,6 +72,7 @@ export function TrashView() {
                         icon={TrashIcon}
                         title="Trash is empty"
                         description="Notes you delete appear here until you restore or permanently remove them."
+                        action={<Button variant="primary" onClick={() => { window.dispatchEvent(new CustomEvent('focus-capture')); }}>Create a note</Button>}
                     />
                 ) : (
                     <div className="space-y-2">
