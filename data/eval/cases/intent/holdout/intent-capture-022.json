@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-022",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Offering free coding mentorship for beginners, weekends 10am-2pm, virtual or library",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "schedule", "price"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["education", "volunteering", "schedule", "free"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-88"
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "ece": 0.1327272727272726,
+  "bins": [
+    {
+      "binStart": 0.5,
+      "binEnd": 0.6000000000000001,
+      "count": 13,
+      "accuracy": 1,
+      "avgConfidence": 0.5999999999999999
+    },
+    {
+      "binStart": 0.9,
+      "binEnd": 1,
+      "count": 42,
+      "accuracy": 1,
+      "avgConfidence": 0.9500000000000002
+    }
+  ],
+  "overallAccuracy": 1,
+  "overallAvgConfidence": 0.8672727272727278,
+  "totalSamples": 55,
+  "byStage": {
+    "deterministic": {
+      "ece": 0.04999999999999982,
+      "bins": [
+        {
+          "binStart": 0.9,
+          "binEnd": 1,
+          "count": 42,
+          "accuracy": 1,
+          "avgConfidence": 0.9500000000000002
+        }
+      ],
+      "overallAccuracy": 1,
+      "overallAvgConfidence": 0.9500000000000002,
+      "totalSamples": 42,
+      "byStage": {},
+      "calibrationMap": []
+    },
+    "pattern": {
+      "ece": 0,
+      "bins": [],
+      "overallAccuracy": 0,
+      "overallAvgConfidence": 0,
+      "totalSamples": 0,
+      "byStage": {},
+      "calibrationMap": []
+    },
+    "ai": {
+      "ece": 0,
+      "bins": [],
+      "overallAccuracy": 0,
+      "overallAvgConfidence": 0,
+      "totalSamples": 0,
+      "byStage": {},
+      "calibrationMap": []
+    },
+    "fuzzy": {
+      "ece": 0.40000000000000013,
+      "bins": [
+        {
+          "binStart": 0.5,
+          "binEnd": 0.6000000000000001,
+          "count": 13,
+          "accuracy": 1,
+          "avgConfidence": 0.5999999999999999
+        }
+      ],
+      "overallAccuracy": 1,
+      "overallAvgConfidence": 0.5999999999999999,
+      "totalSamples": 13,
+      "byStage": {},
+      "calibrationMap": []
+    }
+  },
+  "calibrationMap": [
+    {
+      "raw": 0,
+      "calibrated": 0
+    },
+    {
+      "raw": 0.5999999999999999,
+      "calibrated": 1
+    },
+    {
+      "raw": 0.9500000000000002,
+      "calibrated": 1
+    },
+    {
+      "raw": 1,
+      "calibrated": 1
+    }
+  ]
+}

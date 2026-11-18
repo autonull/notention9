@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-024",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need a personal chef for weekly meal prep, vegetarian, gluten-free, budget 200/week",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["personal chef", "meal prep"] },
+    { "key": "dietary", "operator": "contains", "values": ["vegetarian", "gluten-free"] },
+    { "key": "frequency", "operator": "contains", "values": ["weekly"] },
+    { "key": "budget", "operator": "less than", "values": ["200 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.89
+  },
+  "tags": ["food", "health", "dietary", "schedule", "budget"]
+}

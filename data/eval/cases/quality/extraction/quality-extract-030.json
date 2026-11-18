@@ -1,0 +1,17 @@
+{
+  "id": "quality-extract-030",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need help setting up smart home devices: lights, thermostat, locks. Budget 150 for setup.",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["smart home", "tech setup"] },
+    { "key": "item", "operator": "contains", "values": ["lights", "thermostat", "locks"] },
+    { "key": "budget", "operator": "less than", "values": ["150 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.87
+  },
+  "tags": ["tech", "home", "budget", "setup"]
+}

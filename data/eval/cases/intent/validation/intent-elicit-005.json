@@ -1,0 +1,22 @@
+{
+  "id": "intent-elicit-005",
+  "family": "intent",
+  "intent": "elicit_property",
+  "prompt": "Add schedule preference to the tennis coaching request",
+  "seed": {
+    "notes": [{ "id": "note-5", "type": "need", "properties": { "need": "tennis coach", "level": "intermediate" } }],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["schedule"],
+    "outcome": "elicited"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["sports", "schedule", "property"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-37"
+  }
+}

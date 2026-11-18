@@ -1,0 +1,19 @@
+{
+  "id": "quality-extract-055",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Client needs specialist care for trauma therapy. Trust source: primary provider. Urgency: immediate. Referral quality: high. Feedback loop: closed.",
+  "expected": [
+    { "key": "role", "operator": "is", "values": ["client"] },
+    { "key": "need", "operator": "contains", "values": ["specialist-care", "trauma-therapy"] },
+    { "key": "trustSource", "operator": "contains", "values": ["primary-provider"] },
+    { "key": "urgency", "operator": "contains", "values": ["immediate"] },
+    { "key": "referralQuality", "operator": "is", "values": ["high"] },
+    { "key": "feedbackLoop", "operator": "is", "values": ["closed"] }
+  ],
+  "forbidden": [
+    { "key": "urgency", "operator": "contains", "values": ["scheduled"] }
+  ],
+  "labels": { "annotators": 2, "agreement": 0.9 },
+  "tags": ["referral", "chain", "trust", "specialist", "healthcare"]
+}

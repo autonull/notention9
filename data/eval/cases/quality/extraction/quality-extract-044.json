@@ -1,0 +1,15 @@
+{
+  "id": "quality-extract-044",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Community water distribution: Coordinators needed at 3 distribution points. Supplies: 500L water, 200 food packages, 50 medical kits. Volunteers with vehicles preferred. Daily 8am-6pm.",
+  "expected": [
+    { "key": "resourceType", "operator": "contains", "values": ["water", "food", "medical"] },
+    { "key": "quantity", "operator": "greater than", "values": ["100"] },
+    { "key": "schedule", "operator": "contains", "values": ["daily 8am-6pm"] },
+    { "key": "vehicle", "operator": "contains", "values": ["preferred"] }
+  ],
+  "forbidden": [],
+  "labels": { "annotators": 2, "agreement": 0.9 },
+  "tags": ["survival", "resource-distribution", "commons", "crisis-response"]
+}

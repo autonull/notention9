@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-035",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Need someone to grocery shop for homebound neighbor, deliver by 2pm, budget 30 + cost of groceries",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["grocery shopper", "shopping", "delivery"] },
+    { "key": "recipient", "operator": "contains", "values": ["homebound", "neighbor", "elderly"] },
+    { "key": "deadline", "operator": "contains", "values": ["2pm"] },
+    { "key": "budget", "operator": "less than", "values": ["30 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.89
+  },
+  "tags": ["care", "non-market", "elderly", "deadline", "budget", "groceries"]
+}

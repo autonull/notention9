@@ -1,0 +1,26 @@
+{
+  "id": "intent-match-005",
+  "family": "intent",
+  "intent": "match_local",
+  "prompt": "Find free coding mentors available weekends",
+  "seed": {
+    "notes": [
+      { "id": "note-mentor-001", "type": "offer", "properties": { "role": "coding mentor", "schedule": "weekends", "price": "free" } },
+      { "id": "note-mentor-002", "type": "offer", "properties": { "role": "programming tutor", "schedule": "weekday evenings", "price": "30 per hour" } }
+    ],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["matches"],
+    "outcome": "matched",
+    "matchMinRecall": 0.5
+  },
+  "metrics": ["completion", "steps", "recall", "precision"],
+  "tags": ["education", "volunteering", "matching", "free"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-97"
+  }
+}

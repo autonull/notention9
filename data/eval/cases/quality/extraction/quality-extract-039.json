@@ -1,0 +1,15 @@
+{
+  "id": "quality-extract-039",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "From: alice@example.com To: bob@example.com Cc: team@example.com Subject: Project kickoff meeting tomorrow 10am",
+  "expected": [
+    { "key": "from", "operator": "is", "values": ["alice@example.com"] },
+    { "key": "to", "operator": "is", "values": ["bob@example.com"] },
+    { "key": "cc", "operator": "is", "values": ["team@example.com"] },
+    { "key": "subject", "operator": "contains", "values": ["project kickoff meeting"] }
+  ],
+  "forbidden": [],
+  "labels": { "annotators": 2, "agreement": 0.95 },
+  "tags": ["communication", "email", "schedule"]
+}

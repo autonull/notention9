@@ -1,0 +1,15 @@
+{
+  "id": "quality-extract-046",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Generational stewardship: Plot steward is Ana, garden-bed is north, harvest-share is 30%. Lineage: passed from grandmother Maria. Stewardship duties: soil health, seed saving, community distribution.",
+  "expected": [
+    { "key": "steward", "operator": "is", "values": ["Ana"] },
+    { "key": "gardenBed", "operator": "is", "values": ["north"] },
+    { "key": "harvestShare", "operator": "is", "values": ["30%"] },
+    { "key": "lineage", "operator": "contains", "values": ["grandmother Maria"] }
+  ],
+  "forbidden": [],
+  "labels": { "annotators": 2, "agreement": 0.91 },
+  "tags": ["generational", "generational-stewardship", "communal", "land"]
+}

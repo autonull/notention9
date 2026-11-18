@@ -1,0 +1,3266 @@
+[
+  {
+    "id": "note_mwbqjkze_8rr43lo",
+    "title": "Need mural artist: exterior, 20x30ft, community theme, weather-resistant, 2-week...",
+    "content": "Need mural artist: exterior, 20x30ft, community theme, weather-resistant, 2-week timeline. Budget $5000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "5000 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 5000,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T14:05:14.216Z",
+    "updatedAt": "2026-10-19T14:05:14.216Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_3cnm21z",
+    "title": "Seeking illustrator: children's book, 32 pages, watercolor style, character desi...",
+    "content": "Seeking illustrator: children's book, 32 pages, watercolor style, character design, print-ready. $3000-5000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T09:18:48.963Z",
+    "updatedAt": "2026-10-23T09:18:48.963Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_dsh908c",
+    "title": "Looking for graphic designer: brand identity, logo, guidelines, collateral, webs...",
+    "content": "Looking for graphic designer: brand identity, logo, guidelines, collateral, website assets. $2000-4000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-16T16:21:50.930Z",
+    "updatedAt": "2026-10-16T16:21:50.930Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_9zhe3dx",
+    "title": "Want photographer: wedding, documentary style, 8hrs, digital + album, engagement...",
+    "content": "Want photographer: wedding, documentary style, 8hrs, digital + album, engagement session. $2500-4000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T02:32:42.403Z",
+    "updatedAt": "2026-10-25T02:32:42.403Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_yfnojw1",
+    "title": "Need videographer: short film, 10min, 4K, color grade, sound design, festival de...",
+    "content": "Need videographer: short film, 10min, 4K, color grade, sound design, festival delivery. $3000-6000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T21:07:33.994Z",
+    "updatedAt": "2026-10-21T21:07:33.994Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_97wetzz",
+    "title": "Seeking ceramicist: custom dinnerware, 12 place settings, stoneware, glaze specs...",
+    "content": "Seeking ceramicist: custom dinnerware, 12 place settings, stoneware, glaze specs, food-safe. $2000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T10:39:00.512Z",
+    "updatedAt": "2026-11-09T10:39:00.512Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_uheo1cv",
+    "title": "Looking for glassblower: lighting fixtures, 6 pendants, blown glass, custom colo...",
+    "content": "Looking for glassblower: lighting fixtures, 6 pendants, blown glass, custom colors, UL listed. $3000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T18:25:35.886Z",
+    "updatedAt": "2026-11-08T18:25:35.886Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_tm0hnkw",
+    "title": "Want textile artist: wall hanging, 6x8ft, natural dyes, wool/silk, commission fo...",
+    "content": "Want textile artist: wall hanging, 6x8ft, natural dyes, wool/silk, commission for lobby. $4000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T03:53:12.824Z",
+    "updatedAt": "2026-10-18T03:53:12.824Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_u3k0oz1",
+    "title": "Seeking sculptor: bronze, life-size, figurative, patina, installation, public ar...",
+    "content": "Seeking sculptor: bronze, life-size, figurative, patina, installation, public art. $25000+.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T06:54:16.223Z",
+    "updatedAt": "2026-10-19T06:54:16.223Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_j3iaozw",
+    "title": "Need calligrapher: wedding envelopes, 200, copperplate, white ink, dark paper, 2...",
+    "content": "Need calligrapher: wedding envelopes, 200, copperplate, white ink, dark paper, 2-week turnaround. $500.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T09:21:47.634Z",
+    "updatedAt": "2026-10-21T09:21:47.634Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_m9ehcu9",
+    "title": "Muralist: 20+ public murals, exterior/interior, community engagement, lift/insur...",
+    "content": "Muralist: 20+ public murals, exterior/interior, community engagement, lift/insurance. $25/sq ft.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T16:19:02.925Z",
+    "updatedAt": "2026-10-28T16:19:02.925Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_hhbmg2w",
+    "title": "Illustrator: children's books, editorial, surface design, watercolor/ink/digital...",
+    "content": "Illustrator: children's books, editorial, surface design, watercolor/ink/digital. $75/hr, $3k/book.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-16T21:53:47.694Z",
+    "updatedAt": "2026-10-16T21:53:47.694Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_z9x4ujd",
+    "title": "Graphic designer: 15 yrs, branding, packaging, web, print, motion, strategy. $10...",
+    "content": "Graphic designer: 15 yrs, branding, packaging, web, print, motion, strategy. $100/hr, project-based.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T20:40:49.953Z",
+    "updatedAt": "2026-11-08T20:40:49.953Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_i3ye6pu",
+    "title": "Photographer: weddings, portraits, commercial, film+digital, albums, galleries. ...",
+    "content": "Photographer: weddings, portraits, commercial, film+digital, albums, galleries. $3000/wedding.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T19:43:03.651Z",
+    "updatedAt": "2026-10-13T19:43:03.651Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_zygaodw",
+    "title": "Videographer: documentary, commercial, music, drone, 4K, premiere, color, sound....",
+    "content": "Videographer: documentary, commercial, music, drone, 4K, premiere, color, sound. $200/hr.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T14:53:20.831Z",
+    "updatedAt": "2026-10-17T14:53:20.831Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_kxwr3zn",
+    "title": "Ceramicist: production pottery, custom orders, glazes, kiln, shipping, wholesale...",
+    "content": "Ceramicist: production pottery, custom orders, glazes, kiln, shipping, wholesale. $50-200/piece.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T03:50:53.352Z",
+    "updatedAt": "2026-11-01T03:50:53.352Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_4d1lrzg",
+    "title": "Glassblower: studio, lighting, sculpture, vessels, classes, commissions, gallery...",
+    "content": "Glassblower: studio, lighting, sculpture, vessels, classes, commissions, gallery representation. $150/hr.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T12:23:04.585Z",
+    "updatedAt": "2026-11-05T12:23:04.585Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_3f35sak",
+    "title": "Textile artist: weaving, dyeing, felting, embroidery, commissions, teaching, exh...",
+    "content": "Textile artist: weaving, dyeing, felting, embroidery, commissions, teaching, exhibitions. $100/hr.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-12T20:07:27.460Z",
+    "updatedAt": "2026-10-12T20:07:27.460Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_2qgtlyj",
+    "title": "Sculptor: bronze, steel, stone, wood, public art, maquette, foundry, installatio...",
+    "content": "Sculptor: bronze, steel, stone, wood, public art, maquette, foundry, installation. $50k+ typical.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T03:25:51.398Z",
+    "updatedAt": "2026-10-18T03:25:51.398Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_3y068hm",
+    "title": "Calligrapher: copperplate, spencerian, modern, envelopes, signs, logos, workshop...",
+    "content": "Calligrapher: copperplate, spencerian, modern, envelopes, signs, logos, workshops. $3/env, $150/hr.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T14:12:44.716Z",
+    "updatedAt": "2026-10-28T14:12:44.716Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_pm28d96",
+    "title": "Seeking language teacher: Indigenous language, immersion, community classes, eld...",
+    "content": "Seeking language teacher: Indigenous language, immersion, community classes, elder speakers. Grant-funded.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T13:22:52.588Z",
+    "updatedAt": "2026-10-16T13:22:52.588Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_vrqq3oz",
+    "title": "Need cultural consultant: protocol, ceremony, land acknowledgment, repatriation,...",
+    "content": "Need cultural consultant: protocol, ceremony, land acknowledgment, repatriation, community liaison. Indigenous-led.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T07:01:36.952Z",
+    "updatedAt": "2026-10-13T07:01:36.952Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_ze2auvz",
+    "title": "Looking for storyteller: traditional tales, school assemblies, festivals, virtua...",
+    "content": "Looking for storyteller: traditional tales, school assemblies, festivals, virtual, all ages. Honorarium.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T11:38:14.127Z",
+    "updatedAt": "2026-10-24T11:38:14.127Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_00erbrj",
+    "title": "Want drum maker: hand drum, frame drum, ceremonial, natural materials, blessed. ...",
+    "content": "Want drum maker: hand drum, frame drum, ceremonial, natural materials, blessed. Cultural protocols.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-11T04:48:49.338Z",
+    "updatedAt": "2026-11-11T04:48:49.338Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_w5r2h7j",
+    "title": "Seeking regalia maker: beadwork, quillwork, ribbon, leather, dance, ceremony, cu...",
+    "content": "Seeking regalia maker: beadwork, quillwork, ribbon, leather, dance, ceremony, custom fit. Community artist.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T00:55:33.791Z",
+    "updatedAt": "2026-11-03T00:55:33.791Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_zoyhmio",
+    "title": "Need traditional foods teacher: harvesting, processing, cooking, preservation, s...",
+    "content": "Need traditional foods teacher: harvesting, processing, cooking, preservation, seasonal rounds. Knowledge keeper.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T19:49:53.809Z",
+    "updatedAt": "2026-10-18T19:49:53.809Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_nc2bvtg",
+    "title": "Looking for plant medicine guide: identification, ethics, preparation, ceremony,...",
+    "content": "Looking for plant medicine guide: identification, ethics, preparation, ceremony, integration. Experienced, humble.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "experienced"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T14:27:07.817Z",
+    "updatedAt": "2026-11-05T14:27:07.817Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_px6s4ns",
+    "title": "Want song keeper: traditional songs, teaching, recording, language revitalizatio...",
+    "content": "Want song keeper: traditional songs, teaching, recording, language revitalization, community. Elder/knowledge holder.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T16:14:51.955Z",
+    "updatedAt": "2026-11-01T16:14:51.955Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_cxas7e7",
+    "title": "Seeking ceremony facilitator: rites of passage, seasonal, healing, community, in...",
+    "content": "Seeking ceremony facilitator: rites of passage, seasonal, healing, community, inclusive. Trained, authorized.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T18:41:52.729Z",
+    "updatedAt": "2026-10-31T18:41:52.729Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_eoajte6",
+    "title": "Need cultural center space: gatherings, classes, ceremony, archive, kitchen, acc...",
+    "content": "Need cultural center space: gatherings, classes, ceremony, archive, kitchen, accessible. Affordable, long-term.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T15:27:10.218Z",
+    "updatedAt": "2026-10-12T15:27:10.218Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_bmoeycm",
+    "title": "Language revitalization: immersion nest, master-apprentice, curriculum, document...",
+    "content": "Language revitalization: immersion nest, master-apprentice, curriculum, documentation, tech. Grant-funded.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T06:28:52.602Z",
+    "updatedAt": "2026-10-31T06:28:52.602Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_op44t7q",
+    "title": "Cultural advisor: tribal liaison, government/NGO/corp, protocol, policy, educati...",
+    "content": "Cultural advisor: tribal liaison, government/NGO/corp, protocol, policy, education, 20 yrs exp. $200/hr.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T16:24:29.333Z",
+    "updatedAt": "2026-10-25T16:24:29.333Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_ugvh6om",
+    "title": "Storyteller: traditional/contemporary, schools, libraries, festivals, Zoom, 30-6...",
+    "content": "Storyteller: traditional/contemporary, schools, libraries, festivals, Zoom, 30-60min. $300-500.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T06:56:04.400Z",
+    "updatedAt": "2026-11-08T06:56:04.400Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_kxclkgb",
+    "title": "Drum maker: elk/deer/buffalo hide, cedar/maple frame, sinew, blessed, teaching. ...",
+    "content": "Drum maker: elk/deer/buffalo hide, cedar/maple frame, sinew, blessed, teaching. $300-800.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T03:14:58.262Z",
+    "updatedAt": "2026-10-22T03:14:58.262Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_00tshmw",
+    "title": "Regalia artist: beadwork, applique, ribbon, leather, custom, repair, cultural pr...",
+    "content": "Regalia artist: beadwork, applique, ribbon, leather, custom, repair, cultural protocols. $500-5000.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T12:46:27.423Z",
+    "updatedAt": "2026-10-19T12:46:27.423Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_urou4uy",
+    "title": "Food sovereignty educator: wild foods, gardens, processing, preservation, interg...",
+    "content": "Food sovereignty educator: wild foods, gardens, processing, preservation, intergenerational. Workshops $50.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T04:40:43.377Z",
+    "updatedAt": "2026-10-14T04:40:43.377Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_qursufu",
+    "title": "Ethnobotanist: plant ID, ethics, sustainable harvest, prep, ceremony, integratio...",
+    "content": "Ethnobotanist: plant ID, ethics, sustainable harvest, prep, ceremony, integration, reciprocity. $100/hr.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T12:45:08.608Z",
+    "updatedAt": "2026-10-23T12:45:08.608Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_kcj0e3q",
+    "title": "Song carrier: traditional, teaching, recording, language, community, protocol, h...",
+    "content": "Song carrier: traditional, teaching, recording, language, community, protocol, honorarium. $200/session.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T21:32:59.534Z",
+    "updatedAt": "2026-10-30T21:32:59.534Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_92uy8pc",
+    "title": "Ceremonialist: sun dance, sweat lodge, pipe, naming, grief, seasonal, inclusive,...",
+    "content": "Ceremonialist: sun dance, sweat lodge, pipe, naming, grief, seasonal, inclusive, trained. Honorarium.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T17:42:35.577Z",
+    "updatedAt": "2026-10-13T17:42:35.577Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_my0dyjf",
+    "title": "Cultural space: 2000 sq ft, kitchen, archive, garden, accessible, sliding scale,...",
+    "content": "Cultural space: 2000 sq ft, kitchen, archive, garden, accessible, sliding scale, Indigenous-led. $500/mo.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T14:30:26.166Z",
+    "updatedAt": "2026-10-14T14:30:26.166Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkze_ivwjv3l",
+    "title": "Need wedding officiant: interfaith, secular, spiritual, custom ceremony, rehears...",
+    "content": "Need wedding officiant: interfaith, secular, spiritual, custom ceremony, rehearsal, license. $300-600.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T04:13:31.022Z",
+    "updatedAt": "2026-10-29T04:13:31.022Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_omqqmqs",
+    "title": "Seeking funeral celebrant: personalized, non-religious, green burial, home funer...",
+    "content": "Seeking funeral celebrant: personalized, non-religious, green burial, home funeral guide. $400-800.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T23:37:37.082Z",
+    "updatedAt": "2026-11-10T23:37:37.082Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkze_9yavog7",
+    "title": "Looking for baby naming: welcoming ceremony, family involvement, keepsake, sibli...",
+    "content": "Looking for baby naming: welcoming ceremony, family involvement, keepsake, siblings. $200-400.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T03:40:55.742Z",
+    "updatedAt": "2026-10-25T03:40:55.742Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356474
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_dbcg2ub",
+    "title": "Want house blessing: new home, clearing, protection, ancestors, land spirits, co...",
+    "content": "Want house blessing: new home, clearing, protection, ancestors, land spirits, community. $150-300.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T08:27:14.476Z",
+    "updatedAt": "2026-11-07T08:27:14.476Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_8fz5aop",
+    "title": "Seeking divorce ritual: closure, release, witness, transition, private or commun...",
+    "content": "Seeking divorce ritual: closure, release, witness, transition, private or community. $300-500.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T13:26:57.103Z",
+    "updatedAt": "2026-10-29T13:26:57.103Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_0zyrbz0",
+    "title": "Need coming of age: 13-16, mentorship, challenge, celebration, community recogni...",
+    "content": "Need coming of age: 13-16, mentorship, challenge, celebration, community recognition. 6-month program.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T15:06:02.834Z",
+    "updatedAt": "2026-10-26T15:06:02.834Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_tp6o3i6",
+    "title": "Looking for grief ceremony: miscarriage, infant loss, ambiguous, annual, communi...",
+    "content": "Looking for grief ceremony: miscarriage, infant loss, ambiguous, annual, community witness. Donation-based.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T22:51:50.859Z",
+    "updatedAt": "2026-10-29T22:51:50.859Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_uo9ick6",
+    "title": "Want seasonal celebration: solstice, equinox, cross-quarter, fire, feast, song, ...",
+    "content": "Want seasonal celebration: solstice, equinox, cross-quarter, fire, feast, song, story. Community-organized.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T16:34:15.235Z",
+    "updatedAt": "2026-10-28T16:34:15.235Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_fjpe25w",
+    "title": "Seeking initiation: adulthood, elderhood, leadership, mystery, ordeal, integrati...",
+    "content": "Seeking initiation: adulthood, elderhood, leadership, mystery, ordeal, integration. Cultural/traditional.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "lead"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-07T20:08:33.956Z",
+    "updatedAt": "2026-11-07T20:08:33.956Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_j9enrxx",
+    "title": "Need daily practice: meditation, prayer, movement, journaling, nature, accountab...",
+    "content": "Need daily practice: meditation, prayer, movement, journaling, nature, accountability. Group or guide.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T12:38:09.407Z",
+    "updatedAt": "2026-10-23T12:38:09.407Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_5pw4n1r",
+    "title": "Celebrant: weddings, funerals, namings, blessings, divorces, transitions, all fa...",
+    "content": "Celebrant: weddings, funerals, namings, blessings, divorces, transitions, all faiths/none. $300-800.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T08:34:13.125Z",
+    "updatedAt": "2026-10-31T08:34:13.125Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_he8z6gb",
+    "title": "Death doula: home funeral, vigil, green burial, legacy, grief companion, 24/7 on...",
+    "content": "Death doula: home funeral, vigil, green burial, legacy, grief companion, 24/7 on-call. $50/hr, packages.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-14T16:12:20.367Z",
+    "updatedAt": "2026-10-14T16:12:20.367Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_6gh7iqt",
+    "title": "Ritual designer: custom ceremonies, life transitions, organizational, community,...",
+    "content": "Ritual designer: custom ceremonies, life transitions, organizational, community, arts-integrated. $500-2000.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T21:00:55.068Z",
+    "updatedAt": "2026-10-16T21:00:55.068Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_hzdd342",
+    "title": "Grief facilitator: circles, rituals, writing, art, nature, continuing bonds, tra...",
+    "content": "Grief facilitator: circles, rituals, writing, art, nature, continuing bonds, trained. $40/sliding scale.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T10:51:51.446Z",
+    "updatedAt": "2026-10-16T10:51:51.446Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_273g3bj",
+    "title": "Seasonal celebrant: wheel of the year, fire, feast, song, story, inclusive, acce...",
+    "content": "Seasonal celebrant: wheel of the year, fire, feast, song, story, inclusive, accessible. Community donation.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T14:11:05.005Z",
+    "updatedAt": "2026-10-14T14:11:05.005Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_jrtx40a",
+    "title": "Rites of passage guide: youth/adult, wilderness, mentorship, ceremony, parent in...",
+    "content": "Rites of passage guide: youth/adult, wilderness, mentorship, ceremony, parent involvement. $2000/program.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T02:46:17.527Z",
+    "updatedAt": "2026-10-31T02:46:17.527Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_ql9gdu2",
+    "title": "End-of-life doula: planning, vigil, legacy, grief, home funeral, green burial, s...",
+    "content": "End-of-life doula: planning, vigil, legacy, grief, home funeral, green burial, sliding scale. $50/hr.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T23:58:34.904Z",
+    "updatedAt": "2026-11-08T23:58:34.904Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_6c3360b",
+    "title": "Ceremony musician: harp, guitar, voice, chant, mantra, improvisation, sensitive,...",
+    "content": "Ceremony musician: harp, guitar, voice, chant, mantra, improvisation, sensitive, amplified. $200/event.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T06:03:42.516Z",
+    "updatedAt": "2026-11-05T06:03:42.516Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_60dxjro",
+    "title": "Ritual artist: altars, mandalas, sand painting, flower, fire, impermanent, cerem...",
+    "content": "Ritual artist: altars, mandalas, sand painting, flower, fire, impermanent, ceremonial. $300-1000.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T14:53:37.510Z",
+    "updatedAt": "2026-11-06T14:53:37.510Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_cngqyxi",
+    "title": "Practice leader: meditation, yoga, chant, walking, writing, nature, daily/weekly...",
+    "content": "Practice leader: meditation, yoga, chant, walking, writing, nature, daily/weekly, donation. $10-20/session.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "lead"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T11:20:56.879Z",
+    "updatedAt": "2026-11-03T11:20:56.879Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_fz3thn7",
+    "title": "Seeking game night host: board games, TTRPG, card, social deduction, weekly, inc...",
+    "content": "Seeking game night host: board games, TTRPG, card, social deduction, weekly, inclusive. Snacks provided.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T00:29:41.783Z",
+    "updatedAt": "2026-11-05T00:29:41.783Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_sv0vith",
+    "title": "Need D&D group: 5e/PF2e/OSR, weekly, roleplay-heavy, safety tools, LGBTQ+ friend...",
+    "content": "Need D&D group: 5e/PF2e/OSR, weekly, roleplay-heavy, safety tools, LGBTQ+ friendly. Experienced DM.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "experienced"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T19:15:49.577Z",
+    "updatedAt": "2026-10-22T19:15:49.577Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_9dhhdn4",
+    "title": "Looking for LARP: boffer/nordic/chamber, monthly, costuming, narrative, communit...",
+    "content": "Looking for LARP: boffer/nordic/chamber, monthly, costuming, narrative, community. Newbie welcome.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T14:26:52.521Z",
+    "updatedAt": "2026-11-03T14:26:52.521Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_scm0qcq",
+    "title": "Want escape room: mobile, corporate/private, 60min, 4-8 people, puzzle design, s...",
+    "content": "Want escape room: mobile, corporate/private, 60min, 4-8 people, puzzle design, setup/teardown. $300-500.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T22:10:05.917Z",
+    "updatedAt": "2026-11-05T22:10:05.917Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_jyreumg",
+    "title": "Seeking puzzle hunt: city-wide, team, 4-8hrs, physical+digital, prize, annual ev...",
+    "content": "Seeking puzzle hunt: city-wide, team, 4-8hrs, physical+digital, prize, annual event. Organizer needed.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T00:18:39.588Z",
+    "updatedAt": "2026-10-31T00:18:39.588Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_rbd74x4",
+    "title": "Need playground designer: natural, inclusive, adventure, loose parts, community ...",
+    "content": "Need playground designer: natural, inclusive, adventure, loose parts, community build. Nonprofit/school.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T21:59:32.270Z",
+    "updatedAt": "2026-11-10T21:59:32.270Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_41hylto",
+    "title": "Looking for toy maker: wooden, open-ended, Montessori/Waldorf, non-toxic, heirlo...",
+    "content": "Looking for toy maker: wooden, open-ended, Montessori/Waldorf, non-toxic, heirloom quality. Custom orders.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T19:40:36.663Z",
+    "updatedAt": "2026-10-14T19:40:36.663Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_erdb8l8",
+    "title": "Want festival organizer: play-focused, all ages, games, art, music, food, access...",
+    "content": "Want festival organizer: play-focused, all ages, games, art, music, food, accessibility. Grant-funded.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T07:45:23.531Z",
+    "updatedAt": "2026-10-13T07:45:23.531Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_br1iyig",
+    "title": "Seeking recreation therapist: adaptive sports, inclusive play, disability, commu...",
+    "content": "Seeking recreation therapist: adaptive sports, inclusive play, disability, community integration. Certified.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T02:51:36.634Z",
+    "updatedAt": "2026-11-08T02:51:36.634Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_gy7suwd",
+    "title": "Need play space: indoor, all-weather, climbing, building, sensory, drop-in, slid...",
+    "content": "Need play space: indoor, all-weather, climbing, building, sensory, drop-in, sliding scale. Community-run.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-01T23:07:17.286Z",
+    "updatedAt": "2026-11-01T23:07:17.286Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_5jirscg",
+    "title": "Game cafe: 500+ games, TTRPG library, food/drink, events, private rooms, members...",
+    "content": "Game cafe: 500+ games, TTRPG library, food/drink, events, private rooms, membership. $5/hr, $20/day.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T02:02:46.414Z",
+    "updatedAt": "2026-11-08T02:02:46.414Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_323xasc",
+    "title": "D&D DM: professional, 10 yrs, custom worlds, safety tools, virtual/in-person, 4-...",
+    "content": "D&D DM: professional, 10 yrs, custom worlds, safety tools, virtual/in-person, 4-6 players. $25/player/session.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T14:36:37.087Z",
+    "updatedAt": "2026-10-27T14:36:37.087Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_pn6euav",
+    "title": "LARP organizer: 20 yrs, boffer/nordic, costuming, props, safety, inclusion, annu...",
+    "content": "LARP organizer: 20 yrs, boffer/nordic, costuming, props, safety, inclusion, annual campaign. $50-200/event.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T07:01:29.284Z",
+    "updatedAt": "2026-10-31T07:01:29.284Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_gnv6mv1",
+    "title": "Escape room designer: custom, mobile, corporate/edu/private, 60min, 2-10 players...",
+    "content": "Escape room designer: custom, mobile, corporate/edu/private, 60min, 2-10 players, debrief. $400/event.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T18:17:28.009Z",
+    "updatedAt": "2026-10-29T18:17:28.009Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_zvbgbg2",
+    "title": "Puzzle hunt creator: MIT Mystery Hunt alum, city/campus/corporate, tech+physical...",
+    "content": "Puzzle hunt creator: MIT Mystery Hunt alum, city/campus/corporate, tech+physical, prizes. $2000+.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T01:40:30.927Z",
+    "updatedAt": "2026-11-02T01:40:30.927Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_foe95qr",
+    "title": "Playscape designer: natural, adventure, loose parts, inclusive, community build,...",
+    "content": "Playscape designer: natural, adventure, loose parts, inclusive, community build, grant writing. $5000+.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T00:27:59.011Z",
+    "updatedAt": "2026-10-24T00:27:59.011Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_bwriez8",
+    "title": "Toy maker: wooden, Waldorf, open-ended, non-toxic, heirloom, custom, wholesale. ...",
+    "content": "Toy maker: wooden, Waldorf, open-ended, non-toxic, heirloom, custom, wholesale. $30-200.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T05:20:20.049Z",
+    "updatedAt": "2026-11-09T05:20:20.049Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_dugekmy",
+    "title": "Festival producer: play/art/music, 500-5000, accessibility, sustainability, comm...",
+    "content": "Festival producer: play/art/music, 500-5000, accessibility, sustainability, community, grants. $10k-100k.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T21:37:10.316Z",
+    "updatedAt": "2026-10-28T21:37:10.316Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_b53utx9",
+    "title": "Rec therapist: CTRS, adaptive, inclusive, disability, aging, veterans, community...",
+    "content": "Rec therapist: CTRS, adaptive, inclusive, disability, aging, veterans, community, outcomes. $75/hr.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-07T03:26:51.146Z",
+    "updatedAt": "2026-11-07T03:26:51.146Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_05a1qag",
+    "title": "Play space operator: 3000 sq ft, climbing, building, sensory, cafe, drop-in, mem...",
+    "content": "Play space operator: 3000 sq ft, climbing, building, sensory, cafe, drop-in, membership. $15/day, $100/mo.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/d"
+        ],
+        "unit": "USD/d",
+        "quantity": {
+          "value": null,
+          "unit": "USD/d",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "d",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T12:17:05.675Z",
+    "updatedAt": "2026-10-23T12:17:05.675Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_ypu7syv",
+    "title": "Need mural artist: exterior 20x30ft, community theme, weather-resistant, 2-week ...",
+    "content": "Need mural artist: exterior 20x30ft, community theme, weather-resistant, 2-week timeline. $5000.",
+    "tags": [
+      "arts-culture",
+      "arts-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T21:28:21.360Z",
+    "updatedAt": "2026-10-12T21:28:21.360Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_fbhtnjd",
+    "title": "Muralist: 20+ public murals, exterior/interior, community engagement, lift/insur...",
+    "content": "Muralist: 20+ public murals, exterior/interior, community engagement, lift/insurance. $25/sq ft.",
+    "tags": [
+      "arts-culture",
+      "arts-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T14:51:52.327Z",
+    "updatedAt": "2026-11-06T14:51:52.327Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_cjk8dnz",
+    "title": "Seeking language teacher: Indigenous language, immersion, community classes, eld...",
+    "content": "Seeking language teacher: Indigenous language, immersion, community classes, elder speakers. Grant-funded.",
+    "tags": [
+      "arts-culture",
+      "culture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T17:28:18.474Z",
+    "updatedAt": "2026-10-25T17:28:18.474Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_vc45ia0",
+    "title": "Language revitalization: immersion nest, master-apprentice, curriculum, document...",
+    "content": "Language revitalization: immersion nest, master-apprentice, curriculum, documentation, tech. Grant-funded.",
+    "tags": [
+      "arts-culture",
+      "culture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T19:38:29.874Z",
+    "updatedAt": "2026-10-27T19:38:29.874Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_ohrp42r",
+    "title": "Need wedding officiant: interfaith, secular, spiritual, custom ceremony, rehears...",
+    "content": "Need wedding officiant: interfaith, secular, spiritual, custom ceremony, rehearsal, license. $300-600.",
+    "tags": [
+      "arts-culture",
+      "ritual-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T19:11:45.986Z",
+    "updatedAt": "2026-11-08T19:11:45.986Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_hfzkmo4",
+    "title": "Celebrant: weddings, funerals, namings, blessings, divorces, transitions, all fa...",
+    "content": "Celebrant: weddings, funerals, namings, blessings, divorces, transitions, all faiths/none. $300-800.",
+    "tags": [
+      "arts-culture",
+      "ritual-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T02:24:29.278Z",
+    "updatedAt": "2026-11-01T02:24:29.278Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_muwhggx",
+    "title": "Seeking game night host: board games, TTRPG, card, social deduction, weekly, inc...",
+    "content": "Seeking game night host: board games, TTRPG, card, social deduction, weekly, inclusive. Snacks.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T11:20:55.004Z",
+    "updatedAt": "2026-10-22T11:20:55.004Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_6bbiu32",
+    "title": "Game cafe: 500+ games, TTRPG library, food/drink, events, private rooms, members...",
+    "content": "Game cafe: 500+ games, TTRPG library, food/drink, events, private rooms, membership. $5/hr.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/h"
+        ],
+        "unit": "USD/h",
+        "quantity": {
+          "value": null,
+          "unit": "USD/h",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "h",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-21T01:26:49.440Z",
+    "updatedAt": "2026-10-21T01:26:49.440Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkzf_d6kw6qc",
+    "title": "Need D&D group: 5e/PF2e/OSR, weekly, roleplay-heavy, safety tools, LGBTQ+ friend...",
+    "content": "Need D&D group: 5e/PF2e/OSR, weekly, roleplay-heavy, safety tools, LGBTQ+ friendly. Experienced DM.",
+    "tags": [
+      "arts-culture",
+      "play-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "experienced"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T02:27:23.446Z",
+    "updatedAt": "2026-10-28T02:27:23.446Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkzf_crtwlwl",
+    "title": "D&D DM: professional, 10yrs, custom worlds, safety tools, virtual/in-person, 4-6...",
+    "content": "D&D DM: professional, 10yrs, custom worlds, safety tools, virtual/in-person, 4-6 players. $25/player/session.",
+    "tags": [
+      "arts-culture",
+      "play-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T20:10:50.936Z",
+    "updatedAt": "2026-10-12T20:10:50.936Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-arts-culture",
+      "timestamp": 1794378356475
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  }
+]

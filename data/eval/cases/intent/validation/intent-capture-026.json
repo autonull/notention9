@@ -1,0 +1,22 @@
+{
+  "id": "intent-capture-026",
+  "family": "intent",
+  "intent": "capture_need",
+  "prompt": "Need math tutor for high school student Tuesdays Thursdays 4-6pm free community center",
+  "seed": {
+    "notes": [],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 2,
+    "requiredKeys": ["need", "schedule", "price"],
+    "outcome": "captured"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["education", "youth", "schedule", "free", "volunteering"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-106"
+  }
+}

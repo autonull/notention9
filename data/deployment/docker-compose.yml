@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  relay-1:
+    image: ghcr.io/nostr-dev/nostr-relay:latest
+    container_name: notention-relay-1
+    ports:
+      - "7001:7001"
+    volumes:
+      - relay1-data:/data
+    environment:
+      - RELAY_PORT=7001
+      - RELAY_DB_PATH=/data/relay.db
+      - RELAY_NAME=Notention Relay 1
+      - RELAY_DESCRIPTION=Primary relay for Notention pilot network
+      - RELAY_PUBKEY=${RELAY_1_PUBKEY}
+      - RELAY_CONTACT=${RELAY_CONTACT}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7001"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  relay-2:
+    image: ghcr.io/nostr-dev/nostr-relay:latest
+    container_name: notention-relay-2
+    ports:
+      - "7002:7002"
+    volumes:
+      - relay2-data:/data
+    environment:
+      - RELAY_PORT=7002
+      - RELAY_DB_PATH=/data/relay.db
+      - RELAY_NAME=Notention Relay 2
+      - RELAY_DESCRIPTION=Secondary relay for Notention pilot network
+      - RELAY_PUBKEY=${RELAY_2_PUBKEY}
+      - RELAY_CONTACT=${RELAY_CONTACT}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7002"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  relay-3:
+    image: ghcr.io/nostr-dev/nostr-relay:latest
+    container_name: notention-relay-3
+    ports:
+      - "7003:7003"
+    volumes:
+      - relay3-data:/data
+    environment:
+      - RELAY_PORT=7003
+      - RELAY_DB_PATH=/data/relay.db
+      - RELAY_NAME=Notention Relay 3
+      - RELAY_DESCRIPTION=Tertiary relay for Notention pilot network
+      - RELAY_PUBKEY=${RELAY_3_PUBKEY}
+      - RELAY_CONTACT=${RELAY_CONTACT}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:7003"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Local in-process relay for development/testing (no external dependency)
+  local-relay:
+    build:
+      context: ..
+      dockerfile: deployment/Dockerfile.local-relay
+    container_name: notention-local-relay
+    ports:
+      - "7000:7000"
+    environment:
+      - RELAY_PORT=7000
+    restart: unless-stopped
+
+volumes:
+  relay1-data:
+  relay2-data:
+  relay3-data:

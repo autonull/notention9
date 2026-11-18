@@ -1,0 +1,17 @@
+{
+  "id": "quality-extract-010",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Want to donate winter coats and blankets to homeless shelter by December 1st",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["donation", "donate"] },
+    { "key": "item", "operator": "contains", "values": ["winter coats", "blankets"] },
+    { "key": "deadline", "operator": "less than", "values": ["December 1"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.94
+  },
+  "tags": ["community", "non-market", "donation", "deadline", "homeless"]
+}

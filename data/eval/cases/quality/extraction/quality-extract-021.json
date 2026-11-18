@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-021",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Looking for yoga instructor for private sessions, prenatal focus, budget 80/session",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["yoga instructor", "prenatal yoga"] },
+    { "key": "focus", "operator": "contains", "values": ["prenatal", "pregnancy"] },
+    { "key": "format", "operator": "contains", "values": ["private", "one-on-one"] },
+    { "key": "budget", "operator": "less than", "values": ["80 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.87
+  },
+  "tags": ["health", "wellness", "pregnancy", "budget", "private"]
+}

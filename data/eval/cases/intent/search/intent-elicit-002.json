@@ -1,0 +1,22 @@
+{
+  "id": "intent-elicit-002",
+  "family": "intent",
+  "intent": "elicit_property",
+  "prompt": "Add a deadline to the dog walking request",
+  "seed": {
+    "notes": [{ "id": "note-1", "type": "need", "properties": { "need": "dog walker", "schedule": "weekday mornings" } }],
+    "settings": {},
+    "revisions": ["incumbent"]
+  },
+  "expected": {
+    "minProperties": 1,
+    "requiredKeys": ["deadline"],
+    "outcome": "elicited"
+  },
+  "metrics": ["completion", "steps", "corrections"],
+  "tags": ["care", "pet", "deadline", "property"],
+  "provenance": {
+    "author": "human",
+    "source": "interview-03"
+  }
+}

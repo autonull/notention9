@@ -1,0 +1,3391 @@
+[
+  {
+    "id": "note_mwbqjkyw_rjkj4u8",
+    "title": "Seeking affordable rental: 2BR/1BA, near transit, under $1500/month. Cat-friendl...",
+    "content": "Seeking affordable rental: 2BR/1BA, near transit, under $1500/month. Cat-friendly, in-unit laundry.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T00:28:18.416Z",
+    "updatedAt": "2026-10-28T00:28:18.416Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_rx0mnlp",
+    "title": "Looking for house to buy: 3BR, 0.25+ acre, zone 6 gardening, workshop/garage. Bu...",
+    "content": "Looking for house to buy: 3BR, 0.25+ acre, zone 6 gardening, workshop/garage. Budget $350k.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "350 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 350,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T07:39:44.345Z",
+    "updatedAt": "2026-10-13T07:39:44.345Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_21ecnkm",
+    "title": "Need temporary housing: 3-6 months, furnished, utilities included. Traveling nur...",
+    "content": "Need temporary housing: 3-6 months, furnished, utilities included. Traveling nurse, quiet neighborhood.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "6 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 6,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-07T21:48:18.814Z",
+    "updatedAt": "2026-11-07T21:48:18.814Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_doxq6sc",
+    "title": "Want to join a housing cooperative: shared ownership, consensus governance, comm...",
+    "content": "Want to join a housing cooperative: shared ownership, consensus governance, community meals.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-26T09:28:24.990Z",
+    "updatedAt": "2026-10-26T09:28:24.990Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_1eu11jb",
+    "title": "Seeking land for tiny house: 0.1-0.5 acre, water/septic/electric access, permiss...",
+    "content": "Seeking land for tiny house: 0.1-0.5 acre, water/septic/electric access, permissive zoning.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T22:58:35.590Z",
+    "updatedAt": "2026-10-17T22:58:35.590Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_k1ufijd",
+    "title": "Looking for roommate: 1BR in 3BR house, $800 + utilities. Clean, respectful, 420...",
+    "content": "Looking for roommate: 1BR in 3BR house, $800 + utilities. Clean, respectful, 420-friendly.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T14:28:25.871Z",
+    "updatedAt": "2026-11-08T14:28:25.871Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_2hbk1fe",
+    "title": "Need accessible housing: wheelchair ramp, roll-in shower, wide doorways. Ground ...",
+    "content": "Need accessible housing: wheelchair ramp, roll-in shower, wide doorways. Ground floor, near clinic.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-21T10:20:28.524Z",
+    "updatedAt": "2026-10-21T10:20:28.524Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_1g0ngjs",
+    "title": "Want to house-sit long-term: care for property, pets, plants. Reliable, referenc...",
+    "content": "Want to house-sit long-term: care for property, pets, plants. Reliable, references available.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T11:35:18.491Z",
+    "updatedAt": "2026-10-27T11:35:18.491Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_e13rvt8",
+    "title": "Seeking multigenerational home: separate in-law suite, shared yard, near good sc...",
+    "content": "Seeking multigenerational home: separate in-law suite, shared yard, near good schools.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T06:40:10.664Z",
+    "updatedAt": "2026-10-28T06:40:10.664Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_0a3s9if",
+    "title": "Looking for commercial-residential mix: live/work space, storefront + apartment,...",
+    "content": "Looking for commercial-residential mix: live/work space, storefront + apartment, artist-friendly.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T14:38:08.988Z",
+    "updatedAt": "2026-11-08T14:38:08.988Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_5zw0rm1",
+    "title": "Landlord offering 2BR apartment: near subway, renovated, heat/hot water included...",
+    "content": "Landlord offering 2BR apartment: near subway, renovated, heat/hot water included. $1400/month.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-31T21:47:48.451Z",
+    "updatedAt": "2026-10-31T21:47:48.451Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_54lv7sg",
+    "title": "Homeowner renting basement suite: private entrance, kitchenette, 1BR. $900/month...",
+    "content": "Homeowner renting basement suite: private entrance, kitchenette, 1BR. $900/month, utilities included.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-05T03:05:03.542Z",
+    "updatedAt": "2026-11-05T03:05:03.542Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_3hq5ka2",
+    "title": "Cooperative housing has opening: 3BR unit, member-owned, shared garden/kitchen. ...",
+    "content": "Cooperative housing has opening: 3BR unit, member-owned, shared garden/kitchen. $1200/month equity.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-03T15:53:17.080Z",
+    "updatedAt": "2026-11-03T15:53:17.080Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_pxvzpom",
+    "title": "Property owner seeking house-sitter: 6 months, 3BR rural home, chickens/garden c...",
+    "content": "Property owner seeking house-sitter: 6 months, 3BR rural home, chickens/garden care. Free rent + stipend.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "6 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 6,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-12T18:42:03.679Z",
+    "updatedAt": "2026-10-12T18:42:03.679Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_5axlwf7",
+    "title": "Tiny house community has pad available: hookups, shared bathhouse, common house....",
+    "content": "Tiny house community has pad available: hookups, shared bathhouse, common house. $400/month pad fee.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T01:43:09.465Z",
+    "updatedAt": "2026-11-08T01:43:09.465Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_0ivp433",
+    "title": "Accessible apartment available: roll-in shower, grab bars, elevator building. $1...",
+    "content": "Accessible apartment available: roll-in shower, grab bars, elevator building. $1600/month, Section 8 ok.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T03:17:04.697Z",
+    "updatedAt": "2026-10-19T03:17:04.697Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_zx979ip",
+    "title": "Room for rent in shared house: 3BR/2BA, friendly housemates, garden, bikes welco...",
+    "content": "Room for rent in shared house: 3BR/2BA, friendly housemates, garden, bikes welcome. $850/month.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-07T14:42:00.489Z",
+    "updatedAt": "2026-11-07T14:42:00.489Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_39aqntz",
+    "title": "Live/work loft for rent: 1000 sq ft, high ceilings, zoning allows retail/studio....",
+    "content": "Live/work loft for rent: 1000 sq ft, high ceilings, zoning allows retail/studio. $2000/month.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T14:41:42.827Z",
+    "updatedAt": "2026-10-13T14:41:42.827Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_0x6lrui",
+    "title": "Multigenerational home for sale: main house + ADU, 0.5 acre, solar, well. $425k.",
+    "content": "Multigenerational home for sale: main house + ADU, 0.5 acre, solar, well. $425k.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T04:39:42.912Z",
+    "updatedAt": "2026-10-25T04:39:42.912Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_70vpfi8",
+    "title": "House share for seniors: 4BR home, shared meals/activities, care coordination. $...",
+    "content": "House share for seniors: 4BR home, shared meals/activities, care coordination. $1500/month all-in.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "senior"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-07T06:17:40.357Z",
+    "updatedAt": "2026-11-07T06:17:40.357Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_9ggjxvz",
+    "title": "Need off-grid solar system: 5kW panels, 20kWh battery, inverter, install. Budget...",
+    "content": "Need off-grid solar system: 5kW panels, 20kWh battery, inverter, install. Budget $25k.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "25 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 25,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T18:37:28.486Z",
+    "updatedAt": "2026-10-13T18:37:28.486Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_peertxe",
+    "title": "Looking for grid-tied solar with battery backup: 10kW, Powerwall, net metering. ...",
+    "content": "Looking for grid-tied solar with battery backup: 10kW, Powerwall, net metering. Quote requested.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T05:37:36.321Z",
+    "updatedAt": "2026-11-10T05:37:36.321Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_lct6ki7",
+    "title": "Seeking wood stove insert: EPA certified, heats 2000 sq ft, existing masonry chi...",
+    "content": "Seeking wood stove insert: EPA certified, heats 2000 sq ft, existing masonry chimney.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T07:20:32.492Z",
+    "updatedAt": "2026-10-23T07:20:32.492Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_g6gv8w5",
+    "title": "Want heat pump installation: mini-split or ducted, cold-climate rated, 3 zones. ...",
+    "content": "Want heat pump installation: mini-split or ducted, cold-climate rated, 3 zones. Rebates apply.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-24T23:09:54.624Z",
+    "updatedAt": "2026-10-24T23:09:54.624Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_34zrj2l",
+    "title": "Need generator: whole-house, natural gas/propane, 20kW, automatic transfer switc...",
+    "content": "Need generator: whole-house, natural gas/propane, 20kW, automatic transfer switch.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T16:30:06.877Z",
+    "updatedAt": "2026-11-10T16:30:06.877Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_7i1ecq5",
+    "title": "Seeking energy audit: blower door, thermal imaging, prioritized retrofit plan. $...",
+    "content": "Seeking energy audit: blower door, thermal imaging, prioritized retrofit plan. $300-500.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T03:24:49.368Z",
+    "updatedAt": "2026-10-19T03:24:49.368Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_j3d2zmk",
+    "title": "Want community solar subscription: no roof install, 10% bill savings, no upfront...",
+    "content": "Want community solar subscription: no roof install, 10% bill savings, no upfront cost.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T22:30:10.298Z",
+    "updatedAt": "2026-10-27T22:30:10.298Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_bgoig72",
+    "title": "Need EV charger install: Level 2, 48A, WiFi, load management. Garage, 50ft run.",
+    "content": "Need EV charger install: Level 2, 48A, WiFi, load management. Garage, 50ft run.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T04:37:45.638Z",
+    "updatedAt": "2026-10-26T04:37:45.638Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_b5h6nv3",
+    "title": "Looking for micro-hydro: seasonal creek, 100ft head, 200W continuous. Permitting...",
+    "content": "Looking for micro-hydro: seasonal creek, 100ft head, 200W continuous. Permitting help.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T09:05:51.661Z",
+    "updatedAt": "2026-10-29T09:05:51.661Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_cpg2ftr",
+    "title": "Want passive house retrofit: insulation, air sealing, ERV, high-performance wind...",
+    "content": "Want passive house retrofit: insulation, air sealing, ERV, high-performance windows. Phased.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T14:01:01.196Z",
+    "updatedAt": "2026-11-03T14:01:01.196Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_zlv4iyy",
+    "title": "Solar installer: design, permit, install, maintenance. 15 years, NABCEP, 500+ sy...",
+    "content": "Solar installer: design, permit, install, maintenance. 15 years, NABCEP, 500+ systems. Free quote.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "15 yr"
+        ],
+        "unit": "yr",
+        "quantity": {
+          "value": 15,
+          "unit": "yr",
+          "unitType": "simple",
+          "numerator": "yr",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T22:25:17.732Z",
+    "updatedAt": "2026-11-08T22:25:17.732Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_bddc0k5",
+    "title": "HVAC contractor: heat pumps, mini-splits, geothermal, ductless. Mitsubishi Diamo...",
+    "content": "HVAC contractor: heat pumps, mini-splits, geothermal, ductless. Mitsubishi Diamond Dealer.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T01:06:56.630Z",
+    "updatedAt": "2026-11-04T01:06:56.630Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_kico7zp",
+    "title": "Energy auditor: RESNET certified, blower door, HERS rating, rebate navigation. $...",
+    "content": "Energy auditor: RESNET certified, blower door, HERS rating, rebate navigation. $350.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T21:42:50.523Z",
+    "updatedAt": "2026-11-04T21:42:50.523Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_3avucxu",
+    "title": "Generator dealer: Generac, Kohler, whole-house, portable. Sales, install, servic...",
+    "content": "Generator dealer: Generac, Kohler, whole-house, portable. Sales, install, service contracts.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T13:46:00.485Z",
+    "updatedAt": "2026-10-29T13:46:00.485Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_i9azblf",
+    "title": "EV charger installer: Tesla, ChargePoint, ClipperCreek. Permits, panel upgrades,...",
+    "content": "EV charger installer: Tesla, ChargePoint, ClipperCreek. Permits, panel upgrades, load calcs.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-19T07:42:08.856Z",
+    "updatedAt": "2026-10-19T07:42:08.856Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_kkt3lb5",
+    "title": "Community solar developer: subscription management, bill credits, no roof needed...",
+    "content": "Community solar developer: subscription management, bill credits, no roof needed. 10% savings.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T23:40:03.315Z",
+    "updatedAt": "2026-11-05T23:40:03.315Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_l5nryo4",
+    "title": "Wood stove retailer: Jøtul, Vermont Castings, HearthStone. Install, chimney lini...",
+    "content": "Wood stove retailer: Jøtul, Vermont Castings, HearthStone. Install, chimney lining, permits.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T01:08:38.673Z",
+    "updatedAt": "2026-11-10T01:08:38.673Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_f5yt5jx",
+    "title": "Insulation contractor: cellulose, spray foam, rigid foam, air sealing. Blower do...",
+    "content": "Insulation contractor: cellulose, spray foam, rigid foam, air sealing. Blower door verified.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-26T05:12:28.947Z",
+    "updatedAt": "2026-10-26T05:12:28.947Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_mobarlf",
+    "title": "Micro-hydro specialist: site assessment, turbine sizing, permitting, install. Of...",
+    "content": "Micro-hydro specialist: site assessment, turbine sizing, permitting, install. Off-grid expertise.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T05:22:11.872Z",
+    "updatedAt": "2026-10-14T05:22:11.872Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_664t2uf",
+    "title": "Passive house consultant: PHIUS certified, EnerPHit retrofit, modeling, certific...",
+    "content": "Passive house consultant: PHIUS certified, EnerPHit retrofit, modeling, certification.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T01:15:53.263Z",
+    "updatedAt": "2026-10-14T01:15:53.263Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_4q944ze",
+    "title": "Need emergency shelter: domestic violence, displacement, disaster. Safe, confide...",
+    "content": "Need emergency shelter: domestic violence, displacement, disaster. Safe, confidential, immediate.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T20:12:47.018Z",
+    "updatedAt": "2026-11-04T20:12:47.018Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_4vsoymp",
+    "title": "Seeking transitional housing: 6-24 months, case management, job support, sobriet...",
+    "content": "Seeking transitional housing: 6-24 months, case management, job support, sobriety support.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "24 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 24,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T10:09:39.586Z",
+    "updatedAt": "2026-10-28T10:09:39.586Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_pmtn2bq",
+    "title": "Looking for winter shelter: warming center, overnight, showers, meals. Volunteer...",
+    "content": "Looking for winter shelter: warming center, overnight, showers, meals. Volunteer or staff.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "experienceLevel",
+        "operator": "is",
+        "values": [
+          "staff"
+        ],
+        "role": "fact",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T06:16:39.742Z",
+    "updatedAt": "2026-11-02T06:16:39.742Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_7f90ks6",
+    "title": "Want to build a yurt: 24-30ft, insulated, platform, wood stove. Kit or custom, b...",
+    "content": "Want to build a yurt: 24-30ft, insulated, platform, wood stove. Kit or custom, budget $15k.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "15 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 15,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-09T19:57:55.926Z",
+    "updatedAt": "2026-11-09T19:57:55.926Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_8nuuafb",
+    "title": "Seeking RV park spot: full hookups, long-term, quiet, near nature. $500-700/mont...",
+    "content": "Seeking RV park spot: full hookups, long-term, quiet, near nature. $500-700/month.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "700 USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": 700,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-23T08:27:44.060Z",
+    "updatedAt": "2026-10-23T08:27:44.060Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_pukqrsq",
+    "title": "Need housing for refugee family: 3BR, furnished, near transit/schools/mosque. 1-...",
+    "content": "Need housing for refugee family: 3BR, furnished, near transit/schools/mosque. 1-year lease.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-10T10:49:26.924Z",
+    "updatedAt": "2026-11-10T10:49:26.924Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_r38lqod",
+    "title": "Looking for squat/land trust: vacant property, adverse possession, community lan...",
+    "content": "Looking for squat/land trust: vacant property, adverse possession, community land trust model.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-28T07:24:28.880Z",
+    "updatedAt": "2026-10-28T07:24:28.880Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_vc36ghp",
+    "title": "Want earthship/natural building: tires, cob, straw bale, off-grid. Workshop or b...",
+    "content": "Want earthship/natural building: tires, cob, straw bale, off-grid. Workshop or builder.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T01:38:44.825Z",
+    "updatedAt": "2026-10-19T01:38:44.825Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_mmfg046",
+    "title": "Seeking safe parking: vehicle dwelling, overnight, bathroom access, security. Lo...",
+    "content": "Seeking safe parking: vehicle dwelling, overnight, bathroom access, security. Low cost.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-20T06:35:12.163Z",
+    "updatedAt": "2026-10-20T06:35:12.163Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_mew0nnl",
+    "title": "Need home repair: roof, foundation, plumbing, electrical. Low-income, grant-elig...",
+    "content": "Need home repair: roof, foundation, plumbing, electrical. Low-income, grant-eligible.",
+    "tags": [
+      "shelter-energy",
+      "shelter-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-30T04:44:04.295Z",
+    "updatedAt": "2026-10-30T04:44:04.295Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_baj8mlw",
+    "title": "Shelter operator: emergency beds, case management, housing navigation. 24/7 inta...",
+    "content": "Shelter operator: emergency beds, case management, housing navigation. 24/7 intake.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T07:42:43.553Z",
+    "updatedAt": "2026-11-02T07:42:43.553Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_r7gl1r8",
+    "title": "Transitional housing program: 18 months, counseling, job training, permanent hou...",
+    "content": "Transitional housing program: 18 months, counseling, job training, permanent housing placement.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "18 mo"
+        ],
+        "unit": "mo",
+        "quantity": {
+          "value": 18,
+          "unit": "mo",
+          "unitType": "simple",
+          "numerator": "mo",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-26T15:37:18.209Z",
+    "updatedAt": "2026-10-26T15:37:18.209Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_e7jf0ry",
+    "title": "Warming center: Nov-Mar, 50 beds, showers, laundry, meals. Volunteer-run, donati...",
+    "content": "Warming center: Nov-Mar, 50 beds, showers, laundry, meals. Volunteer-run, donations welcome.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T17:32:02.785Z",
+    "updatedAt": "2026-10-15T17:32:02.785Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_lxinz59",
+    "title": "Yurt builder: Pacific Yurt, Rainier, custom. Platforms, decks, stoves, permits. ...",
+    "content": "Yurt builder: Pacific Yurt, Rainier, custom. Platforms, decks, stoves, permits. 10+ years.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-06T23:18:22.749Z",
+    "updatedAt": "2026-11-06T23:18:22.749Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_mqt0pp3",
+    "title": "RV park: 100 sites, full hookups, WiFi, laundry, clubhouse, pet-friendly. $550/m...",
+    "content": "RV park: 100 sites, full hookups, WiFi, laundry, clubhouse, pet-friendly. $550/month.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-15T02:47:58.809Z",
+    "updatedAt": "2026-10-15T02:47:58.809Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_8rr439s",
+    "title": "Refugee resettlement agency: housing placement, cultural orientation, benefits, ...",
+    "content": "Refugee resettlement agency: housing placement, cultural orientation, benefits, employment.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T02:18:14.616Z",
+    "updatedAt": "2026-11-09T02:18:14.616Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_q03wng5",
+    "title": "Community land trust: permanently affordable homeownership, ground lease, stewar...",
+    "content": "Community land trust: permanently affordable homeownership, ground lease, stewardship.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "rust"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T19:45:06.272Z",
+    "updatedAt": "2026-10-13T19:45:06.272Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_eicamtc",
+    "title": "Natural building workshop: cob, straw bale, earthbag, plaster. Hands-on, 5-day, ...",
+    "content": "Natural building workshop: cob, straw bale, earthbag, plaster. Hands-on, 5-day, $800.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T14:56:33.138Z",
+    "updatedAt": "2026-10-22T14:56:33.138Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_ek6on8j",
+    "title": "Safe parking program: 20 spaces, porta-potties, showers, case management. Church...",
+    "content": "Safe parking program: 20 spaces, porta-potties, showers, case management. Church lot, nightly.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T06:03:54.177Z",
+    "updatedAt": "2026-10-24T06:03:54.177Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_feyarhh",
+    "title": "Home repair nonprofit: critical repairs, accessibility mods, weatherization. Fre...",
+    "content": "Home repair nonprofit: critical repairs, accessibility mods, weatherization. Free for qualifying.",
+    "tags": [
+      "shelter-energy",
+      "shelter-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T23:19:43.195Z",
+    "updatedAt": "2026-10-17T23:19:43.195Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_49y0p9j",
+    "title": "Need lumber: dimensional, rough-sawn, local species. 2x4, 2x6, 1x12, live edge s...",
+    "content": "Need lumber: dimensional, rough-sawn, local species. 2x4, 2x6, 1x12, live edge slabs.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T19:05:58.143Z",
+    "updatedAt": "2026-10-18T19:05:58.143Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_7vfsk6g",
+    "title": "Seeking reclaimed materials: brick, beam, flooring, fixtures, windows. Character...",
+    "content": "Seeking reclaimed materials: brick, beam, flooring, fixtures, windows. Character, sustainability.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-23T12:45:31.515Z",
+    "updatedAt": "2026-10-23T12:45:31.515Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_lo2785v",
+    "title": "Want straw bales: construction grade, 2-string, 500+. Delivery to site.",
+    "content": "Want straw bales: construction grade, 2-string, 500+. Delivery to site.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T07:49:00.080Z",
+    "updatedAt": "2026-10-12T07:49:00.080Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_1uk2yga",
+    "title": "Need clay soil: for cob, plaster, earthen floor. Screened, tested, 10+ yards.",
+    "content": "Need clay soil: for cob, plaster, earthen floor. Screened, tested, 10+ yards.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T10:16:23.000Z",
+    "updatedAt": "2026-10-22T10:16:23.000Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_vks9alc",
+    "title": "Looking for lime: hydraulic, hydrated, putty. Plaster, mortar, hempcrete. Bulk b...",
+    "content": "Looking for lime: hydraulic, hydrated, putty. Plaster, mortar, hempcrete. Bulk bags.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-11T01:00:57.631Z",
+    "updatedAt": "2026-11-11T01:00:57.631Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_vj603bv",
+    "title": "Seeking hempcrete: blocks, cast-in-place, insulation value. R-2.5/inch, vapor pe...",
+    "content": "Seeking hempcrete: blocks, cast-in-place, insulation value. R-2.5/inch, vapor permeable.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T22:08:15.116Z",
+    "updatedAt": "2026-10-22T22:08:15.116Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_h0akcyc",
+    "title": "Need recycled insulation: denim, cellulose, wood fiber. Non-toxic, R-value specs...",
+    "content": "Need recycled insulation: denim, cellulose, wood fiber. Non-toxic, R-value specs.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T16:00:34.524Z",
+    "updatedAt": "2026-11-07T16:00:34.524Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_5f19p73",
+    "title": "Want natural paint: clay, lime, milk, oil-based. Zero VOC, breathable, durable.",
+    "content": "Want natural paint: clay, lime, milk, oil-based. Zero VOC, breathable, durable.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T10:37:46.263Z",
+    "updatedAt": "2026-10-24T10:37:46.263Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_fcjsrdo",
+    "title": "Looking for rammed earth forms: rental or purchase, modular, 18-24 inch walls.",
+    "content": "Looking for rammed earth forms: rental or purchase, modular, 18-24 inch walls.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T02:18:04.132Z",
+    "updatedAt": "2026-10-15T02:18:04.132Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_n84px4x",
+    "title": "Need gravel/sand: road base, drainage, concrete, plaster. Clean, screened, deliv...",
+    "content": "Need gravel/sand: road base, drainage, concrete, plaster. Clean, screened, delivered.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T21:38:40.064Z",
+    "updatedAt": "2026-10-18T21:38:40.064Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_eofpz9o",
+    "title": "Sawyer offering local lumber: oak, pine, cedar, walnut. Rough-sawn, kiln-dried, ...",
+    "content": "Sawyer offering local lumber: oak, pine, cedar, walnut. Rough-sawn, kiln-dried, custom cuts.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T15:48:39.921Z",
+    "updatedAt": "2026-10-27T15:48:39.921Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_lcxnajl",
+    "title": "Reclaimed materials yard: brick, timber, flooring, doors, hardware, bathtubs. 10...",
+    "content": "Reclaimed materials yard: brick, timber, flooring, doors, hardware, bathtubs. 10,000 sq ft.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T23:29:05.837Z",
+    "updatedAt": "2026-10-17T23:29:05.837Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_6obzyxd",
+    "title": "Straw bale supplier: organic, construction grade, 2/3-string. Delivery, volume d...",
+    "content": "Straw bale supplier: organic, construction grade, 2/3-string. Delivery, volume discounts.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T03:06:13.084Z",
+    "updatedAt": "2026-11-08T03:06:13.084Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_uyf7ho5",
+    "title": "Clay pit owner: screened clay, various colors, pottery/building grade. $25/yard.",
+    "content": "Clay pit owner: screened clay, various colors, pottery/building grade. $25/yard.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T19:07:59.556Z",
+    "updatedAt": "2026-10-28T19:07:59.556Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_5augo7i",
+    "title": "Lime supplier: St. Astier NHL, Type S, lime putty. Pallets, bags, technical supp...",
+    "content": "Lime supplier: St. Astier NHL, Type S, lime putty. Pallets, bags, technical support.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T05:37:06.427Z",
+    "updatedAt": "2026-10-16T05:37:06.427Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_6r6r2nt",
+    "title": "Hempcrete installer: blocks, spray, casts. Training, consulting, code compliance...",
+    "content": "Hempcrete installer: blocks, spray, casts. Training, consulting, code compliance.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-29T00:49:07.641Z",
+    "updatedAt": "2026-10-29T00:49:07.641Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_17rybff",
+    "title": "Insulation distributor: Gutex, Steico, Havelock Wool, Applegate. Full line, cont...",
+    "content": "Insulation distributor: Gutex, Steico, Havelock Wool, Applegate. Full line, contractor pricing.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T10:50:54.016Z",
+    "updatedAt": "2026-10-24T10:50:54.016Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_xmwd4xl",
+    "title": "Natural paint maker: clay, lime, casein, linseed oil. Custom colors, sample kits...",
+    "content": "Natural paint maker: clay, lime, casein, linseed oil. Custom colors, sample kits.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T06:33:46.136Z",
+    "updatedAt": "2026-11-05T06:33:46.136Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_mm296wp",
+    "title": "Rental: rammed earth forms, pneumatic tampers, soil mixer. Daily/weekly rates.",
+    "content": "Rental: rammed earth forms, pneumatic tampers, soil mixer. Daily/weekly rates.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T02:47:35.189Z",
+    "updatedAt": "2026-10-13T02:47:35.189Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_r0qwgq1",
+    "title": "Aggregate supplier: washed gravel, sand, stone dust, recycled concrete. Bulk del...",
+    "content": "Aggregate supplier: washed gravel, sand, stone dust, recycled concrete. Bulk delivery.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T17:53:36.864Z",
+    "updatedAt": "2026-11-01T17:53:36.864Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_zn9i7is",
+    "title": "Seeking affordable rental: 2BR, near transit, under $1500, cat-friendly, in-unit...",
+    "content": "Seeking affordable rental: 2BR, near transit, under $1500, cat-friendly, in-unit laundry.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T09:10:25.455Z",
+    "updatedAt": "2026-11-04T09:10:25.455Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_68gi3de",
+    "title": "Landlord offering 2BR apt: near subway, renovated, heat/hot water included. $140...",
+    "content": "Landlord offering 2BR apt: near subway, renovated, heat/hot water included. $1400/month.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T17:25:50.967Z",
+    "updatedAt": "2026-11-08T17:25:50.967Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_d5jypfq",
+    "title": "Need off-grid solar: 5kW panels, 20kWh battery, inverter, install. Budget $25k.",
+    "content": "Need off-grid solar: 5kW panels, 20kWh battery, inverter, install. Budget $25k.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "25 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 25,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T13:59:02.607Z",
+    "updatedAt": "2026-11-08T13:59:02.607Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_xgil409",
+    "title": "Solar installer: design, permit, install, maintenance. 15yrs, NABCEP, 500+ syste...",
+    "content": "Solar installer: design, permit, install, maintenance. 15yrs, NABCEP, 500+ systems. Free quote.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T03:34:55.515Z",
+    "updatedAt": "2026-11-04T03:34:55.515Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_6vdq6og",
+    "title": "Looking for tiny house land: 0.25 acre, hookups, permissive zoning. Long-term le...",
+    "content": "Looking for tiny house land: 0.25 acre, hookups, permissive zoning. Long-term lease.",
+    "tags": [
+      "shelter-energy",
+      "housing-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T22:54:42.761Z",
+    "updatedAt": "2026-10-14T22:54:42.761Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_n228vqy",
+    "title": "Tiny house community pad: hookups, shared bathhouse, common house. $400/month pa...",
+    "content": "Tiny house community pad: hookups, shared bathhouse, common house. $400/month pad fee.",
+    "tags": [
+      "shelter-energy",
+      "housing-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-02T21:28:36.405Z",
+    "updatedAt": "2026-11-02T21:28:36.405Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_1ejgkrk",
+    "title": "Need heat pump: 3-zone mini-split, cold climate, rebates. 2000 sq ft, existing d...",
+    "content": "Need heat pump: 3-zone mini-split, cold climate, rebates. 2000 sq ft, existing ductwork.",
+    "tags": [
+      "shelter-energy",
+      "energy-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "cli"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-17T03:18:25.326Z",
+    "updatedAt": "2026-10-17T03:18:25.326Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_3r5mqdf",
+    "title": "HVAC contractor: Mitsubishi Diamond Dealer, heat pumps, geothermal, mini-splits....",
+    "content": "HVAC contractor: Mitsubishi Diamond Dealer, heat pumps, geothermal, mini-splits. Free estimate.",
+    "tags": [
+      "shelter-energy",
+      "energy-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T11:47:49.113Z",
+    "updatedAt": "2026-11-01T11:47:49.113Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyw_mb7uzm2",
+    "title": "Seeking reclaimed lumber: barn beams, wide plank flooring, vintage doors. Charac...",
+    "content": "Seeking reclaimed lumber: barn beams, wide plank flooring, vintage doors. Character, sustainability.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T00:13:28.560Z",
+    "updatedAt": "2026-10-17T00:13:28.560Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyw_9ag8g4b",
+    "title": "Sawyer offering local lumber: oak, pine, cedar, walnut. Rough-sawn, kiln-dried, ...",
+    "content": "Sawyer offering local lumber: oak, pine, cedar, walnut. Rough-sawn, kiln-dried, custom cuts.",
+    "tags": [
+      "shelter-energy",
+      "construction-&-materials-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-27T07:31:09.876Z",
+    "updatedAt": "2026-10-27T07:31:09.876Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-shelter-energy",
+      "timestamp": 1794378356456
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  }
+]

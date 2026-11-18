@@ -1,0 +1,20 @@
+{
+  "id": "quality-extract-049",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Task: Fix login bug on mobile. Assignee: DevTeam. Priority: high. Due: 2026-11-20. Estimated: 4 hours. Status: in-progress. Actual: 3.5 hours so far.",
+  "expected": [
+    { "key": "task", "operator": "contains", "values": ["Fix login bug on mobile"] },
+    { "key": "assignee", "operator": "is", "values": ["DevTeam"] },
+    { "key": "priority", "operator": "is", "values": ["high"] },
+    { "key": "dueDate", "operator": "before", "values": ["2026-11-20"] },
+    { "key": "estimatedHours", "operator": "is", "values": ["4"] },
+    { "key": "status", "operator": "is", "values": ["in-progress"] },
+    { "key": "actualHours", "operator": "is", "values": ["3.5"] }
+  ],
+  "forbidden": [
+    { "key": "priority", "operator": "is", "values": ["low"] }
+  ],
+  "labels": { "annotators": 2, "agreement": 0.94 },
+  "tags": ["work", "task", "project", "bug"]
+}

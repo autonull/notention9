@@ -1,0 +1,2124 @@
+[
+  {
+    "id": "note_mwbqjkyv_q5gwu3w",
+    "title": "Need fresh vegetables delivered weekly: organic carrots, kale, onions, potatoes....",
+    "content": "Need fresh vegetables delivered weekly: organic carrots, kale, onions, potatoes. Budget $50/week. Local farm preferred.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/wk"
+        ],
+        "unit": "USD/wk",
+        "quantity": {
+          "value": null,
+          "unit": "USD/wk",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "wk",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "50 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 50,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-13T14:25:40.709Z",
+    "updatedAt": "2026-10-13T14:25:40.709Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_j2rcqld",
+    "title": "Looking for bulk grains: 50lb bags of rice, beans, oats, wheat berries. Long-ter...",
+    "content": "Looking for bulk grains: 50lb bags of rice, beans, oats, wheat berries. Long-term storage, food security focus.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T16:35:33.813Z",
+    "updatedAt": "2026-11-07T16:35:33.813Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_5h8v6bm",
+    "title": "Seeking raw milk and pasture-raised eggs from local dairy. Weekly pickup, $8/doz...",
+    "content": "Seeking raw milk and pasture-raised eggs from local dairy. Weekly pickup, $8/dozen eggs, $6/gal milk.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T09:34:04.439Z",
+    "updatedAt": "2026-10-28T09:34:04.439Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_rw2j77j",
+    "title": "Need gluten-free bread and pasta made in dedicated facility. Celiac-safe, weekly...",
+    "content": "Need gluten-free bread and pasta made in dedicated facility. Celiac-safe, weekly delivery.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T01:29:21.152Z",
+    "updatedAt": "2026-10-14T01:29:21.152Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_27ti5kn",
+    "title": "Want to join a CSA (Community Supported Agriculture) share. Vegetables, fruit, h...",
+    "content": "Want to join a CSA (Community Supported Agriculture) share. Vegetables, fruit, herbs. 20-week season, $600-800.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T23:14:04.051Z",
+    "updatedAt": "2026-10-19T23:14:04.051Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_j00rhjr",
+    "title": "Looking for fermented foods: sauerkraut, kimchi, kombucha, kefir. Traditional pr...",
+    "content": "Looking for fermented foods: sauerkraut, kimchi, kombucha, kefir. Traditional preparation, no vinegar.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T12:31:37.591Z",
+    "updatedAt": "2026-11-08T12:31:37.591Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_3c7vm6d",
+    "title": "Need baby formula (organic, European formula preferred) and pureed baby food. Mo...",
+    "content": "Need baby formula (organic, European formula preferred) and pureed baby food. Monthly supply.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T15:24:22.355Z",
+    "updatedAt": "2026-10-12T15:24:22.355Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_ok8s028",
+    "title": "Seeking wild-caught fish and seafood: salmon, sardines, shrimp. Frozen, vacuum-s...",
+    "content": "Seeking wild-caught fish and seafood: salmon, sardines, shrimp. Frozen, vacuum-sealed, sustainable.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T09:38:07.585Z",
+    "updatedAt": "2026-11-07T09:38:07.585Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_jjhbtix",
+    "title": "Want heritage breed pork and poultry: whole chickens, pork chops, bacon. Pasture...",
+    "content": "Want heritage breed pork and poultry: whole chickens, pork chops, bacon. Pasture-raised, no antibiotics.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T11:42:19.965Z",
+    "updatedAt": "2026-10-16T11:42:19.965Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_mq3cp6x",
+    "title": "Need bulk nuts and seeds: almonds, walnuts, pumpkin seeds, chia, flax. Raw, orga...",
+    "content": "Need bulk nuts and seeds: almonds, walnuts, pumpkin seeds, chia, flax. Raw, organic, 25lb bags.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T00:18:18.737Z",
+    "updatedAt": "2026-11-08T00:18:18.737Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_5xwspfb",
+    "title": "Home gardener offering surplus tomatoes, zucchini, cucumbers, peppers. Free pick...",
+    "content": "Home gardener offering surplus tomatoes, zucchini, cucumbers, peppers. Free pickup, seasonal.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-02T01:33:51.402Z",
+    "updatedAt": "2026-11-02T01:33:51.402Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_nrnusqc",
+    "title": "Small-scale farmer selling CSA shares: 20 weeks of mixed vegetables, herbs, some...",
+    "content": "Small-scale farmer selling CSA shares: 20 weeks of mixed vegetables, herbs, some fruit. $700/season.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "20 wk"
+        ],
+        "unit": "wk",
+        "quantity": {
+          "value": 20,
+          "unit": "wk",
+          "unitType": "simple",
+          "numerator": "wk",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-24T11:22:49.765Z",
+    "updatedAt": "2026-10-24T11:22:49.765Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_es8svdp",
+    "title": "Baker offering sourdough bread, pastries, granola. Weekly pickup, subscription $...",
+    "content": "Baker offering sourdough bread, pastries, granola. Weekly pickup, subscription $40/month.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-10T05:28:49.430Z",
+    "updatedAt": "2026-11-10T05:28:49.430Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_x98ephw",
+    "title": "Beekeeper selling raw honey, beeswax, propolis. Local pickup, various sizes.",
+    "content": "Beekeeper selling raw honey, beeswax, propolis. Local pickup, various sizes.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-04T00:49:42.035Z",
+    "updatedAt": "2026-11-04T00:49:42.035Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_isw2aq4",
+    "title": "Fermenter offering sauerkraut, kimchi, pickles, hot sauce. Traditional lacto-fer...",
+    "content": "Fermenter offering sauerkraut, kimchi, pickles, hot sauce. Traditional lacto-fermentation, $12/jar.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T10:25:42.593Z",
+    "updatedAt": "2026-10-24T10:25:42.593Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_7mb7ucp",
+    "title": "Hunter sharing venison, wild turkey, rabbit. Processed, vacuum-sealed, freezer-r...",
+    "content": "Hunter sharing venison, wild turkey, rabbit. Processed, vacuum-sealed, freezer-ready.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-28T01:50:14.061Z",
+    "updatedAt": "2026-10-28T01:50:14.061Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_kc9l38v",
+    "title": "Orchard owner offering apples, pears, plums, berries. U-pick or pre-picked, seas...",
+    "content": "Orchard owner offering apples, pears, plums, berries. U-pick or pre-picked, seasonal.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T19:22:34.506Z",
+    "updatedAt": "2026-10-25T19:22:34.506Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_p9ro3sl",
+    "title": "Mushroom grower selling oyster, shiitake, lion's mane. Fresh or dried, weekly ha...",
+    "content": "Mushroom grower selling oyster, shiitake, lion's mane. Fresh or dried, weekly harvest.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-18T00:27:17.751Z",
+    "updatedAt": "2026-10-18T00:27:17.751Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_zytcevn",
+    "title": "Dairy farmer offering raw milk, cream, butter, cheese. Herd share program, $50/m...",
+    "content": "Dairy farmer offering raw milk, cream, butter, cheese. Herd share program, $50/month.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T03:20:47.853Z",
+    "updatedAt": "2026-11-04T03:20:47.853Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_jzbbfwu",
+    "title": "Community kitchen offering prepared meals: soups, stews, casseroles. Sliding sca...",
+    "content": "Community kitchen offering prepared meals: soups, stews, casseroles. Sliding scale, pickup/delivery.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-25T11:48:35.044Z",
+    "updatedAt": "2026-10-25T11:48:35.044Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_6tlqe63",
+    "title": "Need spring water delivery: 5-gallon glass jugs, monthly. Local source preferred...",
+    "content": "Need spring water delivery: 5-gallon glass jugs, monthly. Local source preferred, $8/jug.",
+    "tags": [
+      "food-water",
+      "water-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-16T06:57:41.041Z",
+    "updatedAt": "2026-10-16T06:57:41.041Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_n37c9r1",
+    "title": "Looking for water filtration system: whole-house, reverse osmosis, or Berkey. Bu...",
+    "content": "Looking for water filtration system: whole-house, reverse osmosis, or Berkey. Budget $300-500.",
+    "tags": [
+      "food-water",
+      "water-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "budget",
+        "operator": "is",
+        "values": [
+          "300 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 300,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      },
+      {
+        "key": "budget",
+        "operator": "between",
+        "values": [
+          "300 USD",
+          "500 USD"
+        ],
+        "unit": "USD",
+        "quantity": {
+          "value": 400,
+          "unit": "USD",
+          "unitType": "simple",
+          "numerator": "USD",
+          "semanticType": "price"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-30T03:11:07.881Z",
+    "updatedAt": "2026-10-30T03:11:07.881Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_5lg2zc5",
+    "title": "Seeking rainwater harvesting setup: tanks, gutters, filters, pump. 1000+ gallon ...",
+    "content": "Seeking rainwater harvesting setup: tanks, gutters, filters, pump. 1000+ gallon capacity.",
+    "tags": [
+      "food-water",
+      "water-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-19T21:45:49.812Z",
+    "updatedAt": "2026-10-19T21:45:49.812Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_tole3ud",
+    "title": "Need well water testing and treatment: iron, sulfur, bacteria. Professional serv...",
+    "content": "Need well water testing and treatment: iron, sulfur, bacteria. Professional service.",
+    "tags": [
+      "food-water",
+      "water-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T05:53:26.322Z",
+    "updatedAt": "2026-10-14T05:53:26.322Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_15aioo3",
+    "title": "Want atmospheric water generator for off-grid use. Solar-powered, 5-10 gal/day.",
+    "content": "Want atmospheric water generator for off-grid use. Solar-powered, 5-10 gal/day.",
+    "tags": [
+      "food-water",
+      "water-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-21T03:59:06.088Z",
+    "updatedAt": "2026-10-21T03:59:06.088Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_wb7vn47",
+    "title": "Spring owner offering water access: clean, tested, 5-gal jugs. $5/jug, self-serv...",
+    "content": "Spring owner offering water access: clean, tested, 5-gal jugs. $5/jug, self-serve 24/7.",
+    "tags": [
+      "food-water",
+      "water-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T09:11:29.033Z",
+    "updatedAt": "2026-11-09T09:11:29.033Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_8z83hjp",
+    "title": "Water treatment specialist offering installation: RO, UV, softener, whole-house....",
+    "content": "Water treatment specialist offering installation: RO, UV, softener, whole-house. Free quote.",
+    "tags": [
+      "food-water",
+      "water-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-13T22:56:10.915Z",
+    "updatedAt": "2026-10-13T22:56:10.915Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_0rhwly8",
+    "title": "Rainwater system installer: design, tanks, filtration, irrigation integration. 1...",
+    "content": "Rainwater system installer: design, tanks, filtration, irrigation integration. 10+ years experience.",
+    "tags": [
+      "food-water",
+      "water-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-15T17:22:49.088Z",
+    "updatedAt": "2026-10-15T17:22:49.088Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_2b2wwn3",
+    "title": "Well drilling and pump service: new wells, repairs, water testing. Licensed, ins...",
+    "content": "Well drilling and pump service: new wells, repairs, water testing. Licensed, insured.",
+    "tags": [
+      "food-water",
+      "water-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T13:16:50.131Z",
+    "updatedAt": "2026-10-31T13:16:50.131Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_i77gyl7",
+    "title": "Need heirloom seeds: tomatoes, peppers, beans, corn, squash. Non-GMO, open-polli...",
+    "content": "Need heirloom seeds: tomatoes, peppers, beans, corn, squash. Non-GMO, open-pollinated.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-09T15:03:48.255Z",
+    "updatedAt": "2026-11-09T15:03:48.255Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_32jb585",
+    "title": "Looking for fruit tree saplings: apple, pear, cherry, plum, pawpaw. Bare root, d...",
+    "content": "Looking for fruit tree saplings: apple, pear, cherry, plum, pawpaw. Bare root, disease-resistant.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T01:21:29.984Z",
+    "updatedAt": "2026-10-22T01:21:29.984Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_ddgga97",
+    "title": "Seeking compost and soil amendments: worm castings, biochar, rock dust, mycorrhi...",
+    "content": "Seeking compost and soil amendments: worm castings, biochar, rock dust, mycorrhizae. Bulk delivery.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-07T18:25:50.609Z",
+    "updatedAt": "2026-11-07T18:25:50.609Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_5jykhr7",
+    "title": "Want to learn market gardening: 1-acre intensive, no-till, season extension. Men...",
+    "content": "Want to learn market gardening: 1-acre intensive, no-till, season extension. Mentorship or course.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T16:43:46.692Z",
+    "updatedAt": "2026-10-22T16:43:46.692Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_eqrvf3n",
+    "title": "Need livestock: dairy goats, laying hens, meat rabbits, bees. Healthy, local pic...",
+    "content": "Need livestock: dairy goats, laying hens, meat rabbits, bees. Healthy, local pickup.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-08T09:33:45.993Z",
+    "updatedAt": "2026-11-08T09:33:45.993Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_laol1no",
+    "title": "Looking for greenhouse materials: poly film, frame, ventilation, irrigation. 20x...",
+    "content": "Looking for greenhouse materials: poly film, frame, ventilation, irrigation. 20x40 ft.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T19:28:40.510Z",
+    "updatedAt": "2026-10-12T19:28:40.510Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_29aeb3c",
+    "title": "Seeking tractor and implements: BCS walk-behind, rototiller, seeder, mower. Used...",
+    "content": "Seeking tractor and implements: BCS walk-behind, rototiller, seeder, mower. Used, good condition.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-11-04T05:09:11.425Z",
+    "updatedAt": "2026-11-04T05:09:11.425Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_z0r57aj",
+    "title": "Need fencing: woven wire, electric, portable. For rotational grazing, 5 acres.",
+    "content": "Need fencing: woven wire, electric, portable. For rotational grazing, 5 acres.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T13:02:29.633Z",
+    "updatedAt": "2026-11-05T13:02:29.633Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_86cki80",
+    "title": "Want to start a food forest: perennial vegetables, fruit/nut trees, nitrogen fix...",
+    "content": "Want to start a food forest: perennial vegetables, fruit/nut trees, nitrogen fixers. Design help.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T05:33:19.778Z",
+    "updatedAt": "2026-10-31T05:33:19.778Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_nnm0dw9",
+    "title": "Seeking farm business planning: enterprise budgets, marketing, regulations, cert...",
+    "content": "Seeking farm business planning: enterprise budgets, marketing, regulations, certifications.",
+    "tags": [
+      "food-water",
+      "agriculture-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T02:44:32.447Z",
+    "updatedAt": "2026-10-24T02:44:32.447Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_1391arj",
+    "title": "Seed saver offering heirloom varieties: 50+ tomato, 20+ pepper, beans, grains. T...",
+    "content": "Seed saver offering heirloom varieties: 50+ tomato, 20+ pepper, beans, grains. Trade or sale.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-08T12:23:10.734Z",
+    "updatedAt": "2026-11-08T12:23:10.734Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_g4rj0tf",
+    "title": "Nursery selling fruit/nut trees: adapted to zone 6, bare root and potted. Spring...",
+    "content": "Nursery selling fruit/nut trees: adapted to zone 6, bare root and potted. Spring/fall.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T21:34:10.943Z",
+    "updatedAt": "2026-10-12T21:34:10.943Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 5,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_4cj7nnf",
+    "title": "Compost producer: screened, mature, organic. $40/yard delivered, bulk discounts.",
+    "content": "Compost producer: screened, mature, organic. $40/yard delivered, bulk discounts.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T19:40:42.440Z",
+    "updatedAt": "2026-10-14T19:40:42.440Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_1zuevft",
+    "title": "Market gardener offering mentorship: 1-on-1, season-long, hands-on. $2000/season...",
+    "content": "Market gardener offering mentorship: 1-on-1, season-long, hands-on. $2000/season.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-14T06:29:00.962Z",
+    "updatedAt": "2026-10-14T06:29:00.962Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_bk7mlp2",
+    "title": "Livestock breeder: Nigerian Dwarf goats, heritage chickens, rabbits. Healthy, re...",
+    "content": "Livestock breeder: Nigerian Dwarf goats, heritage chickens, rabbits. Healthy, registered.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "skill",
+        "operator": "is",
+        "values": [
+          "go"
+        ],
+        "role": "constraint",
+        "confidence": 0.7,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-31T18:58:16.158Z",
+    "updatedAt": "2026-10-31T18:58:16.158Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_h577uqh",
+    "title": "Greenhouse builder: custom designs, passive solar, geothermal. 15 years experien...",
+    "content": "Greenhouse builder: custom designs, passive solar, geothermal. 15 years experience.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "15 yr"
+        ],
+        "unit": "yr",
+        "quantity": {
+          "value": 15,
+          "unit": "yr",
+          "unitType": "simple",
+          "numerator": "yr",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T23:41:30.624Z",
+    "updatedAt": "2026-10-22T23:41:30.624Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_67ownqe",
+    "title": "Equipment dealer: BCS, Ferrari, Grillo walk-behind tractors + implements. Sales/...",
+    "content": "Equipment dealer: BCS, Ferrari, Grillo walk-behind tractors + implements. Sales/service.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-12T10:42:45.158Z",
+    "updatedAt": "2026-10-12T10:42:45.158Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_s1ko8dg",
+    "title": "Fence installer: high-tensile, electric, portable. Grazing systems design includ...",
+    "content": "Fence installer: high-tensile, electric, portable. Grazing systems design included.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T12:06:36.716Z",
+    "updatedAt": "2026-10-22T12:06:36.716Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_e7m8xqz",
+    "title": "Permaculture designer: food forests, water systems, whole-farm planning. PDC cer...",
+    "content": "Permaculture designer: food forests, water systems, whole-farm planning. PDC certified.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-03T07:05:57.489Z",
+    "updatedAt": "2026-11-03T07:05:57.489Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_pkt88ly",
+    "title": "Farm business consultant: enterprise analysis, market channels, organic certific...",
+    "content": "Farm business consultant: enterprise analysis, market channels, organic certification. 20 years exp.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "duration",
+        "operator": "is",
+        "values": [
+          "20 yr"
+        ],
+        "unit": "yr",
+        "quantity": {
+          "value": 20,
+          "unit": "yr",
+          "unitType": "simple",
+          "numerator": "yr",
+          "semanticType": "duration"
+        },
+        "role": "fact",
+        "confidence": 0.6,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-25T20:11:18.392Z",
+    "updatedAt": "2026-10-25T20:11:18.392Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_dtei3bn",
+    "title": "Need organic vegetable delivery: weekly CSA box, seasonal, local farm. $50/week,...",
+    "content": "Need organic vegetable delivery: weekly CSA box, seasonal, local farm. $50/week, pickup or delivery.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/wk"
+        ],
+        "unit": "USD/wk",
+        "quantity": {
+          "value": null,
+          "unit": "USD/wk",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "wk",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-12T12:40:20.146Z",
+    "updatedAt": "2026-10-12T12:40:20.146Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_jy55xdl",
+    "title": "Offering backyard eggs: pasture-raised hens, $8/dozen, pickup Fridays. Duck eggs...",
+    "content": "Offering backyard eggs: pasture-raised hens, $8/dozen, pickup Fridays. Duck eggs occasionally.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-22T03:11:30.956Z",
+    "updatedAt": "2026-10-22T03:11:30.956Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_4lnuk9q",
+    "title": "Seeking raw milk herd share: A2 Jersey cows, tested monthly, $50/month for 1 gal...",
+    "content": "Seeking raw milk herd share: A2 Jersey cows, tested monthly, $50/month for 1 gal/week.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      },
+      {
+        "key": "rate",
+        "operator": "is",
+        "values": [
+          "NaN USD/mo"
+        ],
+        "unit": "USD/mo",
+        "quantity": {
+          "value": null,
+          "unit": "USD/mo",
+          "unitType": "compound",
+          "numerator": "USD",
+          "denominator": "mo",
+          "semanticType": "rate"
+        },
+        "role": "constraint",
+        "confidence": 0.8,
+        "provenance": "pattern"
+      }
+    ],
+    "createdAt": "2026-10-22T14:36:30.612Z",
+    "updatedAt": "2026-10-22T14:36:30.612Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 4,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_soypwy3",
+    "title": "Home baker offering sourdough: country loaf, baguettes, cinnamon rolls. $8/loaf,...",
+    "content": "Home baker offering sourdough: country loaf, baguettes, cinnamon rolls. $8/loaf, weekly pickup.",
+    "tags": [
+      "food-water",
+      "food-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T06:21:43.781Z",
+    "updatedAt": "2026-11-05T06:21:43.781Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_n72b7r7",
+    "title": "Need bulk grains: 50lb organic wheat berries, oats, rice, beans. Food grade buck...",
+    "content": "Need bulk grains: 50lb organic wheat berries, oats, rice, beans. Food grade buckets, delivery.",
+    "tags": [
+      "food-water",
+      "food-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T02:31:05.322Z",
+    "updatedAt": "2026-10-31T02:31:05.322Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_vzbqlh4",
+    "title": "Spring water delivery: 5-gal glass jugs, local source, $7/jug, monthly subscript...",
+    "content": "Spring water delivery: 5-gal glass jugs, local source, $7/jug, monthly subscription.",
+    "tags": [
+      "food-water",
+      "water-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-05T13:35:06.470Z",
+    "updatedAt": "2026-11-05T13:35:06.470Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_s8kln2i",
+    "title": "Looking for rainwater system: 1500 gal tanks, filtration, irrigation, potable op...",
+    "content": "Looking for rainwater system: 1500 gal tanks, filtration, irrigation, potable option. Quote needed.",
+    "tags": [
+      "food-water",
+      "water-requests"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "request"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-24T04:57:01.113Z",
+    "updatedAt": "2026-10-24T04:57:01.113Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "open"
+  },
+  {
+    "id": "note_mwbqjkyv_eo3kcm8",
+    "title": "Well water testing & treatment: iron, sulfur, bacteria. Licensed, guaranteed res...",
+    "content": "Well water testing & treatment: iron, sulfur, bacteria. Licensed, guaranteed results.",
+    "tags": [
+      "food-water",
+      "water-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-17T21:10:31.374Z",
+    "updatedAt": "2026-10-17T21:10:31.374Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 1,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_61ngy9g",
+    "title": "Heirloom seed saver: 100+ tomato varieties, peppers, beans, corn. Seed swap or p...",
+    "content": "Heirloom seed saver: 100+ tomato varieties, peppers, beans, corn. Seed swap or purchase.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-11-01T19:09:34.900Z",
+    "updatedAt": "2026-11-01T19:09:34.900Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 3,
+    "status": "available"
+  },
+  {
+    "id": "note_mwbqjkyv_adf0b5k",
+    "title": "Market garden mentor: 1-acre intensive, no-till, season extension. Hands-on appr...",
+    "content": "Market garden mentor: 1-acre intensive, no-till, season extension. Hands-on apprenticeship.",
+    "tags": [
+      "food-water",
+      "agriculture-offers"
+    ],
+    "properties": [
+      {
+        "key": "intent",
+        "operator": "is",
+        "values": [
+          "offer"
+        ],
+        "role": "marker",
+        "confidence": 0.9,
+        "provenance": "inferred"
+      }
+    ],
+    "createdAt": "2026-10-31T20:33:36.252Z",
+    "updatedAt": "2026-10-31T20:33:36.252Z",
+    "pinned": false,
+    "source": {
+      "type": "import",
+      "identifier": "corpus-food-water",
+      "timestamp": 1794378356455
+    },
+    "privacy": "public",
+    "priority": 2,
+    "status": "available"
+  }
+]

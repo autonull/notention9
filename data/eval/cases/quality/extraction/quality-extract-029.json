@@ -1,0 +1,18 @@
+{
+  "id": "quality-extract-029",
+  "family": "quality",
+  "qualityFamily": "extraction",
+  "input": "Looking for someone to teach my teenager to drive, patient instructor, automatic car, budget 50/hr",
+  "expected": [
+    { "key": "role", "operator": "contains", "values": ["driving instructor"] },
+    { "key": "student", "operator": "contains", "values": ["teenager", "teen"] },
+    { "key": "vehicle", "operator": "contains", "values": ["automatic"] },
+    { "key": "budget", "operator": "less than", "values": ["50 USD"] }
+  ],
+  "forbidden": [],
+  "labels": {
+    "annotators": 2,
+    "agreement": 0.86
+  },
+  "tags": ["education", "non-market", "teen", "driving", "budget"]
+}
