@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T03:47:40.728Z",
+  "generatedAt": "2026-11-18T15:54:50.856Z",
   "cases": [
     {
       "id": "inbox-empty",
@@ -117,7 +117,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 43.8,
+        "density": 46.3,
         "actions": [
           {
             "label": "Private",
@@ -154,7 +154,7 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.831,
+        "contentRatio": 0.787,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
@@ -163,7 +163,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 8.7,
+        "density": 19.9,
         "actions": [
           {
             "label": "Capture a new note",
@@ -175,15 +175,15 @@
           },
           {
             "label": "Move to trash",
-            "top": 350
+            "top": 221
           },
           {
             "label": "Move to trash",
-            "top": 478
+            "top": 221
           },
           {
             "label": "Move to trash",
-            "top": 607
+            "top": 358
           }
         ],
         "facts": 0
@@ -235,15 +235,15 @@
         },
         "scrollHeight": 900,
         "contentRatio": 0.307,
-        "wastedSpace": 297,
-        "wastedRatio": 0.329,
-        "trailingSpace": 89,
-        "contentHeight": 722,
+        "wastedSpace": 272,
+        "wastedRatio": 0.302,
+        "trailingSpace": 114,
+        "contentHeight": 697,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 60.9,
+        "density": 63.1,
         "actions": [
           {
             "label": "Anywhere (Global)Near Looking for a Reac",
@@ -388,7 +388,7 @@
             "top": 205
           },
           {
-            "label": "Rename request",
+            "label": "Rename event",
             "top": 285
           }
         ],
@@ -461,7 +461,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 4.6,
+        "density": 5.8,
         "actions": [
           {
             "label": "Zoom in",
@@ -478,6 +478,10 @@
           {
             "label": "OpenStreetMap",
             "top": 868
+          },
+          {
+            "label": "Drop a pin to capture a location",
+            "top": 836
           }
         ],
         "facts": 0
@@ -628,23 +632,27 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.483,
+        "contentRatio": 0.406,
         "wastedSpace": 177,
         "wastedRatio": 0.197,
-        "trailingSpace": 64,
-        "contentHeight": 731,
+        "trailingSpace": 140,
+        "contentHeight": 655,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": {
           "element": "flex flex-col items-center justify-center py-4 px-6 text-cen",
-          "height": 396,
-          "footprint": 0.44
+          "height": 320,
+          "footprint": 0.356
         },
-        "density": 24.6,
+        "density": 27.5,
         "actions": [
           {
             "label": "Add identity",
+            "top": 105
+          },
+          {
+            "label": "Check Connection Settings",
             "top": 105
           },
           {
@@ -657,10 +665,6 @@
           },
           {
             "label": "Entity",
-            "top": 397
-          },
-          {
-            "label": "Communication",
             "top": 397
           }
         ],
@@ -774,16 +778,16 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.81,
+        "contentRatio": 0.904,
         "wastedSpace": 5,
         "wastedRatio": 0.006,
-        "trailingSpace": 80,
-        "contentHeight": 745,
+        "trailingSpace": 0,
+        "contentHeight": 825,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 49.7,
+        "density": 47.3,
         "actions": [
           {
             "label": "Back to List",
@@ -901,35 +905,35 @@
         },
         "scrollHeight": 844,
         "contentRatio": 0.421,
-        "wastedSpace": 117,
-        "wastedRatio": 0.139,
-        "trailingSpace": 124,
-        "contentHeight": 631,
+        "wastedSpace": 67,
+        "wastedRatio": 0.079,
+        "trailingSpace": 142,
+        "contentHeight": 577,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 69.7,
+        "density": 76.2,
         "actions": [
           {
             "label": "Anywhere (Global)Near Looking for a Reac",
-            "top": 89
+            "top": 125
           },
           {
             "label": "Jump to latest",
-            "top": 173
+            "top": 209
           },
           {
             "label": "Today",
-            "top": 233
+            "top": 269
           },
           {
             "label": "Back",
-            "top": 233
+            "top": 269
           },
           {
             "label": "Next",
-            "top": 233
+            "top": 269
           }
         ],
         "facts": 0
@@ -1054,7 +1058,7 @@
             "top": 469
           },
           {
-            "label": "Rename request",
+            "label": "Rename event",
             "top": 541
           }
         ],
@@ -1127,7 +1131,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 4.7,
+        "density": 5.9,
         "actions": [
           {
             "label": "Zoom in",
@@ -1144,6 +1148,10 @@
           {
             "label": "OpenStreetMap",
             "top": 732
+          },
+          {
+            "label": "Drop a pin to capture a location",
+            "top": 700
           }
         ],
         "facts": 0
@@ -1290,7 +1298,7 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.614,
+        "contentRatio": 0.611,
         "wastedSpace": 25,
         "wastedRatio": 0.03,
         "trailingSpace": 0,
@@ -1300,8 +1308,8 @@
         "stretchDefects": [],
         "emptyState": {
           "element": "flex flex-col items-center justify-center py-4 px-6 text-cen",
-          "height": 296,
-          "footprint": 0.351
+          "height": 220,
+          "footprint": 0.261
         },
         "density": 25.3,
         "actions": [
@@ -1310,20 +1318,20 @@
             "top": 181
           },
           {
+            "label": "Check Connection Settings",
+            "top": 237
+          },
+          {
             "label": "Retry All",
-            "top": 279
+            "top": 335
           },
           {
             "label": "All",
-            "top": 479
+            "top": 535
           },
           {
             "label": "Entity",
-            "top": 479
-          },
-          {
-            "label": "Communication",
-            "top": 479
+            "top": 535
           }
         ],
         "facts": 0

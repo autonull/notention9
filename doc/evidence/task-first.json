@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T03:50:03.800Z",
+  "generatedAt": "2026-11-18T15:57:01.247Z",
   "cases": [
     {
       "view": "inbox",
@@ -52,8 +52,13 @@
             "visible": true
           }
         ],
-        "duplicateLabels": [],
-        "focusableCount": 60,
+        "duplicateLabels": [
+          {
+            "label": "respond",
+            "count": 3
+          }
+        ],
+        "focusableCount": 62,
         "firstContentTop": 82,
         "tabStopsToContent": 0
       }
@@ -65,7 +70,7 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 7,
+        "focusableCount": 19,
         "firstContentTop": 160,
         "tabStopsToContent": 1
       }
@@ -182,9 +187,16 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Drop a pin to capture a location",
+            "top": 836,
+            "tabStops": 11,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 11,
+        "focusableCount": 12,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -214,6 +226,12 @@
       "viewport": "desktop",
       "metrics": {
         "primaries": [
+          {
+            "label": "Add identity",
+            "top": 83,
+            "tabStops": 0,
+            "visible": true
+          },
           {
             "label": "Go to Settings",
             "top": 260,
@@ -253,16 +271,16 @@
       "metrics": {
         "primaries": [
           {
-            "label": "Check Connection Settings",
-            "top": 740,
-            "tabStops": 17,
+            "label": "Add identity",
+            "top": 105,
+            "tabStops": 0,
             "visible": true
           }
         ],
         "duplicateLabels": [],
         "focusableCount": 19,
         "firstContentTop": 386,
-        "tabStopsToContent": 16
+        "tabStopsToContent": 17
       }
     },
     {
@@ -316,8 +334,13 @@
             "visible": true
           }
         ],
-        "duplicateLabels": [],
-        "focusableCount": 61,
+        "duplicateLabels": [
+          {
+            "label": "respond",
+            "count": 3
+          }
+        ],
+        "focusableCount": 63,
         "firstContentTop": 79,
         "tabStopsToContent": 1
       }
@@ -354,14 +377,14 @@
         "primaries": [
           {
             "label": "Month",
-            "top": 293,
+            "top": 329,
             "tabStops": 5,
             "visible": true
           }
         ],
         "duplicateLabels": [],
         "focusableCount": 44,
-        "firstContentTop": 233,
+        "firstContentTop": 269,
         "tabStopsToContent": -1
       }
     },
@@ -446,9 +469,16 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "Drop a pin to capture a location",
+            "top": 700,
+            "tabStops": 11,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 11,
+        "focusableCount": 12,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -478,6 +508,12 @@
       "viewport": "mobile",
       "metrics": {
         "primaries": [
+          {
+            "label": "Add identity",
+            "top": 201,
+            "tabStops": 0,
+            "visible": true
+          },
           {
             "label": "Go to Settings",
             "top": 368,
@@ -517,16 +553,16 @@
       "metrics": {
         "primaries": [
           {
-            "label": "Check Connection Settings",
-            "top": 774,
-            "tabStops": 17,
+            "label": "Add identity",
+            "top": 181,
+            "tabStops": 0,
             "visible": true
           }
         ],
         "duplicateLabels": [],
         "focusableCount": 19,
-        "firstContentTop": 520,
-        "tabStopsToContent": 16
+        "firstContentTop": 576,
+        "tabStopsToContent": 17
       }
     }
   ]
