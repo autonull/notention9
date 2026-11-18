@@ -41,10 +41,13 @@
 ### W1 — Extraction quality at ≤4B
 **Goal**: Highest achievable F1 with 0.8B/2B/4B; golden 10/10; quality ≥ 65/70.
 
-- [ ] **W1.1 Fix the Qwen 3.5 4B regression.** It currently falls back to deterministic
-  extraction (golden 3/10). Diagnose: grammar/chat-wrapper mismatch vs prompt mismatch vs
-  context length. Acceptance: golden ≥ 9/10, quality pass ≥ 50/70, no fallback in logs.
-  Command: `LLAMA_MODEL_PATH=models/Qwen_Qwen3.5-4B-Q4_K_M.gguf pnpm prompts:eval eval --provider llamacpp`.
+- [ ] **W1.1 Fix the Qwen 3.5 4B regression.** **Diagnosed 2026-11-18**: every extraction
+  fails with `A context size of 4096 is too large for the available VRAM`, so the pipeline
+  silently falls back to deterministic properties (`provenance: deterministic`); measured
+  golden **4/10, F1 0.440**. Next: lower context (`n_ctx`) and/or GPU layers, free VRAM on the
+  target machine, and assert zero fallbacks. Acceptance: golden ≥ 9/10, quality pass ≥ 50/70,
+  no fallback in logs.
+  Command: `pnpm prompts:eval eval --provider llama-cpp-embedded --model-path models/Qwen_Qwen3.5-4B-Q4_K_M.gguf --few-shot 0`.
 - [ ] **W1.2 Structured-output reliability.** JSON repair + schema validation *before* grammar
   retry; log repair rate. Acceptance: repair success ≥ 99% on quality corpus; zero silent drops.
 - [ ] **W1.3 CoT scratchpad, flag-gated.** Measure CoT on 2B and 4B only (no 9B); keep the flag
@@ -286,6 +289,13 @@ pnpm sim:calibrate
 ---
 
 ## 9. Progress Log
+
+### 2026-11-18 — W1.1 diagnosis (4B regression)
+- Reproduced with `--provider llama-cpp-embedded` on `Qwen_Qwen3.5-4B-Q4_K_M.gguf`.
+- Root cause: `A context size of 4096 is too large for the available VRAM` on **every** case;
+  the pipeline falls back to deterministic extraction (`provenance: deterministic`).
+- Result: golden **4/10, mean F1 0.440** (TODO.25 reported 3/10).
+- Next: reduce `n_ctx` / GPU layers to fit the 10 GB card, then re-run; require zero fallbacks.
 
 ### 2026-11-18 — W6.7 test-infra + W4.5 match canary
 - **W6.7 (a)** Migrated deprecated Vitest `poolOptions`: `ui` → `maxWorkers: 1` (isolation kept —
