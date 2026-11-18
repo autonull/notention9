@@ -6,6 +6,12 @@ export default defineConfig({
         include: ['src/scenarios/**/*.test.ts'],
         globals: true,
         environment: 'node',
+        pool: 'forks',
+        poolOptions: {
+            forks: {
+                singleFork: true,
+            },
+        },
     },
     resolve: {
         alias: {

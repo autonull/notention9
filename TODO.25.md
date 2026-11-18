@@ -1376,8 +1376,8 @@ pnpm eval:verify-manifest
 - **Axe accessibility**: 11/11 views pass.
 - **All gates pass**: space utilization, task-first, accessibility.
 - **Tests pass**: core 934, UI 42 files, optimize 127, space:audit 2/2, taxonomy:coverage 24/24, eval:verify-manifest.
-- **Simulator tests**: 7/38 measurement baseline tests fail (regression, golden-path, gig-economy, freelance-marketplace, hiring-pipeline, project-collaboration, mentorship-network) — the improved match quality (F1 0.561→0.803) produces more matches than stored baselines expect. Baselines for 4 scenarios were updated on 2026-11-18; 5 scenarios need baseline updates. EADDRINUSE port conflicts also occur (relay port 14444).
-- **Remaining**: W11.7 stranger test (blocked on human — needs a fresh profile to run `pnpm stranger-test` and attach install→capture→match→export timing); simulator baseline updates for 5 scenarios.
+- **Simulator tests**: 7/38 measurement baseline tests failed (regression, golden-path, gig-economy, freelance-marketplace, hiring-pipeline, project-collaboration, mentorship-network) — the improved match quality (F1 0.561→0.803) produces more matches than stored baselines expect. **FIXED**: Updated all 38 scenario baselines (calibrated 2026-11-18, 10 seeded reps). Fixed EADDRINUSE port conflicts by running simulator tests in single fork (vitest config: `pool: 'forks', singleFork: true`). All 116 simulator tests pass.
+- **Remaining**: W11.7 stranger test (blocked on human — needs a fresh profile to run `pnpm stranger-test` and attach install→capture→match→export timing).
 
 ---
 
