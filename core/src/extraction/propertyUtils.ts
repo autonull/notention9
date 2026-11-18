@@ -37,7 +37,8 @@ export function addProperty(
     operator: string,
     value: string,
     confidence?: number,
-    provenance?: Property['provenance']
+    provenance?: Property['provenance'],
+    role?: Property['role']
 ): void {
     const values = value.split(',').map(part => part.trim()).filter(Boolean);
     if (values.length === 0) return;
@@ -48,7 +49,7 @@ export function addProperty(
         values.forEach(v => { if (!existing.values.includes(v)) existing.values.push(v); });
         return;
     }
-    properties.set(id, { key, operator, values, confidence, provenance });
+    properties.set(id, { key, operator, values, confidence, provenance, role });
 }
 
 /**

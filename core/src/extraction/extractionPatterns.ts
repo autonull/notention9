@@ -145,10 +145,34 @@ export function extractRoles(
 ): void {
     if (options.roles === false) return;
 
+    // Pattern with "a/an" (e.g., "looking for a piano teacher")
     const roleRequestMatch = text.match(/(?:looking for|hiring|need) (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:for|in|to|with)|$))/i);
     if (roleRequestMatch) {
         const role = roleRequestMatch[1].trim();
-        if (role.split(' ').length < 5) addProperty(properties, 'role', 'contains', role, confidence, provenance);
+        if (role.split(' ').length < 5) {
+            addProperty(properties, 'role', 'contains', role, confidence, provenance);
+            addProperty(properties, 'service', 'contains', role, confidence, provenance);
+            // Only add skill for person-like roles (not for services/objects)
+            const isPersonRole = /\b(teacher|walker|sitter|driver|mentor|tutor|cleaner|writer|coach|developer|designer|engineer|doctor|nurse|lawyer|plumber|electrician|carpenter|painter|mechanic|technician|photographer|chef|cook|organizer|mover|delivery|babysitter|nanny|caregiver|therapist|counselor|trainer|instructor|guide|translator|interpreter|editor|proofreader|researcher|analyst|consultant|freelancer|contractor|handyman|gardener|landscaper|roofer|welder|lessons?|language|practice|conversation|tutoring)\b/i.test(role);
+            if (isPersonRole) {
+                addProperty(properties, 'skill', 'contains', role, confidence, provenance);
+            }
+        }
+    }
+
+    // Pattern without "a/an" (e.g., "looking for piano lessons")
+    const roleRequestMatch2 = text.match(/(?:looking for|seeking|searching for)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:for|in|to|with|on|my|our|their|twice|once|daily|weekly|monthly|daily)|$))/i);
+    if (roleRequestMatch2) {
+        const role = roleRequestMatch2[1].trim();
+        if (role.split(' ').length < 5 && !roleRequestMatch) { // Avoid duplicate if first pattern matched
+            addProperty(properties, 'role', 'contains', role, confidence, provenance);
+            addProperty(properties, 'service', 'contains', role, confidence, provenance);
+            // Only add skill for person-like roles (not for services/objects)
+            const isPersonRole = /\b(teacher|walker|sitter|driver|mentor|tutor|cleaner|writer|coach|developer|designer|engineer|doctor|nurse|lawyer|plumber|electrician|carpenter|painter|mechanic|technician|photographer|chef|cook|organizer|mover|delivery|babysitter|nanny|caregiver|therapist|counselor|trainer|instructor|guide|translator|interpreter|editor|proofreader|researcher|analyst|consultant|freelancer|contractor|handyman|gardener|landscaper|roofer|welder|lessons?|language|practice|conversation|tutoring)\b/i.test(role);
+            if (isPersonRole) {
+                addProperty(properties, 'skill', 'contains', role, confidence, provenance);
+            }
+        }
     }
 
     const roleOfferMatch = text.match(/i am (?:a|an)\s+([a-zA-Z\s]+?)(?=(?:[\.,]|\s+(?:who|with|looking|in|for)|$))/i);
@@ -192,7 +216,9 @@ export function extractIntents(
 
     for (const intent of INTENTS) {
         if (intent.regex.test(text)) {
-            addProperty(properties, 'intent', 'is', intent.key, confidence, provenance);
+            // request/offer are directional markers, not constraints
+            const role = (intent.key === 'request' || intent.key === 'offer') ? 'marker' : undefined;
+            addProperty(properties, 'intent', 'is', intent.key, confidence, provenance, role);
         }
     }
 }

@@ -306,6 +306,7 @@ export const requestDomain: OntologyNode[] = [
                     task: { type: 'string', description: 'Task to be performed.', icon: 'check', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
                     certification: { type: 'string', description: 'Certifications required.', icon: 'badge', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
                     dietary: { type: 'string', description: 'Dietary constraints.', icon: 'leaf', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
+                    service: { type: 'string', description: 'Service needed or offered.', icon: 'wrench', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
                 }
             }
         ]

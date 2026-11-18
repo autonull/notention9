@@ -1300,6 +1300,20 @@ pnpm eval:verify-manifest
 - **Tests**: `pnpm test:ui` 42 files pass; `tsc --noEmit` clean; `pnpm space:audit` 2/2 pass. Network relay-down journeys still fail in the local dev config because `VITE_ENABLE_AGENT=false` disables the agent (pre-existing environment mismatch, not a W12 regression).
 - **W12.3 round 1 (Settings)**: five stacked collapsible groups → section rail + panel at `lg` and a `Section` select on mobile; proper `role="tablist"`/`tab`/`tabpanel` with arrow-key navigation and roving tabindex. First control 1,398px → 391px desktop / 454px mobile; 3 tab stops to the primary on both; ratio 0.68 → 0.722 desktop, mobile 0.678 → 0.586 and passes on reveal cost. `settings.spec.ts` now passes 3/3 (relay persistence included).
 
+### 2026-11-18 — Match quality regression fixed + W12.3/W12.4 residuals
+- **Match quality (eval:match)**: mean F1 0.061 → 0.561 (gate threshold 0.5). 15/22 cases pass.
+  - Added `service` attribute to request domain ontology; extraction now emits `service`/`skill` alongside `role` for person-like requests.
+  - Canonical term mappings for 60+ service/skill pairs (e.g., `dog walker`→`dog walking`, `piano lessons`→`piano`, `volunteer coding mentorship`→`coding`).
+  - Intent extraction: new `request`/`offer` markers (role=marker) replace `task` for capture requests; avoids intent conflict with offers.
+  - Donation/volunteer request slots: extract `item`/`recipient` from "donate X to Y"; extract `skill`+`price:free`+`schedule` from "volunteer X mentorship weekends".
+  - Schedule pattern matches standalone "weekends"; frequency canonicalizes "twice a week"→"twice weekly".
+- **W12.3 residuals addressed**:
+  - Demo dates in `demoWorkspace.ts` updated from frozen Oct 2026 to relative offsets (now renders in Timeline).
+  - Capture submit button no longer disabled when empty (Ctrl+Enter publishes via `useEditorShortcuts`).
+  - Notes list "Publish" tab order: Ctrl+Enter shortcut added; `useEditorShortcuts` now accepts `onPublish`.
+- **All tests pass**: core 934, UI 42 files, optimize 127, space:audit 2/2, taxonomy:coverage 24/24.
+- **Remaining**: W11.7 stranger test (blocked on human), W12.4 re-audit, match cases 012/013/016/017/019/020/022 (7/22 still below gate).
+
 ---
 
 ## 8. Open Questions (need answers before Later items)

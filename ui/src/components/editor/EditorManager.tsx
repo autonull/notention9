@@ -126,7 +126,8 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         addToast,
         handlePrevious,
         handleNext,
-        setSelectedNoteId
+        setSelectedNoteId,
+        onPublish: handlePublish
     });
 
     const handleInsertTemplate = (template: OntologyNode) => {

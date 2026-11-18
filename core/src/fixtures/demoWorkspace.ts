@@ -95,7 +95,7 @@ const DEMO_NOTES: DemoNoteInput[] = [
         tags: ['event', 'community'],
         properties: [
             property('type', ['event'], 'is', 'marker'),
-            property('start', ['2026-10-24T18:00'], 'is', 'constraint'),
+            property('start', ['2026-11-28T18:00'], 'is', 'constraint'),
             property('location', ['Community Hall, Berlin'], 'is', 'constraint'),
         ],
         privacy: 'public',
@@ -109,7 +109,7 @@ const DEMO_NOTES: DemoNoteInput[] = [
         tags: ['task'],
         properties: [
             property('status', ['todo'], 'is', 'marker'),
-            property('deadline', ['2026-10-23'], 'is', 'constraint'),
+            property('deadline', ['2026-11-27'], 'is', 'constraint'),
             property('type', ['task'], 'is', 'marker'),
         ],
         offsetHours: 20,

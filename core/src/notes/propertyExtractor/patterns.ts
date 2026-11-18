@@ -11,10 +11,12 @@ export const TYPE_CHECKERS = {
 } as const;
 
 export const INTENTS = [
+  { key: 'request', regex: /^(?:i\s+)?(?:need|want|looking\s+for|seeking|searching\s+for)\b/i },
+  { key: 'offer', regex: /^(?:i\s+)?(?:offer|provide|selling|available\s+for)\b/i },
   { key: 'reminder', regex: /remind.*me.*(to|about|that).*|set.*reminder/i },
   { key: 'schedule', regex: /schedule|book|plan|arrange.*for|appointment.*with/i },
   { key: 'communication', regex: /email|send.*message|text|call|contact.*about/i },
-  { key: 'task', regex: /todo|to-do|task|do.*later|need.*to|want.*to/i },
+  { key: 'task', regex: /todo|to-do|task|do.*later/i },
   { key: 'shopping', regex: /buy|purchase|order|get.*from|shop.*for/i },
   { key: 'health', regex: /medication|take.*pill|doctor.*appointment|exercise|workout/i },
 ] as const;

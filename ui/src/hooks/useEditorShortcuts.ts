@@ -11,25 +11,32 @@ interface UseEditorShortcutsProps {
     onToggleActive?: () => void;
     onTogglePrivacy?: () => void;
     onFocusMatchPanel?: () => void;
+    onPublish?: () => void;
 }
 
 export function useEditorShortcuts({
-                                       dirtyNote,
-                                       onSave,
-                                       addToast,
-                                       handlePrevious,
-                                       handleNext,
-                                       setSelectedNoteId,
-                                       onToggleActive,
-                                       onTogglePrivacy,
-                                       onFocusMatchPanel
-                                   }: UseEditorShortcutsProps) {
+                                        dirtyNote,
+                                        onSave,
+                                        addToast,
+                                        handlePrevious,
+                                        handleNext,
+                                        setSelectedNoteId,
+                                        onToggleActive,
+                                        onTogglePrivacy,
+                                        onFocusMatchPanel,
+                                        onPublish
+                                    }: UseEditorShortcutsProps) {
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if ((e.metaKey || e.ctrlKey) && e.key === 's') {
                 e.preventDefault();
                 onSave();
                 addToast('Saved', 'success');
+            }
+
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+                e.preventDefault();
+                onPublish?.();
             }
 
             if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key.toLowerCase() === 'a') {
@@ -64,5 +71,5 @@ export function useEditorShortcuts({
         };
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [dirtyNote, onSave, addToast, handlePrevious, handleNext, setSelectedNoteId]);
+    }, [dirtyNote, onSave, addToast, handlePrevious, handleNext, setSelectedNoteId, onPublish]);
 };

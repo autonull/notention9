@@ -103,7 +103,6 @@ export function QuickCapture({
                         />
                         <Button
                             type="submit"
-                            disabled={!input.trim()}
                             size="lg"
                             className="absolute right-2 top-1/2 -translate-y-1/2 touch-target-48"
                             aria-label="Create note"

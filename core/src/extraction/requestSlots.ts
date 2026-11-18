@@ -36,7 +36,8 @@ const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 
 const SCHEDULE_PATTERN = new RegExp(
     `\\b(?:next|this|on)?\\s*${DAY}(?:\\s*(?:,|and|&)\\s*${DAY})*` +
     `(?:\\s+(?:night|mornings?|afternoons?|evenings?|weekends?|weekdays?))?` +
-    `(?:\\s+\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?(?:\\s*[-–]\\s*\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?)?)?`,
+    `(?:\\s+\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?(?:\\s*[-–]\\s*\\d{1,2}(?::\\d{2})?\\s*(?:am|pm)?)?)?` +
+    `|\\b(?:on\\s+)?weekends?\\b`,
     'i'
 );
 
@@ -93,13 +94,50 @@ export function extractRequestSlots(
 ): void {
     if (options.request === false) return;
 
+    let needValue = '';
     for (const pattern of NEED_PATTERNS) {
         const match = text.match(pattern);
         const value = match?.[1]?.trim();
         if (value && value.length > 1 && value.length < 80) {
+            needValue = value;
             addProperty(properties, 'need', 'contains', value, confidence, provenance);
             break;
         }
+    }
+
+    // Donation-specific extraction: extract item and recipient from need
+    if (needValue && /donate|donation|give\s+away|drop\s+off/i.test(text)) {
+        // Extract item: "donate X to Y" -> X is item
+        const itemMatch = needValue.match(/^(?:donate|donation|give\s+away|drop\s+off)\s+(.+?)(?:\s+to\s+.+)?$/i);
+        if (itemMatch) {
+            const item = itemMatch[1].trim();
+            if (item && item.length < 80) {
+                addProperty(properties, 'item', 'is', item, confidence, provenance);
+            }
+        }
+        // Extract recipient: "donate X to Y" -> Y is recipient
+        const recipientMatch = needValue.match(/(?:donate|donation|give\s+away|drop\s+off)\s+.+?\s+to\s+(.+)$/i);
+        if (recipientMatch) {
+            const recipient = recipientMatch[1].trim();
+            if (recipient && recipient.length < 80) {
+                addProperty(properties, 'recipient', 'is', recipient, confidence, provenance);
+            }
+        }
+    }
+
+    // Volunteer/mentorship-specific extraction: extract skill, price (free), schedule
+    // Only trigger on explicit volunteer/pro bono, not on tutor/tutoring (can be paid)
+    if (needValue && /volunteer|mentor|mentoring|pro\s+bono/i.test(text)) {
+        // Extract skill from "volunteer X mentorship" or "volunteer X tutoring"
+        const skillMatch = needValue.match(/(?:volunteer|provide)\s+(.+?)(?:\s+(?:mentorship|mentoring|tutoring|tutor|coaching|teaching))?\s*(?:\s+(?:on|during|for)\s+.+)?$/i);
+        if (skillMatch) {
+            const skill = skillMatch[1].trim();
+            if (skill && skill.length < 80) {
+                addProperty(properties, 'skill', 'is', skill, confidence, provenance);
+            }
+        }
+        // Volunteer implies free
+        addProperty(properties, 'price', 'is', 'free', confidence, provenance);
     }
 
     const scheduleMatch = text.match(SCHEDULE_PATTERN);
