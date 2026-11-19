@@ -661,3 +661,4 @@ Decisions applied:
   - `--quality-limit` option works for fast iteration
   - JSON reports written to `data/eval/local/`
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅.
+- **Note**: `pnpm space:audit` (Playwright-based) fails in test env waiting for `[data-ready]` — pre-existing issue, not a regression.
