@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useMemo, useCallback, useRef, Suspense} from 'react';
 import {Header} from './layout/Header';
 import {MobileNavigation} from './layout/MobileNavigation';
-import {EnhancedCommandPalette} from './ui/EnhancedCommandPalette';
+import {CommandPalette} from './command/CommandPalette';
 import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
@@ -168,39 +168,7 @@ export function AppShell() {
         isMobileNoteList ? 'hidden' : 'block'
     );
 
-    const paletteItems = useMemo(() => {
-        const noteItems = sortedNotes.slice(0, 100).map((note) => ({
-            id: note.id,
-            label: note.title || 'Untitled',
-            description: note.content ? getTextFromHtml(note.content).slice(0, 60) : '',
-            icon: <NoteIcon className="h-5 w-5"/>,
-            action: () => {
-                setSelectedNoteId(note.id);
-                setActiveView('notes');
-            },
-            category: 'Notes',
-            keywords: [
-                note.title.toLowerCase(),
-                ...note.tags.map(t => `#${t.toLowerCase()}`),
-                ...note.properties.flatMap(({key, values}) => [
-                    key.toLowerCase(),
-                    ...values.map(value => `${key.toLowerCase()}:${value.toLowerCase()}`),
-                ]),
-            ],
-        }));
-        return [
-            ...commands.map((cmd) => ({
-                id: `cmd-${cmd.label}`,
-                label: cmd.label,
-                icon: cmd.icon,
-                action: cmd.action,
-                category: 'Navigation',
-                shortcut: cmd.shortcut,
-                keywords: cmd.label.toLowerCase().split(' '),
-            })),
-            ...noteItems,
-        ];
-    }, [commands, sortedNotes, setActiveView, setSelectedNoteId]);
+    // Palette items are now handled by CommandPalette using actionRegistry
 
     return (
         <PendingConfirmationsProvider>
@@ -239,16 +207,9 @@ export function AppShell() {
                         </main>
                     </div>
                     <MobileNavigation/>
-                    <EnhancedCommandPalette
+                    <CommandPalette
                         isOpen={isPaletteOpen}
                         onClose={() => setIsPaletteOpen(false)}
-                        items={paletteItems}
-                        placeholder="Type a command or search notes... (#tag, key:value)"
-                        title="Command Palette"
-                        showShortcuts={true}
-                        showRecent={true}
-                        fuzzySearch={true}
-                        maxItems={100}
                     />
                     <HelpDialog
                         isOpen={isHelpOpen}

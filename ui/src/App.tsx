@@ -7,12 +7,14 @@ import {AgentStatusIndicator} from './components/agent/AgentStatusIndicator';
 import {useNetworkManagement} from './hooks/useNetworkManagement';
 import {useStrategyInit} from './hooks/useStrategyInit';
 import {useAutoBackup} from './hooks/useAutoBackup';
+import {useActionRegistryInit} from './hooks/useActionRegistry';
 import {StrategyProvider} from './hooks/useStrategyResolver';
 import {I18nProvider} from './components/i18n';
 import {AccessibilityProvider} from './hooks/useAccessibility';
 
 function App() {
     useStrategyInit();
+    useActionRegistryInit();
     
     return (
         <I18nProvider>

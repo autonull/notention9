@@ -69,6 +69,10 @@ vi.mock('../hooks/useViewContext', () => ({
         incrementChatNotification: vi.fn(),
         resetChatNotification: vi.fn(),
     }),
+    useViewNavigation: () => ({
+        navigate: vi.fn(),
+        goBack: vi.fn(),
+    }),
 }));
 
 vi.mock('../hooks/useNetworkManagement', () => ({
@@ -111,6 +115,7 @@ vi.mock('../hooks/useAccessibility', () => ({
 
 vi.mock('../hooks/useStrategyResolver', () => ({
     StrategyProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+    initializeStrategySystem: vi.fn(),
 }));
 
 vi.mock('../components/i18n', () => ({
@@ -133,7 +138,7 @@ vi.mock('@notention/core/ui/strategy', () => ({
     strategyRegistry: {},
 }));
 
-// Mock the onboarding service to prevent issues with constructor
+// Mock the onboarding service and action registry to prevent issues with constructor
 vi.mock('@notention/core', async () => {
     const actual = await vi.importActual('@notention/core');
     return {
@@ -143,7 +148,8 @@ vi.mock('@notention/core', async () => {
             }
 
             generateConfigNoteContent = () => '# System Configuration\n@config:active';
-        }
+        },
+        registerBuiltinActions: vi.fn(),
     };
 });
 
