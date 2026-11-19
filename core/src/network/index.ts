@@ -9,5 +9,7 @@ export * from './nostr/LocalTransport.js';
 export * from './nostr/privateNetwork.js';
 export * from './nostr/Outbox.js';
 export * from './nostr/multiDevice.js';
+export { createSyncEngine, type SyncEngine, type SyncState, type NoteRevision, type NoteHead, type SyncConflict, type DeltaSyncOptions, type DeltaSyncResult, KIND_NOTE_REVISION, KIND_NOTE_HEAD, createRevisionEvent, createHeadEvent, parseRevisionEvent, parseHeadEvent, noteToRevision, revisionToNote } from './nostr/syncProtocol.js';
+export * from './nostr/syncBudget.js';
 export * from './meshtastic/MeshtasticNetworkProvider.js';
 export * from './transports/index.js';

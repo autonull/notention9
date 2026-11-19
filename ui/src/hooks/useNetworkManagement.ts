@@ -4,7 +4,9 @@ import {
     NostrNetworkProvider,
     MeshtasticNetworkProvider,
     NetworkProvider,
-    Note
+    Note,
+    AppSettings,
+    type SyncResult,
 } from '@notention/core';
 import { useSettings } from './useSettingsContext';
 import { useNotes } from './useNotes';
@@ -44,6 +46,8 @@ const PROVIDER_CONFIGS: Record<string, ProviderConfig> = {
                 relays: settings.nostr?.relays,
                 enabled: settings.privacyMode !== 'local-only'
             });
+            // Update sync budget configuration
+            (provider as NostrNetworkProvider).updateSyncBudget(settings);
         },
         subscribe: (provider, getUpsertNote) => {
             provider.on('note', (note: Note) => {
@@ -158,13 +162,66 @@ export function useNetworkManagement() {
         setSettings((prev) => ({ ...prev, privacyMode: mode }));
     }, [setSettings]);
 
+    const syncNow = useCallback(async (): Promise<SyncResult> => {
+        if (!nostr) {
+            return {
+                synced: false,
+                eventsPublished: 0,
+                eventsReceived: 0,
+                payloadBytes: 0,
+                durationMs: 0,
+                isDelta: true,
+                error: 'Nostr provider not available',
+            };
+        }
+        return await nostr.sync(settings);
+    }, [nostr, settings]);
+
+    const fullSync = useCallback(async (): Promise<SyncResult> => {
+        if (!nostr) {
+            return {
+                synced: false,
+                eventsPublished: 0,
+                eventsReceived: 0,
+                payloadBytes: 0,
+                durationMs: 0,
+                isDelta: false,
+                error: 'Nostr provider not available',
+            };
+        }
+        return await nostr.fullSync(settings);
+    }, [nostr, settings]);
+
+    const getSyncBudgetStatus = useCallback(() => {
+        if (!nostr) return null;
+        return nostr.getSyncBudgetStatus(settings);
+    }, [nostr, settings]);
+
+    const getSyncMetrics = useCallback(() => {
+        if (!nostr) return null;
+        return nostr.getSyncMetrics(settings);
+    }, [nostr, settings]);
+
+    const updateSyncSettings = useCallback((updates: Partial<AppSettings['sync']>) => {
+        setSettings((prev) => ({
+            ...prev,
+            sync: { ...(prev.sync || {}), ...updates },
+        }));
+    }, [setSettings]);
+
     return {
         providers,
         toggleProvider,
         updateProviderSettings,
         setPrivacyMode,
+        syncNow,
+        fullSync,
+        getSyncBudgetStatus,
+        getSyncMetrics,
+        updateSyncSettings,
         meshtasticSettings: settings.meshtastic || {},
         nostrSettings: settings.nostr || {},
+        syncSettings: settings.sync || {},
         isPrivateMode: settings.privacyMode === 'local-only'
     };
 }

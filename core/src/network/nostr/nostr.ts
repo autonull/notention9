@@ -35,6 +35,9 @@ interface NIP07Window extends Window {
 
 export const pool = new SimplePool();
 
+// Export for external use (e.g., sync budget)
+export { publishEventToRelays };
+
 /**
  * Helper to query events using subscribeMany since SimplePool in v2 might lack list/query.
  * Aggregates events until EOSE or timeout.

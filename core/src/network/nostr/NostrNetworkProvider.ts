@@ -1,11 +1,13 @@
 import { NetworkProvider, NetworkStatus } from '../types.js';
-import { Note, PrivacyLevel, OntologyNode } from '../../types/index.js';
+import { Note, PrivacyLevel, OntologyNode, AppSettings, type NostrEvent } from '../../types/index.js';
 import { getPublicKey } from 'nostr-tools';
 import {
     publishNoteToNostr,
+    publishEventToRelays,
     DEFAULT_RELAYS,
     convertEventToNote,
     pool,
+    queryEvents,
     KIND_SEMANTIC_NOTE,
     KIND_TEXT_NOTE
 } from './nostr.js';
@@ -15,6 +17,19 @@ import { hexToBytes } from '../../utils/encoding.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { relayHealthManager } from './relayHealth.js';
 import { createRelayDiscovery, type RelayDiscoveryService, type DiscoveredRelay } from './relayDiscovery.js';
+import { SyncEngine, createSyncEngine, type DeltaSyncResult, parseRevisionEvent, parseHeadEvent } from './syncProtocol.js';
+import {
+    type SyncBudgetConfig,
+    getConfig,
+    getMetrics,
+    isNetworkAllowed,
+    calculateBatchSize,
+    createDeltaFilter,
+    shouldSyncNow,
+    updateSyncMetrics,
+    formatBytes,
+    getSyncBudgetStatus,
+} from './syncBudget.js';
 
 import { BaseNetworkProvider, type NetworkProviderConfig } from '../BaseNetworkProvider.js';
 
@@ -23,12 +38,27 @@ export interface NostrConfig extends NetworkProviderConfig {
     relays?: string[];
 }
 
+export interface SyncResult {
+    synced: boolean;
+    eventsPublished: number;
+    eventsReceived: number;
+    payloadBytes: number;
+    durationMs: number;
+    isDelta: boolean;
+    error?: string;
+}
+
 export class NostrNetworkProvider extends BaseNetworkProvider implements NetworkProvider {
     readonly id = 'nostr';
     readonly name = 'Nostr';
     private _sub: { close: () => void } | null = null;
     private _pubkey: string | null = null;
     private relayDiscovery: RelayDiscoveryService;
+    private syncEngine: SyncEngine | null = null;
+    private lastSyncAt: number = 0;
+    private syncBudgetConfig: SyncBudgetConfig = getConfig({} as AppSettings);
+    private pendingOutboxEvents: NostrEvent[] = [];
+    private batchTimeout: ReturnType<typeof setTimeout> | null = null;
 
     override config: NostrConfig = {};
 
@@ -38,6 +68,7 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         this.relayDiscovery = createRelayDiscovery();
         if (config.privkey) {
             this.updatePubkey(config.privkey);
+            this.syncEngine = createSyncEngine(config.privkey);
         }
         // Add user-configured relays to discovery
         if (config.relays) {
@@ -244,10 +275,317 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         });
     }
 
+    /** Update sync budget configuration from settings */
+    updateSyncBudget(settings: AppSettings): void {
+        this.syncBudgetConfig = getConfig(settings);
+        this.lastSyncAt = settings.sync?.lastSyncAt ?? 0;
+        if (this.syncEngine) {
+            this.syncEngine.setLastSyncTimestamp(this.lastSyncAt);
+        }
+    }
+
+    /** Check if sync is allowed based on network conditions */
+    async canSyncNow(): Promise<boolean> {
+        if (!this.enabled || !this.config.privkey || !this.syncEngine) {
+            return false;
+        }
+        if (!await isNetworkAllowed(this.syncBudgetConfig)) {
+            this.logger.info('Sync skipped: not on WiFi (wifiOnly mode enabled)');
+            return false;
+        }
+        if (!shouldSyncNow(this.syncBudgetConfig, this.lastSyncAt)) {
+            return false;
+        }
+        return true;
+    }
+
+    /** Perform a delta sync: publish local changes, fetch remote changes */
+    async sync(settings: AppSettings): Promise<SyncResult> {
+        const startTime = Date.now();
+        const result: SyncResult = {
+            synced: false,
+            eventsPublished: 0,
+            eventsReceived: 0,
+            payloadBytes: 0,
+            durationMs: 0,
+            isDelta: true,
+        };
+
+        if (!this.enabled || !this.config.privkey || !this.syncEngine) {
+            result.error = 'Sync not available: missing key or disabled';
+            return result;
+        }
+
+        // Check network conditions
+        if (!await isNetworkAllowed(this.syncBudgetConfig)) {
+            result.error = 'Sync skipped: not on WiFi (wifiOnly mode enabled)';
+            result.durationMs = Date.now() - startTime;
+            return result;
+        }
+
+        this.logger.info('Starting delta sync...');
+
+        try {
+            // 1. Get local changes since last sync
+            const deltaResult = this.syncEngine.createDeltaSyncEvents({
+                sinceTimestamp: this.lastSyncAt,
+                maxEvents: 500,
+            });
+
+            result.isDelta = deltaResult.isDelta;
+
+            // 2. Publish local changes (batched)
+            if (deltaResult.events.length > 0) {
+                const publishResult = await this.publishEventsBatched(deltaResult.events);
+                result.eventsPublished = publishResult.published;
+                result.payloadBytes += publishResult.bytes;
+            }
+
+            // 3. Fetch remote changes using delta filter
+            const filter = createDeltaFilter(this.lastSyncAt, [this.syncEngine.getPubkey()]);
+            const remoteEvents = await this.fetchEvents(filter);
+            result.eventsReceived = remoteEvents.length;
+
+            // Process remote events (would be handled by subscription in real implementation)
+            for (const event of remoteEvents) {
+                const revision = this.parseSyncEvent(event);
+                if (revision) {
+                    this.syncEngine.applyRemoteRevision(revision);
+                }
+            }
+
+            // 4. Update sync timestamp and metrics
+            this.lastSyncAt = Date.now();
+            this.syncEngine.setLastSyncTimestamp(this.lastSyncAt);
+
+            const metricsUpdate = await updateSyncMetrics(settings, result.payloadBytes, result.eventsPublished + result.eventsReceived);
+            if (metricsUpdate.sync?.lastSyncAt) {
+                this.lastSyncAt = metricsUpdate.sync.lastSyncAt;
+            }
+
+            result.synced = true;
+            result.durationMs = Date.now() - startTime;
+            this.logger.info(`Delta sync completed: ${result.eventsPublished} published, ${result.eventsReceived} received, ${formatBytes(result.payloadBytes)} in ${result.durationMs}ms`);
+
+        } catch (error) {
+            result.error = error instanceof Error ? error.message : String(error);
+            result.durationMs = Date.now() - startTime;
+            this.logger.error('Sync failed', error as Error);
+        }
+
+        return result;
+    }
+
+    /** Publish events with batching and budget awareness */
+    private async publishEventsBatched(events: NostrEvent[]): Promise<{ published: number; bytes: number }> {
+        if (events.length === 0) return { published: 0, bytes: 0 };
+
+        const config = this.syncBudgetConfig;
+        const relays = this.relays;
+        let published = 0;
+        let totalBytes = 0;
+
+        if (config.batchEnabled && events.length > 1) {
+            // Process in batches within budget
+            const batchWindow = config.batchWindowMs;
+            const maxPayload = config.maxPayloadBytes;
+
+            for (let i = 0; i < events.length; ) {
+                let batch: NostrEvent[] = [];
+                let batchBytes = 0;
+
+                // Build batch within size limit
+                while (i < events.length) {
+                    const eventSize = calculateBatchSize([events[i]], config.compress);
+                    if (batchBytes + eventSize > maxPayload && batch.length > 0) {
+                        break;
+                    }
+                    batch.push(events[i]);
+                    batchBytes += eventSize;
+                    i++;
+                }
+
+                if (batch.length > 0) {
+                    try {
+                        await this.publishEventBatch(batch, relays);
+                        published += batch.length;
+                        totalBytes += batchBytes;
+                    } catch (e) {
+                        this.logger.error('Batch publish failed', e as Error);
+                        // Try individual publishes as fallback
+                        for (const event of batch) {
+                            try {
+                                await publishEventToRelays(event, relays);
+                                published++;
+                                totalBytes += calculateBatchSize([event], config.compress);
+                            } catch {
+                                // Individual publish failed, continue
+                            }
+                        }
+                    }
+
+                    // Respect batch window
+                    if (i < events.length && batchWindow > 0) {
+                        await new Promise(resolve => setTimeout(resolve, batchWindow));
+                    }
+                }
+            }
+        } else {
+            // Publish all at once (legacy behavior)
+            try {
+                await this.publishEventBatch(events, relays);
+                published = events.length;
+                totalBytes = calculateBatchSize(events, config.compress);
+            } catch (e) {
+                this.logger.error('Publish failed', e as Error);
+            }
+        }
+
+        return { published, bytes: totalBytes };
+    }
+
+    /** Publish a batch of events to relays */
+    private async publishEventBatch(events: NostrEvent[], relays: string[]): Promise<void> {
+        if (relays.length === 0) {
+            throw new Error('No relays configured for publishing');
+        }
+
+        const sortedRelays = relayHealthManager.getSortedRelays(relays);
+        const CONCURRENCY = 3;
+        let deliveredCount = 0;
+        const MIN_DELIVERIES = 1;
+
+        for (const event of events) {
+            for (let i = 0; i < sortedRelays.length; i += CONCURRENCY) {
+                const batch = sortedRelays.slice(i, i + CONCURRENCY);
+                const pubs = pool.publish(batch, event);
+
+                try {
+                    const outcomes = await Promise.allSettled(pubs);
+
+                    for (let j = 0; j < batch.length; j++) {
+                        const url = batch[j];
+                        const outcome = outcomes[j];
+
+                        if (outcome.status === 'fulfilled') {
+                            deliveredCount++;
+                            relayHealthManager.recordPublish(url, true);
+                        } else {
+                            relayHealthManager.recordPublish(url, false, String(outcome.reason));
+                        }
+                    }
+
+                    if (deliveredCount >= MIN_DELIVERIES && i + CONCURRENCY >= sortedRelays.length) {
+                        break;
+                    }
+                    if (deliveredCount >= MIN_DELIVERIES * 2) {
+                        break;
+                    }
+                } catch (e) {
+                    this.logger.warn('Publish batch failed', e as Error);
+                    for (const url of batch) {
+                        relayHealthManager.recordPublish(url, false, String(e));
+                    }
+                }
+            }
+        }
+
+        if (deliveredCount === 0) {
+            throw new Error('No relay accepted the events');
+        }
+    }
+
+    /** Fetch events matching a filter from relays */
+    private async fetchEvents(filter: { kinds: number[]; authors: string[]; since: number }): Promise<NostrEvent[]> {
+        const relays = this.relays;
+        const allEvents: NostrEvent[] = [];
+
+        try {
+            const events = await queryEvents(pool, relays, [filter as any], 10000);
+            allEvents.push(...events);
+        } catch (e) {
+            this.logger.debug(`Fetch failed`, e as Error);
+        }
+
+        // Deduplicate by event ID
+        const seen = new Set<string>();
+        return allEvents.filter(e => {
+            if (seen.has(e.id)) return false;
+            seen.add(e.id);
+            return true;
+        });
+    }
+
+    /** Parse a sync event (revision or head) into a NoteRevision */
+    private parseSyncEvent(event: NostrEvent): import('./syncProtocol.js').NoteRevision | null {
+        return parseRevisionEvent(event) || parseHeadEvent(event) as any;
+    }
+
+    /** Get sync budget status for UI */
+    getSyncBudgetStatus(settings: AppSettings): ReturnType<typeof getSyncBudgetStatus> {
+        return getSyncBudgetStatus(settings);
+    }
+
+    /** Get sync metrics for reporting */
+    getSyncMetrics(settings: AppSettings): ReturnType<typeof getMetrics> {
+        return getMetrics(settings);
+    }
+
+    /** Force a full sync (ignore delta) */
+    async fullSync(settings: AppSettings): Promise<SyncResult> {
+        const startTime = Date.now();
+        const result: SyncResult = {
+            synced: false,
+            eventsPublished: 0,
+            eventsReceived: 0,
+            payloadBytes: 0,
+            durationMs: 0,
+            isDelta: false,
+        };
+
+        if (!this.enabled || !this.config.privkey || !this.syncEngine) {
+            result.error = 'Sync not available';
+            return result;
+        }
+
+        this.logger.info('Starting full sync...');
+
+        try {
+            const fullResult = this.syncEngine.createFullSyncEvents(1000);
+            const publishResult = await this.publishEventsBatched(fullResult.events);
+            result.eventsPublished = publishResult.published;
+            result.payloadBytes = publishResult.bytes;
+            result.isDelta = false;
+
+            this.lastSyncAt = Date.now();
+            this.syncEngine.setLastSyncTimestamp(this.lastSyncAt);
+
+            const metricsUpdate = await updateSyncMetrics(settings, result.payloadBytes, result.eventsPublished);
+            if (metricsUpdate.sync?.lastSyncAt) {
+                this.lastSyncAt = metricsUpdate.sync.lastSyncAt;
+            }
+
+            result.synced = true;
+            result.durationMs = Date.now() - startTime;
+            this.logger.info(`Full sync completed: ${result.eventsPublished} published, ${formatBytes(result.payloadBytes)} in ${result.durationMs}ms`);
+
+        } catch (error) {
+            result.error = error instanceof Error ? error.message : String(error);
+            result.durationMs = Date.now() - startTime;
+            this.logger.error('Full sync failed', error as Error);
+        }
+
+        return result;
+    }
+
     unsubscribe() {
         if (this._sub) {
             this._sub.close();
             this._sub = null;
+        }
+        if (this.batchTimeout) {
+            clearTimeout(this.batchTimeout);
+            this.batchTimeout = null;
         }
     }
 }

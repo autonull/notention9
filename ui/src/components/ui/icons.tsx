@@ -956,3 +956,33 @@ export function MoreHorizontalIcon(props: IconProps) { return (
         />
     </OutlineIcon>
 ); }
+
+export function DatabaseIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4"
+        />
+    </OutlineIcon>
+); }
+
+export function WifiIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 20.25c-4.97 0-9-3.694-9-8.25s4.03-8.25 9-8.25 9 3.694 9 8.25-4.03 8.25-9 8.25zM12 13.5c-2.485 0-4.5 2.015-4.5 4.5s2.015 4.5 4.5 4.5 4.5-2.015 4.5-4.5-2.015-4.5-4.5-4.5z"
+        />
+    </OutlineIcon>
+); }
+
+export function ZapIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+        />
+    </OutlineIcon>
+); }

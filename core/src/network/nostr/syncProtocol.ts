@@ -228,6 +228,20 @@ export function revisionToNote(revision: NoteRevision): Note {
     };
 }
 
+export interface DeltaSyncOptions {
+    sinceTimestamp?: number;
+    maxEvents?: number;
+    authors?: string[];
+}
+
+export interface DeltaSyncResult {
+    events: NostrEvent[];
+    latestTimestamp: number;
+    eventsCount: number;
+    payloadBytes: number;
+    isDelta: boolean;
+}
+
 export class SyncEngine {
     private state: SyncState = {
         heads: new Map(),
@@ -236,6 +250,7 @@ export class SyncEngine {
     };
     private privkeyHex: string;
     private pubkey: string;
+    private lastSyncTimestamp: number = 0;
 
     constructor(privkeyHex: string) {
         this.privkeyHex = privkeyHex;
@@ -246,6 +261,116 @@ export class SyncEngine {
         } catch (e) {
             logger.error('Invalid private key for sync engine', e as Error);
         }
+    }
+
+    setLastSyncTimestamp(timestamp: number): void {
+        this.lastSyncTimestamp = timestamp;
+    }
+
+    getLastSyncTimestamp(): number {
+        return this.lastSyncTimestamp;
+    }
+
+    getRevisionsSince(timestamp: number): NoteRevision[] {
+        const result: NoteRevision[] = [];
+        for (const revisions of this.state.revisions.values()) {
+            for (const rev of revisions) {
+                const revTime = new Date(rev.updatedAt).getTime();
+                if (revTime > timestamp) {
+                    result.push(rev);
+                }
+            }
+        }
+        result.sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
+        return result;
+    }
+
+    createDeltaSyncEvents(options: DeltaSyncOptions = {}): DeltaSyncResult {
+        const since = options.sinceTimestamp ?? this.lastSyncTimestamp;
+        const maxEvents = options.maxEvents ?? 1000;
+        const authors = options.authors ?? [this.pubkey];
+
+        const revisions = this.getRevisionsSince(since);
+        const filtered = revisions.filter(r => authors.includes(r.author)).slice(0, maxEvents);
+
+        const events = filtered.map(rev => {
+            const revisionInput = {
+                noteId: rev.noteId,
+                revision: rev.revision,
+                content: rev.content,
+                title: rev.title,
+                tags: rev.tags,
+                properties: rev.properties,
+                updatedAt: rev.updatedAt,
+                author: rev.author,
+                prevRevisionId: rev.prevRevisionId,
+                isDeleted: rev.isDeleted,
+                deletedAt: rev.deletedAt,
+            };
+            return createRevisionEvent(revisionInput, this.privkeyHex);
+        });
+
+        let latestTimestamp = since;
+        for (const rev of filtered) {
+            const revTime = new Date(rev.updatedAt).getTime();
+            if (revTime > latestTimestamp) {
+                latestTimestamp = revTime;
+            }
+        }
+
+        const payloadBytes = events.reduce((sum, e) => sum + new TextEncoder().encode(JSON.stringify(e)).length, 0);
+
+        return {
+            events,
+            latestTimestamp,
+            eventsCount: events.length,
+            payloadBytes,
+            isDelta: since > 0,
+        };
+    }
+
+    createFullSyncEvents(maxEvents: number = 1000): DeltaSyncResult {
+        const allRevisions: NoteRevision[] = [];
+        for (const revisions of this.state.revisions.values()) {
+            allRevisions.push(...revisions);
+        }
+        allRevisions.sort((a, b) => new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime());
+
+        const filtered = allRevisions.slice(0, maxEvents);
+        const events = filtered.map(rev => {
+            const revisionInput = {
+                noteId: rev.noteId,
+                revision: rev.revision,
+                content: rev.content,
+                title: rev.title,
+                tags: rev.tags,
+                properties: rev.properties,
+                updatedAt: rev.updatedAt,
+                author: rev.author,
+                prevRevisionId: rev.prevRevisionId,
+                isDeleted: rev.isDeleted,
+                deletedAt: rev.deletedAt,
+            };
+            return createRevisionEvent(revisionInput, this.privkeyHex);
+        });
+
+        let latestTimestamp = 0;
+        for (const rev of filtered) {
+            const revTime = new Date(rev.updatedAt).getTime();
+            if (revTime > latestTimestamp) {
+                latestTimestamp = revTime;
+            }
+        }
+
+        const payloadBytes = events.reduce((sum, e) => sum + new TextEncoder().encode(JSON.stringify(e)).length, 0);
+
+        return {
+            events,
+            latestTimestamp,
+            eventsCount: events.length,
+            payloadBytes,
+            isDelta: false,
+        };
     }
 
     getPubkey(): string {

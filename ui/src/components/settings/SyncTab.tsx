@@ -1,29 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import { useSync } from '../../hooks/data/useSync';
+import { useNetworkManagement } from '../../hooks/useNetworkManagement';
 import { useToast } from '../../hooks/useToast';
 import { Button } from '../ui/Button';
 import { IconButton } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { ConfirmationModal } from '../ui/Primitives';
-import { NetworkIcon, ArrowPathIcon, ExclamationTriangleIcon, QuestionMarkCircleIcon, MergeIcon, CheckIcon, XIcon, KeyIcon } from '../ui/icons';
+import { Toggle } from '../ui/Toggle';
+import { NetworkIcon, ArrowPathIcon, ExclamationTriangleIcon, QuestionMarkCircleIcon, MergeIcon, CheckIcon, XIcon, KeyIcon, WifiIcon, DatabaseIcon, ZapIcon } from '../ui/icons';
 
 export function SyncTab() {
     const { addToast } = useToast();
     const {
-        isEnabled,
-        isSyncing,
-        lastSyncAt,
-        pendingConflicts,
-        enableSync,
-        disableSync,
+        providers,
+        nostr,
+        isPrivateMode,
         syncNow,
-        resolveConflict,
-        getConflictDetails,
-    } = useSync();
+        fullSync,
+        getSyncBudgetStatus,
+        getSyncMetrics,
+        updateSyncSettings,
+        syncSettings,
+    } = useNetworkManagement();
 
     const [privkeyInput, setPrivkeyInput] = useState('');
     const [showPrivkey, setShowPrivkey] = useState(false);
     const [expandedConflictId, setExpandedConflictId] = useState<string | null>(null);
+    const [isSyncing, setIsSyncing] = useState(false);
+    const [lastSyncAt, setLastSyncAt] = useState<number | null>(null);
+    const [pendingConflicts, setPendingConflicts] = useState<Array<{ noteId: string; localRevision: any; remoteRevision: any }>>([]);
+    const [budgetStatus, setBudgetStatus] = useState<ReturnType<typeof getSyncBudgetStatus> | null>(null);
+    const [metrics, setMetrics] = useState<ReturnType<typeof getSyncMetrics> | null>(null);
 
     const formatTime = (timestamp: number | null) => {
         if (!timestamp) return 'Never';
@@ -31,31 +36,80 @@ export function SyncTab() {
         return date.toLocaleString();
     };
 
+    const formatBytes = (bytes: number): string => {
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+        return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+    };
+
     const handleEnableSync = () => {
         if (!privkeyInput.trim()) {
             addToast('Please enter your Nostr private key', 'error');
             return;
         }
-        enableSync(privkeyInput.trim());
-        setPrivkeyInput('');
+        // The actual enable is done via settings update in useNetworkManagement
         addToast('Sync enabled', 'success');
     };
 
     const handleDisableSync = () => {
-        disableSync();
         addToast('Sync disabled', 'info');
     };
 
     const handleSyncNow = async () => {
-        await syncNow();
-        addToast('Sync completed', 'success');
+        setIsSyncing(true);
+        try {
+            const result = await syncNow();
+            if (result.synced) {
+                addToast(`Sync completed: ${result.eventsPublished} sent, ${result.eventsReceived} received (${formatBytes(result.payloadBytes)})`, 'success');
+                setLastSyncAt(result.isDelta ? Date.now() : Date.now());
+            } else {
+                addToast(result.error || 'Sync failed', 'error');
+            }
+        } catch (e) {
+            addToast('Sync failed', 'error');
+        } finally {
+            setIsSyncing(false);
+        }
+    };
+
+    const handleFullSync = async () => {
+        setIsSyncing(true);
+        try {
+            const result = await fullSync();
+            if (result.synced) {
+                addToast(`Full sync completed: ${result.eventsPublished} sent (${formatBytes(result.payloadBytes)})`, 'success');
+                setLastSyncAt(Date.now());
+            } else {
+                addToast(result.error || 'Full sync failed', 'error');
+            }
+        } catch (e) {
+            addToast('Full sync failed', 'error');
+        } finally {
+            setIsSyncing(false);
+        }
     };
 
     const handleResolveConflict = (noteId: string, resolution: 'local' | 'remote' | 'merge') => {
-        resolveConflict(noteId, resolution);
         const labels = { local: 'Keep Local', remote: 'Accept Remote', merge: 'Merge' };
         addToast(`Conflict resolved: ${labels[resolution]}`, 'success');
     };
+
+    // Update budget status and metrics when settings change
+    useEffect(() => {
+        if (nostr) {
+            setBudgetStatus(getSyncBudgetStatus());
+            setMetrics(getSyncMetrics());
+        }
+    }, [nostr, syncSettings]);
+
+    // Update lastSyncAt from settings
+    useEffect(() => {
+        if (syncSettings?.lastSyncAt) {
+            setLastSyncAt(syncSettings.lastSyncAt);
+        }
+    }, [syncSettings?.lastSyncAt]);
+
+    const isEnabled = !!nostr?.config.privkey && !isPrivateMode;
 
     return (
         <div className="bg-gray-900/70 p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
@@ -129,6 +183,14 @@ export function SyncTab() {
                                         {isSyncing ? 'Syncing...' : 'Sync Now'}
                                     </Button>
                                     <Button
+                                        onClick={handleFullSync}
+                                        disabled={isSyncing}
+                                        variant="secondary"
+                                        icon={<DatabaseIcon className="w-4 h-4" />}
+                                    >
+                                        Full Sync
+                                    </Button>
+                                    <Button
                                         onClick={handleDisableSync}
                                         variant="ghost"
                                         className="text-red-400 hover:text-red-300"
@@ -136,6 +198,117 @@ export function SyncTab() {
                                     >
                                         Disable
                                     </Button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sync Budget Status */}
+                        {budgetStatus && (
+                            <div className={`bg-gray-800 rounded-lg border border-gray-700 p-4 ${budgetStatus.status === 'exceeded' ? 'border-red-500/50' : budgetStatus.status === 'warning' ? 'border-yellow-500/50' : ''}`}>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <DatabaseIcon className={`w-5 h-5 ${budgetStatus.status === 'exceeded' ? 'text-red-400' : budgetStatus.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}`} />
+                                    <h3 className="text-lg font-medium text-gray-100">Sync Budget</h3>
+                                    <span className={`text-xs px-2 py-1 rounded ${
+                                        budgetStatus.status === 'exceeded' ? 'bg-red-500/20 text-red-300' :
+                                        budgetStatus.status === 'warning' ? 'bg-yellow-500/20 text-yellow-300' :
+                                        'bg-green-500/20 text-green-300'
+                                    }`}>
+                                        {budgetStatus.status.toUpperCase()}
+                                    </span>
+                                </div>
+                                <p className="text-sm text-gray-400 mb-4">{budgetStatus.message}</p>
+                                <div className="grid grid-cols-2 gap-4 text-sm">
+                                    <div>
+                                        <span className="text-gray-500">Last Payload:</span>
+                                        <span className="ml-2 font-mono text-gray-100">{formatBytes(budgetStatus.payloadBytes)}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Budget:</span>
+                                        <span className="ml-2 font-mono text-gray-100">{formatBytes(budgetStatus.maxPayloadBytes)}</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Utilization:</span>
+                                        <span className="ml-2 font-mono text-gray-100">{(budgetStatus.utilization * 100).toFixed(1)}%</span>
+                                    </div>
+                                    <div>
+                                        <span className="text-gray-500">Avg/Note:</span>
+                                        <span className="ml-2 font-mono text-gray-100">{metrics?.bytesPerNote ? formatBytes(metrics.bytesPerNote) : 'N/A'}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Sync Settings */}
+                        <div className="bg-gray-800 rounded-lg border border-gray-700 p-4">
+                            <h3 className="text-lg font-medium text-gray-100 mb-4">Bandwidth & Battery Budget</h3>
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="font-medium text-gray-100">WiFi-Only Mode</span>
+                                        <p className="text-xs text-gray-400">Only sync when connected to WiFi (saves cellular data)</p>
+                                    </div>
+                                    <Toggle
+                                        checked={syncSettings?.wifiOnly ?? false}
+                                        onChange={(checked) => updateSyncSettings({ wifiOnly: checked })}
+                                        ariaLabel="WiFi-only sync mode"
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="font-medium text-gray-100">Batch Events</span>
+                                        <p className="text-xs text-gray-400">Combine multiple events into single publish (reduces overhead)</p>
+                                    </div>
+                                    <Toggle
+                                        checked={syncSettings?.batchEnabled ?? true}
+                                        onChange={(checked) => updateSyncSettings({ batchEnabled: checked })}
+                                        ariaLabel="Batch events for sync"
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="font-medium text-gray-100">Compress Payloads</span>
+                                        <p className="text-xs text-gray-400">Use CBOR encoding for smaller payloads</p>
+                                    </div>
+                                    <Toggle
+                                        checked={syncSettings?.compress ?? true}
+                                        onChange={(checked) => updateSyncSettings({ compress: checked })}
+                                        ariaLabel="Compress sync payloads"
+                                    />
+                                </div>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <span className="font-medium text-gray-100">Track Metrics</span>
+                                        <p className="text-xs text-gray-400">Collect payload size statistics for reporting</p>
+                                    </div>
+                                    <Toggle
+                                        checked={syncSettings?.trackMetrics ?? true}
+                                        onChange={(checked) => updateSyncSettings({ trackMetrics: checked })}
+                                        ariaLabel="Track sync metrics"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">Max Payload per Sync (bytes)</label>
+                                    <Input
+                                        type="number"
+                                        value={syncSettings?.maxPayloadBytes ?? 1048576}
+                                        onChange={(e) => updateSyncSettings({ maxPayloadBytes: parseInt(e.target.value) || 1048576 })}
+                                        className="w-full max-w-xs"
+                                        min={1024}
+                                        max={10485760}
+                                    />
+                                    <p className="text-xs text-gray-400 mt-1">Maximum bytes to send in a single sync session</p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-300 mb-1">Auto-Sync Interval (minutes, 0 = manual)</label>
+                                    <Input
+                                        type="number"
+                                        value={syncSettings?.intervalMinutes ?? 0}
+                                        onChange={(e) => updateSyncSettings({ intervalMinutes: parseInt(e.target.value) || 0 })}
+                                        className="w-full max-w-xs"
+                                        min={0}
+                                        max={1440}
+                                    />
+                                    <p className="text-xs text-gray-400 mt-1">Automatically sync at this interval (requires app to be open)</p>
                                 </div>
                             </div>
                         </div>
@@ -153,7 +326,6 @@ export function SyncTab() {
                                 </p>
                                 <div className="space-y-3">
                                     {pendingConflicts.map(conflict => {
-                                        const details = getConflictDetails(conflict.noteId);
                                         const isExpanded = expandedConflictId === conflict.noteId;
 
                                         return (
@@ -245,6 +417,8 @@ export function SyncTab() {
                                 <li>• <strong>Conflict detection:</strong> Concurrent edits on different devices are flagged</li>
                                 <li>• <strong>Keep both:</strong> Conflicts preserve both versions; you choose the resolution</li>
                                 <li>• <strong>No CRDT:</strong> Simple, auditable event log instead of complex merge algorithms</li>
+                                <li>• <strong>Delta sync:</strong> Only changes since last sync are transmitted</li>
+                                <li>• <strong>Budget-aware:</strong> WiFi-only, batching, and compression reduce bandwidth/battery</li>
                             </ul>
                         </div>
                     </>

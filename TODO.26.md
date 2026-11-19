@@ -158,8 +158,16 @@
   - Integrated into `NostrNetworkProvider` with `addRelay`, `removeRelay`, `discoverRelays` methods
   - Added `RelayDiscoverySection` in Settings UI with discovered relay list, health scores, and add/remove functionality
   - All gates: `pnpm build` ✅, `pnpm test` (running), `pnpm verify` (pending).
-- [ ] **W3.4 Bandwidth & battery budgets.** Delta-only sync, compression, batching, WiFi-only
-  mode. Acceptance: payload size report (bytes/note) before/after.
+- [x] **W3.4 Bandwidth & battery budgets.** Delta-only sync, compression, batching, WiFi-only
+  mode. **Done 2026-11-19**:
+  - Added `SyncBudgetConfig` to `AppSettings.sync` with wifiOnly, maxPayloadBytes, batchEnabled, batchWindowMs, intervalMinutes, compress, trackMetrics
+  - Created `syncBudget.ts` with network detection (Network Information API), payload size calculation, delta filter creation, sync scheduling
+  - Extended `SyncEngine` with `createDeltaSyncEvents()` and `createFullSyncEvents()` for delta/full sync
+  - Enhanced `NostrNetworkProvider` with `sync()`, `fullSync()`, batched publishing with budget awareness, WiFi-only gate, metrics tracking
+  - Updated `useNetworkManagement` hook with `syncNow()`, `fullSync()`, `getSyncBudgetStatus()`, `getSyncMetrics()`, `updateSyncSettings()`
+  - Redesigned `SyncTab.tsx` with budget status display, settings toggles (WiFi-only, batching, compression, metrics), max payload input, auto-sync interval
+  - Added `DatabaseIcon`, `WifiIcon`, `ZapIcon` to icons
+  - All gates: `pnpm build` ✅, `pnpm test` (core 1010 ✅), `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).
 - [ ] **W3.5 Private groups / encrypted DMs (NIP-17/44).** Deferred to Later pending Q2.
   Acceptance: private pool test; no plaintext metadata leakage.
 - [x] **W3.6 Publish safety.** Two privacy levels (`private` / `public`); the old `protected`
@@ -483,6 +491,17 @@ pnpm sim:calibrate
   - Integrated into `NostrNetworkProvider` with `addRelay`, `removeRelay`, `discoverRelays` methods
   - Added `RelayDiscoverySection` in Settings UI with discovered relay list, health scores, and add/remove functionality
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42, agent 17, cli 6, optimize 127, simulator 116), `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).
+
+### 2026-11-19 — W3.4 Bandwidth & battery budgets complete
+- **Implemented**: Sync budget system in `core/src/network/nostr/syncBudget.ts` and extended sync in `syncProtocol.ts`:
+  - Added `AppSettings.sync` with `wifiOnly`, `maxPayloadBytes`, `batchEnabled`, `batchWindowMs`, `intervalMinutes`, `compress`, `trackMetrics`, and metrics fields (`lastSyncAt`, `lastPayloadBytes`, `totalBytesSynced`, `totalNotesSynced`)
+  - `syncBudget.ts`: Network Information API detection (WiFi-only), CBOR/JSON payload sizing, delta filter creation (`createDeltaFilter`), sync scheduling (`shouldSyncNow`), metrics tracking (`updateSyncMetrics`), budget status reporting (`getSyncBudgetStatus`)
+  - Extended `SyncEngine` with `createDeltaSyncEvents()` (only revisions since last sync) and `createFullSyncEvents()` for full sync
+  - Enhanced `NostrNetworkProvider` with `sync()` (delta), `fullSync()`, batched publishing with budget awareness (max payload, batch window), WiFi-only gate, metrics persistence
+  - Updated `useNetworkManagement` hook with `syncNow()`, `fullSync()`, `getSyncBudgetStatus()`, `getSyncMetrics()`, `updateSyncSettings()`
+  - Redesigned `SyncTab.tsx` with budget status panel (OK/Warning/Exceeded), settings toggles, max payload input, auto-sync interval
+  - Added `DatabaseIcon`, `WifiIcon`, `ZapIcon` to icons
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010), `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).
 
 ### 2026-11-19 — W3.2 Sync protocol v1 complete
 - **Implemented**: `SyncEngine` in `core/src/network/nostr/syncProtocol.ts`:

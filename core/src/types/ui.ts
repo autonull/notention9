@@ -64,4 +64,30 @@ export interface AppSettings {
   };
   /** User-defined cross-key mappings for matching custom properties */
   customCrossKeyMappings?: Record<string, string[]>;
+
+  /** Sync bandwidth & battery budget settings */
+  sync?: {
+    /** Only sync over WiFi (skip on cellular) */
+    wifiOnly?: boolean;
+    /** Maximum sync payload size per session in bytes */
+    maxPayloadBytes?: number;
+    /** Batch multiple events into single publish */
+    batchEnabled?: boolean;
+    /** Batch window in milliseconds */
+    batchWindowMs?: number;
+    /** Sync interval in minutes (0 = manual only) */
+    intervalMinutes?: number;
+    /** Compress sync payloads */
+    compress?: boolean;
+    /** Track payload size metrics */
+    trackMetrics?: boolean;
+    /** Last successful sync timestamp */
+    lastSyncAt?: number;
+    /** Last sync payload size in bytes */
+    lastPayloadBytes?: number;
+    /** Cumulative bytes synced */
+    totalBytesSynced?: number;
+    /** Cumulative notes synced */
+    totalNotesSynced?: number;
+  };
 }
