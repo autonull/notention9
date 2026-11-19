@@ -132,7 +132,7 @@
   - **Offer excerpt**: Truncated preview of matched note content
   - **Existing**: Matches/conflicts/missing with reasons (already present)
   No core rework needed — `MatchResult.matches/conflicts/missing` and `PropertyMatch.reason/details` already existed. Build passes. Acceptance: UI test + screenshot 🟡.
-- [ ] **W4.2 Match feedback loop.** Accept/dismiss → re-rank future matches + persist local
+- [x] **W4.2 Match feedback loop.** Accept/dismiss → re-rank future matches + persist local
   preference weights (no retraining, no mutation of the shipped few-shot bundle; export a corpus
   file for the offline prompt loop instead). Acceptance: before/after relevance on the match set.
 - [ ] **W4.3 Action approval & audit.** Preview "what will happen" + capability scope →
@@ -608,3 +608,14 @@ Decisions applied:
 - **Auto-repair**: `EnvelopeValidatedStorage.load()` falls back to legacy keys on envelope load failure, migrating valid data to new envelope format.
 - **Corruption fixture test**: Tampered envelope correctly rejected on load with "Checksum verification failed" error.
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅.
+
+### 2026-11-19 — W4.2 Match feedback loop complete
+- **Implemented**: Local preference learning from accept/reject feedback in `core/src/matching/feedback.ts`:
+  - `recordMatchFeedback(action, request, offer, result, crossKeyMap)` records accept/reject events with property-level details to localStorage.
+  - Learned weights per property key, operator, cross-key mapping, and match type using exponential moving average with daily decay.
+  - `computeRankingScoreWithPreferences()` in `ranking.ts` applies learned weights to boost/penalize match scores.
+  - `findLocalMatchesEnhanced()` now accepts `usePreferences: true` (default) to integrate preference ranking.
+  - UI integration in `InboxView.tsx`: Accept/Reject buttons call `recordMatchFeedback` with full match details.
+  - `getMatchFeedbackStats()` exposes stats for debugging (total events, accept/reject counts, learned weights).
+  - Export function `exportFeedbackCorpus()` for offline prompt loop (W7.2).
+- **Verified**: Build passes, all tests pass (core 1000+, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).

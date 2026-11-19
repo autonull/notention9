@@ -14,7 +14,7 @@ function ontologyMapToArray(nodes: Map<string, OntologyNode>): OntologyNode[] {
  * Offer notes use keys like 'skill', 'schedule', 'rate', 'price'.
  * This mapping allows the match engine to find compatible offer properties.
  */
-const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
+export const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
   need: ['skill', 'service', 'task'],
   service: ['skill', 'service', 'task'],
   role: ['skill', 'role'],

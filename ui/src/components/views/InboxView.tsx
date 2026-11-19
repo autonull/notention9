@@ -7,6 +7,8 @@ import {
     logMatchRejected,
     MatchEngine,
     type Note,
+    recordMatchFeedback,
+    REQUEST_TO_OFFER_KEY_MAP,
 } from '@notention/core';
 import {
     recordMatchAccepted,
@@ -243,6 +245,8 @@ export function InboxView(_props: InboxViewProps) {
             threshold: 0.4,
             ranking: {scoreWeight: 0.5, recencyWeight: 0.2, coverageWeight: 0.2, distanceWeight: 0.1},
             deduplicate: {similarityThreshold: 0.85},
+            usePreferences: true,
+            crossKeyMap: REQUEST_TO_OFFER_KEY_MAP,
         });
 
         return matches[0] ? {request: requests[0], note: matches[0].note, result: matches[0].result} : null;
@@ -265,20 +269,34 @@ export function InboxView(_props: InboxViewProps) {
         addNote(responseNote);
         logMatchAccepted(requestId, noteId, responseNote.id, score);
 
+        // Record feedback for preference learning
+        const engine = new MatchEngine(settings.ontology || []);
+        const result = engine.calculateMatchScore(request, offer);
+        recordMatchFeedback('accept', request, offer, result, REQUEST_TO_OFFER_KEY_MAP);
+
         handleMatchAccept(requestId);
         recordResponseCreated(requestId);
         recordMatchAccepted(requestId, noteId, score);
 
         setSelectedNoteId(responseNote.id);
         setActiveView('notes');
-    }, [notes, addNote, setSelectedNoteId, setActiveView, handleMatchAccept, recordResponseCreated]);
+    }, [notes, addNote, setSelectedNoteId, setActiveView, handleMatchAccept, recordResponseCreated, settings.ontology]);
 
     const handleRejectMatch = useCallback((requestId: string, noteId: string) => {
+        const request = notes.find(n => n.id === requestId);
+        const offer = notes.find(n => n.id === noteId);
+        if (!request || !offer) return;
+
+        // Record feedback for preference learning
+        const engine = new MatchEngine(settings.ontology || []);
+        const result = engine.calculateMatchScore(request, offer);
+        recordMatchFeedback('reject', request, offer, result, REQUEST_TO_OFFER_KEY_MAP);
+
         handleMatchReject(requestId);
         logMatchRejected(requestId, noteId);
         rejectMatch(noteId);
         recordMatchDismissed(requestId, noteId, 0);
-    }, [handleMatchReject, rejectMatch]);
+    }, [handleMatchReject, rejectMatch, notes, settings.ontology]);
 
     const handleReviseRequest = useCallback((requestId: string) => {
         handleMatchClarification(requestId);

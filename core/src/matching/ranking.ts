@@ -1,11 +1,14 @@
 /**
  * Match Ranking & Deduplication (W4.2)
  * Improves ordering (recency, distance, constraint coverage) and collapses near-duplicate offers.
+ * Integrates learned preference weights from user feedback.
  */
 
 import type { Note, Property } from '../types/index.js';
 import type { ScoredMatch } from './bidirectional.js';
 import type { MatchResult, PropertyMatch } from './types.js';
+import { loadPreferenceWeights, calculatePreferenceBoost } from './feedback.js';
+import { REQUEST_TO_OFFER_KEY_MAP } from './MatchEngine.js';
 
 export interface RankingConfig {
     /** Weight for match score (0-1) */
@@ -113,6 +116,47 @@ export function computeRankingScore(
 }
 
 /**
+ * Compute ranking score with preference weights applied
+ */
+export function computeRankingScoreWithPreferences(
+    match: ScoredMatch,
+    request: Note,
+    config: RankingConfig = DEFAULT_RANKING_CONFIG,
+    crossKeyMap: Record<string, string[]> = REQUEST_TO_OFFER_KEY_MAP
+): number {
+    const baseScore = computeRankingScore(match, request, config);
+    
+    // Apply preference boost to the match score component
+    const weights = loadPreferenceWeights();
+    let preferenceBoost = 0;
+    let totalCompatibility = 0;
+    
+    for (const m of match.result.matches) {
+        const boost = calculatePreferenceBoost(m, weights, crossKeyMap);
+        if (boost !== 0) {
+            preferenceBoost += boost;
+            totalCompatibility += m.compatibility;
+        }
+    }
+    for (const m of match.result.conflicts) {
+        const boost = calculatePreferenceBoost(m, weights, crossKeyMap);
+        if (boost !== 0) {
+            preferenceBoost += boost;
+            totalCompatibility += Math.abs(m.compatibility);
+        }
+    }
+    
+    // Normalize boost by total compatibility
+    const normalizedBoost = totalCompatibility > 0 ? preferenceBoost / totalCompatibility : 0;
+    
+    // Apply boost to the score component (which is already weighted by scoreWeight)
+    const boostedScoreComponent = Math.max(0, Math.min(1, match.result.score + normalizedBoost)) * config.scoreWeight;
+    const originalScoreComponent = match.result.score * config.scoreWeight;
+    
+    return baseScore - originalScoreComponent + boostedScoreComponent;
+}
+
+/**
  * Rank matches using multi-factor scoring
  */
 export function rankMatches(
@@ -126,6 +170,25 @@ export function rankMatches(
         .map(match => ({
             ...match,
             rankingScore: computeRankingScore(match, request, fullConfig),
+        }))
+        .sort((a, b) => (b.rankingScore ?? 0) - (a.rankingScore ?? 0));
+}
+
+/**
+ * Rank matches using multi-factor scoring with preference weights
+ */
+export function rankMatchesWithPreferences(
+    matches: ScoredMatch[],
+    request: Note,
+    config: Partial<RankingConfig> = {},
+    crossKeyMap: Record<string, string[]> = REQUEST_TO_OFFER_KEY_MAP
+): ScoredMatch[] {
+    const fullConfig = { ...DEFAULT_RANKING_CONFIG, ...config };
+    
+    return matches
+        .map(match => ({
+            ...match,
+            rankingScore: computeRankingScoreWithPreferences(match, request, fullConfig, crossKeyMap),
         }))
         .sort((a, b) => (b.rankingScore ?? 0) - (a.rankingScore ?? 0));
 }
@@ -204,6 +267,8 @@ export interface EnhancedMatchOptions {
     threshold?: number;
     ranking?: Partial<RankingConfig>;
     deduplicate?: boolean | { similarityThreshold?: number };
+    usePreferences?: boolean;
+    crossKeyMap?: Record<string, string[]>;
 }
 
 export function findLocalMatchesEnhanced(
@@ -212,7 +277,13 @@ export function findLocalMatchesEnhanced(
     localNotes: Note[],
     options: EnhancedMatchOptions = {}
 ): ScoredMatch[] {
-    const { threshold = 0.3, ranking, deduplicate = true } = options;
+    const { 
+        threshold = 0.3, 
+        ranking, 
+        deduplicate = true,
+        usePreferences = true,
+        crossKeyMap = REQUEST_TO_OFFER_KEY_MAP
+    } = options;
     
     // Get base matches
     const matches = localNotes
@@ -234,8 +305,10 @@ export function findLocalMatchesEnhanced(
         })
         .filter((m): m is ScoredMatch => m !== null);
     
-    // Rank
-    const ranked = rankMatches(matches, note, ranking);
+    // Rank with or without preferences
+    const ranked = usePreferences
+        ? rankMatchesWithPreferences(matches, note, ranking, crossKeyMap)
+        : rankMatches(matches, note, ranking);
     
     // Deduplicate
     if (deduplicate) {

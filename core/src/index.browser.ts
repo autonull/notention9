@@ -146,6 +146,8 @@ export {
 // Matching - from matching/index.js
 export {
     MatchEngine,
+    recordMatchFeedback,
+    REQUEST_TO_OFFER_KEY_MAP,
 } from './matching/index.js';
 
 // Notes - from notes/index.js
@@ -343,6 +345,12 @@ export type {
     PrivacyLevel,
     SortOrder,
 } from './types/index.js';
+
+// Feedback types - from feedback/index.js
+export type {
+    Feedback,
+    FeedbackStats,
+} from './feedback/index.js';
 
 // Geo types - from utils/geo.js
 export type {

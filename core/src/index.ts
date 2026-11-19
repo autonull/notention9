@@ -93,7 +93,7 @@ export {
     recordMatchDismissed,
     recordActionCompleted,
 } from './telemetry/matchDigest.js';
-export {
+export { 
     LLMTelemetry,
     getLLMTelemetry,
     resetLLMTelemetryForTesting,

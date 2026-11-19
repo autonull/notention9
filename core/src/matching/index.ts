@@ -7,3 +7,4 @@ export * from './matchers.js';
 export * from './bidirectional.js';
 export * from './matchProtocol.js';
 export * from './ranking.js';
+export * from './feedback.js';
