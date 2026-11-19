@@ -148,6 +148,10 @@ export {
     MatchEngine,
     recordMatchFeedback,
     REQUEST_TO_OFFER_KEY_MAP,
+    getEffectiveCrossKeyMap,
+    setCustomCrossKeyMapping,
+    removeCustomCrossKeyMapping,
+    getCustomCrossKeyMappings,
 } from './matching/index.js';
 
 // Notes - from notes/index.js

@@ -8,7 +8,8 @@ import type { Note, Property } from '../types/index.js';
 import type { ScoredMatch } from './bidirectional.js';
 import type { MatchResult, PropertyMatch } from './types.js';
 import { loadPreferenceWeights, calculatePreferenceBoost } from './feedback.js';
-import { REQUEST_TO_OFFER_KEY_MAP } from './MatchEngine.js';
+import { getEffectiveCrossKeyMap } from './crossKeyMap.js';
+import type { AppSettings } from '../types/ui.js';
 
 export interface RankingConfig {
     /** Weight for match score (0-1) */
@@ -122,8 +123,9 @@ export function computeRankingScoreWithPreferences(
     match: ScoredMatch,
     request: Note,
     config: RankingConfig = DEFAULT_RANKING_CONFIG,
-    crossKeyMap: Record<string, string[]> = REQUEST_TO_OFFER_KEY_MAP
+    settings?: Partial<AppSettings>
 ): number {
+    const crossKeyMap = getEffectiveCrossKeyMap(settings);
     const baseScore = computeRankingScore(match, request, config);
     
     // Apply preference boost to the match score component
@@ -181,14 +183,14 @@ export function rankMatchesWithPreferences(
     matches: ScoredMatch[],
     request: Note,
     config: Partial<RankingConfig> = {},
-    crossKeyMap: Record<string, string[]> = REQUEST_TO_OFFER_KEY_MAP
+    settings?: Partial<AppSettings>
 ): ScoredMatch[] {
     const fullConfig = { ...DEFAULT_RANKING_CONFIG, ...config };
     
     return matches
         .map(match => ({
             ...match,
-            rankingScore: computeRankingScoreWithPreferences(match, request, fullConfig, crossKeyMap),
+            rankingScore: computeRankingScoreWithPreferences(match, request, fullConfig, settings),
         }))
         .sort((a, b) => (b.rankingScore ?? 0) - (a.rankingScore ?? 0));
 }
@@ -268,7 +270,7 @@ export interface EnhancedMatchOptions {
     ranking?: Partial<RankingConfig>;
     deduplicate?: boolean | { similarityThreshold?: number };
     usePreferences?: boolean;
-    crossKeyMap?: Record<string, string[]>;
+    settings?: Partial<AppSettings>;
 }
 
 export function findLocalMatchesEnhanced(
@@ -282,7 +284,7 @@ export function findLocalMatchesEnhanced(
         ranking, 
         deduplicate = true,
         usePreferences = true,
-        crossKeyMap = REQUEST_TO_OFFER_KEY_MAP
+        settings
     } = options;
     
     // Get base matches
@@ -307,7 +309,7 @@ export function findLocalMatchesEnhanced(
     
     // Rank with or without preferences
     const ranked = usePreferences
-        ? rankMatchesWithPreferences(matches, note, ranking, crossKeyMap)
+        ? rankMatchesWithPreferences(matches, note, ranking, settings)
         : rankMatches(matches, note, ranking);
     
     // Deduplicate

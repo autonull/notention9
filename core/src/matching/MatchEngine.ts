@@ -43,11 +43,17 @@ export const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
   task: ['task', 'skill'],
 };
 
+export interface MatchEngineOptions {
+  /** Custom cross-key mappings to extend/override the built-in REQUEST_TO_OFFER_KEY_MAP */
+  crossKeyMap?: Record<string, string[]>;
+}
+
 export class MatchEngine {
   private ontologyNodes: OntologyNode[];
   private ontologyTypes: Map<string, { operators?: { real: string[]; imaginary: string[] } }>;
+  private crossKeyMap: Record<string, string[]>;
 
-  constructor(ontology?: OntologyNode[] | Map<string, OntologyNode>) {
+  constructor(ontology?: OntologyNode[] | Map<string, OntologyNode>, options?: MatchEngineOptions) {
     if (ontology instanceof Map) {
       this.ontologyNodes = ontologyMapToArray(ontology);
       const compiled = getOntology();
@@ -56,6 +62,7 @@ export class MatchEngine {
       this.ontologyNodes = ontology ?? ontologyMapToArray(getOntology().nodes);
       this.ontologyTypes = getOntology().types;
     }
+    this.crossKeyMap = options?.crossKeyMap ?? REQUEST_TO_OFFER_KEY_MAP;
   }
 
   calculateMatchScore(request: Note, offer: Note): MatchResult {
@@ -83,7 +90,7 @@ export class MatchEngine {
       if (reqProp.role === 'marker') return [];
 
       // Collect candidate offer properties: direct key match + cross-key mappings
-      const candidateKeys = [reqProp.key, ...(REQUEST_TO_OFFER_KEY_MAP[reqProp.key] ?? [])];
+      const candidateKeys = [reqProp.key, ...(this.crossKeyMap[reqProp.key] ?? [])];
       const offerProps = offer.properties.filter(p => candidateKeys.includes(p.key));
       if (offerProps.length === 0) return [];
 

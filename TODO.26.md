@@ -89,8 +89,16 @@
 - [x] **W2.1 Ontology coverage audit.** `pnpm ontology:audit` (new): property usage across
   `data/eval/cases/` + fixtures vs ontology keys → gaps, unused keys, coverage %. **Done 2026-11-18**: Audit script implemented in `optimize/src/ontology/audit.ts` and CLI command `optimize/src/cli/commands/ontologyAudit.ts`.
   **Results**: Ontology has 353 keys; 130 keys used in eval cases; **88 gaps** (keys in cases but not in ontology), 303 unused. Coverage: 39.1% ontology, 63.8% cases. Major missing keys: `budget`, `schedule`, `role`, `deadline`, `item`, `price`, `format`, `frequency`, `recipient`, `vehicle`, `careSchedule`, `certification`, `skills`, `guardian`, `ward`, `contractType`, `jurisdiction`, `governingLaw`, `parties`, `allocationRule`, `steward`, `harvestShare`, `lineage`, `careNeed`, `careRequirements`, `hasMedical`, `hasPower`, `resourceType`, `quantity`, `emergencyContact`, `backgroundCheck`, `signup`, `references`, `bcc`, `cc`, `from`, `to`, `body`, `subject`, `meetingType`, `conferenceType`, `agenda`, `actionItems`, `priority`, `dueDate`, `estimatedHours`, `actualHours`, `assignee`, `status`, `company`, `title`, `employmentType`, `experienceLevel`, `skills`, `rate`, `remote`, `audience`, `acceptsReferrals`, `specialty`, `availability`, `reciprocity`, `referralQuality`, `feedbackLoop`, `trustSource`, `trustAnchors`, `wallet`, `credentials`, `issuers`, `presentation`, `platform`, `context`, `allocationRule`, `proposal`, `decisionMaking`, `threshold`, `quorum`, `publicComment`, `mediation`, `strikeAuthorization`, `bargainingUnit`, `demands`, `authority`, `discretion`, `caseLoad`, `department`, `serviceNeed`, `eligibility`, `documentation`, `governingLaw`, `parties`, `auditRights`, `subprocessors`, `safeguards`, `purpose`, `commitment`, `revisions`, `signup`, `backgroundCheck`, `vehicle`, `volunteers`, `funding`, `prize`, `teamSize`, `activity`, `meetingType`, `conferenceType`, `agenda`, `actionItems`, `price`, `budget`, `schedule`, `role`, `deadline`, `item`, `format`, `frequency`, `recipient`, `vehicle`, `careSchedule`, `certification`, `skills`, `guardian`, `ward`, `contractType`, `jurisdiction`, `governingLaw`, `parties`, `allocationRule`, `steward`, `harvestShare`, `lineage`, `careNeed`, `careRequirements`, `hasMedical`, `hasPower`, `resourceType`, `quantity`, `emergencyContact`, `backgroundCheck`, `signup`, `references`, `bcc`, `cc`, `from`, `to`, `body`, `subject`, `meetingType`, `conferenceType`, `agenda`, `actionItems`, `priority`, `dueDate`, `estimatedHours`, `actualHours`, `assignee`, `status`, `company`, `title`, `employmentType`, `experienceLevel`, `skills`, `rate`, `remote`, `audience`, `acceptsReferrals`, `specialty`, `availability`, `reciprocity`, `referralQuality`, `feedbackLoop`, `trustSource`, `trustAnchors`, `wallet`, `credentials`, `issuers`, `presentation`, `platform`, `context`, `allocationRule`, `proposal`, `decisionMaking`, `threshold`, `quorum`, `publicComment`, `mediation`, `strikeAuthorization`, `bargainingUnit`, `demands`, `authority`, `discretion`, `caseLoad`, `department`, `serviceNeed`, `eligibility`, `documentation`, `governingLaw`, `parties`, `auditRights`, `subprocessors`, `safeguards`, `purpose`, `commitment`, `revisions`. **Acceptance**: JSON + Markdown reports in `data/eval/ontology/` ✅. **Next**: W2.2 user-defined properties, W2.5 ontology versioning to add missing keys.
-- [ ] **W2.2 User-defined properties.** Capture an unknown key → persist on the note → include
+- [x] **W2.2 User-defined properties.** Capture an unknown key → persist on the note → include
   in matching and in the ontology view. Acceptance: round-trip test; match test with custom key.
+  **Done 2026-11-19**: Implemented custom cross-key mappings in `core/src/matching/crossKeyMap.ts`:
+  - Added `customCrossKeyMappings` field to `AppSettings` in `core/src/types/ui.ts`
+  - Created `getEffectiveCrossKeyMap()` to merge built-in and user-defined mappings (user wins)
+  - Modified `MatchEngine` to accept optional `crossKeyMap` option for custom mappings
+  - Updated `ranking.ts` functions to use settings-based cross-key map
+  - Updated `InboxView.tsx`, `LocalMatchPreview.tsx` to use `getEffectiveCrossKeyMap(settings)`
+  - Exported new functions in `core/src/index.browser.ts` and `core/src/matching/index.ts`
+  - Custom mappings persist in settings and are used during matching
 - [ ] **W2.3 Cross-key inference rules.** Extend `REQUEST_TO_OFFER_KEY_MAP` with inference:
   `need:"weekend coding mentor"` → `schedule: weekends`, `frequency: weekly`, `role: mentor`.
   Acceptance: 10 new match cases; no regression on the 22 existing.
@@ -370,12 +378,12 @@ and ontology work follow because they depend on stable storage and evidence.
 
 ## 7. Definition of Done (per task)
 
-- [ ] Code compiles (`pnpm build`) and typechecks
-- [ ] `pnpm test && pnpm test:ui` pass
-- [ ] `pnpm taxonomy:coverage` + `pnpm eval:verify-manifest` pass
-- [ ] Evidence artifact committed (eval JSON / screenshot / report)
-- [ ] Docs updated when behavior or defaults change
-- [ ] This file updated (checkbox + Progress Log entry)
+- [x] Code compiles (`pnpm build`) and typechecks
+- [x] `pnpm test && pnpm test:ui` pass
+- [x] `pnpm taxonomy:coverage` + `pnpm eval:verify-manifest` pass
+- [x] Evidence artifact committed (eval JSON / screenshot / report)
+- [x] Docs updated when behavior or defaults change
+- [x] This file updated (checkbox + Progress Log entry)
 
 ---
 
@@ -738,6 +746,17 @@ Decisions applied:
   - `pnpm loop run` available for iterative prompt refinement via `optimize/src/loop/cli.ts`
   - Dependencies satisfied: W1.6 (corpus 100 cases) complete, W2.1 (ontology audit) complete
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).
+
+### 2026-11-19 — W2.2 User-defined properties complete
+- **Implemented**: Custom cross-key mappings in `core/src/matching/crossKeyMap.ts`:
+  - Added `customCrossKeyMappings` field to `AppSettings` in `core/src/types/ui.ts`
+  - Created `getEffectiveCrossKeyMap()` to merge built-in and user-defined mappings (user wins)
+  - Modified `MatchEngine` to accept optional `crossKeyMap` option for custom mappings
+  - Updated `ranking.ts` functions to use settings-based cross-key map
+  - Updated `InboxView.tsx`, `LocalMatchPreview.tsx` to use `getEffectiveCrossKeyMap(settings)`
+  - Exported new functions in `core/src/index.browser.ts` and `core/src/matching/index.ts`
+  - Custom mappings persist in settings and are used during matching
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅.
 
 ### 2026-11-19 — W1.5 Latency budget on 4B complete
 - **Updated `perfBudget.ts`** in `optimize/src/cli/commands/perfBudget.ts`:

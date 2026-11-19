@@ -62,4 +62,6 @@ export interface AppSettings {
     lastBackupAt?: string;  // ISO timestamp
     nextBackupAt?: string;  // ISO timestamp
   };
+  /** User-defined cross-key mappings for matching custom properties */
+  customCrossKeyMappings?: Record<string, string[]>;
 }

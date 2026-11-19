@@ -3,36 +3,8 @@ import {Button} from '../ui/Button';
 import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon, ThumbsUpIcon, ThumbsDownIcon, EditIcon, MapIcon, ChartBarIcon, DocumentTextIcon} from '../ui/icons';
 import type {MatchResult, PropertyMatch, Property, Note, MatchDetails} from '@notention/core';
 import {recordFriction} from '@notention/core/telemetry/journal';
-
-/** Cross-key mapping used by the match engine (mirrored for explanation) */
-const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
-    need: ['skill', 'service', 'task'],
-    service: ['skill', 'service', 'task'],
-    role: ['skill', 'role'],
-    frequency: ['schedule', 'frequency'],
-    schedule: ['schedule', 'frequency'],
-    price: ['rate', 'price'],
-    budget: ['rate', 'budget', 'price'],
-    item: ['item'],
-    recipient: ['recipient', 'audience'],
-    audience: ['audience', 'recipient'],
-    vehicle: ['vehicle'],
-    property: ['property'],
-    device: ['device'],
-    topic: ['skill', 'topic', 'subject'],
-    focus: ['skill', 'focus'],
-    subject: ['skill', 'subject'],
-    student: ['audience', 'student'],
-    patient: ['audience', 'patient'],
-    level: ['skill', 'level'],
-    format: ['format'],
-    certification: ['certification'],
-    dietary: ['dietary'],
-    turnaround: ['turnaround'],
-    type: ['type'],
-    event: ['event'],
-    task: ['task', 'skill'],
-};
+import {getEffectiveCrossKeyMap} from '@notention/core';
+import type {AppSettings} from '@notention/core';
 
 interface LocalMatchPreviewProps {
     match: {
@@ -46,6 +18,7 @@ interface LocalMatchPreviewProps {
     onReviseRequest?: (requestId: string) => void;
     onView?: () => void;
     onExplanation?: (event: 'explained' | 'dismissed') => void;
+    settings?: Partial<AppSettings>;
 }
 
 function getMatchTypeColor(details?: MatchDetails) {
@@ -77,14 +50,15 @@ function getMatchTypeLabel(details?: MatchDetails) {
 }
 
 /** Build detailed explanation for a match including cross-key mappings and score contribution */
-function buildMatchExplanation(m: PropertyMatch): {
+function buildMatchExplanation(m: PropertyMatch, settings?: Partial<AppSettings>): {
     crossKeyUsed: boolean;
     mappedFrom: string | null;
     scoreContribution: string;
 } {
     const requestKey = m.requestProp.key;
     const offerKey = m.offerProp.key;
-    const mappedFrom = REQUEST_TO_OFFER_KEY_MAP[requestKey]?.includes(offerKey) 
+    const crossKeyMap = getEffectiveCrossKeyMap(settings);
+    const mappedFrom = crossKeyMap[requestKey]?.includes(offerKey) 
         ? `mapped from request "${requestKey}" → offer "${offerKey}"`
         : null;
     
@@ -95,12 +69,13 @@ function buildMatchExplanation(m: PropertyMatch): {
     };
 }
 
-export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectMatch, onReviseRequest, onView, onExplanation}: LocalMatchPreviewProps) {
+export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectMatch, onReviseRequest, onView, onExplanation, settings}: LocalMatchPreviewProps) {
     const {result} = match;
     const totalMatches = result.matches.length;
     const totalConflicts = result.conflicts.length;
     const totalMissing = result.missing.length;
     
+    const crossKeyMap = getEffectiveCrossKeyMap(settings);
     const hasExplanations = result.matches.some(m => m.details) || 
                            result.conflicts.some(c => c.details) ||
                            totalMissing > 0;
@@ -149,14 +124,14 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                             </summary>
                             <div className="mt-3 space-y-4 text-xs">
                                 {/* Cross-key mappings used */}
-                                {result.matches.some(m => REQUEST_TO_OFFER_KEY_MAP[m.requestProp.key]?.includes(m.offerProp.key)) && (
+                                {result.matches.some(m => crossKeyMap[m.requestProp.key]?.includes(m.offerProp.key)) && (
                                     <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                                         <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wide mb-2">
                                             <MapIcon className="w-3 h-3"/> Cross-key mappings used
                                         </div>
                                         <div className="space-y-1 text-blue-300">
                                             {result.matches
-                                                .filter(m => REQUEST_TO_OFFER_KEY_MAP[m.requestProp.key]?.includes(m.offerProp.key))
+                                                .filter(m => crossKeyMap[m.requestProp.key]?.includes(m.offerProp.key))
                                                 .map((m, i) => (
                                                     <div key={i} className="text-[11px]">
                                                         <span className="font-medium">{m.requestProp.key}</span>
@@ -181,7 +156,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                         </div>
                                         <div className="space-y-1 text-green-300">
                                             {result.matches.map((m, i) => {
-                                                const explanation = buildMatchExplanation(m);
+                                                const explanation = buildMatchExplanation(m, settings);
                                                 return (
                                                     <div key={i} className="flex items-center justify-between text-[11px]">
                                                         <div className="flex items-center gap-2">

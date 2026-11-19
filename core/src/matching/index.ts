@@ -8,3 +8,4 @@ export * from './bidirectional.js';
 export * from './matchProtocol.js';
 export * from './ranking.js';
 export * from './feedback.js';
+export * from './crossKeyMap.js';

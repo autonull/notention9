@@ -8,8 +8,9 @@ import {
     MatchEngine,
     type Note,
     recordMatchFeedback,
-    REQUEST_TO_OFFER_KEY_MAP,
+    getEffectiveCrossKeyMap,
 } from '@notention/core';
+import type { AppSettings } from '@notention/core';
 import {
     recordMatchAccepted,
     recordMatchDismissed,
@@ -38,36 +39,6 @@ interface InboxViewProps {
 }
 
 const QUICK_CAPTURE_MARKUP = /(?:^|\s)(?:#[\w-]+|\b[\w.-]+:\S+)/g;
-
-/** Cross-key mapping used by the match engine (mirrored for explanation) */
-const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
-    need: ['skill', 'service', 'task'],
-    service: ['skill', 'service', 'task'],
-    role: ['skill', 'role'],
-    frequency: ['schedule', 'frequency'],
-    schedule: ['schedule', 'frequency'],
-    price: ['rate', 'price'],
-    budget: ['rate', 'budget', 'price'],
-    item: ['item'],
-    recipient: ['recipient', 'audience'],
-    audience: ['audience', 'recipient'],
-    vehicle: ['vehicle'],
-    property: ['property'],
-    device: ['device'],
-    topic: ['skill', 'topic', 'subject'],
-    focus: ['skill', 'focus'],
-    subject: ['skill', 'subject'],
-    student: ['audience', 'student'],
-    patient: ['audience', 'patient'],
-    level: ['skill', 'level'],
-    format: ['format'],
-    certification: ['certification'],
-    dietary: ['dietary'],
-    turnaround: ['turnaround'],
-    type: ['type'],
-    event: ['event'],
-    task: ['task', 'skill'],
-};
 
 const deriveQuickNoteTitle = (input: string): string =>
     getTextFromHtml(input).replace(QUICK_CAPTURE_MARKUP, ' ').replace(/\s+/g, ' ').trim().slice(0, 80) || 'Quick Note';
@@ -246,7 +217,7 @@ export function InboxView(_props: InboxViewProps) {
             ranking: {scoreWeight: 0.5, recencyWeight: 0.2, coverageWeight: 0.2, distanceWeight: 0.1},
             deduplicate: {similarityThreshold: 0.85},
             usePreferences: true,
-            crossKeyMap: REQUEST_TO_OFFER_KEY_MAP,
+            settings,
         });
 
         return matches[0] ? {request: requests[0], note: matches[0].note, result: matches[0].result} : null;
@@ -272,7 +243,8 @@ export function InboxView(_props: InboxViewProps) {
         // Record feedback for preference learning
         const engine = new MatchEngine(settings.ontology || []);
         const result = engine.calculateMatchScore(request, offer);
-        recordMatchFeedback('accept', request, offer, result, REQUEST_TO_OFFER_KEY_MAP);
+        const crossKeyMap = getEffectiveCrossKeyMap(settings);
+        recordMatchFeedback('accept', request, offer, result, crossKeyMap);
 
         handleMatchAccept(requestId);
         recordResponseCreated(requestId);
@@ -280,7 +252,7 @@ export function InboxView(_props: InboxViewProps) {
 
         setSelectedNoteId(responseNote.id);
         setActiveView('notes');
-    }, [notes, addNote, setSelectedNoteId, setActiveView, handleMatchAccept, recordResponseCreated, settings.ontology]);
+    }, [notes, addNote, setSelectedNoteId, setActiveView, handleMatchAccept, recordResponseCreated, settings]);
 
     const handleRejectMatch = useCallback((requestId: string, noteId: string) => {
         const request = notes.find(n => n.id === requestId);
@@ -290,13 +262,14 @@ export function InboxView(_props: InboxViewProps) {
         // Record feedback for preference learning
         const engine = new MatchEngine(settings.ontology || []);
         const result = engine.calculateMatchScore(request, offer);
-        recordMatchFeedback('reject', request, offer, result, REQUEST_TO_OFFER_KEY_MAP);
+        const crossKeyMap = getEffectiveCrossKeyMap(settings);
+        recordMatchFeedback('reject', request, offer, result, crossKeyMap);
 
         handleMatchReject(requestId);
         logMatchRejected(requestId, noteId);
         rejectMatch(noteId);
         recordMatchDismissed(requestId, noteId, 0);
-    }, [handleMatchReject, rejectMatch, notes, settings.ontology]);
+    }, [handleMatchReject, rejectMatch, notes, settings]);
 
     const handleReviseRequest = useCallback((requestId: string) => {
         handleMatchClarification(requestId);
@@ -426,6 +399,8 @@ function LocalMatchCard({
     const {result} = localMatch;
     const {matches, conflicts, missing} = result;
 
+    const crossKeyMap = getEffectiveCrossKeyMap(settings);
+
     const matchTypeLabel = (details?: {type?: string}) => {
         switch (details?.type) {
             case 'exact': return 'Exact match';
@@ -456,7 +431,7 @@ function LocalMatchCard({
     const buildMatchExplanation = (m: any) => {
         const requestKey = m.requestProp.key;
         const offerKey = m.offerProp.key;
-        const mappedFrom = REQUEST_TO_OFFER_KEY_MAP[requestKey]?.includes(offerKey)
+        const mappedFrom = crossKeyMap[requestKey]?.includes(offerKey)
             ? `mapped from request "${requestKey}" → offer "${offerKey}"`
             : null;
 
@@ -528,14 +503,14 @@ function LocalMatchCard({
                         </summary>
                         <div className="mt-3 space-y-4 text-xs max-w-[400px]">
                             {/* Cross-key mappings used */}
-                            {matches.some((m: any) => REQUEST_TO_OFFER_KEY_MAP[m.requestProp.key]?.includes(m.offerProp.key)) && (
+                            {matches.some((m: any) => crossKeyMap[m.requestProp.key]?.includes(m.offerProp.key)) && (
                                 <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
                                     <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wide mb-2">
                                         <MapIcon className="w-3 h-3"/> Cross-key mappings used
                                     </div>
                                     <div className="space-y-1 text-blue-300">
                                         {matches
-                                            .filter((m: any) => REQUEST_TO_OFFER_KEY_MAP[m.requestProp.key]?.includes(m.offerProp.key))
+                                            .filter((m: any) => crossKeyMap[m.requestProp.key]?.includes(m.offerProp.key))
                                             .map((m: any, i: number) => (
                                                 <div key={i} className="text-[11px]">
                                                     <span className="font-medium">{m.requestProp.key}</span>
