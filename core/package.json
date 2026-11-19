@@ -314,6 +314,11 @@
       "import": "./dist/fixtures/index.js",
       "node": "./dist/fixtures/index.js",
       "browser": "./dist/browser/fixtures/index.js"
+    },
+    "./export": {
+      "import": "./dist/export/index.js",
+      "node": "./dist/export/index.js",
+      "browser": "./dist/browser/export/index.js"
     }
   },
   "scripts": {

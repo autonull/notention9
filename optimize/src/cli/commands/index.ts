@@ -16,3 +16,4 @@ export { PerfBudgetCommand } from './perfBudget.js';
 export { MigrateCommand } from './migrate.js';
 export { LLMTelemetryCommand } from './llmTelemetry.js';
 export { I18nAuditCommand } from './i18nAudit.js';
+export { RestoreVerifyCommand } from './restoreVerify.js';

@@ -24,7 +24,7 @@ class BrowserStorageAdapter implements StorageAdapter {
     }
 }
 
-class NodeStorageAdapter implements StorageAdapter {
+export class NodeStorageAdapter implements StorageAdapter {
     private fs: typeof import('fs/promises') | null = null;
     private path: typeof import('path') | null = null;
     private storeDir: string;

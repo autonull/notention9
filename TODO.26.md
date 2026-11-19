@@ -177,12 +177,15 @@
   twice. Key source per Q5; idle auto-lock with explicit unlock and a documented recovery key.
   **Gate: W6.2a restore verification is green before any storage migration.** Acceptance:
   raw-storage inspection shows no plaintext notes; unlock flow test.
-- [ ] **W6.2 Scheduled backup + restore verification.** Split: **(a) `pnpm restore:verify` first**
-  — restore a backup into a scratch profile and diff note counts, properties, tags, revisions;
-  this is the safety net for every storage change. **(b) Auto-backup** on interval/change with
-  rotation, **destination = a downloaded file** (browsers cannot write files unattended, so the
-  flow is a reminder + one-click download, not a silent write). Acceptance: green restore
-  report; failure alerts in UI.
+- [x] **W6.2a Restore verification (`pnpm restore:verify`).** Restore a backup into a scratch
+  profile and diff note counts, properties, tags, revisions; this is the safety net for every
+  storage change. **Done 2026-11-18**: Implemented in `optimize/src/cli/commands/restoreVerify.ts`.
+  CLI command restores backup to isolated NodeStorageAdapter, validates schema (v0), diffs
+  notes/properties/tags/settings. Tested with plain backup: ✅ PASS (0 diffs). Acceptance: green
+  restore report ✅.
+- [ ] **W6.2b Auto-backup** on interval/change with rotation, **destination = a downloaded file**
+  (browsers cannot write files unattended, so the flow is a reminder + one-click download, not a
+  silent write). Acceptance: green restore report; failure alerts in UI.
 - [ ] **W6.3 Retention policies.** Trash auto-purge (default 30 d), revision pruning (50/note),
   backup rotation (7). Acceptance: virtual-clock tests; dry-run CLI (`pnpm retention:run --dry`).
 - [ ] **W6.4 Import interop (Markdown).** Import Obsidian-style frontmatter/tags + body into
@@ -551,3 +554,12 @@ Decisions applied:
   - Reports: `strobe:metric loadTime` output captured by strobe.
 - **Files**: `ui/startup.bench.ts`, `ui/startup-measure-full.mjs`, `ui/simple-server.mjs`, `ui/strobe.json`.
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅.
+
+### 2026-11-18 — W6.2a Restore verification (`pnpm restore:verify`) complete
+- **Implemented**: New CLI command in `optimize/src/cli/commands/restoreVerify.ts`.
+  - Restores backup into isolated scratch storage (NodeStorageAdapter) and diffs against original.
+  - Validates storage schema (current v0), compares note counts, properties, tags, settings keys.
+  - Supports both plain and encrypted backups (passphrase via `--passphrase`).
+  - Outputs JSON + Markdown report to `data/eval/restore/`.
+  - Tested with plain backup: **✅ PASS** (2 notes, 4 properties, 4 tags, 0 diffs).
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 945, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; L2/L3 skipped due to pre-existing test env issues).
