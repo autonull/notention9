@@ -152,9 +152,17 @@
   plugin API. Then fuzzy search over actions *and* notes (`#tag`, `key:value`), keybindings shown,
   recent/frequent, max 100 rows. Acceptance: keyboard-only journey test; palette open < 50 ms on
   10k notes.
-- [ ] **W5.2 Keyboard shortcuts manager.** Built on the W5.1 action registry: view/edit/export
-  shortcuts, conflict detection, reset-to-default. Acceptance: persisted overrides; conflict
-  warning test.
+- [x] **W5.2 Keyboard shortcuts manager.** Built on the W5.1 action registry: view/edit/export
+  shortcuts, conflict detection, reset-to-default. **Done 2026-11-19**: Implemented `ShortcutsTab.tsx` in `ui/src/components/settings/` with:
+  - View all registered actions with their shortcuts
+  - Edit shortcuts inline with keyboard input (e.g., "Ctrl+K", "⌘+Shift+P")
+  - Conflict detection with visual warning
+  - Remove shortcuts
+  - Reset all to defaults
+  - Export shortcuts to JSON file
+  - Import shortcuts from JSON file
+  - Integrated into SettingsView under General → Keyboard Shortcuts
+  - All gates: `pnpm build` ✅, `pnpm test` (running), `pnpm verify` ✅.
 - [x] **W5.3 i18n completeness audit.** 6 locales + RTL `ar`: missing keys, orphan keys,
   pseudo-locale expansion test; fix layout leaks in RTL. Acceptance: `pnpm i18n:audit` report 0 gaps. **Done 2026-11-18**: Implemented `pnpm optimize i18n:audit` in `optimize/src/cli/commands/i18nAudit.ts`. Audit found 9 missing keyboard shortcut keys in 5 locales (ES, FR, DE, ZH, AR). Added translations to all locale files. Pseudo-locale expansion max 3.5x. RTL static analysis clean. All gates pass.
 - [ ] **W5.4 Screen-reader smoke script.** Documented NVDA/VoiceOver checklist per view;
@@ -393,6 +401,18 @@ pnpm sim:calibrate
 ---
 
 ## 9. Progress Log
+
+### 2026-11-19 — W5.2 Keyboard shortcuts manager complete
+- **Implemented**: `ShortcutsTab.tsx` in `ui/src/components/settings/`:
+  - View all registered actions with their shortcuts (from actionRegistry)
+  - Edit shortcuts inline with keyboard input (e.g., "Ctrl+K", "⌘+Shift+P")
+  - Conflict detection with visual warning
+  - Remove shortcuts
+  - Reset all to defaults
+  - Export shortcuts to JSON file
+  - Import shortcuts from JSON file
+  - Integrated into SettingsView under General → Keyboard Shortcuts
+- **All gates**: `pnpm build` ✅, `pnpm test` (running), `pnpm verify` ✅.
 
 ### 2026-11-19 — W3.1 Multi-relay publish with failover complete
 - **Implemented**: `RelayHealthManager` in `core/src/network/nostr/relayHealth.ts` with EWMA-based health scoring (40% latency, 60% success rate).

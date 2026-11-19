@@ -15,6 +15,7 @@ import {ProfileSettings} from '../settings/ProfileSettings';
 import {RevisionsTab} from '../settings/RevisionsTab';
 import {AccessibilityTab} from '../settings/AccessibilityTab';
 import {LanguageTab} from '../settings/LanguageTab';
+import {ShortcutsTab} from '../settings/ShortcutsTab';
 import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon} from '../ui/icons';
 
 interface SettingsGroup {
@@ -48,6 +49,7 @@ export function SettingsView() {
                 {id: 'profile', label: 'Profile & Strategies', icon: <UserGroupIcon className="h-4 w-4" />},
                 {id: 'labels', label: 'Labels', icon: <TagIcon className="h-4 w-4" />},
                 {id: 'language', label: 'Language & Region', icon: <GlobeIcon className="h-4 w-4" />},
+                {id: 'shortcuts', label: 'Keyboard Shortcuts', icon: <KeyIcon className="h-4 w-4" />},
             ],
         },
         {
@@ -115,6 +117,8 @@ export function SettingsView() {
                 return <RevisionsTab userId="default-user"/>;
             case 'accessibility':
                 return <AccessibilityTab/>;
+            case 'shortcuts':
+                return <ShortcutsTab/>;
             default:
                 return null;
         }
