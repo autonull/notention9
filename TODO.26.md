@@ -116,8 +116,16 @@
   - `SyncTab` in Settings with UI for enabling sync, viewing conflicts, and resolving them
   - `useSync` hook for React integration
   - All gates: `pnpm build` ✅, `pnpm test` (running), `pnpm verify` (pending).
-- [ ] **W3.3 Relay discovery & bootstrap.** Well-known relay lists + user-added + latency
-  selection; no hardcoded single relay. Acceptance: discovery test with seeded candidates.
+- [x] **W3.3 Relay discovery & bootstrap.** Well-known relay lists + user-added + latency
+  selection; no hardcoded single relay. **Done 2026-11-19**: Implemented `RelayDiscoveryService` in `core/src/network/nostr/relayDiscovery.ts`:
+  - Fetches well-known relay lists from multiple sources (NIP-65, nostr.band, etc.)
+  - Parses JSON and text formats, extracts relay URLs with metadata
+  - Probes relays for latency and health scoring
+  - Combines builtin, user-added, and discovered relays
+  - Returns best relays sorted by health score and latency
+  - Integrated into `NostrNetworkProvider` with `addRelay`, `removeRelay`, `discoverRelays` methods
+  - Added `RelayDiscoverySection` in Settings UI with discovered relay list, health scores, and add/remove functionality
+  - All gates: `pnpm build` ✅, `pnpm test` (running), `pnpm verify` (pending).
 - [ ] **W3.4 Bandwidth & battery budgets.** Delta-only sync, compression, batching, WiFi-only
   mode. Acceptance: payload size report (bytes/note) before/after.
 - [ ] **W3.5 Private groups / encrypted DMs (NIP-17/44).** Deferred to Later pending Q2.
@@ -407,6 +415,17 @@ pnpm sim:calibrate
 ---
 
 ## 9. Progress Log
+
+### 2026-11-19 — W3.3 Relay discovery & bootstrap complete
+- **Implemented**: `RelayDiscoveryService` in `core/src/network/nostr/relayDiscovery.ts`:
+  - Fetches well-known relay lists from multiple sources (NIP-65, nostr.band, etc.)
+  - Parses JSON and text formats, extracts relay URLs with metadata
+  - Probes relays for latency and health scoring
+  - Combines builtin, user-added, and discovered relays
+  - Returns best relays sorted by health score and latency
+  - Integrated into `NostrNetworkProvider` with `addRelay`, `removeRelay`, `discoverRelays` methods
+  - Added `RelayDiscoverySection` in Settings UI with discovered relay list, health scores, and add/remove functionality
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42, agent 17, cli 6, optimize 127, simulator 116), `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).
 
 ### 2026-11-19 — W3.2 Sync protocol v1 complete
 - **Implemented**: `SyncEngine` in `core/src/network/nostr/syncProtocol.ts`:

@@ -86,6 +86,7 @@ const browserEntries = {
   'network/nostr/relay': 'src/network/nostr/relay.ts',
   'network/nostr/protocol': 'src/network/nostr/protocol.ts',
   'network/nostr/syncProtocol': 'src/network/nostr/syncProtocol.ts',
+  'network/nostr/relayDiscovery': 'src/network/nostr/relayDiscovery.ts',
   // Schemas
   'schemas/generated/seam-definitions': 'src/schemas/generated/seam-definitions.ts',
   // Types
@@ -133,6 +134,7 @@ const nodeEntries = [
   'src/network/nostr/relay.ts',
   'src/network/nostr/protocol.ts',
   'src/network/nostr/syncProtocol.ts',
+  'src/network/nostr/relayDiscovery.ts',
   // Fixtures & Feedback
   'src/fixtures/index.ts',
   'src/feedback/index.ts',

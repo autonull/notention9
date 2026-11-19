@@ -14,6 +14,7 @@ import { ScoredMatch } from '../../matching/bidirectional.js';
 import { hexToBytes } from '../../utils/encoding.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 import { relayHealthManager } from './relayHealth.js';
+import { createRelayDiscovery, type RelayDiscoveryService, type DiscoveredRelay } from './relayDiscovery.js';
 
 import { BaseNetworkProvider, type NetworkProviderConfig } from '../BaseNetworkProvider.js';
 
@@ -27,14 +28,22 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     readonly name = 'Nostr';
     private _sub: { close: () => void } | null = null;
     private _pubkey: string | null = null;
+    private relayDiscovery: RelayDiscoveryService;
 
     override config: NostrConfig = {};
 
     constructor(config: NostrConfig = {}) {
         super();
         this.config = config;
+        this.relayDiscovery = createRelayDiscovery();
         if (config.privkey) {
             this.updatePubkey(config.privkey);
+        }
+        // Add user-configured relays to discovery
+        if (config.relays) {
+            for (const relay of config.relays) {
+                this.relayDiscovery.addUserRelay(relay);
+            }
         }
     }
 
@@ -47,6 +56,43 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     /** Get raw configured relays without health sorting (for settings UI) */
     getConfiguredRelays(): string[] {
         return this.config.relays || DEFAULT_RELAYS;
+    }
+
+    /** Get the relay discovery service for UI integration */
+    getRelayDiscovery(): RelayDiscoveryService {
+        return this.relayDiscovery;
+    }
+
+    /** Add a relay to the discovery service and user config */
+    async addRelay(url: string): Promise<void> {
+        const normalized = url.trim();
+        let finalUrl = normalized;
+        if (!finalUrl.startsWith('wss://') && !finalUrl.startsWith('ws://')) {
+            finalUrl = 'wss://' + finalUrl;
+        }
+
+        this.relayDiscovery.addUserRelay(finalUrl);
+        if (!this.config.relays?.includes(finalUrl)) {
+            this.config.relays = [...(this.config.relays || []), finalUrl];
+        }
+    }
+
+    /** Remove a relay from the discovery service and user config */
+    async removeRelay(url: string): Promise<void> {
+        this.relayDiscovery.removeUserRelay(url);
+        if (this.config.relays) {
+            this.config.relays = this.config.relays.filter(r => r !== url);
+        }
+    }
+
+    /** Discover and return best relays for bootstrap */
+    async discoverRelays(): Promise<string[]> {
+        return await this.relayDiscovery.getBootstrapRelays();
+    }
+
+    /** Get discovered relays with metadata for UI */
+    getDiscoveredRelays() {
+        return this.relayDiscovery.getDiscoveredRelays();
     }
 
     private updatePubkey(privkey: string) {
@@ -67,6 +113,17 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         if (keyChanged) {
             this.config.privkey ? this.updatePubkey(this.config.privkey) : (this._pubkey = null);
         }
+
+        // Sync relay discovery with new config
+        if (relaysChanged) {
+            this.relayDiscovery.clearDiscovered();
+            if (config.relays) {
+                for (const relay of config.relays) {
+                    this.relayDiscovery.addUserRelay(relay);
+                }
+            }
+        }
+
         if ((keyChanged || relaysChanged) && this.enabled) {
             this.subscribe();
         }

@@ -428,6 +428,27 @@ export * as nostrDiscovery from './network/nostr/discovery.js';
 export * as nostrRelay from './network/nostr/relay.js';
 export * as nostrRelayHealth from './network/nostr/relayHealth.js';
 export * as nostrSync from './network/nostr/syncProtocol.js';
+export * as nostrRelayDiscovery from './network/nostr/relayDiscovery.js';
+
+// Direct exports from syncProtocol for browser
+export {
+    KIND_NOTE_REVISION,
+    KIND_NOTE_HEAD,
+    SyncEngine,
+    createSyncEngine,
+    createRevisionEvent,
+    createHeadEvent,
+    parseRevisionEvent,
+    parseHeadEvent,
+    noteToRevision,
+    revisionToNote,
+} from './network/nostr/syncProtocol.js';
+
+// Direct exports from relayDiscovery for browser
+export {
+    createRelayDiscovery,
+    BUILTIN_RELAYS,
+} from './network/nostr/relayDiscovery.js';
 export {
     PROTOCOL_VERSION,
     encodeEventToCBOR,

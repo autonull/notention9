@@ -87,6 +87,7 @@ export default defineConfig({
                 '@notention/core/matching': path.resolve(__dirname, '../core/src/matching/index.ts'),
                 '@notention/core/network': path.resolve(__dirname, '../core/src/network/index.ts'),
                 '@notention/core/network/nostr/syncProtocol': path.resolve(__dirname, '../core/src/network/nostr/syncProtocol.ts'),
+                '@notention/core/network/nostr/relayDiscovery': path.resolve(__dirname, '../core/src/network/nostr/relayDiscovery.ts'),
                 '@notention/core/skills': path.resolve(__dirname, '../core/src/skills/index.ts'),
                 '@notention/core/prompts': path.resolve(__dirname, '../core/src/prompts/index.ts'),
                 '@notention/core/export': path.resolve(__dirname, '../core/src/export/index.ts'),

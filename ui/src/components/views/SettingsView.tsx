@@ -17,6 +17,7 @@ import {AccessibilityTab} from '../settings/AccessibilityTab';
 import {LanguageTab} from '../settings/LanguageTab';
 import {ShortcutsTab} from '../settings/ShortcutsTab';
 import {SyncTab} from '../settings/SyncTab';
+import {RelayDiscoverySection} from '../settings/RelayDiscoverySection';
 import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon} from '../ui/icons';
 
 interface SettingsGroup {
@@ -71,6 +72,7 @@ export function SettingsView() {
                 {id: 'network', label: 'Networks', icon: <GlobeIcon className="h-4 w-4" />},
                 {id: 'nostr', label: 'Nostr Keys', icon: <KeyIcon className="h-4 w-4" />},
                 {id: 'sync', label: 'Sync', icon: <NetworkIcon className="h-4 w-4" />},
+                {id: 'relayDiscovery', label: 'Relay Discovery', icon: <NetworkIcon className="h-4 w-4" />},
             ],
         },
         {
@@ -123,6 +125,8 @@ export function SettingsView() {
                 return <ShortcutsTab/>;
             case 'sync':
                 return <SyncTab/>;
+            case 'relayDiscovery':
+                return <RelayDiscoverySection/>;
             default:
                 return null;
         }
