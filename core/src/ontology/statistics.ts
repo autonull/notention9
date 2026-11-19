@@ -99,4 +99,11 @@ export class UsageTracker {
     getCoOccurrenceData(): Map<string, Map<string, number>> {
         return this.coOccurrence.getCoOccurrenceData();
     }
+
+    /**
+     * Get the co-occurrence recorder instance
+     */
+    getCoOccurrenceRecorder(): CoOccurrenceRecorder {
+        return this.coOccurrence;
+    }
 }

@@ -101,6 +101,26 @@ export {
     isValidEvent,
     verifiedSymbol,
 } from './network/nostr/protocol.js';
+
+// Sync protocol
+export {
+    KIND_NOTE_REVISION,
+    KIND_NOTE_HEAD,
+    SyncEngine,
+    createSyncEngine,
+    createRevisionEvent,
+    createHeadEvent,
+    parseRevisionEvent,
+    parseHeadEvent,
+    noteToRevision,
+    revisionToNote,
+} from './network/nostr/syncProtocol.js';
+
+// Relay discovery
+export {
+    createRelayDiscovery,
+    BUILTIN_RELAYS,
+} from './network/nostr/relayDiscovery.js';
 `;
 
 const outputPath = resolve('../core/dist/browser/index.js');

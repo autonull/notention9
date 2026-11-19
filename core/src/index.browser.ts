@@ -119,6 +119,11 @@ export {
     getSubtreeKeysInTree,
 } from './ontology/index.js';
 
+// OntologyService - from ontology/ontologyService.js
+export {
+    OntologyService,
+} from './ontology/ontologyService.js';
+
 // Notes - from notes/index.js
 export {
     detectConflicts,
@@ -127,10 +132,6 @@ export {
 export {
     DEFAULT_ONTOLOGY,
 } from './ontology/ontology.default.js';
-
-export {
-    OntologyService,
-} from './ontology/ontologyService.js';
 
 // Extraction - from extraction/index.js
 export {
@@ -165,6 +166,11 @@ export {
     isNoteActive,
     createResponseNote,
     createWithdrawalNote,
+    RelatedNotesService,
+    createRelatedNotesService,
+    type RelatedNotesOptions,
+    type RelatedNote,
+    type RelatedReason,
 } from './notes/index.js';
 
 // Status constants - from utils/constants.js

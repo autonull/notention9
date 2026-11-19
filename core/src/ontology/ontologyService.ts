@@ -9,6 +9,7 @@ import {
     type WidgetType
 } from './widgets.js';
 import { UsageTracker, type SuggestedAttribute } from './statistics.js';
+import { CoOccurrenceRecorder } from './CoOccurrenceRecorder.js';
 import { FuzzyMatcher } from '../utils/matching.js';
 
 /**
@@ -211,6 +212,13 @@ export class OntologyService {
      */
     getGraphData() {
         return this.usageTracker.getGraphData();
+    }
+
+    /**
+     * Get the co-occurrence recorder for related notes analysis
+     */
+    getCoOccurrenceRecorder(): CoOccurrenceRecorder {
+        return this.usageTracker.getCoOccurrenceRecorder();
     }
 
     /**

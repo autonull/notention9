@@ -3,7 +3,11 @@ import type {Note, OntologyNode, Property} from '@notention/core';
 import {parseGeoFromValues} from '@notention/core';
 import {ClockIcon, MapPinIcon, GlobeIcon, SparklesIcon, SearchIcon, LinkIcon} from '../ui/icons';
 import {SmartNoteAssistant} from '../SmartNoteAssistant';
+import {RelatedNotesPanel} from '../assistant/RelatedNotesPanel';
+import {useRelatedNotes} from '../../hooks/useRelatedNotes';
+import {useNotes} from '../../hooks/useNotes';
 import {cn} from '../../utils/ui';
+import type {RelatedNote} from '@notention/core';
 
 interface InspectorPanelProps {
     note: Note;
@@ -36,6 +40,11 @@ export function InspectorPanel({
     onToggleSidebar,
     className = '',
 }: InspectorPanelProps) {
+    const { notes: allNotes } = useNotes();
+    const { findRelated, findBacklinks } = useRelatedNotes(note);
+    const relatedNotes = findRelated;
+    const backlinks = findBacklinks;
+
     const context = useMemo<ContextData>(() => {
         let location: { lat: number; lng: number } | null = null;
         let date: Date | null = null;
@@ -141,6 +150,18 @@ export function InspectorPanel({
                     onPickTime={onPickTime}
                     ontology={ontology}
                 />
+                {(relatedNotes.length > 0 || backlinks.length > 0) && (
+                    <RelatedNotesPanel
+                        note={note}
+                        relatedNotes={relatedNotes}
+                        backlinks={backlinks}
+                        onSelectNote={(selectedNote) => {
+                            // This would need a way to navigate to the note
+                            // For now, we'll dispatch a custom event
+                            window.dispatchEvent(new CustomEvent('navigate-to-note', { detail: selectedNote.id }));
+                        }}
+                    />
+                )}
             </div>
         </div>
     );

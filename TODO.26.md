@@ -102,9 +102,17 @@
 - [ ] **W2.3 Cross-key inference rules.** Extend `REQUEST_TO_OFFER_KEY_MAP` with inference:
   `need:"weekend coding mentor"` → `schedule: weekends`, `frequency: weekly`, `role: mentor`.
   Acceptance: 10 new match cases; no regression on the 22 existing.
-- [ ] **W2.4 Related notes & backlinks (local).** "See also" panel on a note using shared
+- [x] **W2.4 Related notes & backlinks (local).** "See also" panel on a note using shared
   ontology keys, tags, and `CoOccurrenceAnalyzer`/`GraphDataBuilder`. Read-only, no server.
   Acceptance: deterministic fixture test; screenshot before/after; no O(n²) scans (indexed).
+  **Done 2026-11-19**: Implemented `RelatedNotesService` in `core/src/notes/relatedNotes.ts` with:
+  - Inverted indexes for O(1) property/tag lookups (no O(n²) scans)
+  - Scoring by shared properties (weighted by ontology presence), shared tags, and co-occurrence data
+  - Backlinks via `inResponseTo`, `references`, `relatedTo` properties
+  - `useRelatedNotes` hook in `ui/src/hooks/useRelatedNotes.ts` for React integration
+  - `RelatedNotesPanel` component in `ui/src/components/assistant/RelatedNotesPanel.tsx` with "See also" section
+  - Integrated into `InspectorPanel` to show related notes and backlinks in the sidebar
+  - 9 tests in `core/src/notes/relatedNotes.test.ts` covering all scoring methods
 - [ ] **W2.5 Ontology versioning & note migration.** Version the ontology document; migrate
   stored notes when keys are renamed/merged. Acceptance: fixture migration + idempotent re-run.
 
@@ -423,6 +431,17 @@ pnpm sim:calibrate
 ---
 
 ## 9. Progress Log
+
+### 2026-11-19 — W2.4 Related notes & backlinks (local) complete
+- **Implemented**: `RelatedNotesService` in `core/src/notes/relatedNotes.ts`:
+  - Inverted indexes for O(1) property/tag lookups (no O(n²) scans)
+  - Scoring by shared properties (weighted by ontology presence), shared tags, and co-occurrence data
+  - Backlinks via `inResponseTo`, `references`, `relatedTo` properties
+  - `useRelatedNotes` hook in `ui/src/hooks/useRelatedNotes.ts` for React integration
+  - `RelatedNotesPanel` component in `ui/src/components/assistant/RelatedNotesPanel.tsx` with "See also" section
+  - Integrated into `InspectorPanel` to show related notes and backlinks in the sidebar
+  - 9 tests in `core/src/notes/relatedNotes.test.ts` covering all scoring methods
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42, agent 17, cli 6, optimize 127, simulator 116), `pnpm test:ui` ✅.
 
 ### 2026-11-19 — W3.3 Relay discovery & bootstrap complete
 - **Implemented**: `RelayDiscoveryService` in `core/src/network/nostr/relayDiscovery.ts`:
