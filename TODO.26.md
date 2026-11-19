@@ -349,22 +349,25 @@ cheap wins.
 | **M6 — Quality push** | W1.6 → W1.4 → W1.3 → W1.5 | Holdout F1 table; loop archive; latency budget | 3–5 d |
 | **M7 — Network resilience** | W3.1 → W3.2 → W3.3 | 3-relay scenario with one dead relay passes; concurrent edits keep both versions | 4–6 d |
 | **M8 — Ontology echoes** | W2.2 → W2.4 → W2.5 | Custom key round-trip; backlinks indexed; idempotent ontology migration | 3–4 d |
-| **M9 — Decision-gated** | W3.5 (Q2), W4.3 (Q3), W4.4 (Q1), W5.4/W5.6 (Q4), W6.3–W6.5 (Q7), W7.1/W7.3/W7.4 | — | — |
+| **M9 — Priority network & UX** | **W3.4** (bandwidth/battery), **W3.5** (NIP-17/44 private groups), **W5.5** (theming/density), **W7.1** (type-safe config) | Delta sync report; encrypted DM test; theme matrix; config schema with migration | 4–6 d |
+| **M10 — Decision-gated** | W4.3 (Q3), W4.4 (Q1), W5.4/W5.6 (Q4), W6.3–W6.5 (Q7), W7.3/W7.4 | — | — |
 
 **Execution order at a glance:**
-`M1 → M2 (overlaps) → M3 → M4 → M5 → M6 → M7 → M8 → M9`
+`M1 → M2 (overlaps) → M3 → M4 → M5 → M6 → M7 → M8 → M9 → M10`
 
 **Why this order:** unblock and measure first (M1/M2), protect the data before changing storage
 (M3), harvest the cheap trust win (M4), then build leverage (M5) and push quality (M6). Network
-and ontology work follow because they depend on stable storage and evidence.
+and ontology work follow because they depend on stable storage and evidence. **M9 prioritizes
+user-requested items: network efficiency (W3.4), private groups (W3.5), theming (W5.5), and
+type-safe config (W7.1)** — all with clear acceptance criteria and no remaining hard blockers.
 
-### 4.4 Decisions needed to unblock M3
+### 4.4 Decisions needed to unblock M9
 
-- **Q5 (key source)**: recommend passphrase-first with an explicit recovery key; OS keychain is
-  not portable to the browser target.
-- ~~Q6 (merge policy)~~ → **resolved 2026-11-18**: no CRDT; revision log + LWW + keep-both on
-  conflict.
-- Q1/Q3/Q4/Q2 do not block M1–M8; answer them before M9.
+- **Q2 (remote provider)**: keep opt-in redacted inference or remove for local-only clarity? → W3.5, W6.1
+- **Q4 (shipped locales)**: which of 6 + RTL `ar` actually ship? → W5.5
+- **Q5 (key source)**: passphrase-first with recovery key; OS keychain not portable to browser → W7.1
+- ~~Q6 (merge policy)~~ → **resolved 2026-11-18**: no CRDT; revision log + LWW + keep-both on conflict
+- Q1/Q3/Q7 do not block M1–M9; answer them before M10.
 
 ---
 
@@ -390,11 +393,11 @@ and ontology work follow because they depend on stable storage and evidence.
 - ~~Sync merge policy~~ → **No CRDT**: revision log + LWW + keep-both on conflict.
 - ~~Protected privacy level~~ → **Removed**: only `private` and `public` remain.
 
-**Open (gate Later work)**
+**Open (gate M10)**
 1. **Primary user**: solo knowledge worker / mutual-aid organizer / agent operator? → W4.4, W5.6.
 2. **Remote provider**: keep opt-in redacted inference, or remove it for local-only clarity? → W3.5, W6.1.
 3. **Match actions**: auto-execute with approval, or always manual? → W4.3.
-4. **Shipped locales**: which of the 6 + RTL `ar` actually ship? → W5.3, W5.5.
+4. **Shipped locales**: which of the 6 + RTL `ar` actually ship? → W5.5.
 5. **Encryption at rest key source**: OS keychain, per-session passphrase, or both? → W6.1.
 6. **Retention defaults**: trash 30 d, revisions 50/note, backups 7? → W6.3.
 
