@@ -46,6 +46,8 @@ export interface LlamaCppBridgeOptions {
     /** Labelled cases used for retrieval-selected few-shot prompting. */
     fewShotBank?: readonly LabelledCase[];
     fewShotCount?: number;
+    /** Enable chain-of-thought scratchpad (off by default) */
+    useCoT?: boolean;
 }
 
 let cachedLlama: Llama | null = null;
@@ -54,7 +56,7 @@ let cachedContext: LlamaContext | null = null;
 let cachedSequence: LlamaContextSequence | null = null;
 let cachedSession: LlamaChatSession | null = null;
 let cachedGrammar: { signature: string; grammar: LlamaGrammar } | null = null;
-let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout' | 'fewShotBank' | 'fewShotCount' | 'maxTokens'>> | null = null;
+let currentOptions: Required<Omit<LlamaCppBridgeOptions, 'timeout' | 'fewShotBank' | 'fewShotCount' | 'maxTokens' | 'useCoT'>> | null = null;
 
 // Grammar gating state
 interface GrammarModeState {
@@ -275,7 +277,7 @@ export async function getOrCreateLlamaSession(options: LlamaCppBridgeOptions): P
         contextSize: options.contextSize ?? DEFAULT_CONTEXT_SIZE,
         gpuLayers: options.gpuLayers ?? resolveGpuLayers(),
         temperature: options.temperature ?? DEFAULT_TEMPERATURE,
-        systemPrompt: options.systemPrompt ?? buildSystemPrompt(DEFAULT_ONTOLOGY, modelSupportsGrammar(options.modelPath || getModelPath())),
+        systemPrompt: options.systemPrompt ?? buildSystemPrompt(DEFAULT_ONTOLOGY, modelSupportsGrammar(options.modelPath || getModelPath()), options.useCoT ?? false),
     };
 
     if (cachedSession && currentOptions &&
@@ -533,7 +535,7 @@ export async function extractWithLlamaCpp(
     const grammarMode = modelSupportsGrammar_ ? getGrammarMode(modelPath) : 'fallback';
 
     const useGrammar = grammarMode === 'grammar';
-    const systemPrompt = options.systemPrompt ?? buildSystemPrompt(ontology, useGrammar);
+    const systemPrompt = options.systemPrompt ?? buildSystemPrompt(ontology, useGrammar, options.useCoT ?? false);
     const session = await getOrCreateLlamaSession({ ...options, systemPrompt });
     const grammar = useGrammar ? await getOrCreateGrammar(cachedLlama!, ontology) : undefined;
 
@@ -603,7 +605,7 @@ export async function extractWithLlamaCpp(
     session.resetChatHistory();
     await cachedSequence?.clearHistory();
 
-    const fallbackSystemPrompt = buildSystemPrompt(ontology, false);
+    const fallbackSystemPrompt = buildSystemPrompt(ontology, false, options.useCoT ?? false);
     await getOrCreateLlamaSession({ ...options, systemPrompt: fallbackSystemPrompt });
 
     const fallbackStartTime = performance.now();

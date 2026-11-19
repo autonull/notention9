@@ -29,6 +29,8 @@ export interface LlamaCppProviderOptions {
     systemPrompt?: string;
     /** Dispose model between extractions to free VRAM (slower but fits larger models) */
     disposeBetweenCases?: boolean;
+    /** Enable chain-of-thought scratchpad (off by default) */
+    useCoT?: boolean;
 }
 
 export class LlamaCppProvider implements Provider {
@@ -68,6 +70,7 @@ export class LlamaCppProvider implements Provider {
                     temperature: this.options.temperature ?? 0,
                     fewShotCount: this.options.fewShotCount ?? 3,
                     systemPrompt: this.options.systemPrompt,
+                    useCoT: this.options.useCoT ?? false,
                 };
                 // Only include fewShotBank if it's a non-empty array
                 if (this.options.fewShotBank && this.options.fewShotBank.length > 0) {

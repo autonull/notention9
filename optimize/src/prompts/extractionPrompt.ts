@@ -165,13 +165,41 @@ const CORE_EXTRACTION_EXAMPLES = EXTRACTION_EXAMPLES.slice(0, 20);
 /** Full examples for grammar-supported models (Qwen 3+) */
 const FULL_EXTRACTION_EXAMPLES = EXTRACTION_EXAMPLES; // All 29 examples
 
-export function buildSystemPrompt(ontology: OntologyNode[], supportsGrammar: boolean = true): string {
+/** CoT examples with scratchpad reasoning */
+const COT_EXTRACTION_EXAMPLES: readonly ExtractionExample[] = [
+    {
+        input: 'Meeting with John tomorrow at 10am',
+        output: '<thinking>\nUser mentions "Meeting with John tomorrow at 10am"\n- "Meeting" indicates scheduling intent\n- "with John" indicates a person/contact (to)\n- "tomorrow at 10am" indicates start time\nOutput: [{"key":"intent","operator":"is","values":["schedule"]},{"key":"to","operator":"is","values":["John"]},{"key":"startTime","operator":"is","values":["10am"]}]\n</thinking>\n[{"key":"intent","operator":"is","values":["schedule"]},{"key":"to","operator":"is","values":["John"]},{"key":"startTime","operator":"is","values":["10am"]}]',
+    },
+    {
+        input: 'Need a wheelchair ramp installed before Friday, budget 900',
+        output: '<thinking>\nUser says "Need a wheelchair ramp installed before Friday, budget 900"\n- "Need" indicates request intent\n- "wheelchair ramp installed" is a service/role (contains)\n- "before Friday" is a deadline (contains)\n- "budget 900" is a budget ceiling (less than 900 USD)\nOutput: [{"key":"intent","operator":"is","values":["request"]},{"key":"role","operator":"contains","values":["wheelchair ramp"]},{"key":"deadline","operator":"contains","values":["Friday"]},{"key":"budget","operator":"less than","values":["900 USD"]}]\n</thinking>\n[{"key":"intent","operator":"is","values":["request"]},{"key":"role","operator":"contains","values":["wheelchair ramp"]},{"key":"deadline","operator":"contains","values":["Friday"]},{"key":"budget","operator":"less than","values":["900 USD"]}]',
+    },
+    {
+        input: 'looking for a laptop under $1000',
+        output: '<thinking>\nUser says "looking for a laptop under $1000"\n- "looking for" indicates request intent\n- "laptop" is a physical good (item contains)\n- "under $1000" is a budget ceiling (less than 1000 USD)\nOutput: [{"key":"intent","operator":"is","values":["request"]},{"key":"item","operator":"contains","values":["laptop"]},{"key":"budget","operator":"less than","values":["1000 USD"]}]\n</thinking>\n[{"key":"intent","operator":"is","values":["request"]},{"key":"item","operator":"contains","values":["laptop"]},{"key":"budget","operator":"less than","values":["1000 USD"]}]',
+    },
+    {
+        input: 'maybe we should consider the new proposal',
+        output: '<thinking>\nUser says "maybe we should consider the new proposal"\n- "maybe" and "should consider" indicate hypothetical/uncertain\n- No concrete constraints or actionable properties\nOutput: []\n</thinking>\n[]',
+    },
+    {
+        input: 'I need to buy milk and eggs',
+        output: '<thinking>\nUser says "I need to buy milk and eggs"\n- "need to buy" indicates request intent\n- "milk and eggs" are physical goods (item contains)\nOutput: [{"key":"intent","operator":"is","values":["request"]},{"key":"item","operator":"contains","values":["milk","eggs"]}]\n</thinking>\n[{"key":"intent","operator":"is","values":["request"]},{"key":"item","operator":"contains","values":["milk","eggs"]}]',
+    },
+];
+
+export function buildSystemPrompt(ontology: OntologyNode[], supportsGrammar: boolean = true, useCoT: boolean = false): string {
     const keys = leafOntologyKeys(ontology).join(', ') || 'none';
     const examples = (supportsGrammar ? FULL_EXTRACTION_EXAMPLES : CORE_EXTRACTION_EXAMPLES)
         .map(example => `"${example.input}" -> ${example.output}`)
         .join('\n');
 
-    return `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
+    const cotExamples = COT_EXTRACTION_EXAMPLES
+        .map(example => `"${example.input}" -> ${example.output}`)
+        .join('\n');
+
+    const basePrompt = `You are a precise semantic property extraction system. Output ONLY a JSON array. Do not explain.
 
 Each item has exactly: "key" (from the ontology keys), "operator", and "values" (non-empty string array).
 
@@ -195,7 +223,21 @@ Modality rules:
 - Mark a need with key "need" and "intent" value "request".
 - A pure hypothetical with no concrete constraint returns [].
 - Never assert a desire as "is": "I want a cheap laptop" is a constraint ("price less than ..."), not a fact.
-- Always include "intent" when the note has a clear intent.
+- Always include "intent" when the note has a clear intent.`;
+
+    if (useCoT) {
+        return `${basePrompt}
+
+Think step by step before outputting JSON. Use <thinking>...</thinking> tags for reasoning, then output the JSON array.
+
+CoT Examples:
+${cotExamples}
+
+Examples:
+${examples}`;
+    }
+
+    return `${basePrompt}
 
 Examples:
 ${examples}`;
