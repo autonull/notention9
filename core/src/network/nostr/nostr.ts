@@ -8,6 +8,7 @@ import { DEFAULT_RELAYS, resolveRelays } from '../../config/nostr.js';
 import { queryEventsWithTimeout } from '../../utils/nostrQuery.js';
 import { withTimeout } from '../../utils/async.js';
 import { redactPIIForTransport } from '../../utils/piiRedaction.js';
+import { relayHealthManager, type RelayHealthMetrics } from './relayHealth.js';
 
 export { DEFAULT_RELAYS, resolveRelays };
 export const KIND_TEXT_NOTE = 1;
@@ -205,36 +206,82 @@ export async function publishDeletionRequest(
 }
 
 async function publishEventToRelays(event: NostrEvent, relays: string[]): Promise<void> {
-  const pubs = pool.publish(relays, event);
-
-  try {
-    const outcomes = await withTimeout(
-      Promise.allSettled(pubs),
-      PUBLISH_TIMEOUT_MS,
-      'No relay accepted the event. Check the relay connection and try again.'
-    );
-
-    // nostr-tools resolves with a "connection failure" string instead of
-    // rejecting, so a resolved promise is not proof of a delivery.
-    const isConnectionFailure = (value: unknown): boolean =>
-        typeof value === 'string' && value.startsWith('connection failure');
-
-    const delivered = outcomes.filter(
-      outcome => outcome.status === 'fulfilled' && !isConnectionFailure(outcome.value)
-    );
-
-    if (delivered.length === 0) {
-      const reasons = outcomes.map(outcome =>
-        outcome.status === 'rejected'
-          ? (outcome.reason instanceof Error ? outcome.reason.message : String(outcome.reason))
-          : String(outcome.value)
-      );
-      throw new Error(reasons.filter(Boolean).join('; ') || 'No relay accepted the event');
-    }
-  } catch (e: any) {
-    Logger.getInstance().warn('Failed to publish to any relay', e);
-    throw e;
+  if (relays.length === 0) {
+    throw new Error('No relays configured for publishing');
   }
+
+  // Sort relays by health score (best first) for failover
+  const sortedRelays = relayHealthManager.getSortedRelays(relays);
+  const logger = Logger.getInstance();
+
+  // Track per-relay outcomes for health recording
+  const relayOutcomes = new Map<string, { success: boolean; latency?: number; error?: string }>();
+
+  // Try relays in health order with concurrency limit
+  const CONCURRENCY = 3;
+  let deliveredCount = 0;
+  const MIN_DELIVERIES = 1; // At least 1 relay must accept
+
+  for (let i = 0; i < sortedRelays.length; i += CONCURRENCY) {
+    const batch = sortedRelays.slice(i, i + CONCURRENCY);
+    const pubs = pool.publish(batch, event);
+
+    try {
+      const outcomes = await withTimeout(
+        Promise.allSettled(pubs),
+        PUBLISH_TIMEOUT_MS,
+        `Batch ${Math.floor(i / CONCURRENCY) + 1} timed out`
+      );
+
+      for (let j = 0; j < batch.length; j++) {
+        const url = batch[j];
+        const outcome = outcomes[j];
+
+        const isConnectionFailure = (value: unknown): boolean =>
+            typeof value === 'string' && value.startsWith('connection failure');
+
+        if (outcome.status === 'fulfilled' && !isConnectionFailure(outcome.value)) {
+            deliveredCount++;
+            relayOutcomes.set(url, { success: true });
+        } else {
+            const error = outcome.status === 'rejected'
+                ? (outcome.reason instanceof Error ? outcome.reason.message : String(outcome.reason))
+                : String(outcome.value);
+            relayOutcomes.set(url, { success: false, error });
+        }
+      }
+
+      // Failover: stop early if we have enough deliveries
+      if (deliveredCount >= MIN_DELIVERIES && i + CONCURRENCY >= sortedRelays.length) {
+          break;
+      }
+      if (deliveredCount >= MIN_DELIVERIES * 2) {
+          // Got double the minimum, good enough
+          break;
+      }
+    } catch (e) {
+      logger.warn(`Publish batch failed`, e as Error);
+      for (const url of batch) {
+          if (!relayOutcomes.has(url)) {
+              relayOutcomes.set(url, { success: false, error: String(e) });
+          }
+      }
+    }
+  }
+
+  // Record health metrics for all attempted relays
+  for (const [url, outcome] of relayOutcomes) {
+      relayHealthManager.recordPublish(url, outcome.success, outcome.error);
+  }
+
+  if (deliveredCount === 0) {
+      const reasons = Array.from(relayOutcomes.entries())
+          .filter(([, o]) => !o.success)
+          .map(([, o]) => o.error || 'unknown error');
+      throw new Error(reasons.filter(Boolean).join('; ') || 'No relay accepted the event');
+  }
+
+  logger.info(`Published to ${deliveredCount}/${relayOutcomes.size} relays`);
 }
 
 async function prepareAndSignEvent(

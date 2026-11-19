@@ -419,12 +419,14 @@ export * as feedback from './feedback/index.js';
 
 // UI
 export * as ui from './ui/index.js';
+export { actionRegistry, registerBuiltinActions, useActionRegistry } from './ui/actionRegistry.js';
 
 // Nostr
 export * as nostr from './network/nostr/nostr.js';
 export * as nostrPrivacy from './network/nostr/privacy.js';
 export * as nostrDiscovery from './network/nostr/discovery.js';
 export * as nostrRelay from './network/nostr/relay.js';
+export * as nostrRelayHealth from './network/nostr/relayHealth.js';
 export {
     PROTOCOL_VERSION,
     encodeEventToCBOR,

@@ -9,6 +9,10 @@ interface RelayStatusBannerProps {
 
 function RelayStatusItem({status}: {status: RelayStatus}) {
     const isUp = status.reachable;
+    const healthScore = status.healthScore ?? 0.5;
+    const healthColor = healthScore > 0.7 ? 'text-green-400' : healthScore > 0.4 ? 'text-yellow-400' : 'text-red-400';
+    const healthBg = healthScore > 0.7 ? 'bg-green-500/10' : healthScore > 0.4 ? 'bg-yellow-500/10' : 'bg-red-500/10';
+
     return (
         <div className={`flex items-center gap-2 px-2 py-1.5 rounded border ${
             isUp
@@ -16,9 +20,19 @@ function RelayStatusItem({status}: {status: RelayStatus}) {
                 : 'bg-red-500/10 border-red-500/30 text-red-300'
         }`}>
             <div className={`w-2 h-2 rounded-full ${isUp ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
-            <span className="font-mono text-xs truncate max-w-[180px]">{status.url}</span>
+            <span className="font-mono text-xs truncate max-w-[160px]">{status.url}</span>
             {isUp && status.latency && (
                 <span className="text-xs text-gray-400">{status.latency}ms</span>
+            )}
+            {status.healthScore !== undefined && (
+                <span className={`text-xs font-mono ${healthColor} ${healthBg} px-1.5 py-0.5 rounded`}>
+                    {Math.round(status.healthScore * 100)}%
+                </span>
+            )}
+            {status.healthLatency && status.healthSuccessRate !== undefined && (
+                <span className="text-[10px] text-gray-500">
+                    {status.healthLatency}ms / {status.healthSuccessRate}% ok
+                </span>
             )}
             {!isUp && status.error && (
                 <span className="text-xs text-gray-500">{status.error}</span>
@@ -49,6 +63,8 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
         );
     }
 
+    const healthyCount = statuses.filter(s => (s.healthScore ?? 0.5) > 0.5).length;
+
     return (
         <div
             data-testid="relay-status-detailed"
@@ -65,7 +81,7 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
                     <RelayStatusItem key={status.url} status={status} />
                 ))}
             </div>
-            <div className="mt-3 flex items-center gap-4 text-xs text-gray-400">
+            <div className="mt-3 flex items-center gap-4 text-xs text-gray-400 flex-wrap">
                 <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-green-500" />
                     {up.length} connected
@@ -73,6 +89,10 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
                 <span className="flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-red-500" />
                     {down.length} unreachable
+                </span>
+                <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                    {healthyCount} healthy
                 </span>
             </div>
         </div>

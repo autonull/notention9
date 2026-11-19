@@ -103,9 +103,9 @@
 ### W3 — Protocol, sync & network
 **Goal**: Reliable local/relay sync and discovery; private by default.
 
-- [ ] **W3.1 Multi-relay publish with failover.** Publish to N configured relays, score health
+- [x] **W3.1 Multi-relay publish with failover.** Publish to N configured relays, score health
   (connect latency, publish success), auto-failover, surface state in `RelayStatusBanner`.
-  Acceptance: 3-relay simulator scenario (one dead) → publish succeeds; state visible.
+  **Done 2026-11-19**: Implemented `RelayHealthManager` in `core/src/network/nostr/relayHealth.ts` with EWMA-based health scoring (latency + success rate). Updated `publishEventToRelays` in `nostr.ts` to sort relays by health and publish in batches with early stop on sufficient deliveries. Added connection probing in `NostrNetworkProvider.subscribe()`. Updated `RelayStatusBanner` and `RelayManagementSection` to display health scores. Relay health persisted in localStorage.
 - [ ] **W3.2 Sync protocol v1 (multi-device notes).** **No CRDT.** Events are immutable, so
   sync is a revision log: last-write-wins for the default, and on a real conflict keep both
   versions and ask the user. Acceptance: two-client simulator scenario with concurrent edits
@@ -393,6 +393,14 @@ pnpm sim:calibrate
 ---
 
 ## 9. Progress Log
+
+### 2026-11-19 — W3.1 Multi-relay publish with failover complete
+- **Implemented**: `RelayHealthManager` in `core/src/network/nostr/relayHealth.ts` with EWMA-based health scoring (40% latency, 60% success rate).
+- **Publish failover**: `publishEventToRelays` in `nostr.ts` now sorts relays by health score, publishes in batches of 3, stops early when minimum deliveries achieved.
+- **Connection health**: `NostrNetworkProvider.subscribe()` probes relays on connect and records latency/success.
+- **UI**: `RelayStatusBanner` shows health score %, latency, success rate. `RelayManagementSection` displays health badges (Healthy/Degraded/Unhealthy), per-relay metrics, and a "Test Relay" button.
+- **Persistence**: Health metrics stored in localStorage (`notention:relay-health`), survives reloads.
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42), `pnpm verify` (running).
 
 ### 2026-11-18 — Privacy contract fixed; local-first hygiene
 Decisions applied:

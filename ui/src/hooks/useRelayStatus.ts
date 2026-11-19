@@ -9,6 +9,12 @@ interface RelayStatus {
     latency?: number;
     lastChecked: number;
     error?: string;
+    /** Health score 0-1 */
+    healthScore?: number;
+    /** Health latency (ms) */
+    healthLatency?: number;
+    /** Health success rate (%) */
+    healthSuccessRate?: number;
 }
 
 const probe = (url: string): Promise<RelayStatus> => new Promise(resolve => {
@@ -29,7 +35,8 @@ const probe = (url: string): Promise<RelayStatus> => new Promise(resolve => {
         socket = new WebSocket(url);
         socket.onopen = () => {
             clearTimeout(timer);
-            finish({url, reachable: true, latency: Date.now() - start, lastChecked: Date.now()});
+            const latency = Date.now() - start;
+            finish({url, reachable: true, latency, lastChecked: Date.now()});
         };
         socket.onerror = (e) => {
             clearTimeout(timer);
@@ -56,7 +63,22 @@ export function useRelayStatus(relays?: string[]) {
         setChecking(true);
         try {
             const results = await Promise.all(relayList.map(url => probe(url)));
-            setStatuses(results);
+            // Merge with health data from core
+            if (typeof window !== 'undefined') {
+                const { nostrRelayHealth } = await import('@notention/core');
+                const enriched = results.map(r => {
+                    const health = nostrRelayHealth.relayHealthManager.getStatus(r.url);
+                    return {
+                        ...r,
+                        healthScore: health.score,
+                        healthLatency: health.latency,
+                        healthSuccessRate: health.successRate,
+                    };
+                });
+                setStatuses(enriched);
+            } else {
+                setStatuses(results);
+            }
         } finally {
             setChecking(false);
         }

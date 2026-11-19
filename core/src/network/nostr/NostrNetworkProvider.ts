@@ -13,6 +13,7 @@ import { NetworkDiscoveryService } from './discovery.js';
 import { ScoredMatch } from '../../matching/bidirectional.js';
 import { hexToBytes } from '../../utils/encoding.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
+import { relayHealthManager } from './relayHealth.js';
 
 import { BaseNetworkProvider, type NetworkProviderConfig } from '../BaseNetworkProvider.js';
 
@@ -38,6 +39,13 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     }
 
     private get relays() {
+        const configured = this.config.relays || DEFAULT_RELAYS;
+        // Return health-sorted relays for better reliability
+        return relayHealthManager.getSortedRelays(configured);
+    }
+
+    /** Get raw configured relays without health sorting (for settings UI) */
+    getConfiguredRelays(): string[] {
         return this.config.relays || DEFAULT_RELAYS;
     }
 
@@ -65,10 +73,13 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     }
 
     getStatus(): NetworkStatus {
-        const count = this.relays.length;
+        const configuredRelays = this.getConfiguredRelays();
+        const healthyRelays = configuredRelays.filter(r => relayHealthManager.getHealthScore(r) > 0.5).length;
         return {
             connected: !!this.config.privkey && this.enabled,
-            details: this.config.privkey ? `Using ${count} relay${count === 1 ? '' : 's'}` : 'No private key'
+            details: this.config.privkey
+                ? `Using ${configuredRelays.length} relay${configuredRelays.length === 1 ? '' : 's'} (${healthyRelays} healthy)`
+                : 'No private key'
         };
     }
 
@@ -96,6 +107,7 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
     async discoverMatches(note: Note, ontology: OntologyNode[], privacyMode: PrivacyLevel): Promise<ScoredMatch[]> {
         if (!this.enabled) return [];
         const discovery = new NetworkDiscoveryService(new MatchEngine(ontology), ontology);
+        // Use health-sorted relays for discovery too
         return await discovery.discoverMatches(note, this.relays, privacyMode);
     }
 
@@ -103,11 +115,15 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         this.unsubscribe();
         if (!this.enabled || !this._pubkey) return;
 
-        this.logger.info(`Subscribing to Nostr sync for ${this._pubkey} on ${this.relays.length} relays`);
+        const targetRelays = this.relays;
+        this.logger.info(`Subscribing to Nostr sync for ${this._pubkey} on ${targetRelays.length} relays`);
+
+        // Probe relays for connection health
+        this.probeRelays(targetRelays);
 
         try {
             this._sub = pool.subscribeMany(
-                this.relays,
+                targetRelays,
                 ({ kinds: [KIND_TEXT_NOTE, KIND_SEMANTIC_NOTE], authors: [this._pubkey], limit: 100 } as any),
                 {
                     onevent: (event) => {
@@ -130,6 +146,45 @@ export class NostrNetworkProvider extends BaseNetworkProvider implements Network
         } catch (e) {
             this.logger.error("Failed to subscribe to relays", e as Error);
         }
+    }
+
+    /** Probe relays and record connection health */
+    private async probeRelays(relays: string[]): Promise<void> {
+        const results = await Promise.allSettled(
+            relays.map(async (url) => {
+                const start = Date.now();
+                try {
+                    const ws = new WebSocket(url);
+                    await new Promise<void>((resolve, reject) => {
+                        const timeout = setTimeout(() => {
+                            ws.close();
+                            reject(new Error('timeout'));
+                        }, 3000);
+                        ws.onopen = () => {
+                            clearTimeout(timeout);
+                            ws.close();
+                            resolve();
+                        };
+                        ws.onerror = (e) => {
+                            clearTimeout(timeout);
+                            reject(e);
+                        };
+                    });
+                    const latency = Date.now() - start;
+                    relayHealthManager.recordConnect(url, latency, true);
+                } catch (e) {
+                    const latency = Date.now() - start;
+                    relayHealthManager.recordConnect(url, latency, false, String(e));
+                }
+            })
+        );
+
+        // Log any rejected probes
+        results.forEach((result, i) => {
+            if (result.status === 'rejected') {
+                this.logger.debug(`Relay probe failed for ${relays[i]}`, result.reason);
+            }
+        });
     }
 
     unsubscribe() {

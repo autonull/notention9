@@ -161,6 +161,7 @@ export * from './network/nostr/nostr.js';
 export * from './network/nostr/privacy.js';
 export * from './network/nostr/discovery.js';
 export * from './network/nostr/relay.js';
+export * from './network/nostr/relayHealth.js';
 export {
     PROTOCOL_VERSION,
     encodeEventToCBOR,

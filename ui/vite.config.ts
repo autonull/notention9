@@ -219,8 +219,8 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/utils', replacement: path.resolve(__dirname, isDev ? '../core/src/utils/index.browser.ts' : '../core/dist/browser/utils/index.js') },
                 { find: '@notention/core/constants', replacement: path.resolve(__dirname, isDev ? '../core/src/constants/index.ts' : '../core/dist/browser/constants/index.js') },
                 // @notention/core - directory-based resolution for main entry (MUST be LAST to not shadow subpath aliases)
-                // Dev: src/index.browser.ts (browser entry), Production: dist/browser directory
-                { find: '@notention/core', replacement: path.resolve(__dirname, isDev ? '../core/src/index.browser.ts' : '../core/dist/browser') },
+                // Dev: src/index.browser.ts (browser entry), Production: dist/browser/index.js
+                { find: '@notention/core', replacement: path.resolve(__dirname, isDev ? '../core/src/index.browser.ts' : '../core/dist/browser/index.js') },
                 // Node.js built-in polyfills - use direct file paths for packages without proper ESM exports
                 { find: 'crypto', replacement: path.resolve(__dirname, './node_modules/crypto-browserify/index.js') },
                 { find: 'stream', replacement: path.resolve(__dirname, './node_modules/stream-browserify/index.js') },
