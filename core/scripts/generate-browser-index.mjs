@@ -46,6 +46,7 @@ export * from './export/index.js';
 // Config
 export * from './config.js';
 export * from './config/NoteBasedConfig.js';
+export * from './config/settingsSchema.js';
 
 // Storage
 export * from './storage/Storage.js';

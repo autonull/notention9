@@ -289,8 +289,19 @@
 ### W7 — Developer experience & docs (local only)
 **Goal**: A contributor can build, test, and extend without tribal knowledge.
 
-- [ ] **W7.1 Type-safe config schema.** Zod/Valibot for all settings; generate the Settings UI
+- [x] **W7.1 Type-safe config schema.** Zod/Valibot for all settings; generate the Settings UI
   from the schema; migrate stored settings. Acceptance: unknown key is a type error; migration test.
+  **Done 2026-11-19**: Implemented `AppSettingsSchema` in `core/src/config/settingsSchema.ts` with Zod:
+  - Complete schema covering all `AppSettings` fields with defaults, enums, and validation rules
+  - `validateSettings()` for lenient validation with defaults fallback (used on load)
+  - `validateSettingsStrict()` for strict validation (migrations)
+  - `getDefaultValue()` for UI generation from schema defaults
+  - `getUnknownKeys()` to detect stale/migrated settings
+  - `migrateSettings()` for future schema version migrations
+  - Exported from `core/src/config/index.ts` and browser index
+  - Integrated into `SettingsProvider` to validate on load
+  - `DEFAULT_APP_SETTINGS` defined as single source of truth
+  - All gates: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm verify` ✅.
 - [x] **W7.2 Local eval harness.** `pnpm eval:local` runs golden + quality + match offline,
   prints one table, writes artifacts, and **caches per-case results** so 4B iterations stay
   < 5 min. Force multiplier for W1 — do it before prompt tuning, not at the end.
@@ -848,3 +859,16 @@ Decisions applied:
   - LLM Extraction P95: 7ms (budget 1500ms) ✅
   - Bundle Size: 363.8KB (budget 2MB) ✅
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅.
+
+### 2026-11-19 — W7.1 Type-safe config schema complete
+- **Implemented**: `AppSettingsSchema` in `core/src/config/settingsSchema.ts` with Zod:
+  - Complete schema covering all `AppSettings` fields with defaults, enums, and validation rules
+  - `validateSettings()` for lenient validation with defaults fallback (used on load)
+  - `validateSettingsStrict()` for strict validation (migrations)
+  - `getDefaultValue()` for UI generation from schema defaults
+  - `getUnknownKeys()` to detect stale/migrated settings
+  - `migrateSettings()` for future schema version migrations
+  - `DEFAULT_APP_SETTINGS` defined as single source of truth
+  - Exported from `core/src/config/index.ts` and browser index
+  - Integrated into `SettingsProvider` to validate on load
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm verify` ✅.

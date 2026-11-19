@@ -405,3 +405,6 @@ export const FEATURES = {
 export type {
     // Re-export commonly used types
 } from './types/index.js';
+
+// Re-export settings schema for validation
+export * from './config/settingsSchema.js';

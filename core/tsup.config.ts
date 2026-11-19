@@ -52,6 +52,7 @@ const browserEntries = {
   'patternRecognition/index': 'src/patternRecognition/index.ts',
   'security/index': 'src/security/index.ts',
   'config': 'src/config.browser.ts',
+  'config/settingsSchema': 'src/config/settingsSchema.ts',
   'config/NoteBasedConfig': 'src/config/NoteBasedConfig.ts',
   'storage/Storage': 'src/storage/Storage.browser.ts',
   'storage/recovery': 'src/storage/recovery.ts',

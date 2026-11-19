@@ -2,6 +2,7 @@ import type {Dispatch, SetStateAction} from 'react';
 import React, {createContext, ReactNode, useEffect} from 'react';
 import {useLocalForage} from '../../hooks/useLocalForage';
 import type {AppSettings} from '@notention/core';
+import {validateSettings, DEFAULT_APP_SETTINGS} from '@notention/core/config';
 import {DEFAULT_ONTOLOGY, DEFAULT_RELAYS} from '@notention/core';
 import {STORAGE_KEYS} from '../../config/storageKeys';
 
@@ -20,27 +21,15 @@ export function SettingsProvider({
                                  }: { children: ReactNode }) {
     const [settings, setSettings, settingsLoading] = useLocalForage<AppSettings>(
         STORAGE_KEYS.settings,
-        {
-            aiEnabled: false,
-            aiRemoteConsent: false,
-            aiPiiRedactionEnabled: true,
-            aiPiiOverrideEnabled: false,
-            developerMode: false,
-            theme: 'dark',
-            nostr: {
-                privkey: null,
-                relays: DEFAULT_RELAYS,
-            },
-            ontology: [],
-            customTemplates: [],
-            autoBackup: {
-                enabled: false,
-                frequency: 'disabled',
-                encrypt: true,
-                rotationCount: 7,
-            },
-        }
+        DEFAULT_APP_SETTINGS
     );
+
+    // Validate settings after loading from storage
+    useEffect(() => {
+        if (!settingsLoading) {
+            setSettings(prev => validateSettings(prev));
+        }
+    }, [settingsLoading, setSettings]);
 
     // Populate with default ontology on first run
     useEffect(() => {
