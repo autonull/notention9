@@ -55,14 +55,12 @@ interface OntologyAuditResult {
 async function getProjectRoot(): Promise<string> {
     let root = process.cwd();
     while (root !== '/') {
-        try {
-            await import.meta.resolve(`${root}/pnpm-workspace.yaml`);
-            break;
-        } catch {
-            root = join(root, '..');
+        if (existsSync(join(root, 'pnpm-workspace.yaml'))) {
+            return root;
         }
+        root = join(root, '..');
     }
-    return root;
+    return process.cwd();
 }
 
 function flattenKeys(keys: Iterable<string>): string[] {

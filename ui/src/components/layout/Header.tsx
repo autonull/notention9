@@ -7,6 +7,7 @@ import {NavButton} from './NavButton';
 import {IconButton} from '../ui/Button';
 import {SearchIcon, SidebarIcon, MoreHorizontalIcon, ChevronDownIcon} from '../ui/icons';
 import {ConnectionStatus} from './ConnectionStatus';
+import {ExtractionStatusBadge} from './ExtractionStatusBadge';
 import {PRIMARY_NAV, SECONDARY_NAV, SETTINGS_VIEW} from '../../utils/navigation';
 import {modShortcut} from '../../utils/platform';
 
@@ -193,6 +194,7 @@ export function Header({onToggleSidebar}: HeaderProps) {
             {/* Right Section */}
             <div className="flex items-center gap-2">
                 <ConnectionStatus/>
+                <ExtractionStatusBadge/>
                 <div className="hidden md:flex">
                     <NavButton
                         icon={<SETTINGS_VIEW.icon/>}

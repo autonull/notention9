@@ -60,19 +60,17 @@ interface EvalLocalResult {
 }
 
 const DEFAULT_PASS_THRESHOLD = 0.75;
-const CACHE_DIR = join(process.cwd(), 'data', 'eval', 'cache');
+const CACHE_DIR = join('data', 'eval', 'cache');
 
 async function getProjectRoot(): Promise<string> {
     let root = process.cwd();
     while (root !== '/') {
-        try {
-            await import.meta.resolve(`${root}/pnpm-workspace.yaml`);
-            break;
-        } catch {
-            root = join(root, '..');
+        if (existsSync(join(root, 'pnpm-workspace.yaml'))) {
+            return root;
         }
+        root = join(root, '..');
     }
-    return root;
+    return process.cwd();
 }
 
 function getProviderHash(options: LlamaCppProviderOptions): string {
@@ -91,10 +89,10 @@ async function loadCache(cacheDir: string, providerHash: string): Promise<Map<st
     if (!existsSync(cachePath)) return new Map();
     try {
         const content = await readFile(cachePath, 'utf-8');
-        const entries = JSON.parse(content) as CacheEntry[];
+        const entries = JSON.parse(content) as Array<{key: string; value: CacheEntry}>;
         const map = new Map<string, CacheEntry>();
         for (const entry of entries) {
-            map.set(entry.caseId, entry);
+            map.set(entry.key, entry.value);
         }
         return map;
     } catch {
@@ -105,7 +103,7 @@ async function loadCache(cacheDir: string, providerHash: string): Promise<Map<st
 async function saveCache(cacheDir: string, providerHash: string, cache: Map<string, CacheEntry>): Promise<void> {
     await mkdir(cacheDir, { recursive: true });
     const cachePath = join(cacheDir, `${providerHash}.json`);
-    const entries = Array.from(cache.values());
+    const entries = Array.from(cache.entries()).map(([key, value]) => ({key, value}));
     await writeFile(cachePath, JSON.stringify(entries, null, 2));
 }
 

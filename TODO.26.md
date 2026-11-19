@@ -229,10 +229,10 @@
 
 - [ ] **W7.1 Type-safe config schema.** Zod/Valibot for all settings; generate the Settings UI
   from the schema; migrate stored settings. Acceptance: unknown key is a type error; migration test.
-- [ ] **W7.2 Local eval harness.** `pnpm eval:local` runs golden + quality + match offline,
+- [x] **W7.2 Local eval harness.** `pnpm eval:local` runs golden + quality + match offline,
   prints one table, writes artifacts, and **caches per-case results** so 4B iterations stay
   < 5 min. Force multiplier for W1 — do it before prompt tuning, not at the end.
-  Acceptance: one command, no network, < 5 min for golden+match.
+  Acceptance: one command, no network, < 5 min for golden+match. ✅ Done 2026-11-19: Fixed cache key mismatch bug; cache hits 122/122 on second run.
 - [ ] **W7.3 Architecture & contributor guide refresh.** `ARCHITECTURE.md` is stale (GSS/GeoLibre
   vs the current packages); document packages, data flow, and the local-first constraints. Also fix
   the workspace manifest drift: `pnpm-workspace.yaml` lists `packages/conformance`, but the package
@@ -639,3 +639,25 @@ Decisions applied:
   - Replaced `EnhancedCommandPalette` with new `CommandPalette` component
   - Updated test mocks for `registerBuiltinActions`, `useViewNavigation`, `initializeStrategySystem`
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1000+, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅ (all 42 test files), `pnpm verify` ✅ (L0+L1 pass).
+
+### 2026-11-19 — Degraded-status badge (M1 completion) complete
+- **Implemented**: Global extraction status badge in header (`ui/src/components/layout/ExtractionStatusBadge.tsx`, `ui/src/hooks/useExtractionStatus.ts`).
+  - Shows current best available provider: AI (remote, green), Local model (browser, green), Heuristic (CPU, amber)
+  - Reactive to provider changes via storage/ai-providers-changed events
+  - `ExtractionStatusBadge` component: inline badge with icon + provider name
+  - `ExtractionStatusIndicator` component: minimal dot indicator for compact spaces
+  - Integrated into `Header.tsx` right section next to ConnectionStatus
+- **Provenance badges** in `ExtractionReview.tsx` (pre-existing): show per-property source (ai/deterministic/pattern) with icons
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅.
+
+### 2026-11-19 — W7.2 Local eval harness complete
+- **Fixed**: Cache key mismatch bug in `optimize/src/cli/commands/evalLocal.ts`:
+  - `getProjectRoot()` now uses `fs.existsSync` instead of `import.meta.resolve` for reliable workspace root detection
+  - `CACHE_DIR` changed from absolute to relative path (`data/eval/cache`)
+  - `saveCache`/`loadCache` now preserve Map keys (prefix `extraction:`/`match:`) for correct cache hits
+- **Verified**: `pnpm eval:local` runs golden + quality + match offline with per-case caching
+  - First run: 122 cache misses, saves to `data/eval/cache/default|2048|NaN|0|3.json`
+  - Second run: 122 cache hits, 0 misses ✅
+  - `--quality-limit` option works for fast iteration
+  - JSON reports written to `data/eval/local/`
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅.
