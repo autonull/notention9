@@ -153,6 +153,9 @@ export {
     setCustomCrossKeyMapping,
     removeCustomCrossKeyMapping,
     getCustomCrossKeyMappings,
+    applyNeedInference,
+    inferFromNeed,
+    DEFAULT_INFERENCE_RULES,
 } from './matching/index.js';
 
 // Notes - from notes/index.js

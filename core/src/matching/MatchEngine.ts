@@ -2,6 +2,7 @@ import { Note, Property, OntologyNode } from '../types/index.js';
 import { findAttributeDef, getOntology, getEffectiveOperators } from '../ontology/index.js';
 import { type PropertyMatch, type MatchResult } from './types.js';
 import { evaluateProperty } from './matchers.js';
+import { applyNeedInference } from './inference.js';
 
 /** Convert new Map-based ontology to legacy array format for backward compatibility */
 function ontologyMapToArray(nodes: Map<string, OntologyNode>): OntologyNode[] {
@@ -66,7 +67,9 @@ export class MatchEngine {
   }
 
   calculateMatchScore(request: Note, offer: Note): MatchResult {
-    const results = this.findMatches(request, offer);
+    // Apply need inference to enrich request with inferred properties
+    const enrichedRequest = applyNeedInference(request);
+    const results = this.findMatches(enrichedRequest, offer);
     const { matches, conflicts, totalScore, matchedKeys, conflictKeys, requiredConstraintCount } = this.aggregateResults(results);
 
     const missing = request.properties

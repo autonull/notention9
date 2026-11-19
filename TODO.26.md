@@ -99,9 +99,17 @@
   - Updated `InboxView.tsx`, `LocalMatchPreview.tsx` to use `getEffectiveCrossKeyMap(settings)`
   - Exported new functions in `core/src/index.browser.ts` and `core/src/matching/index.ts`
   - Custom mappings persist in settings and are used during matching
-- [ ] **W2.3 Cross-key inference rules.** Extend `REQUEST_TO_OFFER_KEY_MAP` with inference:
+- [x] **W2.3 Cross-key inference rules.** Extend `REQUEST_TO_OFFER_KEY_MAP` with inference:
   `need:"weekend coding mentor"` → `schedule: weekends`, `frequency: weekly`, `role: mentor`.
   Acceptance: 10 new match cases; no regression on the 22 existing.
+  **Done 2026-11-19**: Implemented `inference.ts` in `core/src/matching/inference.ts` with:
+  - `InferenceRule` type with keywords, inferred properties, and priority
+  - 30 default inference rules covering: schedule/frequency (weekend, weekday, daily), roles (mentor, tutor, instructor, coach, teacher, driver, photographer, developer, designer, writer, translator, editor, mover, cleaner, babysitter), audience (children, seniors), format (remote, in-person), duration (hourly, session, project), price (free), budget (cheap/affordable), urgency, and flexible schedule
+  - `inferFromNeed()` function to apply rules to a need property value
+  - `applyNeedInference()` function to enrich a request note with inferred properties
+  - Integrated into `MatchEngine.calculateMatchScore()` to automatically apply inference during matching
+  - Exported from `core/src/matching/index.ts` and `core/src/index.browser.ts`
+  - 19 tests in `core/src/matching/inference.test.ts` covering all rule categories
 - [x] **W2.4 Related notes & backlinks (local).** "See also" panel on a note using shared
   ontology keys, tags, and `CoOccurrenceAnalyzer`/`GraphDataBuilder`. Read-only, no server.
   Acceptance: deterministic fixture test; screenshot before/after; no O(n²) scans (indexed).
@@ -431,6 +439,17 @@ pnpm sim:calibrate
 ---
 
 ## 9. Progress Log
+
+### 2026-11-19 — W2.3 Cross-key inference rules complete
+- **Implemented**: `inference.ts` in `core/src/matching/inference.ts`:
+  - `InferenceRule` type with keywords, inferred properties, and priority
+  - 30 default inference rules covering: schedule/frequency (weekend, weekday, daily), roles (mentor, tutor, instructor, coach, teacher, driver, photographer, developer, designer, writer, translator, editor, mover, cleaner, babysitter), audience (children, seniors), format (remote, in-person), duration (hourly, session, project), price (free), budget (cheap/affordable), urgency, and flexible schedule
+  - `inferFromNeed()` function to apply rules to a need property value
+  - `applyNeedInference()` function to enrich a request note with inferred properties
+  - Integrated into `MatchEngine.calculateMatchScore()` to automatically apply inference during matching
+  - Exported from `core/src/matching/index.ts` and `core/src/index.browser.ts`
+  - 19 tests in `core/src/matching/inference.test.ts` covering all rule categories
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 993 passed), `pnpm test:ui` ✅, `pnpm verify` ✅.
 
 ### 2026-11-19 — W2.4 Related notes & backlinks (local) complete
 - **Implemented**: `RelatedNotesService` in `core/src/notes/relatedNotes.ts`:
