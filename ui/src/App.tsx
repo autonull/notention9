@@ -6,6 +6,7 @@ import {AgentCursor} from './components/AgentCursor';
 import {AgentStatusIndicator} from './components/agent/AgentStatusIndicator';
 import {useNetworkManagement} from './hooks/useNetworkManagement';
 import {useStrategyInit} from './hooks/useStrategyInit';
+import {useAutoBackup} from './hooks/useAutoBackup';
 import {StrategyProvider} from './hooks/useStrategyResolver';
 import {I18nProvider} from './components/i18n';
 import {AccessibilityProvider} from './hooks/useAccessibility';
@@ -30,6 +31,8 @@ function App() {
 function AppContent() {
     // Enable P2P Sync
     useNetworkManagement();
+    // Check for auto-backup due
+    useAutoBackup();
 
     return (
         <StrategyProvider>

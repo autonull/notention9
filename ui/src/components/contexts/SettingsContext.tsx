@@ -33,6 +33,12 @@ export function SettingsProvider({
             },
             ontology: [],
             customTemplates: [],
+            autoBackup: {
+                enabled: false,
+                frequency: 'disabled',
+                encrypt: true,
+                rotationCount: 7,
+            },
         }
     );
 

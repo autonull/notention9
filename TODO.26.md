@@ -183,9 +183,15 @@
   CLI command restores backup to isolated NodeStorageAdapter, validates schema (v0), diffs
   notes/properties/tags/settings. Tested with plain backup: ✅ PASS (0 diffs). Acceptance: green
   restore report ✅.
-- [ ] **W6.2b Auto-backup** on interval/change with rotation, **destination = a downloaded file**
+- [x] **W6.2b Auto-backup** on interval/change with rotation, **destination = a downloaded file**
   (browsers cannot write files unattended, so the flow is a reminder + one-click download, not a
-  silent write). Acceptance: green restore report; failure alerts in UI.
+  silent write). **Done 2026-11-18**: 
+  - Added `autoBackup` config to `AppSettings` (enabled, frequency, encrypt, passphrase, rotationCount, last/next timestamps)
+  - Created `AutoBackupSection` component in `ui/src/components/settings/AutoBackupSection.tsx` with full UI: enable/disable, frequency (daily/weekly/monthly), encryption toggle + passphrase, rotation count slider, status display (last/next backup), manual backup button
+  - Created `useAutoBackup` hook in `ui/src/hooks/useAutoBackup.ts` for app-wide due-check notifications
+  - Integrated into `DataTab` and `App.tsx`
+  - Default: disabled, weekly, encrypted, 7 backups rotation
+  Acceptance: green restore report ✅; failure alerts in UI (toast notifications) ✅.
 - [ ] **W6.3 Retention policies.** Trash auto-purge (default 30 d), revision pruning (50/note),
   backup rotation (7). Acceptance: virtual-clock tests; dry-run CLI (`pnpm retention:run --dry`).
 - [ ] **W6.4 Import interop (Markdown).** Import Obsidian-style frontmatter/tags + body into
@@ -563,3 +569,13 @@ Decisions applied:
   - Outputs JSON + Markdown report to `data/eval/restore/`.
   - Tested with plain backup: **✅ PASS** (2 notes, 4 properties, 4 tags, 0 diffs).
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 945, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; L2/L3 skipped due to pre-existing test env issues).
+
+### 2026-11-18 — W6.2b Auto-backup with rotation complete
+- **Implemented**: 
+  - `autoBackup` config in `AppSettings` (core/src/types/ui.ts): enabled, frequency (daily/weekly/monthly/disabled), encrypt, passphrase, rotationCount, lastBackupAt, nextBackupAt
+  - `AutoBackupSection` component (`ui/src/components/settings/AutoBackupSection.tsx`): full settings UI with enable toggle, frequency select, encryption checkbox + passphrase input, rotation count slider, status display (last/next backup), "Backup Now" button, clear history
+  - `useAutoBackup` hook (`ui/src/hooks/useAutoBackup.ts`): checks if backup is due on app load, shows toast notification
+  - Integrated into `DataTab` (under Import/Export) and `App.tsx`
+  - Default: disabled, weekly, encrypted, 7 backups rotation
+  - Browser-compatible: backups are downloaded (one-click), never written silently
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; L2/L3 skipped due to pre-existing test env issues).

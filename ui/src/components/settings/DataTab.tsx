@@ -6,6 +6,7 @@ import {useView} from '../../hooks/useViewContext';
 import {Button} from '../ui/Button';
 import {ConfirmationModal} from '../ui/Primitives';
 import {ImportExportSection} from './ImportExportSection';
+import {AutoBackupSection} from './AutoBackupSection';
 import {CapabilitiesPanel} from './CapabilitiesPanel';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {SparklesIcon} from '../ui/icons';
@@ -151,6 +152,8 @@ export function DataTab() {
                 onGrantViewed={(noteId, capability) => track(Metrics.CAPABILITY_GRANT_VIEWED, {noteId, capability})}
                 onRevoked={(noteId, capability) => track(Metrics.CAPABILITY_REVOKED, {noteId, capability})}
             />
+
+            <AutoBackupSection onBackupDue={() => {}}/>
 
             {quotaInfo && quotaInfo.percentUsed >= 80 && (
                 <div className="border-t border-gray-700 pt-6">

@@ -53,4 +53,13 @@ export interface AppSettings {
     includeDismissedMatches: boolean;
     includeCompletedActions: boolean;
   };
+  autoBackup?: {
+    enabled: boolean;
+    frequency: 'daily' | 'weekly' | 'monthly' | 'disabled';
+    encrypt: boolean;
+    passphrase?: string;
+    rotationCount: number;  // number of backups to keep
+    lastBackupAt?: string;  // ISO timestamp
+    nextBackupAt?: string;  // ISO timestamp
+  };
 }
