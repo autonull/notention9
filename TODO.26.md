@@ -121,8 +121,16 @@
   - `RelatedNotesPanel` component in `ui/src/components/assistant/RelatedNotesPanel.tsx` with "See also" section
   - Integrated into `InspectorPanel` to show related notes and backlinks in the sidebar
   - 9 tests in `core/src/notes/relatedNotes.test.ts` covering all scoring methods
-- [ ] **W2.5 Ontology versioning & note migration.** Version the ontology document; migrate
+- [x] **W2.5 Ontology versioning & note migration.** Version the ontology document; migrate
   stored notes when keys are renamed/merged. Acceptance: fixture migration + idempotent re-run.
+  **Done 2026-11-19**: Implemented `ontologyMigration.ts` in `core/src/ontology/` with:
+  - `OntologyChange` types: `add`, `modify`, `remove`, `deprecate` for property keys/operators/values/roles
+  - `OntologyVersion` with changelog, base version, and test results
+  - `migrateNotes()` applies changes idempotently using migration markers (`_migration_<path>_<version>`)
+  - `validateMigration()` detects conflicts (rename collisions, add existing, remove missing) before applying
+  - `clearMigrationMarkers()` for cleanup after verified migration
+  - 17 tests covering all change types, idempotency, validation, and marker management
+  - Exported from `core/src/ontology/index.ts`
 
 ### W3 — Protocol, sync & network
 **Goal**: Reliable local/relay sync and discovery; private by default.
@@ -784,6 +792,17 @@ Decisions applied:
   - `pnpm loop run` available for iterative prompt refinement via `optimize/src/loop/cli.ts`
   - Dependencies satisfied: W1.6 (corpus 100 cases) complete, W2.1 (ontology audit) complete
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).
+
+### 2026-11-19 — W2.5 Ontology versioning & note migration complete
+- **Implemented**: `ontologyMigration.ts` in `core/src/ontology/`:
+  - `OntologyChange` types: `add`, `modify`, `remove`, `deprecate` for property keys/operators/values/roles
+  - `OntologyVersion` with changelog, base version, and test results
+  - `migrateNotes()` applies changes idempotently using migration markers (`_migration_<path>_<version>`)
+  - `validateMigration()` detects conflicts (rename collisions, add existing, remove missing) before applying
+  - `clearMigrationMarkers()` for cleanup after verified migration
+  - 17 tests covering all change types, idempotency, validation, and marker management
+  - Exported from `core/src/ontology/index.ts`
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010), `pnpm verify` ✅.
 
 ### 2026-11-19 — W2.2 User-defined properties complete
 - **Implemented**: Custom cross-key mappings in `core/src/matching/crossKeyMap.ts`:

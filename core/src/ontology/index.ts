@@ -45,3 +45,4 @@ export * from './statistics.js';
 export { OntologyService } from './ontologyService.js';
 export * from './biologicalManifest.js';
 export { survivalDomains, hazardDomain, resourceDomain, shelterDomain, medicalDomain, transportDomain, commsDomain } from './survivalDomains.js';
+export * from './ontologyMigration.js';
