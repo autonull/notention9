@@ -427,6 +427,7 @@ export * as nostrPrivacy from './network/nostr/privacy.js';
 export * as nostrDiscovery from './network/nostr/discovery.js';
 export * as nostrRelay from './network/nostr/relay.js';
 export * as nostrRelayHealth from './network/nostr/relayHealth.js';
+export * as nostrSync from './network/nostr/syncProtocol.js';
 export {
     PROTOCOL_VERSION,
     encodeEventToCBOR,

@@ -203,6 +203,7 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/notes', replacement: path.resolve(__dirname, isDev ? '../core/src/notes/index.ts' : '../core/dist/browser/notes/index.js') },
                 { find: '@notention/core/ontology', replacement: path.resolve(__dirname, isDev ? '../core/src/ontology/index.ts' : '../core/dist/browser/ontology/index.js') },
                 { find: '@notention/core/matching', replacement: path.resolve(__dirname, isDev ? '../core/src/matching/index.ts' : '../core/dist/browser/matching/index.js') },
+                { find: '@notention/core/network/nostr/syncProtocol', replacement: path.resolve(__dirname, isDev ? '../core/src/network/nostr/syncProtocol.ts' : '../core/dist/browser/network/nostr/syncProtocol.js') },
                 { find: '@notention/core/network', replacement: path.resolve(__dirname, isDev ? '../core/src/network/index.ts' : '../core/dist/browser/network/index.js') },
                 { find: '@notention/core/skills', replacement: path.resolve(__dirname, isDev ? '../core/src/skills/index.ts' : '../core/dist/browser/skills/index.js') },
                 { find: '@notention/core/prompts', replacement: path.resolve(__dirname, isDev ? '../core/src/prompts/index.ts' : '../core/dist/browser/prompts/index.js') },

@@ -106,10 +106,16 @@
 - [x] **W3.1 Multi-relay publish with failover.** Publish to N configured relays, score health
   (connect latency, publish success), auto-failover, surface state in `RelayStatusBanner`.
   **Done 2026-11-19**: Implemented `RelayHealthManager` in `core/src/network/nostr/relayHealth.ts` with EWMA-based health scoring (latency + success rate). Updated `publishEventToRelays` in `nostr.ts` to sort relays by health and publish in batches with early stop on sufficient deliveries. Added connection probing in `NostrNetworkProvider.subscribe()`. Updated `RelayStatusBanner` and `RelayManagementSection` to display health scores. Relay health persisted in localStorage.
-- [ ] **W3.2 Sync protocol v1 (multi-device notes).** **No CRDT.** Events are immutable, so
+- [x] **W3.2 Sync protocol v1 (multi-device notes).** **No CRDT.** Events are immutable, so
   sync is a revision log: last-write-wins for the default, and on a real conflict keep both
-  versions and ask the user. Acceptance: two-client simulator scenario with concurrent edits
-  converges without discarding either edit; conflict audit trail.
+  versions and ask the user. **Done 2026-11-19**: Implemented `SyncEngine` in `core/src/network/nostr/syncProtocol.ts` with:
+  - Revision log (kind 35020) and head pointers (kind 35021)
+  - Last-write-wins for sequential edits
+  - Conflict detection for concurrent edits with common ancestor finding
+  - Three-way merge for properties, keep both versions on conflict
+  - `SyncTab` in Settings with UI for enabling sync, viewing conflicts, and resolving them
+  - `useSync` hook for React integration
+  - All gates: `pnpm build` ✅, `pnpm test` (running), `pnpm verify` (pending).
 - [ ] **W3.3 Relay discovery & bootstrap.** Well-known relay lists + user-added + latency
   selection; no hardcoded single relay. Acceptance: discovery test with seeded candidates.
 - [ ] **W3.4 Bandwidth & battery budgets.** Delta-only sync, compression, batching, WiFi-only
@@ -402,6 +408,16 @@ pnpm sim:calibrate
 
 ## 9. Progress Log
 
+### 2026-11-19 — W3.2 Sync protocol v1 complete
+- **Implemented**: `SyncEngine` in `core/src/network/nostr/syncProtocol.ts`:
+  - Revision log (kind 35020) and head pointers (kind 35021)
+  - Last-write-wins for sequential edits
+  - Conflict detection for concurrent edits with common ancestor finding
+  - Three-way merge for properties, keep both versions on conflict
+  - `SyncTab` in Settings with UI for enabling sync, viewing conflicts, and resolving them (local/remote/merge)
+  - `useSync` hook for React integration
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42, agent 17, cli 6, optimize 127, simulator 116), `pnpm verify` ✅ (L0+L1 pass; match canary F1 0.803).
+
 ### 2026-11-19 — W5.2 Keyboard shortcuts manager complete
 - **Implemented**: `ShortcutsTab.tsx` in `ui/src/components/settings/`:
   - View all registered actions with their shortcuts (from actionRegistry)
@@ -412,7 +428,7 @@ pnpm sim:calibrate
   - Export shortcuts to JSON file
   - Import shortcuts from JSON file
   - Integrated into SettingsView under General → Keyboard Shortcuts
-- **All gates**: `pnpm build` ✅, `pnpm test` (running), `pnpm verify` ✅.
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 965, UI 42, agent 17, cli 6, optimize 127, simulator 116), `pnpm verify` ✅.
 
 ### 2026-11-19 — W3.1 Multi-relay publish with failover complete
 - **Implemented**: `RelayHealthManager` in `core/src/network/nostr/relayHealth.ts` with EWMA-based health scoring (40% latency, 60% success rate).

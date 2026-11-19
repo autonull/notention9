@@ -16,7 +16,8 @@ import {RevisionsTab} from '../settings/RevisionsTab';
 import {AccessibilityTab} from '../settings/AccessibilityTab';
 import {LanguageTab} from '../settings/LanguageTab';
 import {ShortcutsTab} from '../settings/ShortcutsTab';
-import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon} from '../ui/icons';
+import {SyncTab} from '../settings/SyncTab';
+import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon} from '../ui/icons';
 
 interface SettingsGroup {
     id: string;
@@ -69,6 +70,7 @@ export function SettingsView() {
             tabs: [
                 {id: 'network', label: 'Networks', icon: <GlobeIcon className="h-4 w-4" />},
                 {id: 'nostr', label: 'Nostr Keys', icon: <KeyIcon className="h-4 w-4" />},
+                {id: 'sync', label: 'Sync', icon: <NetworkIcon className="h-4 w-4" />},
             ],
         },
         {
@@ -119,6 +121,8 @@ export function SettingsView() {
                 return <AccessibilityTab/>;
             case 'shortcuts':
                 return <ShortcutsTab/>;
+            case 'sync':
+                return <SyncTab/>;
             default:
                 return null;
         }
