@@ -47,12 +47,15 @@ export const REQUEST_TO_OFFER_KEY_MAP: Record<string, string[]> = {
 export interface MatchEngineOptions {
   /** Custom cross-key mappings to extend/override the built-in REQUEST_TO_OFFER_KEY_MAP */
   crossKeyMap?: Record<string, string[]>;
+  /** Enable regex-based need property inference (default: false — use LLM extraction instead) */
+  useNeedInference?: boolean;
 }
 
 export class MatchEngine {
   private ontologyNodes: OntologyNode[];
   private ontologyTypes: Map<string, { operators?: { real: string[]; imaginary: string[] } }>;
   private crossKeyMap: Record<string, string[]>;
+  private useNeedInference: boolean;
 
   constructor(ontology?: OntologyNode[] | Map<string, OntologyNode>, options?: MatchEngineOptions) {
     if (ontology instanceof Map) {
@@ -64,11 +67,12 @@ export class MatchEngine {
       this.ontologyTypes = getOntology().types;
     }
     this.crossKeyMap = options?.crossKeyMap ?? REQUEST_TO_OFFER_KEY_MAP;
+    this.useNeedInference = options?.useNeedInference ?? false;
   }
 
   calculateMatchScore(request: Note, offer: Note): MatchResult {
-    // Apply need inference to enrich request with inferred properties
-    const enrichedRequest = applyNeedInference(request);
+    // Apply need inference to enrich request with inferred properties (opt-in, default off)
+    const enrichedRequest = this.useNeedInference ? applyNeedInference(request) : request;
     const results = this.findMatches(enrichedRequest, offer);
     const { matches, conflicts, totalScore, matchedKeys, conflictKeys, requiredConstraintCount } = this.aggregateResults(results);
 

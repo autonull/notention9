@@ -107,7 +107,7 @@
   - 30 default inference rules covering: schedule/frequency (weekend, weekday, daily), roles (mentor, tutor, instructor, coach, teacher, driver, photographer, developer, designer, writer, translator, editor, mover, cleaner, babysitter), audience (children, seniors), format (remote, in-person), duration (hourly, session, project), price (free), budget (cheap/affordable), urgency, and flexible schedule
   - `inferFromNeed()` function to apply rules to a need property value
   - `applyNeedInference()` function to enrich a request note with inferred properties
-  - Integrated into `MatchEngine.calculateMatchScore()` to automatically apply inference during matching
+  - Integrated into `MatchEngine` with `useNeedInference` option (default: **false** — LLM extraction preferred)
   - Exported from `core/src/matching/index.ts` and `core/src/index.browser.ts`
   - 19 tests in `core/src/matching/inference.test.ts` covering all rule categories
 - [x] **W2.4 Related notes & backlinks (local).** "See also" panel on a note using shared
@@ -440,13 +440,13 @@ pnpm sim:calibrate
 
 ## 9. Progress Log
 
-### 2026-11-19 — W2.3 Cross-key inference rules complete
+### 2026-11-19 — W2.3 Cross-key inference rules complete (opt-in, default off)
 - **Implemented**: `inference.ts` in `core/src/matching/inference.ts`:
   - `InferenceRule` type with keywords, inferred properties, and priority
   - 30 default inference rules covering: schedule/frequency (weekend, weekday, daily), roles (mentor, tutor, instructor, coach, teacher, driver, photographer, developer, designer, writer, translator, editor, mover, cleaner, babysitter), audience (children, seniors), format (remote, in-person), duration (hourly, session, project), price (free), budget (cheap/affordable), urgency, and flexible schedule
   - `inferFromNeed()` function to apply rules to a need property value
   - `applyNeedInference()` function to enrich a request note with inferred properties
-  - Integrated into `MatchEngine.calculateMatchScore()` to automatically apply inference during matching
+  - Integrated into `MatchEngine` with `useNeedInference` option (default: **false** — LLM extraction preferred)
   - Exported from `core/src/matching/index.ts` and `core/src/index.browser.ts`
   - 19 tests in `core/src/matching/inference.test.ts` covering all rule categories
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 993 passed), `pnpm test:ui` ✅, `pnpm verify` ✅.
