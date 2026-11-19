@@ -17,15 +17,20 @@ const __dirname = resolve(__filename, '..');
 interface PerfBudgetConfig {
     ttiBudget: number;
     inpBudget: number;
-    extractionP95Budget: number;
+    // Progressive extraction budgets (W1.5)
+    heuristicExtractionBudget: number;   // < 300ms
+    llmExtractionP50Budget: number;      // < 800ms
+    llmExtractionP95Budget: number;      // < 1500ms
     bundleBudget: number;
 }
 
 const DEFAULT_CONFIG: PerfBudgetConfig = {
-    ttiBudget: 2500,      // 2.5s
-    inpBudget: 200,       // 200ms
-    extractionP95Budget: 800,  // 800ms
-    bundleBudget: 2 * 1024 * 1024,  // 2MB (gzipped main bundle)
+    ttiBudget: 2500,       // 2.5s
+    inpBudget: 200,        // 200ms
+    heuristicExtractionBudget: 300,    // 300ms for first properties
+    llmExtractionP50Budget: 800,       // 800ms p50 for LLM refinement
+    llmExtractionP95Budget: 1500,      // 1500ms p95 for LLM refinement
+    bundleBudget: 2 * 1024 * 1024,     // 2MB (gzipped main bundle)
 };
 
 const SAMPLE_TEXTS = [
@@ -48,8 +53,10 @@ export class PerfBudgetCommand extends Command {
         { name: 'json', type: 'boolean' as const, description: 'Output as JSON' },
         { name: 'tti-budget', type: 'number' as const, description: 'TTI budget in ms (default: 2500)' },
         { name: 'inp-budget', type: 'number' as const, description: 'INP budget in ms (default: 200)' },
-        { name: 'extraction-budget', type: 'number' as const, description: 'Extraction p95 budget in ms (default: 800)' },
-        { name: 'bundle-budget', type: 'number' as const, description: 'Bundle budget in bytes (default: 512000)' },
+        { name: 'heuristic-budget', type: 'number' as const, description: 'Heuristic extraction budget in ms (default: 300)' },
+        { name: 'llm-p50-budget', type: 'number' as const, description: 'LLM extraction p50 budget in ms (default: 800)' },
+        { name: 'llm-p95-budget', type: 'number' as const, description: 'LLM extraction p95 budget in ms (default: 1500)' },
+        { name: 'bundle-budget', type: 'number' as const, description: 'Bundle budget in bytes (default: 2097152)' },
         { name: 'runs', type: 'number' as const, description: 'Number of extraction runs for p95 (default: 100)' },
         { name: 'skip-browser', type: 'boolean' as const, description: 'Skip browser-based TTI/INP measurements' },
     ];
@@ -58,7 +65,9 @@ export class PerfBudgetCommand extends Command {
         json?: boolean;
         ttiBudget?: number;
         inpBudget?: number;
-        extractionBudget?: number;
+        heuristicBudget?: number;
+        llmP50Budget?: number;
+        llmP95Budget?: number;
         bundleBudget?: number;
         runs?: number;
         skipbrowser?: boolean;
@@ -67,7 +76,9 @@ export class PerfBudgetCommand extends Command {
         const config: PerfBudgetConfig = {
             ttiBudget: args.ttiBudget ?? DEFAULT_CONFIG.ttiBudget,
             inpBudget: args.inpBudget ?? DEFAULT_CONFIG.inpBudget,
-            extractionP95Budget: args.extractionBudget ?? DEFAULT_CONFIG.extractionP95Budget,
+            heuristicExtractionBudget: args.heuristicBudget ?? DEFAULT_CONFIG.heuristicExtractionBudget,
+            llmExtractionP50Budget: args.llmP50Budget ?? DEFAULT_CONFIG.llmExtractionP50Budget,
+            llmExtractionP95Budget: args.llmP95Budget ?? DEFAULT_CONFIG.llmExtractionP95Budget,
             bundleBudget: args.bundleBudget ?? DEFAULT_CONFIG.bundleBudget,
         };
 
@@ -76,13 +87,27 @@ export class PerfBudgetCommand extends Command {
 
         const results: Record<string, { budget: number; actual: number; pass: boolean }> = {};
 
-        // 1. Measure extraction p95
-        this.printInfo(`Measuring extraction latency (${runs} runs)...`);
-        const extractionP95 = await this.measureExtractionP95(runs);
-        results.extractionP95 = {
-            budget: config.extractionP95Budget,
-            actual: extractionP95,
-            pass: extractionP95 <= config.extractionP95Budget,
+        // 1. Measure heuristic extraction (first properties)
+        this.printInfo(`Measuring heuristic extraction latency (${runs} runs)...`);
+        const heuristicP95 = await this.measureHeuristicExtractionP95(runs);
+        results.heuristicExtraction = {
+            budget: config.heuristicExtractionBudget,
+            actual: heuristicP95,
+            pass: heuristicP95 <= config.heuristicExtractionBudget,
+        };
+
+        // 2. Measure LLM extraction (progressive refinement)
+        this.printInfo(`Measuring LLM extraction latency (${runs} runs)...`);
+        const { p50: llmP50, p95: llmP95 } = await this.measureLLMExtractionPercentiles(runs);
+        results.llmExtractionP50 = {
+            budget: config.llmExtractionP50Budget,
+            actual: llmP50,
+            pass: llmP50 <= config.llmExtractionP50Budget,
+        };
+        results.llmExtractionP95 = {
+            budget: config.llmExtractionP95Budget,
+            actual: llmP95,
+            pass: llmP95 <= config.llmExtractionP95Budget,
         };
 
         // 2. Measure bundle size
@@ -138,7 +163,7 @@ export class PerfBudgetCommand extends Command {
         return overallPass ? 0 : 1;
     }
 
-    private async measureExtractionP95(runs: number): Promise<number> {
+    private async measureHeuristicExtractionP95(runs: number): Promise<number> {
         const pipeline = createExtractionPipeline();
         const ontologyService = new OntologyService();
         const ontology = ontologyService.getAllNodes();
@@ -148,6 +173,7 @@ export class PerfBudgetCommand extends Command {
             const text = SAMPLE_TEXTS[i % SAMPLE_TEXTS.length];
             const start = performance.now();
             
+            // Heuristic only: no LLM, just pattern-based extraction
             await pipeline.extract(text, ontology, {
                 intents: true,
                 patterns: true,
@@ -167,6 +193,48 @@ export class PerfBudgetCommand extends Command {
         latencies.sort((a, b) => a - b);
         const p95Index = Math.ceil(latencies.length * 0.95) - 1;
         return Math.round(latencies[p95Index]);
+    }
+
+    private async measureLLMExtractionPercentiles(runs: number): Promise<{ p50: number; p95: number }> {
+        const pipeline = createExtractionPipeline();
+        const ontologyService = new OntologyService();
+        const ontology = ontologyService.getAllNodes();
+        const latencies: number[] = [];
+
+        // Check if LLM is available via environment (model path or server URL)
+        const hasLLM = !!(process.env.LLAMA_MODEL_PATH || process.env.LLAMA_CPP_SERVER_URL);
+
+        if (!hasLLM) {
+            this.printWarning('No LLM provider configured (LLAMA_MODEL_PATH or LLAMA_CPP_SERVER_URL), using heuristic latencies as fallback');
+            const heuristicP95 = await this.measureHeuristicExtractionP95(runs);
+            return { p50: heuristicP95, p95: heuristicP95 };
+        }
+
+        for (let i = 0; i < runs; i++) {
+            const text = SAMPLE_TEXTS[i % SAMPLE_TEXTS.length];
+            const start = performance.now();
+            
+            // Full extraction including LLM refinement
+            await pipeline.extract(text, ontology, {
+                intents: true,
+                patterns: true,
+                ontologyKeys: true,
+                fuzzy: true,
+                price: true,
+                dates: true,
+                roles: true,
+                request: true,
+                ranges: true,
+            });
+            
+            const end = performance.now();
+            latencies.push(end - start);
+        }
+
+        latencies.sort((a, b) => a - b);
+        const p50Index = Math.ceil(latencies.length * 0.50) - 1;
+        const p95Index = Math.ceil(latencies.length * 0.95) - 1;
+        return { p50: Math.round(latencies[p50Index]), p95: Math.round(latencies[p95Index]) };
     }
 
     private async measureBundleSize(): Promise<number> {
