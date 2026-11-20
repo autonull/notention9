@@ -36,9 +36,14 @@ interface UseSmartNoteAssistantReturn {
     // Data
     suggestions: NoteSuggestion[];
     activeSuggestions: NoteSuggestion[];
+    staleSuggestions: NoteSuggestion[];
+    appliedSuggestions: NoteSuggestion[];
     isGenerating: boolean;
     refreshSuggestions: () => Promise<void>;
     dismissSuggestion: (suggestionId: string) => boolean;
+    applySuggestion: (suggestionId: string, resultNoteIds?: string[], fitCount?: number) => boolean;
+    undoApply: (suggestionId: string) => boolean;
+    undoDismiss: (suggestionId: string) => boolean;
     localMatches: ReturnType<typeof useMatches>;
     networkMatches: ScoredMatch[];
     isSearching: boolean;
@@ -94,9 +99,14 @@ export function useSmartNoteAssistant({
     const {
         suggestions,
         activeSuggestions,
+        staleSuggestions,
+        appliedSuggestions,
         isGenerating,
         refresh: refreshSuggestions,
-        dismissSuggestion
+        dismissSuggestion,
+        applySuggestion,
+        undoApply,
+        undoDismiss
     } = useNoteSuggestions({ note });
 
     const localMatches = useMatches(note);
@@ -283,9 +293,14 @@ export function useSmartNoteAssistant({
         setActiveSuggestion,
         suggestions,
         activeSuggestions,
+        staleSuggestions,
+        appliedSuggestions,
         isGenerating,
         refreshSuggestions,
         dismissSuggestion,
+        applySuggestion,
+        undoApply,
+        undoDismiss,
         localMatches,
         networkMatches,
         isSearching,

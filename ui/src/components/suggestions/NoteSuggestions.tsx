@@ -1,48 +1,60 @@
 import React from 'react';
 import { Note, NoteSuggestion } from '@notention/core';
-import { useNoteSuggestions } from '../../hooks/useNoteSuggestions';
 import { SuggestionCard } from './SuggestionCard';
 import styles from './NoteSuggestions.module.css';
 
 interface NoteSuggestionsProps {
   note: Note | null;
+  activeSuggestions: NoteSuggestion[];
+  staleSuggestions: NoteSuggestion[];
+  appliedSuggestions: NoteSuggestion[];
   onSuggestionApplied?: (suggestion: NoteSuggestion) => void;
-  onSuggestionDismissed?: (suggestion: NoteSuggestion) => void;
+  onSuggestionDismissed?: (suggestionId: string) => boolean;
+  onSuggestionUndoApply?: (suggestionId: string) => boolean;
+  onSuggestionUndoDismiss?: (suggestionId: string) => boolean;
   showStale?: boolean;
+  showApplied?: boolean;
   maxSuggestions?: number;
   showHeader?: boolean;
+  isGenerating?: boolean;
+  error?: Error | null;
+  refresh?: () => Promise<void>;
 }
 
 export function NoteSuggestions({
   note,
+  activeSuggestions = [],
+  staleSuggestions = [],
+  appliedSuggestions = [],
   onSuggestionApplied,
   onSuggestionDismissed,
+  onSuggestionUndoApply,
+  onSuggestionUndoDismiss,
   showStale = true,
+  showApplied = true,
   maxSuggestions = 10,
-  showHeader = true
+  showHeader = true,
+  isGenerating = false,
+  error = null,
+  refresh
 }: NoteSuggestionsProps) {
-  const {
-    activeSuggestions,
-    staleSuggestions,
-    isGenerating,
-    error,
-    refresh,
-    applySuggestion,
-    dismissSuggestion
-  } = useNoteSuggestions({ note });
-
   const handleApply = (suggestionId: string) => {
-    const suggestion = [...activeSuggestions, ...staleSuggestions].find(s => s.id === suggestionId);
-    if (suggestion && applySuggestion(suggestionId)) {
-      onSuggestionApplied?.(suggestion);
+    const suggestion = [...activeSuggestions, ...staleSuggestions, ...appliedSuggestions].find(s => s.id === suggestionId);
+    if (suggestion && onSuggestionApplied) {
+      onSuggestionApplied(suggestion);
     }
   };
 
   const handleDismiss = (suggestionId: string) => {
-    const suggestion = [...activeSuggestions, ...staleSuggestions].find(s => s.id === suggestionId);
-    if (suggestion && dismissSuggestion(suggestionId)) {
-      onSuggestionDismissed?.(suggestion);
-    }
+    onSuggestionDismissed?.(suggestionId);
+  };
+
+  const handleUndoApply = (suggestionId: string) => {
+    onSuggestionUndoApply?.(suggestionId);
+  };
+
+  const handleUndoDismiss = (suggestionId: string) => {
+    onSuggestionUndoDismiss?.(suggestionId);
   };
 
   if (!note) {
@@ -58,7 +70,7 @@ export function NoteSuggestions({
     ...(showStale ? staleSuggestions.slice(0, Math.max(0, maxSuggestions - activeSuggestions.length)) : [])
   ];
 
-  if (isGenerating && displaySuggestions.length === 0) {
+  if (isGenerating && displaySuggestions.length === 0 && (!showApplied || appliedSuggestions.length === 0)) {
     return (
       <div className={styles.loading} role="status" aria-live="polite">
         <div className={styles.spinner} />
@@ -78,13 +90,15 @@ export function NoteSuggestions({
     );
   }
 
-  if (displaySuggestions.length === 0) {
+  if (displaySuggestions.length === 0 && (!showApplied || appliedSuggestions.length === 0)) {
     return (
       <div className={styles.empty}>
         <p>No suggestions available</p>
-        <button onClick={refresh} className={styles.refreshButton}>
-          Refresh
-        </button>
+        {refresh && (
+          <button onClick={refresh} className={styles.refreshButton}>
+            Refresh
+          </button>
+        )}
       </div>
     );
   }
@@ -99,14 +113,6 @@ export function NoteSuggestions({
               {activeSuggestions.length} active
               {staleSuggestions.length > 0 && `, ${staleSuggestions.length} stale`}
             </span>
-            <button
-              onClick={refresh}
-              className={styles.refreshButton}
-              disabled={isGenerating}
-              aria-label="Refresh suggestions"
-            >
-              ⟳
-            </button>
           </div>
         </div>
       )}
@@ -121,6 +127,8 @@ export function NoteSuggestions({
                 suggestion={suggestion}
                 onApply={handleApply}
                 onDismiss={handleDismiss}
+                onUndoApply={handleUndoApply}
+                onUndoDismiss={handleUndoDismiss}
               />
             ))}
           </>
@@ -135,6 +143,24 @@ export function NoteSuggestions({
                 suggestion={suggestion}
                 onApply={handleApply}
                 onDismiss={handleDismiss}
+                onUndoApply={handleUndoApply}
+                onUndoDismiss={handleUndoDismiss}
+              />
+            ))}
+          </>
+        )}
+
+        {showApplied && appliedSuggestions.length > 0 && (
+          <>
+            {showHeader && <div className={styles.sectionHeader}>Applied</div>}
+            {appliedSuggestions.slice(0, maxSuggestions).map(suggestion => (
+              <SuggestionCard
+                key={suggestion.id}
+                suggestion={suggestion}
+                onApply={handleApply}
+                onDismiss={handleDismiss}
+                onUndoApply={handleUndoApply}
+                onUndoDismiss={handleUndoDismiss}
               />
             ))}
           </>

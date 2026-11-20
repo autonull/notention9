@@ -15,6 +15,9 @@ interface AssistantContentProps {
     activeTab: string;
     properties: Property[];
     suggestions: NoteSuggestion[];
+    activeSuggestions: NoteSuggestion[];
+    staleSuggestions: NoteSuggestion[];
+    appliedSuggestions: NoteSuggestion[];
     localMatches: ScoredMatch[];
     networkMatches: ScoredMatch[];
     isSearching: boolean;
@@ -39,6 +42,9 @@ interface AssistantContentProps {
     onConnect: (match: ScoredMatch) => Promise<void>;
     onChat: (author: string) => void;
     onApplySuggestion: (suggestion: NoteSuggestion) => void;
+    onDismissSuggestion: (suggestionId: string) => boolean;
+    onUndoApply: (suggestionId: string) => boolean;
+    onUndoDismiss: (suggestionId: string) => boolean;
     onMouseEnterSuggestion: (index: number) => void;
     onAddDiscovered: (key: string, type: string) => void;
     noteId: string;
@@ -49,6 +55,9 @@ export function AssistantContent({
     activeTab,
     properties,
     suggestions,
+    activeSuggestions,
+    staleSuggestions,
+    appliedSuggestions,
     localMatches,
     networkMatches,
     isSearching,
@@ -73,6 +82,9 @@ export function AssistantContent({
     onConnect,
     onChat,
     onApplySuggestion,
+    onDismissSuggestion,
+    onUndoApply,
+    onUndoDismiss,
     onMouseEnterSuggestion,
     onAddDiscovered,
     noteId,
@@ -104,7 +116,12 @@ export function AssistantContent({
                 <NoteSuggestions
                     note={note}
                     onSuggestionApplied={onApplySuggestion}
-                    onSuggestionDismissed={() => {}}
+                    onSuggestionDismissed={onDismissSuggestion}
+                    onSuggestionUndoApply={onUndoApply}
+                    onSuggestionUndoDismiss={onUndoDismiss}
+                    activeSuggestions={activeSuggestions}
+                    staleSuggestions={staleSuggestions}
+                    appliedSuggestions={appliedSuggestions}
                 />
             )}
 

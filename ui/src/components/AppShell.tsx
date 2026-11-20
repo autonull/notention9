@@ -16,6 +16,8 @@ import {useView} from '../hooks/useViewContext';
 import {useUrlRouting} from '../hooks/useUrlRouting';
 import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
 import {useCommands} from '../hooks/useCommands';
+import {browserSuggestionStateStore} from '../services/suggestionStateStore';
+import {suggestionOrchestrator} from '@notention/core';
 import {HelpDialog} from './modals/HelpDialog';
 import {ConnectivityBanner} from './layout/ConnectivityBanner';
 import {DegradedModeBanner} from './layout/DegradedModeBanner';
@@ -34,6 +36,11 @@ const DevBridge = import.meta.env.VITE_DEV_HOOKS === 'true'
 
 export function AppShell() {
     const {getSortedFilteredNotes, loading: notesLoading} = useNotes();
+
+    // Initialize suggestion state store once
+    useMemo(() => {
+        suggestionOrchestrator.setStateStore(browserSuggestionStateStore);
+    }, []);
     const {
         activeView,
         setActiveView,

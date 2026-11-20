@@ -1,6 +1,6 @@
 import React from 'react';
 import { NoteSuggestion, Property } from '@notention/core';
-import { XIcon, HelpIcon, CheckIcon, ArrowRightIcon } from '../ui/icons';
+import { XIcon, HelpIcon, CheckIcon, ArrowRightIcon, ArrowPathIcon } from '../ui/icons';
 import styles from './SuggestionCard.module.css';
 
 const verbMap: Record<NoteSuggestion['kind'], string> = {
@@ -31,6 +31,8 @@ interface SuggestionCardProps {
   suggestion: NoteSuggestion;
   onApply: (suggestionId: string) => void;
   onDismiss: (suggestionId: string) => void;
+  onUndoApply?: (suggestionId: string) => void;
+  onUndoDismiss?: (suggestionId: string) => void;
   onPreview?: (suggestion: NoteSuggestion) => void;
 }
 
@@ -75,10 +77,29 @@ function getEvidenceLine(suggestion: NoteSuggestion): string | null {
   }
 }
 
-export function SuggestionCard({ suggestion, onApply, onDismiss, onPreview }: SuggestionCardProps) {
+function getAppliedLine(suggestion: NoteSuggestion): string | null {
+  if (suggestion.status !== 'applied') return null;
+  const fitCount = (suggestion as any).fitCount;
+  if (typeof fitCount === 'number' && fitCount > 0) {
+    return `${fitCount} offer${fitCount === 1 ? '' : 's'} now match`;
+  }
+  return 'Applied';
+}
+
+export function SuggestionCard({ 
+  suggestion, 
+  onApply, 
+  onDismiss, 
+  onUndoApply, 
+  onUndoDismiss,
+  onPreview 
+}: SuggestionCardProps) {
   const isStale = suggestion.status === 'stale';
+  const isApplied = suggestion.status === 'applied';
+  const isDismissed = suggestion.status === 'dismissed';
   const verbTitle = getVerbTitle(suggestion);
   const evidenceLine = getEvidenceLine(suggestion);
+  const appliedLine = getAppliedLine(suggestion);
   const evidence = suggestion.evidence[0];
   const sourceLabel = evidence ? sourceLabels[evidence.source] : '';
   const sourceIcon = evidence ? sourceIcons[evidence.source] : null;
@@ -89,7 +110,7 @@ export function SuggestionCard({ suggestion, onApply, onDismiss, onPreview }: Su
 
   return (
     <div
-      className={`${styles.card} ${isStale ? styles.stale : ''}`}
+      className={`${styles.card} ${isStale ? styles.stale : ''} ${isApplied ? styles.applied : ''} ${isDismissed ? styles.dismissed : ''}`}
       data-testid={`suggestion-card-${suggestion.id}`}
     >
       <div className={styles.mainRow}>
@@ -116,62 +137,101 @@ export function SuggestionCard({ suggestion, onApply, onDismiss, onPreview }: Su
             </div>
           )}
 
-          {evidenceLine && (
+          {evidenceLine && !isApplied && (
             <div className={styles.evidence}>
               {sourceIcon}
               <span className={styles.evidenceText}>{evidenceLine}</span>
             </div>
           )}
+
+          {appliedLine && (
+            <div className={styles.appliedLine}>
+              <span className={styles.appliedIcon}>✓</span>
+              <span className={styles.appliedText}>{appliedLine}</span>
+            </div>
+          )}
         </div>
 
         <div className={styles.actions}>
-          <button
-            className={`${styles.primaryAction} ${isStale ? styles.refreshAction : ''}`}
-            onClick={() => onApply(suggestion.id)}
-            aria-label={isStale ? 'Refresh suggestion' : 'Apply suggestion'}
-            disabled={isStale && suggestion.proposedChange?.type !== 'add'}
-          >
-            {isStale ? (
-              <>
-                <span className={styles.actionIcon}>↻</span>
-                <span>Refresh</span>
-              </>
-            ) : (
-              <>
-                <span className={styles.actionIcon}>
-                  <CheckIcon className="w-4 h-4" />
-                </span>
-                <span>Apply</span>
-              </>
-            )}
-          </button>
+          {!isApplied && !isDismissed && (
+            <button
+              className={`${styles.primaryAction} ${isStale ? styles.refreshAction : ''}`}
+              onClick={() => onApply(suggestion.id)}
+              aria-label={isStale ? 'Refresh suggestion' : 'Apply suggestion'}
+              disabled={isStale && suggestion.proposedChange?.type !== 'add'}
+            >
+              {isStale ? (
+                <>
+                  <span className={styles.actionIcon}>↻</span>
+                  <span>Refresh</span>
+                </>
+              ) : (
+                <>
+                  <span className={styles.actionIcon}>
+                    <CheckIcon className="w-4 h-4" />
+                  </span>
+                  <span>Apply</span>
+                </>
+              )}
+            </button>
+          )}
 
-          <button
-            className={styles.whyButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              alert(`Why?\n\n${suggestion.description}\n\nSource: ${sourceLabel}`);
-            }}
-            aria-label="Why this suggestion?"
-            title="Why?"
-          >
-            <HelpIcon className="w-4 h-4" />
-          </button>
+          {isApplied && onUndoApply && (
+            <button
+              className={`${styles.primaryAction} ${styles.undoAction}`}
+              onClick={() => onUndoApply(suggestion.id)}
+              aria-label="Undo apply"
+            >
+              <span className={styles.actionIcon}>
+                <ArrowPathIcon className="w-4 h-4" />
+              </span>
+              <span>Undo</span>
+            </button>
+          )}
 
-          <button
-            className={styles.dismissButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDismiss(suggestion.id);
-            }}
-            aria-label="Dismiss suggestion"
-          >
-            <XIcon className="w-4 h-4" />
-          </button>
+          {isDismissed && onUndoDismiss && (
+            <button
+              className={`${styles.primaryAction} ${styles.undoAction}`}
+              onClick={() => onUndoDismiss(suggestion.id)}
+              aria-label="Undo dismiss"
+            >
+              <span className={styles.actionIcon}>
+                <ArrowPathIcon className="w-4 h-4" />
+              </span>
+              <span>Undo</span>
+            </button>
+          )}
+
+          {!isApplied && !isDismissed && (
+            <>
+              <button
+                className={styles.whyButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  alert(`Why?\n\n${suggestion.description}\n\nSource: ${sourceLabel}`);
+                }}
+                aria-label="Why this suggestion?"
+                title="Why?"
+              >
+                <HelpIcon className="w-4 h-4" />
+              </button>
+
+              <button
+                className={styles.dismissButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDismiss(suggestion.id);
+                }}
+                aria-label="Dismiss suggestion"
+              >
+                <XIcon className="w-4 h-4" />
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {evidence && (
+      {evidence && !isApplied && (
         <div className={styles.sourceChip}>
           {sourceIcon}
           <span>{sourceLabel}</span>
