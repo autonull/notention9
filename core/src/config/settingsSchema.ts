@@ -7,6 +7,8 @@ import type { AppSettings, Template } from '../types/index.js';
  */
 export const AppSettingsSchema = z.object({
     theme: z.enum(['light', 'dark', 'system']).default('system'),
+    density: z.enum(['compact', 'comfortable']).default('comfortable'),
+    accentColor: z.string().default('#2563eb'),
     language: z.string().optional(),
     developerMode: z.boolean().default(false),
     privacyMode: z.string().optional(),
@@ -87,6 +89,8 @@ export type AppSettingsFromSchema = z.infer<typeof AppSettingsSchema>;
  */
 export const DEFAULT_APP_SETTINGS: AppSettings = {
     theme: 'system',
+    density: 'comfortable',
+    accentColor: '#2563eb',
     developerMode: false,
     aiEnabled: false,
     automationEnabled: false,

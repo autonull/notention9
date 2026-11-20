@@ -6,6 +6,8 @@ export type SidebarViewMode = 'list' | 'grid';
 
 export interface AppSettings {
   theme: 'light' | 'dark' | 'system';
+  density: 'compact' | 'comfortable';
+  accentColor: string;
   language?: string;
   developerMode: boolean;
   privacyMode?: string;

@@ -28,6 +28,8 @@ const createValidNote = (overrides: Partial<Note> = {}): Note => ({
 
 const createValidSettings = (overrides: Partial<AppSettings> = {}): AppSettings => ({
     theme: 'dark',
+    density: 'comfortable',
+    accentColor: '#2563eb',
     developerMode: false,
     aiEnabled: false,
     aiRemoteConsent: false,

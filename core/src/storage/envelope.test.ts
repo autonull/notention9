@@ -23,6 +23,8 @@ const createTestNote = (overrides: Partial<Note> = {}): Note => ({
 
 const createTestSettings = (overrides: Partial<AppSettings> = {}): AppSettings => ({
     theme: 'dark',
+    density: 'comfortable',
+    accentColor: '#2563eb',
     developerMode: false,
     aiEnabled: false,
     aiRemoteConsent: false,

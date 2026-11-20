@@ -230,6 +230,8 @@ export class EnvelopeValidatedStorage {
     private getDefaultSettings(): StorageSchema['settings'] {
         return {
             theme: 'dark',
+            density: 'comfortable',
+            accentColor: '#2563eb',
             developerMode: false,
             aiEnabled: false,
             aiRemoteConsent: false,

@@ -11,6 +11,7 @@ import {useActionRegistryInit} from './hooks/useActionRegistry';
 import {StrategyProvider} from './hooks/useStrategyResolver';
 import {I18nProvider} from './components/i18n';
 import {AccessibilityProvider} from './hooks/useAccessibility';
+import {useTheme} from './hooks/useTheme';
 
 function App() {
     useStrategyInit();
@@ -35,6 +36,8 @@ function AppContent() {
     useNetworkManagement();
     // Check for auto-backup due
     useAutoBackup();
+    // Apply theme, density, and accent color
+    useTheme();
 
     return (
         <StrategyProvider>

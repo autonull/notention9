@@ -4,6 +4,8 @@ import type { Note, AppSettings } from '@notention/core';
 
 const baseSettings: AppSettings = {
     theme: 'dark',
+    density: 'comfortable',
+    accentColor: '#2563eb',
     developerMode: false,
     aiEnabled: false,
     aiProvider: 'local',

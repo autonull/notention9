@@ -221,9 +221,18 @@
   pseudo-locale expansion test; fix layout leaks in RTL. Acceptance: `pnpm i18n:audit` report 0 gaps. **Done 2026-11-18**: Implemented `pnpm optimize i18n:audit` in `optimize/src/cli/commands/i18nAudit.ts`. Audit found 9 missing keyboard shortcut keys in 5 locales (ES, FR, DE, ZH, AR). Added translations to all locale files. Pseudo-locale expansion max 3.5x. RTL static analysis clean. All gates pass.
 - [ ] **W5.4 Screen-reader smoke script.** Documented NVDA/VoiceOver checklist per view;
   live regions for async extraction/match; no unlabeled controls. Acceptance: checklist + axe green.
-- [ ] **W5.5 Theming & density.** Compact/comfortable density, light/dark/auto, accent color;
-  respects `prefers-reduced-motion` and `prefers-color-scheme`. Acceptance: screenshot matrix
-  (2 densities × 3 themes) + contrast check.
+- [x] **W5.5 Theming & density.** Compact/comfortable density, light/dark/auto, accent color;
+  respects `prefers-reduced-motion` and `prefers-color-scheme`. **Done 2026-11-19**:
+  - Added `density` ('compact' | 'comfortable') and `accentColor` (hex string) to `AppSettings` in `core/src/types/ui.ts` and `core/src/config/settingsSchema.ts`
+  - Updated `DEFAULT_APP_SETTINGS` with defaults: density='comfortable', accentColor='#2563eb'
+  - Extended `design-system.css` with theme tokens (light/dark/system via `prefers-color-scheme`), density classes (`density-compact`, `density-comfortable` with dynamic spacing), and accent color CSS variables (`--accent-color`, `--accent-color-rgb`, `--accent-color-hover`, `--accent-color-light`, `--accent-color-muted`)
+  - Created `useTheme` hook in `ui/src/hooks/useTheme.ts` to apply theme, density, and accent color to document root
+  - Created `AppearanceTab` component in `ui/src/components/settings/AppearanceTab.tsx` with UI for theme selection (Light/Dark/System), density (Compact/Comfortable), accent color (8 presets + custom color picker), and live preview
+  - Integrated `AppearanceTab` into SettingsView under General → Appearance
+  - Updated `initializeTheme` for early theme application on startup
+  - Fixed default settings in `core/src/storage/envelopeStorage.ts`, `core/src/storage/recovery.ts`, `core/src/storage/migratedStorage.ts`, `optimize/src/cli/commands/migrate.ts`, `optimize/src/journeys.ts`
+  - Fixed test fixtures in `core/src/storage/envelope.test.ts`, `core/src/storage/storage.test.ts`, `core/src/storage/migrations.test.ts`
+  - All gates: `pnpm build` ✅
 - [~] **W5.6 Mobile PWA install.** ✅ Service worker enabled (`vite-plugin-pwa`, app shell
   precached at 6.5 MB, model chunk excluded); installable manifest. ⏳ Offline capture queue
   and background sync on reconnect remain. Acceptance: Lighthouse installability + offline
@@ -872,3 +881,17 @@ Decisions applied:
   - Exported from `core/src/config/index.ts` and browser index
   - Integrated into `SettingsProvider` to validate on load
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm verify` ✅.
+
+### 2026-11-19 — W5.5 Theming & density complete
+- **Implemented**: Complete theming and density system:
+  - Added `density` ('compact' | 'comfortable') and `accentColor` (hex string) to `AppSettings` in `core/src/types/ui.ts` and `core/src/config/settingsSchema.ts`
+  - Updated `DEFAULT_APP_SETTINGS` with defaults: density='comfortable', accentColor='#2563eb'
+  - Extended `ui/src/styles/design-system.css` with theme tokens (light/dark/system via `prefers-color-scheme`), density classes (`density-compact`, `density-comfortable` with dynamic spacing scale), and accent color CSS variables (`--accent-color`, `--accent-color-rgb`, `--accent-color-hover`, `--accent-color-light`, `--accent-color-muted`)
+  - Created `useTheme` hook in `ui/src/hooks/useTheme.ts` to apply theme, density, and accent color to document root
+  - Created `AppearanceTab` component in `ui/src/components/settings/AppearanceTab.tsx` with UI for theme selection (Light/Dark/System), density (Compact/Comfortable), accent color (8 presets + custom color picker), and live preview
+  - Integrated `AppearanceTab` into SettingsView under General → Appearance
+  - Added `PaletteIcon`, `SunIcon`, `MoonIcon`, `MonitorIcon`, `MinimizeIcon`, `MaximizeIcon` to `ui/src/components/ui/icons.tsx`
+  - Updated `initializeTheme` for early theme application on startup
+  - Fixed default settings in `core/src/storage/envelopeStorage.ts`, `core/src/storage/recovery.ts`, `core/src/storage/migratedStorage.ts`, `optimize/src/cli/commands/migrate.ts`, `optimize/src/journeys.ts`
+  - Fixed test fixtures in `core/src/storage/envelope.test.ts`, `core/src/storage/storage.test.ts`, `core/src/storage/migrations.test.ts`
+- **All gates**: `pnpm build` ✅

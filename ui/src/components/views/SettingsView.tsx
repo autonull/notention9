@@ -18,7 +18,8 @@ import {LanguageTab} from '../settings/LanguageTab';
 import {ShortcutsTab} from '../settings/ShortcutsTab';
 import {SyncTab} from '../settings/SyncTab';
 import {RelayDiscoverySection} from '../settings/RelayDiscoverySection';
-import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon} from '../ui/icons';
+import {AppearanceTab} from '../settings/AppearanceTab';
+import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon, PaletteIcon} from '../../components/ui/icons';
 
 interface SettingsGroup {
     id: string;
@@ -49,6 +50,7 @@ export function SettingsView() {
             icon: <UserGroupIcon className="h-5 w-5" />,
             tabs: [
                 {id: 'profile', label: 'Profile & Strategies', icon: <UserGroupIcon className="h-4 w-4" />},
+                {id: 'appearance', label: 'Appearance', icon: <PaletteIcon className="h-4 w-4" />},
                 {id: 'labels', label: 'Labels', icon: <TagIcon className="h-4 w-4" />},
                 {id: 'language', label: 'Language & Region', icon: <GlobeIcon className="h-4 w-4" />},
                 {id: 'shortcuts', label: 'Keyboard Shortcuts', icon: <KeyIcon className="h-4 w-4" />},
@@ -115,6 +117,8 @@ export function SettingsView() {
                 return <MetricsTab/>;
             case 'profile':
                 return <ProfileSettings/>;
+            case 'appearance':
+                return <AppearanceTab/>;
             case 'language':
                 return <LanguageTab/>;
             case 'revisions':
