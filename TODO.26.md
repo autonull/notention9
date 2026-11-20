@@ -270,7 +270,7 @@
   Acceptance: green restore report ✅; failure alerts in UI (toast notifications) ✅.
 - [ ] **W6.3 Retention policies.** Trash auto-purge (default 30 d), revision pruning (50/note),
   backup rotation (7). Acceptance: virtual-clock tests; dry-run CLI (`pnpm retention:run --dry`).
-- [ ] **W6.4 Import interop (Markdown).** Import Obsidian-style frontmatter/tags + body into
+- [x] **W6.4 Import interop (Markdown).** Import Obsidian-style frontmatter/tags + body into
   notes; complete the round-trip with `markdownExport`. Acceptance: lossless fixture round-trip +
   documented lossy edges (attachments, aliases).
 - [x] **W6.5 Error boundaries & degraded mode.** Offline/LLM-timeout/storage-full paths show
@@ -764,6 +764,17 @@ Decisions applied:
   - `useAutoBackup()`: starts hourly scheduler on mount, triggers download when due
   - `useAutoBackupOnChange()`: triggers backup after note changes
   - Integrated into `App.tsx`
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅.
+
+### 2026-11-20 — W6.4 Import interop (Markdown) complete
+- **Implemented**: `markdownImport.ts` in `core/src/utils/`:
+  - `parseNotentionMarkdown()`: parses Notention's own markdown export format (## Title, **Metadata:**, **Properties:**, **Content:**)
+  - `parseMarkdownFile()`: auto-detects Obsidian-style YAML frontmatter vs Notention format
+  - `parseFrontmatter()` / `parseObsidianFrontmatter()`: extracts title, tags, custom fields as properties, dates, priority, status, privacy
+  - `importNotesFromMarkdown()`: converts parsed data to full `Note` objects with ISO timestamps, `source.type: 'import'`
+  - Handles locale date formats (e.g., `1/15/2026, 5:30:00 AM`) and ISO dates
+  - 10 tests covering Notention format, Obsidian frontmatter, round-trip (with documented HTML→plain text loss)
+- **Exports**: Added to `core/src/utils/index.ts`, `core/src/utils/index.browser.ts`
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅.
 
 ### 2026-11-19 — W6.1 Encryption at rest + auto-lock complete
