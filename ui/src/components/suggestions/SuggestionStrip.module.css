@@ -1,0 +1,118 @@
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.loading,
+.error,
+.empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: var(--text-secondary, #888);
+}
+
+.loading {
+  background: var(--bg-tertiary, #2a2a3e);
+}
+
+.error {
+  background: var(--error-bg, #7f1d1d);
+  color: var(--error-color, #ef4444);
+}
+
+.empty {
+  background: var(--bg-tertiary, #2a2a3e);
+  justify-content: space-between;
+}
+
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--border-color, #333);
+  border-top-color: var(--accent-primary, #6366f1);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.retryButton,
+.refreshButton {
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  background: var(--accent-primary, #6366f1);
+  color: #fff;
+  transition: opacity 0.2s;
+}
+
+.retryButton:hover,
+.refreshButton:hover {
+  opacity: 0.9;
+}
+
+.showAll {
+  align-self: flex-start;
+  padding: 6px 12px;
+  margin-top: 4px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid var(--border-color, #333);
+  background: transparent;
+  color: var(--text-secondary, #888);
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.showAll:hover {
+  background: var(--bg-tertiary, #2a2a3e);
+  color: var(--text-primary, #fff);
+  border-color: var(--accent-primary, #6366f1);
+}
+
+.showAll:focus-visible {
+  outline: 2px solid var(--accent-primary, #6366f1);
+  outline-offset: 2px;
+}
+
+/* Mobile: horizontal scroll */
+@media (max-width: 640px) {
+  .cards {
+    flex-direction: row;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    gap: 12px;
+  }
+
+  .cards > * {
+    flex: 0 0 280px;
+    scroll-snap-align: start;
+  }
+
+  .showAll {
+    flex: 0 0 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 100px;
+  }
+}

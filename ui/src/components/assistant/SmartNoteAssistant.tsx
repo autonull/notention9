@@ -34,7 +34,7 @@ export function SmartNoteAssistant({
         activeSuggestion,
         setActiveSuggestion,
         suggestions,
-        removeSuggestion,
+        dismissSuggestion,
         localMatches,
         networkMatches,
         isSearching,

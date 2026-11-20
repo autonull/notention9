@@ -96,7 +96,7 @@ export function useSmartNoteAssistant({
         activeSuggestions,
         isGenerating,
         refresh: refreshSuggestions,
-        dismiss: dismissSuggestion
+        dismissSuggestion
     } = useNoteSuggestions({ note });
 
     const localMatches = useMatches(note);

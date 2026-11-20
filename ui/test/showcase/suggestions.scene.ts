@@ -140,7 +140,7 @@ test('suggestions: skill-matched note shows fulfillment hint', async ({page}) =>
     });
     await page.getByTestId('toggle-inspector').click();
     await page.getByRole('tab', {name: /AI/}).click();
-    await page.getByText('Fulfillment available', {exact: false}).first().waitFor({timeout: 10_000});
+    await page.getByText('Fulfill', {exact: false}).first().waitFor({timeout: 10_000});
     await page.waitForSelector('text=Suggestions');
     await snap(page, {
         area: 'suggestions',

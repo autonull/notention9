@@ -74,8 +74,8 @@ export function useNoteSuggestions(options: UseNoteSuggestionsOptions): UseNoteS
   }, [note?.id]);
 
   useEffect(() => {
-    orchestrator.on('lifecycle', handleEvent);
-    return () => orchestrator.off('lifecycle', handleEvent);
+    const unsubscribe = orchestrator.onAll(handleEvent);
+    return unsubscribe;
   }, [orchestrator, handleEvent]);
 
   useEffect(() => {

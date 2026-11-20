@@ -1,6 +1,31 @@
 import React from 'react';
 import { NoteSuggestion, Property } from '@notention/core';
+import { XIcon, HelpIcon, CheckIcon, ArrowRightIcon } from '../ui/icons';
 import styles from './SuggestionCard.module.css';
+
+const verbMap: Record<NoteSuggestion['kind'], string> = {
+  'add-property': 'Add',
+  'modify-property': 'Change',
+  'remove-property': 'Remove',
+  'fulfillment-hint': 'Fulfill',
+  'related-note': 'Open',
+  'skill-match': 'Run',
+  'inferred-constraint': 'Apply'
+};
+
+const sourceLabels: Record<NoteSuggestion['evidence'][0]['source'], string> = {
+  rules: 'Rule',
+  fulfillment: 'Skill',
+  related: 'Match',
+  llm: 'AI'
+};
+
+const sourceIcons: Record<NoteSuggestion['evidence'][0]['source'], React.ReactNode> = {
+  rules: <span className={styles.sourceIcon}>📋</span>,
+  fulfillment: <span className={styles.sourceIcon}>⚡</span>,
+  related: <span className={styles.sourceIcon}>🔗</span>,
+  llm: <span className={styles.sourceIcon}>🤖</span>
+};
 
 interface SuggestionCardProps {
   suggestion: NoteSuggestion;
@@ -9,139 +34,149 @@ interface SuggestionCardProps {
   onPreview?: (suggestion: NoteSuggestion) => void;
 }
 
-const kindIcons: Record<NoteSuggestion['kind'], string> = {
-  'add-property': '➕',
-  'modify-property': '✏️',
-  'remove-property': '🗑️',
-  'fulfillment-hint': '🔗',
-  'related-note': '🔗',
-  'skill-match': '⚡',
-  'inferred-constraint': '🔍'
-};
+function getVerbTitle(suggestion: NoteSuggestion): string {
+  const verb = verbMap[suggestion.kind] || 'Add';
+  const prop = suggestion.proposedChange?.property;
+  const prevProp = suggestion.proposedChange?.previousProperty;
 
-const kindLabels: Record<NoteSuggestion['kind'], string> = {
-  'add-property': 'Add Property',
-  'modify-property': 'Modify Property',
-  'remove-property': 'Remove Property',
-  'fulfillment-hint': 'Fulfillment',
-  'related-note': 'Related Note',
-  'skill-match': 'Skill Match',
-  'inferred-constraint': 'Inferred Constraint'
-};
+  if (prop) {
+    return `${verb} ${prop.key}`;
+  }
+  if (prevProp) {
+    return `${verb} ${prevProp.key}`;
+  }
+  if (suggestion.skillId) {
+    return `${verb} ${suggestion.skillId}`;
+  }
+  if (suggestion.relatedNoteId) {
+    return `${verb} related note`;
+  }
+  return suggestion.title || verb;
+}
 
-const statusColors: Record<NoteSuggestion['status'], string> = {
-  active: '#10b981',
-  stale: '#f59e0b',
-  applied: '#6366f1',
-  dismissed: '#9ca3af'
-};
+function getEvidenceLine(suggestion: NoteSuggestion): string | null {
+  const evidence = suggestion.evidence[0];
+  if (!evidence) return null;
+
+  switch (evidence.source) {
+    case 'rules':
+      if (evidence.ruleId) {
+        return `Rule: ${evidence.ruleId.replace(/^rule-/, '').replace(/-/g, ' ')}`;
+      }
+      return 'Rule-based suggestion';
+    case 'fulfillment':
+      return 'Skill match available';
+    case 'related':
+      return evidence.matchedNoteId ? 'Matching note found' : 'Related content';
+    case 'llm':
+      return 'AI-generated suggestion';
+    default:
+      return null;
+  }
+}
 
 export function SuggestionCard({ suggestion, onApply, onDismiss, onPreview }: SuggestionCardProps) {
-  const Icon = kindIcons[suggestion.kind] || '💡';
-  const Label = kindLabels[suggestion.kind] || suggestion.kind;
-  const statusColor = statusColors[suggestion.status];
-
+  const isStale = suggestion.status === 'stale';
+  const verbTitle = getVerbTitle(suggestion);
+  const evidenceLine = getEvidenceLine(suggestion);
   const evidence = suggestion.evidence[0];
-  const confidence = evidence ? Math.round(evidence.confidence * 100) : 0;
+  const sourceLabel = evidence ? sourceLabels[evidence.source] : '';
+  const sourceIcon = evidence ? sourceIcons[evidence.source] : null;
 
-  const proposedProperty = suggestion.proposedChange?.property;
-  const previousProperty = suggestion.proposedChange?.previousProperty;
+  const prop = suggestion.proposedChange?.property;
+  const prevProp = suggestion.proposedChange?.previousProperty;
+  const hasProposedChange = prop || prevProp;
 
   return (
-    <div className={styles.card} style={{ borderLeftColor: statusColor }}>
-      <div className={styles.header}>
-        <div className={styles.titleRow}>
-          <span className={styles.icon}>{Icon}</span>
-          <h4 className={styles.title}>{suggestion.title}</h4>
-          <span className={styles.badge} style={{ backgroundColor: statusColor }}>
-            {suggestion.status}
-          </span>
-        </div>
-        <div className={styles.meta}>
-          <span className={styles.kind}>{Label}</span>
-          <span className={styles.confidence}>{confidence}% confidence</span>
-        </div>
-      </div>
+    <div
+      className={`${styles.card} ${isStale ? styles.stale : ''}`}
+      data-testid={`suggestion-card-${suggestion.id}`}
+    >
+      <div className={styles.mainRow}>
+        <div className={styles.content}>
+          <h4 className={styles.title}>{verbTitle}</h4>
+          <p className={styles.description}>{suggestion.description}</p>
 
-      <p className={styles.description}>{suggestion.description}</p>
+          {hasProposedChange && (
+            <div className={styles.proposedChange}>
+              {prop && (
+                <div className={styles.property}>
+                  <span className={styles.propertyKey}>{prop.key}</span>
+                  <span className={styles.propertyOperator}>{prop.operator}</span>
+                  <span className={styles.propertyValue}>{prop.values.join(', ')}</span>
+                </div>
+              )}
+              {prevProp && !prop && (
+                <div className={styles.property} style={{ opacity: 0.6 }}>
+                  <span className={styles.propertyKey}>{prevProp.key}</span>
+                  <span className={styles.propertyOperator}>{prevProp.operator}</span>
+                  <span className={styles.propertyValue}>{prevProp.values.join(', ')}</span>
+                </div>
+              )}
+            </div>
+          )}
 
-      {proposedProperty && (
-        <div className={styles.proposedChange}>
-          <div className={styles.changeHeader}>
-            {suggestion.proposedChange.type === 'add' && 'Proposed addition:'}
-            {suggestion.proposedChange.type === 'modify' && 'Proposed change:'}
-            {suggestion.proposedChange.type === 'remove' && 'To remove:'}
-          </div>
-          <div className={styles.property}>
-            <span className={styles.propertyKey}>{proposedProperty.key}</span>
-            <span className={styles.propertyOperator}>{proposedProperty.operator}</span>
-            <span className={styles.propertyValue}>{proposedProperty.values.join(', ')}</span>
-          </div>
-          {previousProperty && (
-            <div className={styles.previousProperty}>
-              <span className={styles.propertyKey}>{previousProperty.key}</span>
-              <span className={styles.propertyOperator}>{previousProperty.operator}</span>
-              <span className={styles.propertyValue}>{previousProperty.values.join(', ')}</span>
+          {evidenceLine && (
+            <div className={styles.evidence}>
+              {sourceIcon}
+              <span className={styles.evidenceText}>{evidenceLine}</span>
             </div>
           )}
         </div>
-      )}
 
-      {suggestion.kind === 'fulfillment-hint' && suggestion.skillId && (
-        <div className={styles.skillInfo}>
-          <span className={styles.skillLabel}>Skill: </span>
-          <span className={styles.skillValue}>{suggestion.skillId}</span>
-        </div>
-      )}
-
-      {suggestion.kind === 'related-note' && suggestion.relatedNoteId && (
-        <div className={styles.relatedInfo}>
-          <span className={styles.skillLabel}>Related note: </span>
-          <span className={styles.skillValue}>{suggestion.relatedNoteId}</span>
-        </div>
-      )}
-
-      {evidence && evidence.details && (
-        <details className={styles.details}>
-          <summary>Evidence details</summary>
-          <pre className={styles.evidenceJson}>{JSON.stringify(evidence.details, null, 2)}</pre>
-        </details>
-      )}
-
-      <div className={styles.actions}>
-        {suggestion.status === 'active' && (
-          <>
-            <button
-              className={styles.applyButton}
-              onClick={() => onApply(suggestion.id)}
-            >
-              Apply
-            </button>
-            <button
-              className={styles.dismissButton}
-              onClick={() => onDismiss(suggestion.id)}
-            >
-              Dismiss
-            </button>
-          </>
-        )}
-        {suggestion.status === 'stale' && (
+        <div className={styles.actions}>
           <button
-            className={styles.refreshButton}
+            className={`${styles.primaryAction} ${isStale ? styles.refreshAction : ''}`}
             onClick={() => onApply(suggestion.id)}
+            aria-label={isStale ? 'Refresh suggestion' : 'Apply suggestion'}
+            disabled={isStale && suggestion.proposedChange?.type !== 'add'}
           >
-            Refresh
+            {isStale ? (
+              <>
+                <span className={styles.actionIcon}>↻</span>
+                <span>Refresh</span>
+              </>
+            ) : (
+              <>
+                <span className={styles.actionIcon}>
+                  <CheckIcon className="w-4 h-4" />
+                </span>
+                <span>Apply</span>
+              </>
+            )}
           </button>
-        )}
-        {onPreview && (
+
           <button
-            className={styles.previewButton}
-            onClick={() => onPreview(suggestion)}
+            className={styles.whyButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              alert(`Why?\n\n${suggestion.description}\n\nSource: ${sourceLabel}`);
+            }}
+            aria-label="Why this suggestion?"
+            title="Why?"
           >
-            Preview
+            <HelpIcon className="w-4 h-4" />
           </button>
-        )}
+
+          <button
+            className={styles.dismissButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDismiss(suggestion.id);
+            }}
+            aria-label="Dismiss suggestion"
+          >
+            <XIcon className="w-4 h-4" />
+          </button>
+        </div>
       </div>
+
+      {evidence && (
+        <div className={styles.sourceChip}>
+          {sourceIcon}
+          <span>{sourceLabel}</span>
+        </div>
+      )}
     </div>
   );
 }

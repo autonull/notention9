@@ -1,7 +1,7 @@
 import React from 'react';
 import { Note, NoteSuggestion } from '@notention/core';
 import { useNoteSuggestions } from '../../hooks/useNoteSuggestions';
-import { SuggestionCard } from './SuggestionCard.js';
+import { SuggestionCard } from './SuggestionCard';
 import styles from './NoteSuggestions.module.css';
 
 interface NoteSuggestionsProps {
@@ -10,6 +10,7 @@ interface NoteSuggestionsProps {
   onSuggestionDismissed?: (suggestion: NoteSuggestion) => void;
   showStale?: boolean;
   maxSuggestions?: number;
+  showHeader?: boolean;
 }
 
 export function NoteSuggestions({
@@ -17,7 +18,8 @@ export function NoteSuggestions({
   onSuggestionApplied,
   onSuggestionDismissed,
   showStale = true,
-  maxSuggestions = 10
+  maxSuggestions = 10,
+  showHeader = true
 }: NoteSuggestionsProps) {
   const {
     activeSuggestions,
@@ -58,16 +60,16 @@ export function NoteSuggestions({
 
   if (isGenerating && displaySuggestions.length === 0) {
     return (
-      <div className={styles.loading}>
+      <div className={styles.loading} role="status" aria-live="polite">
         <div className={styles.spinner} />
-        <p>Generating suggestions...</p>
+        <p>Generating suggestions…</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.error}>
+      <div className={styles.error} role="alert">
         <p>Error: {error.message}</p>
         <button onClick={refresh} className={styles.retryButton}>
           Retry
@@ -89,23 +91,30 @@ export function NoteSuggestions({
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <h3>Suggestions</h3>
-        <div className={styles.headerActions}>
-          <span className={styles.count}>
-            {activeSuggestions.length} active
-            {staleSuggestions.length > 0 && `, ${staleSuggestions.length} stale`}
-          </span>
-          <button onClick={refresh} className={styles.refreshButton} disabled={isGenerating}>
-            ⟳
-          </button>
+      {showHeader && (
+        <div className={styles.header}>
+          <h3>Suggestions</h3>
+          <div className={styles.headerActions}>
+            <span className={styles.count}>
+              {activeSuggestions.length} active
+              {staleSuggestions.length > 0 && `, ${staleSuggestions.length} stale`}
+            </span>
+            <button
+              onClick={refresh}
+              className={styles.refreshButton}
+              disabled={isGenerating}
+              aria-label="Refresh suggestions"
+            >
+              ⟳
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
-      <div className={styles.list}>
+      <div className={styles.list} role="list" aria-label="Suggestions">
         {activeSuggestions.length > 0 && (
           <>
-            <div className={styles.sectionHeader}>Active</div>
+            {showHeader && <div className={styles.sectionHeader}>Active</div>}
             {activeSuggestions.slice(0, maxSuggestions).map(suggestion => (
               <SuggestionCard
                 key={suggestion.id}
@@ -119,7 +128,7 @@ export function NoteSuggestions({
 
         {showStale && staleSuggestions.length > 0 && (
           <>
-            <div className={styles.sectionHeader}>Stale (refresh to update)</div>
+            {showHeader && <div className={styles.sectionHeader}>Stale — refresh to update</div>}
             {staleSuggestions.slice(0, Math.max(0, maxSuggestions - activeSuggestions.length)).map(suggestion => (
               <SuggestionCard
                 key={suggestion.id}

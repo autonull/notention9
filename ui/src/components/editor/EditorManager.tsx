@@ -6,7 +6,8 @@ import {useToast} from '../../hooks/useToast';
 import {useNotes} from '../../hooks/useNotes';
 import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
-import type {Note, OntologyNode, ScoredMatch} from '@notention/core';
+import {useNoteSuggestions} from '../../hooks/useNoteSuggestions';
+import type {Note, OntologyNode, ScoredMatch, NoteSuggestion} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
@@ -56,6 +57,16 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         undo,
         redo
     } = useEditorLogic({note, onSave});
+
+    const { applySuggestion, dismissSuggestion } = useNoteSuggestions({ note: dirtyNote });
+
+    const handleSuggestionApplied = useCallback((suggestion: NoteSuggestion) => {
+        applySuggestion(suggestion.id);
+    }, [applySuggestion]);
+
+    const handleSuggestionDismissed = useCallback((suggestion: NoteSuggestion) => {
+        dismissSuggestion(suggestion.id);
+    }, [dismissSuggestion]);
 
     const {
         isInspectorOpen, setIsInspectorOpen,
@@ -193,6 +204,9 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 canRedo={canRedo}
                 onUndo={handleUndo}
                 onRedo={handleRedo}
+                onSuggestionApplied={handleSuggestionApplied}
+                onSuggestionDismissed={handleSuggestionDismissed}
+                showSuggestionStrip={true}
             />
             {publishError && (
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />

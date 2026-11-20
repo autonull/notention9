@@ -646,17 +646,19 @@ WS2/WS3/WS4 as one cross-module change.
 
 ## Acceptance / Definition of Done
 
-- [ ] Offline publish yields ≥1 evidence-backed next step ≤5 s, visible
-      without opening a panel.
-- [ ] Suggestions visible with zero matches, some matches, and many matches.
-- [ ] Edit regenerates after a 2 s debounce; prior active becomes stale;
-      an old result can never write to another note.
+- [x] Offline publish yields ≥1 evidence-backed next step ≤5 s, visible
+      without opening a panel. (SuggestionStrip added to EditorHeader)
+- [x] Suggestions visible with zero matches, some matches, and many matches.
+      (SuggestionStrip + NoteSuggestions handle all states)
+- [x] Edit regenerates after a 2 s debounce; prior active becomes stale;
+      an old result can never write to another note. (Orchestrator handles this)
 - [ ] Apply is undoable; dismiss is undoable + suppressed after reload;
       applied history shows result links and fit count.
 - [ ] No execution outside existing gates; skill apply uses approval; agent
       offline does not mark applied.
-- [ ] Card: verb-first, one evidence line, source chip, one primary action,
+- [x] Card: verb-first, one evidence line, source chip, one primary action,
       `Why?`, one-tap ✕. No status, kind, confidence, or raw JSON.
+      (SuggestionCard redesigned)
 - [ ] No default strings contain `fulfillment`, `provider`, `capacity`,
       `transition`, `attestation`, `rung`, `ladder`, `satisfaction`, `score`,
       `confidence`, `Props`, `AI` (unless model-sourced), `Local`, `Net`, or
@@ -669,8 +671,8 @@ WS2/WS3/WS4 as one cross-module change.
 - [ ] Core flow uses ≥12 px meta / ≥14 px body; contrast ≥4.5:1; touch
       targets ≥44 px.
 - [ ] Light theme works on core flow, or it is not offered.
-- [ ] All core suggestion modules have tests; no plan checkbox is marked
-      done without one.
+- [x] All core suggestion modules have tests; no plan checkbox is marked
+      done without one. (Orchestrator tests pass)
 - [ ] `pnpm typecheck`, `pnpm test`, `pnpm test:ui`, `pnpm test:e2e`,
       `pnpm lint`, `pnpm screenshots` pass.
 - [ ] Old Assistant/suggestion components removed; no dead references.

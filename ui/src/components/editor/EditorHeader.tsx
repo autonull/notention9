@@ -5,7 +5,8 @@ import {IconButton} from '../ui/Button';
 import {EditorControls} from './EditorControls';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {PrivacyControl} from '../publish/PrivacyControl';
-import type {Note} from '@notention/core';
+import {SuggestionStrip} from '../suggestions/SuggestionStrip';
+import type {Note, NoteSuggestion} from '@notention/core';
 
 interface EditorHeaderProps {
     note: Note;
@@ -42,6 +43,9 @@ interface EditorHeaderProps {
     canRedo?: boolean;
     onUndo?: () => void;
     onRedo?: () => void;
+    onSuggestionApplied?: (suggestion: NoteSuggestion) => void;
+    onSuggestionDismissed?: (suggestion: NoteSuggestion) => void;
+    showSuggestionStrip?: boolean;
 }
 
 export function EditorHeader({
@@ -78,7 +82,10 @@ export function EditorHeader({
     canUndo = false,
     canRedo = false,
     onUndo,
-    onRedo
+    onRedo,
+    onSuggestionApplied,
+    onSuggestionDismissed,
+    showSuggestionStrip = true
 }: EditorHeaderProps) {
     const [isTagInputVisible, setIsTagInputVisible] = useState(tags.length > 0);
 
@@ -168,6 +175,18 @@ export function EditorHeader({
                         isAutoTagging={isAutoTagging}
                         autoFocus={true}
                         className="input"
+                    />
+                </div>
+            )}
+
+            {showSuggestionStrip && (
+                <div className="px-3 pb-3 border-t border-gray-700/30">
+                    <SuggestionStrip
+                        note={note}
+                        maxVisible={3}
+                        onSuggestionApplied={onSuggestionApplied}
+                        onSuggestionDismissed={onSuggestionDismissed}
+                        showAllAction={() => onToggleInspector?.()}
                     />
                 </div>
             )}
