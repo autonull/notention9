@@ -322,6 +322,54 @@ export const commerceDomain: OntologyNode[] = [
 ];
 
 // ============================================================================
+// SOCIAL DOMAIN - Meetups, events, community gatherings
+// ============================================================================
+
+export const socialDomain: OntologyNode[] = [
+    {
+        id: 'social',
+        label: 'Social',
+        description: 'Social gatherings, meetups, and community events.',
+        children: [
+            {
+                id: 'meetup-request',
+                label: 'Meetup Request',
+                description: 'A request to organize or join a social gathering.',
+                actionLabel: 'Plan Meetup',
+                extends: ['event', 'request'],
+                requiredAttributes: ['location'],
+                suggestions: [
+                    {
+                        id: 'rule-add-location-for-meetup',
+                        name: 'Add location for meetup',
+                        description: 'Suggest adding location when note is a meetup request',
+                        targetNodeIds: ['social/meetup-request'],
+                        condition: { type: 'nodeType', nodeId: 'social/meetup-request' },
+                        action: {
+                            type: 'suggestAddProperty',
+                            key: 'location',
+                            operator: 'is',
+                            value: '',
+                            reason: 'Meetup requests should include a location'
+                        },
+                        priority: 10,
+                        enabled: true
+                    }
+                ],
+                attributes: {
+                    location: { type: 'string', description: 'Meetup location', icon: 'location', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] }, role: 'constraint' },
+                    date: { type: 'string', description: 'Meetup date and time', icon: 'calendar', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
+                    frequency: { type: 'string', description: 'How often the meetup recurs', icon: 'refresh', operators: { real: ['is'], imaginary: ['is not'] } },
+                    capacity: { type: 'number', description: 'Maximum number of attendees', icon: 'users', operators: { real: ['is', 'less than', 'greater than'], imaginary: [] } },
+                    topic: { type: 'string', description: 'Topic or theme of the meetup', icon: 'tag', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },
+                    format: { type: 'enum', options: ['in-person', 'virtual', 'hybrid'], description: 'Meetup format', icon: 'monitor', operators: { real: ['is'], imaginary: ['is not'] } }
+                }
+            }
+        ]
+    }
+];
+
+// ============================================================================
 // REQUEST DOMAIN - Needs, offers, and requests for things
 // ============================================================================
 
@@ -430,6 +478,7 @@ export const DEFAULT_ONTOLOGY: OntologyNode[] = combineDomains(
     communicationDomain,
     eventDomain,
     workDomain,
+    socialDomain,
     commerceDomain,
     requestDomain,
     survivalDomains,

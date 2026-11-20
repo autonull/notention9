@@ -188,22 +188,6 @@ function generateSuggestionId(noteId: string, ruleId: string, action: RuleAction
 export function getDefaultRules(): SuggestionRule[] {
   return [
     {
-      id: 'rule-add-location-for-meetup',
-      name: 'Add location for meetup',
-      description: 'Suggest adding location when note is a meetup request',
-      targetNodeIds: ['social/meetup-request'],
-      condition: { type: 'nodeType', nodeId: 'social/meetup-request' },
-      action: {
-        type: 'suggestAddProperty',
-        key: 'location',
-        operator: 'is',
-        value: '',
-        reason: 'Meetup requests should include a location'
-      },
-      priority: 10,
-      enabled: true
-    },
-    {
       id: 'rule-add-budget-for-job',
       name: 'Add budget for job request',
       description: 'Suggest adding budget when note is a job request',
