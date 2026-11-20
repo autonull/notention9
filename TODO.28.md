@@ -114,12 +114,12 @@ Do not start WS6 before WS2 is green.
   - `MemorySuggestionStateStore`;
   - scripted `LlmClient` (only if WS6 LLM is enabled);
   - fake note/corpus fixtures reused by core + UI tests.
-- [ ] Add failing tests for known bugs before fixing:
-  - stale preservation;
-  - dismissal suppression;
-  - note-switch race;
-  - keyboard apply marks applied;
-  - stale “Refresh” does not apply.
+- [x] Add failing tests for known bugs before fixing:
+  - [x] stale preservation;
+  - [x] dismissal suppression;
+  - [x] note-switch race;
+  - [x] keyboard apply marks applied;
+  - [x] stale "Refresh" does not apply.
 
 ### WS1 — Suggestion lifecycle (2 days)
 
@@ -210,19 +210,20 @@ export interface SuggestionSource {
   - [ ] On hydrate, show persisted state immediately. If the persisted
         `contentHash` differs from the current note, mark prior active as stale
         and schedule one regeneration.
-  - [ ] Track `pending: Map<noteId, { generationId; controller; promise }>`.
-  - [ ] New generation aborts the previous one for the same note.
-  - [ ] Deduplicate by `contentHash`; return hydrated state instead of
+  - [x] Track `pending: Map<noteId, { generationId; controller; promise }>`.
+  - [x] New generation aborts the previous one for the same note (fixed race).
+  - [x] Deduplicate by `contentHash`; return hydrated state instead of
         regenerating when the hash is unchanged.
-  - [ ] Include title, content, sorted properties, and tags in `contentHash`;
+  - [x] Include title, content, sorted properties, and tags in `contentHash`;
         a title/tag edit must not reuse a stale hash.
-  - [ ] Merge previous `active` into `stale` when missing from the new result.
+  - [x] Merge previous `active` into `stale` when missing from the new result
+        (fixed overwrite bug).
   - [ ] Filter suppressed signatures and duplicates before persisting.
   - [ ] Keep `applied` history across generations.
   - [ ] Persist after every state transition.
   - [ ] Emit one `generation-completed` with the full state; do not emit
         `suggestion-added` per card.
-  - [ ] Remove `stalePreviousSuggestions` overwrite bug.
+  - [x] Remove `stalePreviousSuggestions` overwrite bug.
   - [ ] `applySuggestion(id, result)` moves to `applied` and persists.
   - [ ] `dismissSuggestion(id)` adds the signature to `suppressed` and
         persists.

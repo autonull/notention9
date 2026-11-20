@@ -87,6 +87,7 @@ export interface SuggestionGenerationResult {
   suggestions: NoteSuggestion[];
   generationId: string;
   timestamp: number;
+  noteId: string;
 }
 
 export interface SourcePlugin {

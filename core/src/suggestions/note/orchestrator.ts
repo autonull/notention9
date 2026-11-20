@@ -157,35 +157,41 @@ export class SuggestionOrchestrator extends EventEmitter {
     note: Note,
     trigger: SuggestionGenerationContext['trigger'] = 'refresh'
   ): Promise<SuggestionGenerationResult> {
+    // Check for existing pending generation FIRST, before any async work
     const existingPending = this.pendingGenerations.get(note.id);
     if (existingPending) {
       return existingPending;
     }
 
-    // The UI mounts the hook before SettingsContext can set the ontology, so the
-    // first run would resolve against an empty ontology and cache that result.
-    await this.waitForOntology();
+    // Create the generation promise and store it IMMEDIATELY to handle concurrent requests
+    const generationPromise = (async () => {
+      // The UI mounts the hook before SettingsContext can set the ontology, so the
+      // first run would resolve against an empty ontology and cache that result.
+      await this.waitForOntology();
 
-    // Duplicate load (two hooks, re-render, debounced save) must not wipe the
-    // previous result: the second run dedups against the first and stales it.
-    const contentHash = this.contentHash(note);
-    if (this.lastGenerationHash.get(note.id) === contentHash && this.suggestions.has(note.id)) {
-      return {
-        suggestions: this.suggestions.get(note.id)!,
-        generationId: this.lastGenerationId.get(note.id) ?? `gen-${contentHash}`,
-        timestamp: Date.now()
-      };
-    }
+      // Duplicate load (two hooks, re-render, debounced save) must not wipe the
+      // previous result: the second run dedups against the first and stales it.
+      const contentHash = this.contentHash(note);
+      if (this.lastGenerationHash.get(note.id) === contentHash && this.suggestions.has(note.id)) {
+        return {
+          suggestions: this.suggestions.get(note.id)!,
+          generationId: this.lastGenerationId.get(note.id) ?? `gen-${contentHash}`,
+          timestamp: Date.now(),
+          noteId: note.id
+        };
+      }
 
-    const generationId = `gen-${shortSha256(`${note.id}|${trigger}|${Date.now()}`)}`;
-    const generationPromise = this.runGeneration(note, trigger, generationId);
-    this.pendingGenerations.set(note.id, generationPromise);
-
-    try {
-      const result = await generationPromise;
+      const generationId = `gen-${shortSha256(`${note.id}|${trigger}|${Date.now()}`)}`;
+      const result = await this.runGeneration(note, trigger, generationId);
       this.lastGenerationHash.set(note.id, contentHash);
       this.lastGenerationId.set(note.id, generationId);
       return result;
+    })();
+    
+    this.pendingGenerations.set(note.id, generationPromise);
+
+    try {
+      return await generationPromise;
     } finally {
       this.pendingGenerations.delete(note.id);
     }
@@ -258,14 +264,33 @@ export class SuggestionOrchestrator extends EventEmitter {
       generationId
     }));
 
-    this.stalePreviousSuggestions(note.id, finalSuggestions);
-    this.suggestions.set(note.id, finalSuggestions);
+    // Stale previous suggestions and include them in the final list
+    const existing = this.suggestions.get(note.id) || [];
+    const newKeys = new Set(finalSuggestions.map(s => this.getSuggestionKey(s)));
+    const staleSuggestions: NoteSuggestion[] = [];
+
+    for (const existingSuggestion of existing) {
+      if (existingSuggestion.status === 'active' && !newKeys.has(this.getSuggestionKey(existingSuggestion))) {
+        existingSuggestion.status = 'stale';
+        existingSuggestion.updatedAt = Date.now();
+        staleSuggestions.push(existingSuggestion);
+        this.emitEvent({
+          type: 'suggestion-updated',
+          noteId: note.id,
+          suggestion: existingSuggestion,
+          timestamp: Date.now()
+        });
+      }
+    }
+
+    const combinedSuggestions = [...finalSuggestions, ...staleSuggestions];
+    this.suggestions.set(note.id, combinedSuggestions);
 
     this.emitEvent({
       type: 'generation-completed',
       noteId: note.id,
       generationId,
-      suggestions: finalSuggestions,
+      suggestions: combinedSuggestions,
       timestamp: Date.now()
     });
 
@@ -280,28 +305,11 @@ export class SuggestionOrchestrator extends EventEmitter {
     }
 
     return {
-      suggestions: finalSuggestions,
+      suggestions: combinedSuggestions,
       generationId,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      noteId: note.id
     };
-  }
-
-  private stalePreviousSuggestions(noteId: string, newSuggestions: NoteSuggestion[]): void {
-    const existing = this.suggestions.get(noteId) || [];
-    const newKeys = new Set(newSuggestions.map(s => this.getSuggestionKey(s)));
-
-    for (const existingSuggestion of existing) {
-      if (existingSuggestion.status === 'active' && !newKeys.has(this.getSuggestionKey(existingSuggestion))) {
-        existingSuggestion.status = 'stale';
-        existingSuggestion.updatedAt = Date.now();
-        this.emitEvent({
-          type: 'suggestion-updated',
-          noteId,
-          suggestion: existingSuggestion,
-          timestamp: Date.now()
-        });
-      }
-    }
   }
 
   private getSuggestionKey(suggestion: NoteSuggestion): string {
