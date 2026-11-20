@@ -1,12 +1,12 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {ArrowLeftIcon, LockIcon} from '../ui/icons';
 import {TagInput} from './TagInput';
 import {IconButton} from '../ui/Button';
 import {EditorControls} from './EditorControls';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {PrivacyControl} from '../publish/PrivacyControl';
-import {SuggestionStrip} from '../suggestions/SuggestionStrip';
-import type {Note, NoteSuggestion} from '@notention/core';
+import {NextStepStrip} from '../next-steps';
+import type {Note} from '@notention/core';
 
 interface EditorHeaderProps {
     note: Note;
@@ -14,7 +14,6 @@ interface EditorHeaderProps {
     title: string;
     onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onPublish: () => void;
-    onFindMatches?: () => void;
     onBack?: () => void;
     isPublishing: boolean;
     isPublished: boolean;
@@ -23,18 +22,10 @@ interface EditorHeaderProps {
     onAutoTag?: () => void;
     isAutoTagging: boolean;
     isApiKeyAvailable: boolean;
-    isInspectorOpen?: boolean;
-    onToggleInspector?: () => void;
     onSaveTemplate?: () => void;
-    onNext?: () => void;
-    onPrevious?: () => void;
-    hasNext?: boolean;
-    hasPrevious?: boolean;
     onExport?: () => void;
     onCopyContent?: () => void;
     readOnly?: boolean;
-    isToolbarVisible?: boolean;
-    onToggleToolbar?: () => void;
     actionLabel?: string;
     missingProperties?: string[];
     onAddProperty?: (key: string) => void;
@@ -63,20 +54,11 @@ export function EditorHeader({
     onAutoTag,
     isAutoTagging,
     isApiKeyAvailable,
-    onFindMatches,
     onBack,
-    isInspectorOpen,
-    onToggleInspector,
     onSaveTemplate,
-    onNext,
-    onPrevious,
-    hasNext,
-    hasPrevious,
     onExport,
     onCopyContent,
     readOnly = false,
-    isToolbarVisible = true,
-    onToggleToolbar,
     actionLabel = 'Publish',
     missingProperties = [],
     onAddProperty,
@@ -91,25 +73,25 @@ export function EditorHeader({
     onSuggestionUndoDismiss,
     showSuggestionStrip = true
 }: EditorHeaderProps) {
-    const [isTagInputVisible, setIsTagInputVisible] = useState(tags.length > 0);
-
-    const handleToggleTags = () => {
-        setIsTagInputVisible(prev => !prev);
+    const handleAddDetail = () => {
+        // TODO: Open searchable ontology/property picker
+        console.log('Open ontology/property picker');
     };
 
     return (
         <header className="flex-shrink-0 bg-gray-900 border-b border-gray-700/50 sticky top-0 z-10">
-            <div className="flex items-center gap-3 p-3">
+            {/* Row 1: Back, Title, Privacy, Core Actions */}
+            <div className="flex items-center gap-2 p-3">
                 {onBack && (
-                    <div className="md:hidden mr-1">
-                        <IconButton
-                            onClick={onBack}
-                            tooltip="Back to List"
-                            icon={ArrowLeftIcon}
-                            variant="secondary"
-                            label="Alt+←"
-                        />
-                    </div>
+                    <IconButton
+                        onClick={onBack}
+                        tooltip="Back to List"
+                        icon={ArrowLeftIcon}
+                        variant="secondary"
+                        size="sm"
+                        label="Alt+←"
+                        className="md:hidden"
+                    />
                 )}
 
                 <div className="flex-grow min-w-0 flex items-center mr-2">
@@ -137,62 +119,49 @@ export function EditorHeader({
 
                 {id && <SkillExecutionIndicator noteId={id}/>}
 
-                {/* Privacy Control Inline - Always visible, especially on mobile */}
+                {/* Privacy Control Inline */}
                 <div className="flex-shrink-0 mr-2">
                     <PrivacyControl note={note} onUpdate={onUpdateNote}/>
                 </div>
 
                 <EditorControls
-                    onNext={onNext}
-                    onPrevious={onPrevious}
-                    hasNext={hasNext}
-                    hasPrevious={hasPrevious}
-                    isToolbarVisible={isToolbarVisible}
-                    onToggleToolbar={onToggleToolbar}
-                    isInspectorOpen={isInspectorOpen}
-                    onToggleInspector={onToggleInspector}
-                    isTagInputVisible={isTagInputVisible}
-                    onToggleTags={handleToggleTags}
-                    onSaveTemplate={onSaveTemplate}
-                    onCopyContent={onCopyContent}
-                    missingProperties={missingProperties}
-                    onAddProperty={onAddProperty}
-                    onFindMatches={onFindMatches}
                     onPublish={onPublish}
                     isPublishing={isPublishing}
                     isPublished={isPublished}
-                    onExport={onExport}
                     actionLabel={actionLabel}
+                    onSaveTemplate={onSaveTemplate}
+                    onExport={onExport}
+                    onCopyContent={onCopyContent}
                     canUndo={canUndo}
                     canRedo={canRedo}
                     onUndo={onUndo}
                     onRedo={onRedo}
+                    missingProperties={missingProperties}
+                    onAddProperty={onAddProperty}
+                    onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
+                    isAutoTagging={isAutoTagging}
                 />
             </div>
 
-            {isTagInputVisible && (
-                <div className="px-3 pb-3 animate-fade-in">
-                    <TagInput
-                        tags={tags}
-                        onChange={onTagsChange}
-                        onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
-                        isAutoTagging={isAutoTagging}
-                        autoFocus={true}
-                        className="input"
-                    />
-                </div>
-            )}
+            {/* Row 2: Tags + Suggestions */}
+            <div className="px-3 pb-2 animate-fade-in">
+                <TagInput
+                    tags={tags}
+                    onChange={onTagsChange}
+                    onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
+                    isAutoTagging={isAutoTagging}
+                    autoFocus={false}
+                    className="input"
+                    onAddDetail={handleAddDetail}
+                />
+            </div>
 
             {showSuggestionStrip && (
                 <div className="px-3 pb-3 border-t border-gray-700/30">
-                    <SuggestionStrip
+                    <NextStepStrip
                         note={note}
-                        maxVisible={3}
-                        onSuggestionApplied={onSuggestionApplied}
-                        onSuggestionDismissed={onSuggestionDismissed}
-                        onSuggestionUndoApply={onSuggestionUndoApply}
-                        onSuggestionUndoDismiss={onSuggestionUndoDismiss}
-                        showAllAction={() => onToggleInspector?.()}
+                        onStepApplied={onSuggestionApplied}
+                        onStepDismissed={onSuggestionDismissed}
                     />
                 </div>
             )}

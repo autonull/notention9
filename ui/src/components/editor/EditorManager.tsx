@@ -208,7 +208,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 title={dirtyNote.title}
                 onTitleChange={handleTitleChange}
                 onPublish={handlePublish}
-                onFindMatches={handleFindMatches}
                 onBack={() => setSelectedNoteId(null)}
                 isPublishing={isPublishing}
                 isPublished={isPublished}
@@ -217,17 +216,9 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onAutoTag={handleAutoTag}
                 isAutoTagging={isAutoTagging}
                 isApiKeyAvailable={isApiKeyAvailable}
-                isInspectorOpen={isInspectorOpen}
-                onToggleInspector={() => setIsInspectorOpen(!isInspectorOpen)}
                 onSaveTemplate={() => setIsSaveTemplateModalOpen(true)}
-                onNext={handleNext}
-                onPrevious={handlePrevious}
-                hasNext={hasNext}
-                hasPrevious={hasPrevious}
                 onExport={handleExport}
                 onCopyContent={handleCopyContent}
-                isToolbarVisible={isToolbarVisible}
-                onToggleToolbar={() => setIsToolbarVisible(!isToolbarVisible)}
                 actionLabel={actionLabel}
                 missingProperties={missingProperties}
                 onAddProperty={handleAddPropertyHint}

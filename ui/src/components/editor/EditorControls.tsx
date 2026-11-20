@@ -4,179 +4,90 @@ import {
     ChevronUpIcon,
     DocumentDuplicateIcon,
     EditIcon,
-    SearchSparkleIcon,
-    TagIcon,
     SparklesIcon,
     EllipsisVerticalIcon,
     ArrowUpTrayIcon,
     ArrowLeftIcon,
-    ArrowRightIcon
+    ArrowRightIcon,
 } from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {Button} from '../ui/Button';
 import {DropdownMenu, DropdownMenuItem} from '../ui/Primitives';
 
 export interface EditorControlsProps {
-    onNext?: () => void;
-    onPrevious?: () => void;
-    hasNext?: boolean;
-    hasPrevious?: boolean;
-    isToolbarVisible?: boolean;
-    onToggleToolbar?: () => void;
-    isInspectorOpen?: boolean;
-    onToggleInspector?: () => void;
-    isTagInputVisible: boolean;
-    onToggleTags: () => void;
-    onSaveTemplate?: () => void;
-    onCopyContent?: () => void;
-    onExport?: () => void;
-    missingProperties: string[];
-    onAddProperty?: (key: string) => void;
-    onFindMatches?: () => void;
     onPublish: () => void;
     isPublishing: boolean;
     isPublished: boolean;
     actionLabel: string;
+    onSaveTemplate?: () => void;
+    onExport?: () => void;
+    onCopyContent?: () => void;
     canUndo?: boolean;
     canRedo?: boolean;
     onUndo?: () => void;
     onRedo?: () => void;
+    missingProperties?: string[];
+    onAddProperty?: (key: string) => void;
+    onAutoTag?: () => void;
+    isAutoTagging?: boolean;
 }
 
 export function EditorControls({
-    onNext,
-    onPrevious,
-    hasNext,
-    hasPrevious,
-    isToolbarVisible = true,
-    onToggleToolbar,
-    isInspectorOpen,
-    onToggleInspector,
-    isTagInputVisible,
-    onToggleTags,
-    onSaveTemplate,
-    onCopyContent,
-    onExport,
-    missingProperties = [],
-    onAddProperty,
-    onFindMatches,
     onPublish,
     isPublishing,
     isPublished,
     actionLabel,
+    onSaveTemplate,
+    onExport,
+    onCopyContent,
     canUndo = false,
     canRedo = false,
     onUndo,
-    onRedo
+    onRedo,
+    missingProperties = [],
+    onAddProperty,
+    onAutoTag,
+    isAutoTagging,
 }: EditorControlsProps) {
     const menuItems: DropdownMenuItem[] = [
-        ...(onToggleToolbar ? [{
-            label: isToolbarVisible ? "Hide Toolbar" : "Show Toolbar",
-            icon: isToolbarVisible ? ChevronUpIcon : ChevronDownIcon,
-            onClick: onToggleToolbar
-        }] : []),
         ...(onSaveTemplate ? [{
             label: "Save as Template",
             icon: DocumentDuplicateIcon,
-            onClick: onSaveTemplate
+            onClick: onSaveTemplate,
         }] : []),
         ...(onCopyContent ? [{
             label: "Copy Content",
             icon: EditIcon,
-            onClick: onCopyContent
+            onClick: onCopyContent,
         }] : []),
         ...(onExport ? [{
             label: "Export Note",
             icon: ArrowUpTrayIcon,
-            onClick: onExport
+            onClick: onExport,
         }] : []),
-    ];
+        ...(onAutoTag ? [{
+            label: isAutoTagging ? "Auto-tagging…" : "Auto-suggest tags",
+            icon: SparklesIcon,
+            onClick: onAutoTag,
+            disabled: isAutoTagging,
+        }] : []),
+        ...((canUndo || canRedo) && onUndo && onRedo ? [{
+            label: "Undo",
+            icon: ArrowLeftIcon,
+            onClick: onUndo,
+            disabled: !canUndo,
+        }, {
+            label: "Redo",
+            icon: ArrowRightIcon,
+            onClick: onRedo,
+            disabled: !canRedo,
+        }] : []),
+    ].flat().filter(Boolean) as DropdownMenuItem[];
 
     return (
         <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Navigation - Condensed */}
-            {(onNext || onPrevious) && (
-                <div className="hidden md:flex items-center card p-1">
-                    <button
-                        onClick={onPrevious}
-                        disabled={!hasPrevious}
-                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed touch-target"
-                        title="Previous Note (Alt+Up)"
-                    >
-                        <ChevronUpIcon className="h-4 w-4"/>
-                    </button>
-                    <button
-                        onClick={onNext}
-                        disabled={!hasNext}
-                        className="btn btn-ghost btn-xs p-1.5 text-gray-400 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed touch-target"
-                        title="Next Note (Alt+Down)"
-                    >
-                        <ChevronDownIcon className="h-4 w-4"/>
-                    </button>
-                </div>
-            )}
-
-            {/* Core Interaction Toggles */}
-            <div className="flex items-center gap-1">
-                {/* Undo/Redo */}
-                {(canUndo || canRedo) && (
-                    <div className="flex items-center gap-1 border-r border-gray-700/50 pr-2 mr-1">
-                        <IconButton
-                            onClick={onUndo}
-                            disabled={!canUndo}
-                            tooltip="Undo (Ctrl+Z)"
-                            icon={ArrowLeftIcon}
-                            variant="ghost"
-                            size="sm"
-                            label="Ctrl+Z"
-                            className="touch-target"
-                        />
-                        <IconButton
-                            onClick={onRedo}
-                            disabled={!canRedo}
-                            tooltip="Redo (Ctrl+Shift+Z)"
-                            icon={ArrowRightIcon}
-                            variant="ghost"
-                            size="sm"
-                            label="Ctrl+Shift+Z"
-                            className="touch-target"
-                        />
-                    </div>
-                )}
-                {onToggleInspector && (
-                    <IconButton
-                        onClick={onToggleInspector}
-                        tooltip="Toggle Assistant"
-                        icon={SparklesIcon}
-                        variant="ghost"
-                        isActive={isInspectorOpen}
-                        size="sm"
-                        data-testid="toggle-inspector"
-                    />
-                )}
-                <IconButton
-                    onClick={onToggleTags}
-                    tooltip="Tags"
-                    icon={TagIcon}
-                    variant="ghost"
-                    isActive={isTagInputVisible}
-                    size="sm"
-                />
-            </div>
-
             {/* Primary Actions */}
-            <div className="flex items-center gap-2 border-l border-gray-700/50 pl-2 ml-1">
-                {onFindMatches && (
-                    <IconButton
-                        onClick={onFindMatches}
-                        tooltip="Find matches in network"
-                        icon={SearchSparkleIcon}
-                        variant="ghost"
-                        size="md"
-                        className="text-purple-400 hover:bg-purple-900/30 hover:text-purple-300"
-                    />
-                )}
-
+            <div className="flex items-center gap-2">
                 <Button
                     onClick={onPublish}
                     disabled={isPublishing}
@@ -186,16 +97,6 @@ export function EditorControls({
                 >
                     {isPublishing ? 'Publishing…' : isPublished ? 'Published' : actionLabel}
                 </Button>
-
-                <IconButton
-                    onClick={() => window.dispatchEvent(new CustomEvent('save-note'))}
-                    tooltip="Save Note (Ctrl+S)"
-                    icon={EditIcon}
-                    variant="ghost"
-                    size="md"
-                    label="Ctrl+S"
-                    className="hidden lg:flex touch-target"
-                />
 
                 {/* More Menu */}
                 <DropdownMenu
@@ -211,10 +112,10 @@ export function EditorControls({
                 />
             </div>
 
-            {/* Property Hints - Subtle */}
+            {/* Property Hints - Inline chips */}
             {missingProperties.length > 0 && onAddProperty && (
-                <div className="hidden xl:flex items-center gap-1 ml-2">
-                    {missingProperties.slice(0, 2).map(prop => (
+                <div className="flex items-center gap-1 ml-2">
+                    {missingProperties.slice(0, 3).map(prop => (
                         <button
                             key={prop}
                             onClick={(e) => {
@@ -222,7 +123,7 @@ export function EditorControls({
                                 onAddProperty(prop);
                             }}
                             title={`Add ${prop} property`}
-                            className="btn btn-ghost btn-xs px-2 py-0.5 text-[10px] uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95 touch-target"
+                            className="btn btn-ghost btn-xs px-2 py-0.5 text-xs uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95 touch-target"
                         >
                             + {prop}
                         </button>
