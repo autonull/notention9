@@ -56,6 +56,7 @@ const browserEntries = {
   'config/NoteBasedConfig': 'src/config/NoteBasedConfig.ts',
   'storage/Storage': 'src/storage/Storage.browser.ts',
   'storage/recovery': 'src/storage/recovery.ts',
+  'storage/autoBackup': 'src/storage/autoBackup.ts',
   'templates/index': 'src/templates/index.ts',
   'fixtures/index': 'src/fixtures/index.ts',
   'feedback/index': 'src/feedback/index.ts',

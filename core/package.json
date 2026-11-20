@@ -38,6 +38,11 @@
       "node": "./dist/storage/index.js",
       "browser": "./dist/browser/storage/index.js"
     },
+    "./storage/autoBackup": {
+      "import": "./dist/storage/autoBackup.js",
+      "node": "./dist/storage/autoBackup.js",
+      "browser": "./dist/browser/storage/autoBackup.js"
+    },
     "./storage/migrations": {
       "import": "./dist/storage/migrations.js",
       "node": "./dist/storage/migrations.js",

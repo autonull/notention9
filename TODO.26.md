@@ -748,15 +748,23 @@ Decisions applied:
   - Tested with plain backup: **✅ PASS** (2 notes, 4 properties, 4 tags, 0 diffs).
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 945, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; L2/L3 skipped due to pre-existing test env issues).
 
-### 2026-11-18 — W6.2b Auto-backup with rotation complete
-- **Implemented**: 
-  - `autoBackup` config in `AppSettings` (core/src/types/ui.ts): enabled, frequency (daily/weekly/monthly/disabled), encrypt, passphrase, rotationCount, lastBackupAt, nextBackupAt
-  - `AutoBackupSection` component (`ui/src/components/settings/AutoBackupSection.tsx`): full settings UI with enable toggle, frequency select, encryption checkbox + passphrase input, rotation count slider, status display (last/next backup), "Backup Now" button, clear history
-  - `useAutoBackup` hook (`ui/src/hooks/useAutoBackup.ts`): checks if backup is due on app load, shows toast notification
-  - Integrated into `DataTab` (under Import/Export) and `App.tsx`
-  - Default: disabled, weekly, encrypted, 7 backups rotation
-  - Browser-compatible: backups are downloaded (one-click), never written silently
-- **All gates**: `pnpm build` ✅, `pnpm test` ✅, `pnpm test:ui` ✅, `pnpm verify` ✅ (L0+L1 pass; L2/L3 skipped due to pre-existing test env issues).
+### 2026-11-20 — W6.2b Auto-backup with rotation complete (core scheduler + UI)
+- **Implemented core auto-backup module** (`core/src/storage/autoBackup.ts`):
+  - `AutoBackupState` persisted in localStorage with history and rotation
+  - `isBackupDue()` / `calculateNextBackup()` shared with UI
+  - `performAutoBackup()`: builds export envelope, optional AES-GCM encryption, triggers browser download
+  - `createAutoBackupScheduler()`: hourly check, auto-download when due, updates `lastBackupAt`/`nextBackupAt`
+  - `triggerBackupOnChange()`: optional on-change backup trigger
+  - `recordBackup()` with rotation count enforcement
+  - Exported from `core/src/storage/index.ts`, `core/src/index.browser.ts`, and browser index generator
+- **UI enhancements** (`ui/src/components/settings/AutoBackupSection.tsx`):
+  - Backup history panel showing timestamp, note count, encryption status, size
+  - Uses shared `isBackupDue`, `calculateNextBackup`, `getAutoBackupState`, `clearAutoBackupState` from core
+- **React hooks** (`ui/src/hooks/useAutoBackup.ts`):
+  - `useAutoBackup()`: starts hourly scheduler on mount, triggers download when due
+  - `useAutoBackupOnChange()`: triggers backup after note changes
+  - Integrated into `App.tsx`
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm test:ui` ✅.
 
 ### 2026-11-19 — W6.1 Encryption at rest + auto-lock complete
 - **Implemented**: Unified `StorageEnvelope` format in `core/src/storage/envelope.ts` (shared with W6.6):

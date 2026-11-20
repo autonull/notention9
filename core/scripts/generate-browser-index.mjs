@@ -51,6 +51,7 @@ export * from './config/settingsSchema.js';
 // Storage
 export * from './storage/Storage.js';
 export * from './storage/recovery.js';
+export * from './storage/autoBackup.js';
 
 // Templates
 export * from './templates/index.js';

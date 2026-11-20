@@ -477,6 +477,7 @@ export {
     verifiedSymbol,
 } from './network/nostr/protocol.js';
 export * from './export/backupEncryption.js';
+export * from './storage/autoBackup.js';
 
 export {findLocalMatchesEnhanced, rankMatches, deduplicateMatches} from './matching/ranking.js';
 

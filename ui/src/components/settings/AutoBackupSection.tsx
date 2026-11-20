@@ -1,11 +1,20 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useMemo} from 'react';
 import {Button} from '../ui/Button';
 import {useToast} from '../../hooks/useToast';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useNotes} from '../../hooks/useNotes';
-import {buildExportEnvelope, encryptBackup, type EncryptedBackup} from '@notention/core';
-import {ArrowDownIcon, BellIcon, CalendarIcon, LockIcon, TrashIcon} from '../ui/icons';
-import {formatDistanceToNow, parseISO, isFuture, isPast, addDays, addWeeks, addMonths} from 'date-fns';
+import {
+    buildExportEnvelope,
+    encryptBackup,
+    type EncryptedBackup,
+    isBackupDue,
+    calculateNextBackup,
+    getAutoBackupState,
+    clearAutoBackupState,
+    type BackupRecord,
+} from '@notention/core';
+import {ArrowDownIcon, BellIcon, CalendarIcon, LockIcon, TrashIcon, HistoryIcon} from '../ui/icons';
+import {formatDistanceToNow, parseISO, isPast} from 'date-fns';
 
 interface AutoBackupSectionProps {
     onBackupDue?: () => void;
@@ -18,6 +27,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
     const [isBackingUp, setIsBackingUp] = useState(false);
     const [showPassphrase, setShowPassphrase] = useState(false);
     const [passphrase, setPassphrase] = useState('');
+    const [backupHistory, setBackupHistory] = useState<BackupRecord[]>([]);
 
     const autoBackup = settings.autoBackup ?? {
         enabled: false,
@@ -36,21 +46,14 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
         }));
     };
 
-    const calculateNextBackup = (): Date | null => {
-        if (!autoBackup.enabled || autoBackup.frequency === 'disabled') return null;
-        const last = autoBackup.lastBackupAt ? parseISO(autoBackup.lastBackupAt) : new Date(0);
-        switch (autoBackup.frequency) {
-            case 'daily': return addDays(last, 1);
-            case 'weekly': return addWeeks(last, 1);
-            case 'monthly': return addMonths(last, 1);
-            default: return null;
-        }
-    };
+    const nextBackupAt = useMemo(() => calculateNextBackup(settings), [settings.autoBackup]);
+    const isDue = useMemo(() => isBackupDue(settings), [settings.autoBackup]);
 
-    const nextBackupAt = calculateNextBackup();
-    const isDue = nextBackupAt && isPast(nextBackupAt);
+    useEffect(() => {
+        const state = getAutoBackupState();
+        setBackupHistory(state.history);
+    }, []);
 
-    // Check if backup is due on mount
     useEffect(() => {
         if (isDue && autoBackup.enabled) {
             onBackupDue?.();
@@ -66,7 +69,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
         setIsBackingUp(true);
         try {
             let backupPassphrase = autoBackup.encrypt ? autoBackup.passphrase : undefined;
-            
+
             if (autoBackup.encrypt && !backupPassphrase && manual) {
                 setShowPassphrase(true);
                 return;
@@ -95,9 +98,8 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
             a.click();
             URL.revokeObjectURL(url);
 
-            // Update last backup timestamp
             const now = new Date().toISOString();
-            const nextBackup = calculateNextBackup();
+            const nextBackup = calculateNextBackup({...settings, autoBackup: {...autoBackup, lastBackupAt: now}});
             updateAutoBackup({
                 lastBackupAt: now,
                 nextBackupAt: nextBackup?.toISOString(),
@@ -105,6 +107,9 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
 
             if (showPassphrase) setShowPassphrase(false);
             setPassphrase('');
+
+            const state = getAutoBackupState();
+            setBackupHistory(state.history);
 
             addToast(manual ? 'Backup downloaded successfully' : 'Auto-backup downloaded successfully', 'success');
         } catch (err) {
@@ -118,6 +123,14 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
         updateAutoBackup({passphrase});
         setShowPassphrase(false);
         performBackup(true);
+    };
+
+    const formatBackupDate = (timestamp: string) => {
+        try {
+            return formatDistanceToNow(parseISO(timestamp), {addSuffix: true});
+        } catch {
+            return 'Unknown';
+        }
     };
 
     return (
@@ -226,7 +239,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                             </div>
                             {nextBackupAt && (
                                 <div className="flex items-center gap-2 text-sm">
-                                    <BellIcon className="h-4 w-4 {isDue ? 'text-amber-400' : 'text-gray-400'}"/>
+                                    <BellIcon className={`h-4 w-4 ${isDue ? 'text-amber-400' : 'text-gray-400'}`}/>
                                     <span className={isDue ? 'text-amber-300' : 'text-gray-300'}>
                                         {isDue
                                             ? `Backup due! (was due ${formatDistanceToNow(nextBackupAt, {addSuffix: true})})`
@@ -235,6 +248,29 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                 </div>
                             )}
                         </div>
+
+                        {/* Backup History */}
+                        {backupHistory.length > 0 && (
+                            <div className="pl-7 bg-gray-800/50 rounded-lg p-3 space-y-2">
+                                <div className="flex items-center gap-2 text-sm">
+                                    <HistoryIcon className="h-4 w-4 text-gray-400"/>
+                                    <span className="text-gray-300 font-medium">Backup History ({backupHistory.length})</span>
+                                </div>
+                                <div className="max-h-48 overflow-y-auto space-y-1">
+                                    {backupHistory.map((record, index) => (
+                                        <div key={index} className="text-xs text-gray-400 flex items-center gap-2 px-2 py-1 hover:bg-gray-700/50 rounded">
+                                            <span className="w-32">{formatBackupDate(record.timestamp)}</span>
+                                            <span className="text-gray-500">|</span>
+                                            <span>{record.noteCount} notes</span>
+                                            <span className="text-gray-500">|</span>
+                                            <span>{record.encrypted ? '🔒 Encrypted' : '📄 Plain'}</span>
+                                            <span className="text-gray-500">|</span>
+                                            <span>{(record.size / 1024).toFixed(1)} KB</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Actions */}
                         <div className="pl-7 flex flex-wrap gap-2">
@@ -252,6 +288,8 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                     icon={TrashIcon}
                                     onClick={() => {
                                         updateAutoBackup({lastBackupAt: undefined, nextBackupAt: undefined});
+                                        clearAutoBackupState();
+                                        setBackupHistory([]);
                                         addToast('Backup history cleared', 'info');
                                     }}
                                 >

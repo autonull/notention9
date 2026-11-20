@@ -34,6 +34,7 @@ export {
     ServerIcon,
     ZapIcon,
     DatabaseIcon,
+    HistoryIcon,
 } from './icons';
 
 // Re-export commonly used types
