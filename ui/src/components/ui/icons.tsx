@@ -1046,3 +1046,33 @@ export function ZapIcon(props: IconProps) { return (
         />
     </OutlineIcon>
 ); }
+
+export function AlertTriangleIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+        />
+    </OutlineIcon>
+); }
+
+export function WifiOffIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M8.25 9.75a5.25 5.25 0 011.06-2.91M8.25 9.75c-1.733 0-3.355.703-4.5 1.815M12 15.75a4.5 4.5 0 00-.91-2.627m.91 2.627c1.733 0 3.355.703 4.5 1.815M12 3.75a8.25 8.25 0 108.25 8.25m-8.25-8.25l16.5 16.5M8.25 9.75l7.5 7.5M4.5 20.25a8.25 8.25 0 01-1.584-6.383M12 20.25a8.25 8.25 0 01-1.584-6.383M15.75 20.25a8.25 8.25 0 01-1.584-6.383"
+        />
+    </OutlineIcon>
+); }
+
+export function ServerIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3 16.5V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v9a2.25 2.25 0 01-2.25 2.25h-13.5A2.25 2.25 0 013 16.5zM9.75 16.5V7.5m6 9V7.5m3-6v6m-3-6h.008v.008H12V7.5z"
+        />
+    </OutlineIcon>
+); }

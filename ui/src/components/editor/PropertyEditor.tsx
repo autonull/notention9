@@ -7,8 +7,9 @@ import {getCurrentPosition} from '../../utils/geolocation';
 import {useToast} from '../../hooks/useToast';
 import {useAnnounce} from '../../hooks/useAccessibility';
 import {useGardener} from '../../hooks/useGardener';
+import {useAIAlign} from '../../hooks/useAIAlign';
 import {EnhancedPropertyValueInput} from '../properties/EnhancedPropertyValueInput';
-import {Input} from '../ui/Input';
+import {Input, ExtractionStatus} from '../ui/Primitives';
 import {Button} from '../ui/Button';
 import {IconButton} from '../ui/Button';
 import {Select} from '../ui/Select';
@@ -77,6 +78,26 @@ export function PropertyEditor({
     const announce = useAnnounce();
     const {track} = useMetrics();
     const {alignToOntology} = useGardener();
+    const {align, loading: aiLoading, error: aiError, fallbackUsed: aiFallbackUsed} = useAIAlign({
+        onSuccess: (properties) => {
+            if (properties.length > 0) {
+                const property = properties[0];
+                setKey(property.key);
+                setOperator(property.operator);
+                setValue(property.values.join(','));
+                setShowExtraction(false);
+                addToast('Property extracted!', 'success');
+                announce(`Property extracted: ${property.key} ${property.operator} ${property.values.join(', ')}`);
+            } else {
+                addToast('No properties found in text.', 'info');
+                announce('No properties found in text.');
+            }
+        },
+        onError: (error) => {
+            addToast('Extraction failed.', 'error');
+            announce('Extraction failed.');
+        },
+    });
     const {suggestions: ontologySuggestions} = useOntologySuggestions();
     const {suggestions: patternSuggestions} = usePatternSuggestions({properties: []} as any);
 
@@ -129,27 +150,7 @@ export function PropertyEditor({
 
     const handleMagicFill = async () => {
         if (!extractionText) return;
-
-        try {
-            const results = await alignToOntology(extractionText, ontology);
-
-            if (results.length > 0) {
-                const property = results[0];
-                setKey(property.key);
-                setOperator(property.operator);
-                setValue(property.values.join(','));
-                setShowExtraction(false);
-                addToast('Property extracted!', 'success');
-                announce(`Property extracted: ${property.key} ${property.operator} ${property.values.join(', ')}`);
-            } else {
-                addToast('No properties found in text.', 'info');
-                announce('No properties found in text.');
-            }
-        } catch (e) {
-            Logger.getInstance().error("Property extraction failed", e instanceof Error ? e : new Error(String(e)));
-            addToast('Extraction failed.', 'error');
-            announce('Extraction failed.');
-        }
+        await align(extractionText, ontology);
     };
 
     const handlePickLocation = async (): Promise<string> => {
@@ -310,13 +311,24 @@ export function PropertyEditor({
                         autoFocus
                         className="text-sm mb-2"
                     />
+                    {(aiLoading || aiFallbackUsed || aiError) && (
+                        <ExtractionStatus
+                            loading={aiLoading}
+                            fallbackUsed={aiFallbackUsed}
+                            providerUsed="ai"
+                            providerKind={aiFallbackUsed ? 'heuristic' : 'llm'}
+                            error={aiError}
+                            onRetry={handleMagicFill}
+                        />
+                    )}
                     <Button
                         onClick={handleMagicFill}
                         size="xs"
                         variant="primary"
                         className="w-full bg-purple-600 hover:bg-purple-500"
+                        disabled={aiLoading}
                     >
-                        Extract Property
+                        {aiLoading ? 'Extracting...' : 'Extract Property'}
                     </Button>
                 </div>
             )}

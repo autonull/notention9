@@ -16,12 +16,14 @@ import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
 import {useCommands} from '../hooks/useCommands';
 import {HelpDialog} from './modals/HelpDialog';
 import {ConnectivityBanner} from './layout/ConnectivityBanner';
+import {DegradedModeBanner} from './layout/DegradedModeBanner';
 import {useToast} from '../hooks/useToast';
 import {useIsMobile} from '../hooks/useMediaQuery';
 import {useSidebarState} from '../hooks/useSidebarState';
 import {cn} from '../utils/ui';
 import {PendingConfirmationsProvider} from '../hooks/usePendingConfirmations';
 import {PendingConfirmationsModal} from './ui/PendingConfirmationsModal';
+import {useDegradedMode} from '../hooks/useDegradedMode';
 
 // Dynamic import for DevBridge - only loaded when VITE_DEV_HOOKS=true
 const DevBridge = import.meta.env.VITE_DEV_HOOKS === 'true'
@@ -56,6 +58,7 @@ export function AppShell() {
     const {commands} = useCommands({setIsHelpOpen});
     const {addToast} = useToast();
     const isMobile = useIsMobile();
+    const {addDegradedMode, removeDegradedMode} = useDegradedMode();
 
     const {
         isOpen: isSidebarOpen,
@@ -82,15 +85,62 @@ export function AppShell() {
         const handleStorageError = (event: Event) => {
             const detail = (event as CustomEvent<{key: string; message: string}>).detail;
             addToast(`Could not save ${detail?.key ?? 'data'}. Storage may be full.`, 'error');
+            addDegradedMode({
+                type: 'storage-full',
+                message: `Could not save ${detail?.key ?? 'data'}. Storage may be full.`,
+                severity: 'error',
+                dismissible: true,
+                action: {
+                    label: 'Clear Space',
+                    onClick: () => {
+                        // Could open storage settings
+                        removeDegradedMode('storage-full');
+                    }
+                }
+            });
         };
+
+        const handleStorageCorrupt = (event: Event) => {
+            const detail = (event as CustomEvent<{key: string; message: string}>).detail;
+            addDegradedMode({
+                type: 'storage-corrupt',
+                message: detail?.message ?? 'Data corruption detected. A backup has been restored.',
+                severity: 'error',
+                dismissible: false,
+            });
+        };
+
+        const handleSyncFailed = (event: Event) => {
+            const detail = (event as CustomEvent<{message: string}>).detail;
+            addDegradedMode({
+                type: 'sync-failed',
+                message: detail?.message ?? 'Background sync failed. Changes are stored locally.',
+                severity: 'warning',
+                dismissible: true,
+                action: {
+                    label: 'Retry Sync',
+                    onClick: () => {
+                        window.dispatchEvent(new CustomEvent('retry-sync'));
+                        removeDegradedMode('sync-failed');
+                    }
+                }
+            });
+        };
+
         const handleOpenShortcutsHelp = () => setIsShortcutsHelpOpen(true);
+
         window.addEventListener('storage-error', handleStorageError);
+        window.addEventListener('storage-corrupt', handleStorageCorrupt);
+        window.addEventListener('sync-failed', handleSyncFailed);
         window.addEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
+
         return () => {
             window.removeEventListener('storage-error', handleStorageError);
+            window.removeEventListener('storage-corrupt', handleStorageCorrupt);
+            window.removeEventListener('sync-failed', handleSyncFailed);
             window.removeEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
         };
-    }, [addToast, setIsShortcutsHelpOpen]);
+    }, [addToast, addDegradedMode, removeDegradedMode, setIsShortcutsHelpOpen]);
 
     useKeyboardShortcuts({
         onNewNote: () => {
@@ -176,6 +226,7 @@ export function AppShell() {
                 <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
                     <Header onToggleSidebar={toggleSidebar}/>
                     <ConnectivityBanner/>
+                    <DegradedModeBanner/>
                     <div className="flex flex-1 overflow-hidden relative">
                         <div className={hideSidebar ? 'hidden' : cn(sidebarClasses, isMobile && 'pb-20')} style={style}>
                             <Sidebar

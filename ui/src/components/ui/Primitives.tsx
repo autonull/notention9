@@ -25,6 +25,16 @@ export * from './SkipLink';
 export * from './FeedbackWidget';
 export * from './EmptyState';
 export * from './ExtractionStatus';
+export * from '../layout/DegradedModeBanner';
+
+// Icons
+export {
+    AlertTriangleIcon,
+    WifiOffIcon,
+    ServerIcon,
+    ZapIcon,
+    DatabaseIcon,
+} from './icons';
 
 // Re-export commonly used types
 export type {ButtonProps, IconButtonProps} from './Button';

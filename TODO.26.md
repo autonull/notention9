@@ -273,8 +273,17 @@
 - [ ] **W6.4 Import interop (Markdown).** Import Obsidian-style frontmatter/tags + body into
   notes; complete the round-trip with `markdownExport`. Acceptance: lossless fixture round-trip +
   documented lossy edges (attachments, aliases).
-- [ ] **W6.5 Error boundaries & degraded mode.** Offline/LLM-timeout/storage-full paths show
+- [x] **W6.5 Error boundaries & degraded mode.** Offline/LLM-timeout/storage-full paths show
   status and retry; no dead ends. Acceptance: fault-injection tests; state visible in UI.
+  **Done 2026-11-19**: Implemented degraded mode system:
+  - `useDegradedMode` hook and `DegradedModeProvider` for persistent UI state
+  - `DegradedModeBanner` component showing inline banners for: LLM timeout, LLM fallback to heuristic, storage full, storage corrupt, sync failed, offline
+  - Integrated into `AppShell` with event listeners for `storage-error`, `storage-corrupt`, `sync-failed`
+  - `useAIDegradedMode` hook automatically tracks AI extraction fallback states
+  - `useAIAlign` hook for AI property extraction with degraded mode integration
+  - Updated `PropertyEditor` to show `ExtractionStatus` during AI extraction
+  - Icons added: `AlertTriangleIcon`, `WifiOffIcon`, `ServerIcon`
+  - All gates: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm verify` ✅.
 - [x] **W6.6 Data integrity.** Per-store checksums on write, detect corruption at startup,
   auto-repair from the newest valid backup. **Same envelope as W6.1**; depends on W6.2a.
   **Done 2026-11-19**: SHA-256 checksum embedded in every `StorageEnvelope` on write.
@@ -895,3 +904,15 @@ Decisions applied:
   - Fixed default settings in `core/src/storage/envelopeStorage.ts`, `core/src/storage/recovery.ts`, `core/src/storage/migratedStorage.ts`, `optimize/src/cli/commands/migrate.ts`, `optimize/src/journeys.ts`
   - Fixed test fixtures in `core/src/storage/envelope.test.ts`, `core/src/storage/storage.test.ts`, `core/src/storage/migrations.test.ts`
 - **All gates**: `pnpm build` ✅
+
+### 2026-11-19 — W6.5 Error boundaries & degraded mode complete
+- **Implemented**: Degraded mode system for visible fault states:
+  - `useDegradedMode` hook and `DegradedModeProvider` in `ui/src/hooks/useDegradedMode.tsx` for persistent UI state tracking
+  - `DegradedModeBanner` component in `ui/src/components/layout/DegradedModeBanner.tsx` showing inline banners for: LLM timeout, LLM fallback to heuristic, storage full, storage corrupt, sync failed, offline
+  - Integrated into `AppShell` with event listeners for `storage-error`, `storage-corrupt`, `sync-failed`
+  - `useAIDegradedMode` hook in `ui/src/hooks/useAIDegradedMode.tsx` automatically tracks AI extraction fallback states
+  - `useAIAlign` hook in `ui/src/hooks/useAIAlign.tsx` for AI property extraction with degraded mode integration
+  - Updated `PropertyEditor` to show `ExtractionStatus` during AI extraction with retry action
+  - Added `AlertTriangleIcon`, `WifiOffIcon`, `ServerIcon` to `ui/src/components/ui/icons.tsx`
+  - Exported from `ui/src/components/ui/Primitives.tsx`
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm verify` ✅.

@@ -12,6 +12,7 @@ import {StrategyProvider} from './hooks/useStrategyResolver';
 import {I18nProvider} from './components/i18n';
 import {AccessibilityProvider} from './hooks/useAccessibility';
 import {useTheme} from './hooks/useTheme';
+import {DegradedModeProvider} from './hooks/useDegradedMode';
 
 function App() {
     useStrategyInit();
@@ -20,12 +21,14 @@ function App() {
     return (
         <I18nProvider>
             <AccessibilityProvider>
-                <ErrorHandlingProvider>
-                    <ErrorBoundary>
-                        <AppContent/>
-                    </ErrorBoundary>
-                    <ErrorDisplay/>
-                </ErrorHandlingProvider>
+                <DegradedModeProvider>
+                    <ErrorHandlingProvider>
+                        <ErrorBoundary>
+                            <AppContent/>
+                        </ErrorBoundary>
+                        <ErrorDisplay/>
+                    </ErrorHandlingProvider>
+                </DegradedModeProvider>
             </AccessibilityProvider>
         </I18nProvider>
     );
