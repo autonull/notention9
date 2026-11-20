@@ -40,7 +40,7 @@ export function SettingsView() {
     const direction = useDirection();
     const isRTL = direction === 'rtl';
 
-    const [activeTab, setActiveTab] = useState('ai');
+    const [activeTab, setActiveTab] = useState('profile');
     const tabRefs = useRef(new Map<string, HTMLButtonElement>());
 
     const groups: SettingsGroup[] = [

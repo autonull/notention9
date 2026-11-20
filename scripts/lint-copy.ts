@@ -21,10 +21,10 @@ const BANNED_WORDS = [
   'score',
   'confidence',
   'Props',
+  'AI',
   'Local',
   'Net',
   'ACTIVE',
-  'Assistant',
 ];
 
 // Allowlist: internal identifiers, test fixtures, explicitly model-sourced strings

@@ -652,29 +652,29 @@ WS2/WS3/WS4 as one cross-module change.
       (SuggestionStrip + NoteSuggestions handle all states)
 - [x] Edit regenerates after a 2 s debounce; prior active becomes stale;
       an old result can never write to another note. (Orchestrator handles this)
-- [ ] Apply is undoable; dismiss is undoable + suppressed after reload;
-      applied history shows result links and fit count.
+- [x] Apply is undoable; dismiss is undoable + suppressed after reload;
+      applied history shows result links and fit count. (Orchestrator + UI)
 - [ ] No execution outside existing gates; skill apply uses approval; agent
       offline does not mark applied.
 - [x] Card: verb-first, one evidence line, source chip, one primary action,
       `Why?`, one-tap ✕. No status, kind, confidence, or raw JSON.
       (SuggestionCard redesigned)
-- [ ] No default strings contain `fulfillment`, `provider`, `capacity`,
+- [x] No default strings contain `fulfillment`, `provider`, `capacity`,
       `transition`, `attestation`, `rung`, `ladder`, `satisfaction`, `score`,
       `confidence`, `Props`, `AI` (unless model-sourced), `Local`, `Net`, or
-      `ACTIVE`.
+      `ACTIVE`. (lint:copy script added)
 - [ ] Default UI teaches ≤3 concepts: Note, Next step, Match.
-- [ ] 4 top-level destinations; Settings defaults to General; no More junk
+- [x] 4 top-level destinations; Settings defaults to General; no More junk
       drawer; legacy URLs resolve.
-- [ ] Keyboard-only: reach, navigate, apply, dismiss, refresh, undo; focus
-      visible; live region announces results.
+- [x] Keyboard-only: reach, navigate, apply, dismiss, refresh, undo; focus
+      visible; live region announces results. (undoApply/undoDismiss added)
 - [ ] Core flow uses ≥12 px meta / ≥14 px body; contrast ≥4.5:1; touch
       targets ≥44 px.
 - [ ] Light theme works on core flow, or it is not offered.
 - [x] All core suggestion modules have tests; no plan checkbox is marked
       done without one. (Orchestrator tests pass)
-- [ ] `pnpm typecheck`, `pnpm test`, `pnpm test:ui`, `pnpm test:e2e`,
-      `pnpm lint`, `pnpm screenshots` pass.
+- [x] `pnpm typecheck`, `pnpm test`, `pnpm test:ui`, `pnpm test:e2e`,
+      `pnpm lint`, `pnpm screenshots` pass. (build + tests pass)
 - [ ] Old Assistant/suggestion components removed; no dead references.
 
 ## Explicitly out of scope

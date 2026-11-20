@@ -60,7 +60,12 @@ export class OntologyService {
         }
 
         this.attributeIndex = new Map();
-        this.indexAttributes(Array.from(this.compiled.nodes.values()));
+        const isLegacyMode = this.compiled.types.size === 0;
+        if (isLegacyMode) {
+            this.indexAttributesLegacy(Array.from(this.compiled.nodes.values()));
+        } else {
+            this.indexAttributesNewMode(Array.from(this.compiled.nodes.values()));
+        }
         const nodeArray = Array.from(this.compiled.nodes.values());
         this.usageTracker = new UsageTracker(nodeArray, this.attributeIndex);
         this.fuzzyMatcher = new FuzzyMatcher();
@@ -225,7 +230,7 @@ export class OntologyService {
         resetOntologyCache();
         this.compiled = getOntology(configPath);
         this.attributeIndex.clear();
-        this.indexAttributes(Array.from(this.compiled.nodes.values()));
+        this.indexAttributesNewMode(Array.from(this.compiled.nodes.values()));
         this.clearCaches();
     }
 
@@ -234,7 +239,7 @@ export class OntologyService {
      * Top-level nodes own no attributes of their own in the legacy array mode,
      * so indexing only the roots would drop every attribute the rules target.
      */
-    private indexAttributes(nodes: OntologyNode[]): void {
+    private indexAttributesLegacy(nodes: OntologyNode[]): void {
         for (const node of nodes) {
             for (const [key, attr] of Object.entries(node.attributes ?? {})) {
                 if (!this.attributeIndex.has(key)) {
@@ -242,7 +247,22 @@ export class OntologyService {
                 }
             }
             if (node.children) {
-                this.indexAttributes(node.children);
+                this.indexAttributesLegacy(node.children);
+            }
+        }
+    }
+
+    /**
+     * Index attributes in new loader mode.
+     * All nodes (including children) are already in the compiled Map in module priority order.
+     * Iterate in Map order without recursion to preserve priority.
+     */
+    private indexAttributesNewMode(nodes: OntologyNode[]): void {
+        for (const node of nodes) {
+            for (const [key, attr] of Object.entries(node.attributes ?? {})) {
+                if (!this.attributeIndex.has(key)) {
+                    this.attributeIndex.set(key, attr);
+                }
             }
         }
     }

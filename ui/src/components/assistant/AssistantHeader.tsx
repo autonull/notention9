@@ -56,10 +56,10 @@ export function AssistantHeader({
                         activeTab={activeTab}
                         onChange={(id) => onChangeTab(id as AssistantTab)}
                         tabs={[
-                            { id: 'properties', label: 'Props', count: propertiesCount },
-                            { id: 'suggestions', label: 'AI', count: suggestions.length },
-                            { id: 'local', label: 'Local', count: localMatches.length },
-                            { id: 'network', label: 'Net', count: networkMatches.length }
+                            { id: 'properties', label: 'Properties', count: propertiesCount },
+                            { id: 'suggestions', label: 'Next steps', count: suggestions.length },
+                            { id: 'local', label: 'Local matches', count: localMatches.length },
+                            { id: 'network', label: 'Network matches', count: networkMatches.length }
                         ]}
                         className="w-full justify-between"
                     />
