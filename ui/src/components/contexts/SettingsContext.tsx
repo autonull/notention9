@@ -5,6 +5,7 @@ import type {AppSettings} from '@notention/core';
 import {validateSettings, DEFAULT_APP_SETTINGS} from '@notention/core/config';
 import {DEFAULT_ONTOLOGY, DEFAULT_RELAYS} from '@notention/core';
 import {STORAGE_KEYS} from '../../config/storageKeys';
+import {suggestionOrchestrator} from '@notention/core';
 
 interface SettingsContextType {
     settings: AppSettings;
@@ -53,6 +54,13 @@ export function SettingsProvider({
             }));
         }
     }, [settings.nostr.relays, settingsLoading, setSettings]);
+
+    // Initialize suggestion orchestrator with ontology
+    useEffect(() => {
+        if (!settingsLoading && settings.ontology && settings.ontology.length > 0) {
+            suggestionOrchestrator.setOntology(settings.ontology);
+        }
+    }, [settings.ontology, settingsLoading]);
 
     return (
         <SettingsContext.Provider
