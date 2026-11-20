@@ -62,6 +62,7 @@ const browserEntries = {
   'feedback/index': 'src/feedback/index.ts',
   // Extensibility
   'suggestions/SuggestionStore': 'src/suggestions/SuggestionStore.browser.ts',
+  'suggestions/note/index': 'src/suggestions/note/index.ts',
   'validation/index': 'src/validation/index.ts',
   'events/index': 'src/events/index.ts',
   'extraction/confidenceCalibration': 'src/extraction/confidenceCalibration.ts',
@@ -121,6 +122,7 @@ const nodeEntries = [
   'src/telemetry/revisionDriver.ts',
   // Extensibility
   'src/suggestions/index.ts',
+  'src/suggestions/note/index.ts',
   'src/validation/index.ts',
   'src/config/index.ts',
   'src/events/index.ts',

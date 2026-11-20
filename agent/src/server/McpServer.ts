@@ -7,6 +7,7 @@ import { PluginManager } from './PluginManager.js';
 import { CorePlugin } from './plugins/CorePlugin.js';
 import { IntelligencePlugin } from './plugins/IntelligencePlugin.js';
 import { BatchPlugin } from './plugins/BatchPlugin.js';
+import { SuggestionPlugin } from './plugins/SuggestionPlugin.js';
 import { ConfigManager } from '../config/ConfigManager.js';
 import { MCP_PATHS } from '../constants.js';
 
@@ -26,6 +27,7 @@ export async function setupMcpServer(app: Express) {
     await pluginManager.register(new CorePlugin());
     await pluginManager.register(new IntelligencePlugin());
     await pluginManager.register(new BatchPlugin());
+    await pluginManager.register(new SuggestionPlugin());
 
     // Register Tools
     registry.getToolDefinitions().forEach(tool => {

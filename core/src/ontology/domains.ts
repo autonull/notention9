@@ -175,6 +175,38 @@ export const workDomain: OntologyNode[] = [
                 actionLabel: 'Post Job',
                 extends: ['job', 'request'],
                 requiredAttributes: ['role'],
+                suggestions: [
+                    {
+                        id: 'rule-add-budget-for-job',
+                        name: 'Add budget for job request',
+                        description: 'Suggest adding budget when note is a job request',
+                        targetNodeIds: ['work/job-request'],
+                        condition: { type: 'nodeType', nodeId: 'work/job-request' },
+                        action: {
+                            type: 'suggestAddProperty',
+                            key: 'budget',
+                            operator: 'gte',
+                            value: '0',
+                            reason: 'Job requests should indicate a budget range'
+                        },
+                        priority: 10,
+                        enabled: true
+                    },
+                    {
+                        id: 'rule-suggest-fulfillment-for-job',
+                        name: 'Suggest fulfillment for job requests',
+                        description: 'When a job request matches a skill pattern, suggest fulfillment',
+                        targetNodeIds: ['work/job-request'],
+                        condition: { type: 'hasAnyProperty', keys: ['skill', 'role', 'service', 'task'] },
+                        action: {
+                            type: 'suggestFulfillment',
+                            skillId: 'auto',
+                            reason: 'This job request matches available fulfillment skills'
+                        },
+                        priority: 15,
+                        enabled: true
+                    }
+                ],
                 attributes: {
                     title: { type: 'string', description: 'Job title', icon: 'title', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     role: { type: 'string', description: 'The job title or role.', icon: 'briefcase', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
@@ -196,6 +228,24 @@ export const workDomain: OntologyNode[] = [
                 actionLabel: 'Post Offer',
                 extends: ['freelance', 'offer'],
                 requiredAttributes: ['role', 'rate'],
+                suggestions: [
+                    {
+                        id: 'rule-add-contact-for-offers',
+                        name: 'Add contact for offer notes',
+                        description: 'Offers should include contact information',
+                        targetNodeIds: ['work/freelance-offer'],
+                        condition: { type: 'nodeType', nodeId: 'work/freelance-offer' },
+                        action: {
+                            type: 'suggestAddProperty',
+                            key: 'contact',
+                            operator: 'is',
+                            value: '',
+                            reason: 'Offers should include contact information'
+                        },
+                        priority: 10,
+                        enabled: true
+                    }
+                ],
                 attributes: {
                     title: { type: 'string', description: 'Service title', icon: 'title', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
                     role: { type: 'string', description: 'The role offered.', icon: 'briefcase', operators: { real: ['is', 'contains'], imaginary: ['is not'] } },
@@ -286,6 +336,54 @@ export const requestDomain: OntologyNode[] = [
                 label: 'Need Request',
                 description: 'Something a person is looking for.',
                 requiredAttributes: ['need'],
+                suggestions: [
+                    {
+                        id: 'rule-add-schedule-for-recurring',
+                        name: 'Add schedule for recurring requests',
+                        description: 'Suggest adding schedule when frequency is specified',
+                        targetNodeIds: ['request/need-request'],
+                        condition: { type: 'hasProperty', key: 'frequency' },
+                        action: {
+                            type: 'suggestAddProperty',
+                            key: 'schedule',
+                            operator: 'is',
+                            value: '',
+                            reason: 'Recurring requests should specify a schedule'
+                        },
+                        priority: 8,
+                        enabled: true
+                    },
+                    {
+                        id: 'rule-add-deadline-for-urgent',
+                        name: 'Add deadline for urgent requests',
+                        description: 'Suggest adding deadline when priority is high',
+                        targetNodeIds: ['request/need-request'],
+                        condition: { type: 'propertyValueIn', key: 'priority', values: ['high', 'urgent', 'critical'] },
+                        action: {
+                            type: 'suggestAddProperty',
+                            key: 'deadline',
+                            operator: 'is',
+                            value: '',
+                            reason: 'Urgent requests should have a deadline'
+                        },
+                        priority: 12,
+                        enabled: true
+                    },
+                    {
+                        id: 'rule-suggest-fulfillment-for-need',
+                        name: 'Suggest fulfillment for need requests',
+                        description: 'When a need request matches a skill pattern, suggest fulfillment',
+                        targetNodeIds: ['request/need-request'],
+                        condition: { type: 'hasAnyProperty', keys: ['skill', 'role', 'service', 'task'] },
+                        action: {
+                            type: 'suggestFulfillment',
+                            skillId: 'auto',
+                            reason: 'This request matches available fulfillment skills'
+                        },
+                        priority: 15,
+                        enabled: true
+                    }
+                ],
                 attributes: {
                     need: { type: 'string', description: 'What is needed.', icon: 'sparkles', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },
                     schedule: { type: 'string', description: 'When the need applies.', icon: 'clock', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },

@@ -344,6 +344,21 @@
       "import": "./dist/export/index.js",
       "node": "./dist/export/index.js",
       "browser": "./dist/browser/export/index.js"
+    },
+    "./security": {
+      "import": "./dist/security/index.js",
+      "node": "./dist/security/index.js",
+      "browser": "./dist/browser/security/index.js"
+    },
+    "./notes": {
+      "import": "./dist/notes/index.js",
+      "node": "./dist/notes/index.js",
+      "browser": "./dist/browser/notes/index.js"
+    },
+    "./events": {
+      "import": "./dist/events/index.js",
+      "node": "./dist/events/index.js",
+      "browser": "./dist/browser/events/index.js"
     }
   },
   "scripts": {

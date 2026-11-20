@@ -102,6 +102,7 @@ export interface OntologyNode {
   children?: OntologyNode[];
   actionLabel?: string;
   extends?: string[];
+  suggestions?: import('../suggestions/note/types.js').SuggestionRule[];
 }
 
 export interface OntologyAttribute {
