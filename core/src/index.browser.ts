@@ -312,6 +312,14 @@ export {
     areNotesEqual,
 } from './notes/index.js';
 
+// Suggestions - from suggestions/note/orchestrator.js
+export {
+    suggestionOrchestrator,
+    SuggestionOrchestrator,
+    type SuggestionEvent,
+    type SuggestionEventType,
+} from './suggestions/note/orchestrator.js';
+
 // Security - from security/index.js
 export {
     CapabilityManager,

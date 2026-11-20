@@ -1,8 +1,8 @@
 import { PropertyPanel } from './PropertyPanel';
-import { SuggestionsPanel } from './SuggestionsPanel';
+import { NoteSuggestions } from '../suggestions/NoteSuggestions';
 import { LocalMatchesPanel } from './LocalMatchesPanel';
 import { NetworkMatchesPanel } from './NetworkMatchesPanel';
-import { Property, ScoredMatch, OntologyNode, Suggestion, Contact, Note } from '@notention/core';
+import { Property, ScoredMatch, OntologyNode, Contact, Note, NoteSuggestion } from '@notention/core';
 import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
 
 interface PropertyReviewState {
@@ -14,7 +14,7 @@ interface PropertyReviewState {
 interface AssistantContentProps {
     activeTab: string;
     properties: Property[];
-    suggestions: Suggestion[];
+    suggestions: NoteSuggestion[];
     localMatches: ScoredMatch[];
     networkMatches: ScoredMatch[];
     isSearching: boolean;
@@ -38,7 +38,7 @@ interface AssistantContentProps {
     onFindMatches: (e?: React.MouseEvent) => Promise<void>;
     onConnect: (match: ScoredMatch) => Promise<void>;
     onChat: (author: string) => void;
-    onApplySuggestion: (suggestion: Suggestion) => void;
+    onApplySuggestion: (suggestion: NoteSuggestion) => void;
     onMouseEnterSuggestion: (index: number) => void;
     onAddDiscovered: (key: string, type: string) => void;
     noteId: string;
@@ -101,12 +101,10 @@ export function AssistantContent({
             )}
 
             {activeTab === 'suggestions' && (
-                <SuggestionsPanel
-                    suggestions={suggestions}
-                    activeSuggestion={0}
-                    onApplySuggestion={onApplySuggestion}
-                    onMouseEnter={onMouseEnterSuggestion}
-                    noteId={noteId}
+                <NoteSuggestions
+                    note={note}
+                    onSuggestionApplied={onApplySuggestion}
+                    onSuggestionDismissed={() => {}}
                 />
             )}
 

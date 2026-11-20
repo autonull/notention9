@@ -1,12 +1,11 @@
 import { SparklesIcon } from '../ui/icons';
 import {Badge} from '../ui/Badge';
 import { Tabs } from '../ui';
-import { ScoredMatch } from '@notention/core';
-import { Suggestion } from '@notention/core';
+import { ScoredMatch, NoteSuggestion } from '@notention/core';
 import type { AssistantTab } from '../../hooks/useSmartNoteAssistant';
 
 interface AssistantHeaderProps {
-    suggestions: Suggestion[];
+    suggestions: NoteSuggestion[];
     localMatches: ScoredMatch[];
     networkMatches: ScoredMatch[];
     propertiesCount: number;

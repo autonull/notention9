@@ -1516,10 +1516,10 @@ Automated test must fail if any default string contains:
 - [x] Suggestions persist when matches arrive
 - [x] Edit regenerates and stales prior active
 - [x] Applying one leaves others active
-- [ ] No execution outside existing gates
-- [ ] Private content never remote without consent
-- [ ] Zero leakage
-- [ ] Default UI learns ≤3 concepts
+- [x] No execution outside existing gates
+- [x] Private content never remote without consent
+- [x] Zero leakage
+- [x] Default UI learns ≤3 concepts
 
 ---
 
