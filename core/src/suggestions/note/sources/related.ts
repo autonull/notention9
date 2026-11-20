@@ -1,7 +1,7 @@
 import type { Note, OntologyNode } from '../../../types/index.js';
 import type { SuggestionGenerationContext, NoteSuggestion, SourcePlugin } from '../types.js';
 import { MatchEngine } from '../../../matching/MatchEngine.js';
-import { shortSha256 } from '../../../utils/common.shared.js';
+import { shortSha256 } from '../../../utils/common.js';
 
 export interface SuggestionRelatedNote {
   note: Note;

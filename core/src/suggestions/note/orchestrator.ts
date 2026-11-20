@@ -13,7 +13,7 @@ import { RelatedSource, createRelatedSource } from './sources/related.js';
 import { LlmSource, createLlmSource, type LlmSourceConfig } from './sources/llm.js';
 import { reshapeSuggestions, createDefaultReshapeOps } from './reshape.js';
 import { verifyAllSuggestions, filterValidSuggestions, type VerificationContext } from './verify.js';
-import { shortSha256, generateId } from '../../utils/common.shared.js';
+import { shortSha256, generateId } from '../../utils/common.js';
 
 export type SuggestionEventType = 
   | 'generation-started'

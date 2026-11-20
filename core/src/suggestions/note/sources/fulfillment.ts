@@ -1,7 +1,7 @@
 import type { Note, OntologyNode } from '../../../types/index.js';
 import type { SuggestionGenerationContext, NoteSuggestion, SourcePlugin } from '../types.js';
 import { SkillPatternMatcher, type SkillDefinition } from '../../../skills/skillPatternMatcher.js';
-import { shortSha256 } from '../../../utils/common.shared.js';
+import { shortSha256 } from '../../../utils/common.js';
 
 export class FulfillmentSource implements SourcePlugin {
   name = 'fulfillment' as const;

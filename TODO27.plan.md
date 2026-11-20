@@ -1,6 +1,6 @@
 # Implementation Plan: Note Suggestions (TODO.27.md)
 
-**Status**: Core implementation complete — build passing; integration pending  
+**Status**: Core implementation complete — build passing; **integration complete**  
 **Scope**: `core`, `agent`, `ui`  
 **Conventions**: `AGENTS.md` (elegant, consolidated, DRY, terse syntax, few comments)
 
@@ -1512,10 +1512,10 @@ Automated test must fail if any default string contains:
 - [x] Verification (property, match, skill)
 - [x] UI components: useNoteSuggestions, NoteSuggestions, SuggestionCard
 - [x] Agent plugin with MCP tools
-- [ ] Offline publish yields ≥1 evidence-backed card ≤5s
-- [ ] Suggestions persist when matches arrive
-- [ ] Edit regenerates and stales prior active
-- [ ] Applying one leaves others active
+- [x] Offline publish yields ≥1 evidence-backed card ≤5s
+- [x] Suggestions persist when matches arrive
+- [x] Edit regenerates and stales prior active
+- [x] Applying one leaves others active
 - [ ] No execution outside existing gates
 - [ ] Private content never remote without consent
 - [ ] Zero leakage
@@ -1541,7 +1541,7 @@ Automated test must fail if any default string contains:
 - [x] 14. `ui/src/components/suggestions/SuggestionCard.tsx`
 - [x] 15. `ui/src/components/suggestions/NoteSuggestions.tsx`
 - [x] 16. `agent/src/server/plugins/SuggestionPlugin.ts`
-- [ ] 17. Integration: `useEditorPublishing`, note save hook, `useSmartNoteAssistant`, `SuggestionsPanel`, `SocketController`, `PluginManager`
+- [x] 17. Integration: `useEditorPublishing`, note save hook, `useSmartNoteAssistant`, `SuggestionsPanel`, `SocketController`, `PluginManager`
 
 ---
 

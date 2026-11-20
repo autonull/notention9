@@ -1,5 +1,6 @@
 import React from 'react';
-import { Note, useNoteSuggestions, NoteSuggestion } from '@notention/core';
+import { Note, NoteSuggestion } from '@notention/core';
+import { useNoteSuggestions } from '../../hooks/useNoteSuggestions';
 import { SuggestionCard } from './SuggestionCard.js';
 import styles from './NoteSuggestions.module.css';
 

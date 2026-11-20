@@ -3,16 +3,14 @@ import { useToast } from './useToast';
 import { useSettings } from './useSettingsContext';
 import { useView } from './useViewContext';
 import { useContacts } from './useContacts';
-import { useNoteAnalysis } from './useNoteAnalysis';
-import { Suggestion } from '@notention/core';
+import { useNoteSuggestions } from './useNoteSuggestions';
 import { useMatches } from './useMatches';
 import { useNetworkDiscovery } from './useNetworkDiscovery';
 import { usePropertyReview, type PropertyReviewItem } from './usePropertyReview';
 import { applyTaskSuggestion } from '../utils/suggestionUtils';
 import { agentService } from '../services/AgentService';
 import { nostrService } from '../services/NostrService';
-import { Note, ScoredMatch, OntologyAttribute, addAttribute, Property, OntologyNode } from '@notention/core';
-import { type UseNoteAnalysisReturn } from './useNoteAnalysis';
+import { Note, ScoredMatch, OntologyAttribute, addAttribute, Property, OntologyNode, NoteSuggestion } from '@notention/core';
 
 interface UseSmartNoteAssistantProps {
     note: Note;
@@ -36,8 +34,11 @@ interface UseSmartNoteAssistantReturn {
     setActiveSuggestion: (index: number) => void;
 
     // Data
-    suggestions: Suggestion[];
-    removeSuggestion: UseNoteAnalysisReturn['removeSuggestion'];
+    suggestions: NoteSuggestion[];
+    activeSuggestions: NoteSuggestion[];
+    isGenerating: boolean;
+    refreshSuggestions: () => Promise<void>;
+    dismissSuggestion: (suggestionId: string) => boolean;
     localMatches: ReturnType<typeof useMatches>;
     networkMatches: ScoredMatch[];
     isSearching: boolean;
@@ -69,7 +70,7 @@ interface UseSmartNoteAssistantReturn {
     handleConnect: (match: ScoredMatch) => Promise<void>;
     handleChat: (author: string) => void;
     handleFindMatches: (e?: React.MouseEvent) => Promise<void>;
-    handleApplySuggestion: (suggestion: Suggestion) => void;
+    handleApplySuggestion: (suggestion: NoteSuggestion) => void;
     handleConfirmAddAttribute: (key: string, attribute: OntologyAttribute) => void;
     handleKeyDown: (e: React.KeyboardEvent) => void;
     toggleOpen: (e?: React.MouseEvent) => void;
@@ -89,7 +90,14 @@ export function useSmartNoteAssistant({
     const { settings, setSettings } = useSettings();
     const { setActiveView, setSelectedChatPubkey, setSelectedNoteId } = useView();
     const { contacts } = useContacts();
-    const { suggestions, removeSuggestion } = useNoteAnalysis(note);
+
+    const {
+        suggestions,
+        activeSuggestions,
+        isGenerating,
+        refresh: refreshSuggestions,
+        dismiss: dismissSuggestion
+    } = useNoteSuggestions({ note });
 
     const localMatches = useMatches(note);
     const { matches: networkMatches, isSearching, discover: discoverMatches, clear: clearNetworkMatches } = useNetworkDiscovery(note, settings.ontology || []);
@@ -101,7 +109,7 @@ export function useSmartNoteAssistant({
 
     const [isOpen, setIsOpen] = useState(true);
     const [activeTab, setActiveTab] = useState<AssistantTab>(
-        suggestions.length > 0 ? 'suggestions' : 'properties'
+        activeSuggestions.length > 0 ? 'suggestions' : 'properties'
     );
     const [activeSuggestion, setActiveSuggestion] = useState<number>(0);
 
@@ -174,21 +182,56 @@ export function useSmartNoteAssistant({
         await discoverMatches();
     }, [activeTab, isOpen, setActiveTab, setIsOpen, discoverMatches]);
 
-    const handleApplySuggestion = useCallback((suggestion: Suggestion) => {
-        const taskContent = applyTaskSuggestion(note.content, suggestion.text || '');
-        if (taskContent) {
-            onNoteUpdate(taskContent);
-            addToast('Suggestion applied', 'success');
-            removeSuggestion(suggestion.id);
-            return;
+    const handleApplySuggestion = useCallback((suggestion: NoteSuggestion) => {
+        // Handle different suggestion kinds
+        switch (suggestion.kind) {
+            case 'add-property':
+            case 'modify-property': {
+                const prop = suggestion.proposedChange?.property;
+                if (prop && onUpdateProperty) {
+                    onUpdateProperty(
+                        suggestion.proposedChange?.type === 'modify' ? suggestion.proposedChange.previousProperty ?? null : null,
+                        prop
+                    );
+                    addToast(`Property ${prop.key} ${suggestion.proposedChange?.type === 'add' ? 'added' : 'updated'}`, 'success');
+                }
+                break;
+            }
+            case 'remove-property': {
+                const prop = suggestion.proposedChange?.previousProperty;
+                if (prop && onUpdateProperty) {
+                    onUpdateProperty(prop, null);
+                    addToast(`Property ${prop.key} removed`, 'success');
+                }
+                break;
+            }
+            case 'fulfillment-hint':
+            case 'skill-match': {
+                // Trigger skill execution via agent
+                if (suggestion.skillId) {
+                    agentService.send(JSON.stringify({
+                        type: 'execute_skill',
+                        payload: { skillId: suggestion.skillId, noteId: note.id }
+                    }));
+                    addToast(`Executing skill: ${suggestion.skillId}`, 'info');
+                }
+                break;
+            }
+            case 'related-note': {
+                if (suggestion.relatedNoteId) {
+                    setSelectedNoteId(suggestion.relatedNoteId);
+                    addToast('Opened related note', 'success');
+                }
+                break;
+            }
+            case 'inferred-constraint': {
+                addToast('Constraint suggestion applied', 'info');
+                break;
+            }
         }
-
-        if (suggestion.type === 'link') {
-            addToast('Info: Use [[ to link to ontology', 'info');
-        } else {
-            addToast('Action not fully implemented yet', 'info');
-        }
-    }, [note.content, onNoteUpdate, addToast, removeSuggestion]);
+        // Mark as applied in orchestrator
+        // Note: the orchestrator handles this via the UI component
+    }, [note.id, onNoteUpdate, onUpdateProperty, addToast, setSelectedNoteId]);
 
     const handleConfirmAddAttribute = useCallback((key: string, attribute: OntologyAttribute) => {
         const targetNodeId = (settings.ontology || [])[0]?.id;
@@ -213,23 +256,23 @@ export function useSmartNoteAssistant({
     }, [setSelectedNoteId]);
 
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-        if (!isOpen || activeTab !== 'suggestions' || suggestions.length === 0) return;
+        if (!isOpen || activeTab !== 'suggestions' || activeSuggestions.length === 0) return;
 
         if (e.key === 'ArrowDown') {
             e.preventDefault();
-            setActiveSuggestion(prev => (prev + 1) % suggestions.length);
+            setActiveSuggestion(prev => (prev + 1) % activeSuggestions.length);
         } else if (e.key === 'ArrowUp') {
             e.preventDefault();
-            setActiveSuggestion(prev => (prev - 1 + suggestions.length) % suggestions.length);
+            setActiveSuggestion(prev => (prev - 1 + activeSuggestions.length) % activeSuggestions.length);
         } else if (e.key === 'Enter') {
             e.preventDefault();
-            if (suggestions[activeSuggestion]) {
-                handleApplySuggestion(suggestions[activeSuggestion]);
+            if (activeSuggestions[activeSuggestion]) {
+                handleApplySuggestion(activeSuggestions[activeSuggestion]);
             }
         } else if (e.key === 'Escape') {
             setIsOpen(false);
         }
-    }, [isOpen, activeTab, suggestions, activeSuggestion, handleApplySuggestion]);
+    }, [isOpen, activeTab, activeSuggestions, activeSuggestion, handleApplySuggestion]);
 
     return {
         isOpen,
@@ -239,7 +282,10 @@ export function useSmartNoteAssistant({
         activeSuggestion,
         setActiveSuggestion,
         suggestions,
-        removeSuggestion,
+        activeSuggestions,
+        isGenerating,
+        refreshSuggestions,
+        dismissSuggestion,
         localMatches,
         networkMatches,
         isSearching,

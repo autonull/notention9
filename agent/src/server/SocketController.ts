@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { PersistenceService } from '../persistence.js';
 import { FeedbackCollector } from '../feedback/FeedbackCollector.js';
-import { Note, Feedback } from '@notention/core';
+import { Note, Feedback, SuggestionOrchestrator, SuggestionEvent, NoteSuggestion } from '@notention/core';
 import { error, log } from '../core/utils.js';
 import { MeshtasticAgentManager } from '../network/MeshtasticAgentManager.js';
 import { tryCatch } from '../utils/errorHandling.js';
@@ -12,6 +12,11 @@ interface SocketMessage {
   id?: string;
 }
 
+interface SuggestionSubscription {
+  noteId: string;
+  ws: WebSocket;
+}
+
 function sendResponse(ws: WebSocket, id: string | undefined, success: boolean, data?: any): void {
     ws.send(JSON.stringify({ type: success ? 'response' : 'error', id, success, ...data }));
 }
@@ -19,6 +24,8 @@ function sendResponse(ws: WebSocket, id: string | undefined, success: boolean, d
 export class SocketController {
   private uiClients = new Set<WebSocket>();
   private meshtasticManager: MeshtasticAgentManager;
+  private suggestionSubscriptions = new Map<string, Set<WebSocket>>();
+  private suggestionOrchestrator: SuggestionOrchestrator;
 
   constructor(
     private feedbackCollector: FeedbackCollector
@@ -26,11 +33,47 @@ export class SocketController {
     this.meshtasticManager = new MeshtasticAgentManager((note) => {
         this.broadcast({ type: 'note_created', payload: note });
     });
+    this.suggestionOrchestrator = SuggestionOrchestrator.getInstance();
+    this.setupSuggestionEventForwarding();
+  }
+
+  private setupSuggestionEventForwarding(): void {
+    this.suggestionOrchestrator.onAll((event: SuggestionEvent) => {
+      this.broadcastSuggestionEvent(event);
+    });
+  }
+
+  private broadcastSuggestionEvent(event: SuggestionEvent): void {
+    const subscribers = this.suggestionSubscriptions.get(event.noteId);
+    if (!subscribers) return;
+
+    const message = {
+      type: 'suggestion_event',
+      payload: event
+    };
+
+    for (const ws of subscribers) {
+      if (ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify(message));
+      }
+    }
   }
 
   public addClient(ws: WebSocket): void {
     this.uiClients.add(ws);
-    ws.on('close', () => this.uiClients.delete(ws));
+    ws.on('close', () => {
+      this.uiClients.delete(ws);
+      this.removeAllSuggestionSubscriptions(ws);
+    });
+  }
+
+  private removeAllSuggestionSubscriptions(ws: WebSocket): void {
+    for (const [noteId, subscribers] of this.suggestionSubscriptions.entries()) {
+      subscribers.delete(ws);
+      if (subscribers.size === 0) {
+        this.suggestionSubscriptions.delete(noteId);
+      }
+    }
   }
 
   public broadcast(message: SocketMessage): void {
@@ -87,6 +130,26 @@ export class SocketController {
       mesh_send_note: async () => {
         await this.meshtasticManager.sendNote(payload as Note);
         sendResponse(ws, id, true);
+      },
+
+      suggestion_subscribe: async () => {
+        const noteId = payload?.noteId;
+        if (!noteId) {
+          sendResponse(ws, id, false, { message: 'noteId required' });
+          return;
+        }
+
+        if (!this.suggestionSubscriptions.has(noteId)) {
+          this.suggestionSubscriptions.set(noteId, new Set());
+        }
+        this.suggestionSubscriptions.get(noteId)!.add(ws);
+
+        // Send current suggestions
+        const suggestions = this.suggestionOrchestrator.getSuggestions(noteId);
+        sendResponse(ws, id, true, {
+          type: 'suggestion_subscribe',
+          payload: { suggestions, subscribed: true }
+        });
       },
 
       // No-op handlers

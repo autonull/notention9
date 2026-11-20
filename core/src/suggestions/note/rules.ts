@@ -1,6 +1,6 @@
 import type { Note, Property, OntologyNode, OntologyAttribute } from '../../types/index.js';
 import type { SuggestionRule, RuleCondition, RuleAction, SuggestionEvidence, NoteSuggestion } from './types.js';
-import { shortSha256 } from '../../utils/common.shared.js';
+import { shortSha256 } from '../../utils/common.js';
 
 export function evaluateCondition(note: Note, condition: RuleCondition): boolean {
   switch (condition.type) {

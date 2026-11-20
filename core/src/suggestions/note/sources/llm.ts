@@ -3,7 +3,7 @@ import type { SuggestionGenerationContext, NoteSuggestion, SourcePlugin } from '
 import { PropertyExtractor } from '../../../notes/propertyExtractor/PropertyExtractor.js';
 import { redactPIIForTransport } from '../../../utils/piiRedaction.js';
 import { CapabilityManager, type CapabilityType } from '../../../security/CapabilityManager.js';
-import { shortSha256 } from '../../../utils/common.shared.js';
+import { shortSha256 } from '../../../utils/common.js';
 
 export interface LlmClient {
   complete(prompt: string, options?: { temperature?: number; maxTokens?: number }): Promise<string>;
