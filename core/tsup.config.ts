@@ -137,6 +137,7 @@ const nodeEntries = [
   'src/network/nostr/protocol.ts',
   'src/network/nostr/syncProtocol.ts',
   'src/network/nostr/relayDiscovery.ts',
+  'src/network/nostr/relayHealth.ts',
   // Fixtures & Feedback
   'src/fixtures/index.ts',
   'src/feedback/index.ts',
