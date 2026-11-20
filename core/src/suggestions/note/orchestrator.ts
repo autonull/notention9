@@ -41,11 +41,18 @@ export class SuggestionOrchestrator extends EventEmitter {
   private noteOntology: OntologyNode[] = [];
   private allNotes: Note[] = [];
   private llmConfig: LlmSourceConfig | null = null;
+  private lastGenerationHash = new Map<string, string>();
+  private lastGenerationId = new Map<string, string>();
+  private ontologyReady: Promise<void>;
+  private resolveOntology: (() => void) | null = null;
   private listeners: Map<SuggestionEventType, Set<(event: SuggestionEvent) => void>> = new Map();
   private allListeners: Set<(event: SuggestionEvent) => void> = new Set();
 
   private constructor() {
     super();
+    this.ontologyReady = new Promise<void>(resolve => {
+      this.resolveOntology = resolve;
+    });
     this.registerDefaultSources();
   }
 
@@ -76,14 +83,22 @@ export class SuggestionOrchestrator extends EventEmitter {
   }
 
   static getInstance(): SuggestionOrchestrator {
+    // Bundle splits can load this module twice, which leaves the class-static
+    // empty in each copy. globalThis is the one place both copies share.
+    const registry = globalThis as typeof globalThis & {
+      __suggestionOrchestrator?: SuggestionOrchestrator;
+    };
     if (!SuggestionOrchestrator.instance) {
-      SuggestionOrchestrator.instance = new SuggestionOrchestrator();
+      SuggestionOrchestrator.instance = registry.__suggestionOrchestrator
+        ?? new SuggestionOrchestrator();
     }
+    registry.__suggestionOrchestrator = SuggestionOrchestrator.instance;
     return SuggestionOrchestrator.instance;
   }
 
   static resetInstance(): void {
     SuggestionOrchestrator.instance = null;
+    delete (globalThis as typeof globalThis & { __suggestionOrchestrator?: SuggestionOrchestrator }).__suggestionOrchestrator;
   }
 
   private registerDefaultSources(): void {
@@ -94,6 +109,11 @@ export class SuggestionOrchestrator extends EventEmitter {
     this.noteOntology = ontology;
     this.sources.set('fulfillment', createFulfillmentSource(ontology));
     this.sources.set('related', createRelatedSource(ontology, this.allNotes));
+    this.invalidateCache();
+    if (ontology.length > 0) {
+      this.resolveOntology?.();
+      this.resolveOntology = null;
+    }
   }
 
   setNotes(notes: Note[]): void {
@@ -102,17 +122,20 @@ export class SuggestionOrchestrator extends EventEmitter {
     if (relatedSource) {
       relatedSource.setNotes(notes);
     }
+    this.invalidateCache();
   }
 
   setLlmConfig(config: LlmSourceConfig): void {
     this.llmConfig = config;
     this.sources.set('llm', createLlmSource(config));
+    this.invalidateCache();
   }
 
   enableSource(sourceName: string): void {
     const source = this.sources.get(sourceName);
     if (source && 'enabled' in source) {
       (source as any).enabled = true;
+      this.invalidateCache();
     }
   }
 
@@ -120,29 +143,65 @@ export class SuggestionOrchestrator extends EventEmitter {
     const source = this.sources.get(sourceName);
     if (source && 'enabled' in source) {
       (source as any).enabled = false;
+      this.invalidateCache();
     }
+  }
+
+  /** Results depend on the ontology and corpus, so they are no longer cached. */
+  private invalidateCache(): void {
+    this.lastGenerationHash.clear();
+    this.lastGenerationId.clear();
   }
 
   async enqueueGeneration(
     note: Note,
     trigger: SuggestionGenerationContext['trigger'] = 'refresh'
   ): Promise<SuggestionGenerationResult> {
-    const generationId = `gen-${shortSha256(`${note.id}|${trigger}|${Date.now()}`)}`;
-
     const existingPending = this.pendingGenerations.get(note.id);
     if (existingPending) {
       return existingPending;
     }
 
+    // The UI mounts the hook before SettingsContext can set the ontology, so the
+    // first run would resolve against an empty ontology and cache that result.
+    await this.waitForOntology();
+
+    // Duplicate load (two hooks, re-render, debounced save) must not wipe the
+    // previous result: the second run dedups against the first and stales it.
+    const contentHash = this.contentHash(note);
+    if (this.lastGenerationHash.get(note.id) === contentHash && this.suggestions.has(note.id)) {
+      return {
+        suggestions: this.suggestions.get(note.id)!,
+        generationId: this.lastGenerationId.get(note.id) ?? `gen-${contentHash}`,
+        timestamp: Date.now()
+      };
+    }
+
+    const generationId = `gen-${shortSha256(`${note.id}|${trigger}|${Date.now()}`)}`;
     const generationPromise = this.runGeneration(note, trigger, generationId);
     this.pendingGenerations.set(note.id, generationPromise);
 
     try {
       const result = await generationPromise;
+      this.lastGenerationHash.set(note.id, contentHash);
+      this.lastGenerationId.set(note.id, generationId);
       return result;
     } finally {
       this.pendingGenerations.delete(note.id);
     }
+  }
+
+  private contentHash(note: Note): string {
+    return shortSha256(`${note.content}|${note.properties.map(p => `${p.key}:${p.operator}:${p.values.join(',')}`).sort().join(';')}`);
+  }
+
+  /** Wait for the ontology, but never long enough to stall a real generation. */
+  private async waitForOntology(): Promise<void> {
+    if (this.noteOntology.length > 0) return;
+    await Promise.race([
+      this.ontologyReady,
+      new Promise<void>(resolve => setTimeout(resolve, 1500))
+    ]);
   }
 
   private async runGeneration(

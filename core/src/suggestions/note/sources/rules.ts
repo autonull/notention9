@@ -1,5 +1,5 @@
 import type { Note, OntologyNode } from '@notention/core';
-import type { SuggestionGenerationContext, NoteSuggestion, SourcePlugin } from '../types.js';
+import type { SuggestionGenerationContext, NoteSuggestion, SuggestionRule, SourcePlugin } from '../types.js';
 import { getDefaultRules, evaluateCondition, applyRuleAction } from '../rules.js';
 
 export class RulesSource implements SourcePlugin {
@@ -7,10 +7,11 @@ export class RulesSource implements SourcePlugin {
 
   async generate(context: SuggestionGenerationContext): Promise<NoteSuggestion[]> {
     const { note, ontology, existingSuggestions } = context;
-    const rules = getDefaultRules().filter(r => r.enabled);
+    const rules = collectRules(ontology);
     const suggestions: NoteSuggestion[] = [];
 
     for (const rule of rules) {
+      if (!rule.enabled) continue;
       if (!rule.targetNodeIds.includes('*') && !this.matchesTarget(note, rule.targetNodeIds)) {
         continue;
       }
@@ -43,6 +44,24 @@ export class RulesSource implements SourcePlugin {
       e.status === 'active'
     );
   }
+}
+
+/** Rules declared on ontology nodes plus the built-in defaults. */
+function collectRules(ontology: OntologyNode[]): SuggestionRule[] {
+  const rules: SuggestionRule[] = [];
+  const walk = (nodes: OntologyNode[]) => {
+    for (const node of nodes) {
+      if (node.suggestions) rules.push(...node.suggestions);
+      if (node.children) walk(node.children);
+    }
+  };
+  walk(ontology);
+
+  const byId = new Map<string, SuggestionRule>();
+  for (const rule of [...rules, ...getDefaultRules()]) {
+    if (!byId.has(rule.id)) byId.set(rule.id, rule);
+  }
+  return [...byId.values()];
 }
 
 export const rulesSource = new RulesSource();

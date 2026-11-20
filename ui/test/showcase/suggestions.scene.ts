@@ -89,6 +89,7 @@ test('suggestions: job request missing budget', async ({page}) => {
     });
     await page.getByTestId('toggle-inspector').click();
     await page.getByRole('tab', {name: /AI/}).click();
+    await page.getByText('Add budget', {exact: false}).first().waitFor({timeout: 10_000});
     await page.waitForSelector('text=Suggestions');
     await snap(page, {
         area: 'suggestions',
@@ -105,6 +106,7 @@ test('suggestions: meetup request missing location', async ({page}) => {
     });
     await page.getByTestId('toggle-inspector').click();
     await page.getByRole('tab', {name: /AI/}).click();
+    await page.getByText('Add location', {exact: false}).first().waitFor({timeout: 10_000});
     await page.waitForSelector('text=Suggestions');
     await snap(page, {
         area: 'suggestions',
@@ -121,6 +123,7 @@ test('suggestions: urgent request missing deadline', async ({page}) => {
     });
     await page.getByTestId('toggle-inspector').click();
     await page.getByRole('tab', {name: /AI/}).click();
+    await page.getByText('Add deadline', {exact: false}).first().waitFor({timeout: 10_000});
     await page.waitForSelector('text=Suggestions');
     await snap(page, {
         area: 'suggestions',
@@ -137,6 +140,7 @@ test('suggestions: skill-matched note shows fulfillment hint', async ({page}) =>
     });
     await page.getByTestId('toggle-inspector').click();
     await page.getByRole('tab', {name: /AI/}).click();
+    await page.getByText('Fulfillment available', {exact: false}).first().waitFor({timeout: 10_000});
     await page.waitForSelector('text=Suggestions');
     await snap(page, {
         area: 'suggestions',
@@ -165,6 +169,7 @@ test('suggestions: multiple suggestions on one note', async ({page}) => {
     });
     await page.getByTestId('toggle-inspector').click();
     await page.getByRole('tab', {name: /AI/}).click();
+    await page.getByText('Add budget', {exact: false}).first().waitFor({timeout: 10_000});
     await page.waitForSelector('text=Suggestions');
     await snap(page, {
         area: 'suggestions',

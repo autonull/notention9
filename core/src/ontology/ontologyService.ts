@@ -59,16 +59,9 @@ export class OntologyService {
             this.compiled = getOntology(configPathOrOntology);
         }
 
-        const nodes = this.compiled.nodes;
         this.attributeIndex = new Map();
-        for (const node of nodes.values()) {
-            for (const [key, attr] of Object.entries(node.attributes ?? {})) {
-                if (!this.attributeIndex.has(key)) {
-                    this.attributeIndex.set(key, attr);
-                }
-            }
-        }
-        const nodeArray = Array.from(nodes.values());
+        this.indexAttributes(Array.from(this.compiled.nodes.values()));
+        const nodeArray = Array.from(this.compiled.nodes.values());
         this.usageTracker = new UsageTracker(nodeArray, this.attributeIndex);
         this.fuzzyMatcher = new FuzzyMatcher();
     }
@@ -232,13 +225,25 @@ export class OntologyService {
         resetOntologyCache();
         this.compiled = getOntology(configPath);
         this.attributeIndex.clear();
-        for (const node of this.compiled.nodes.values()) {
+        this.indexAttributes(Array.from(this.compiled.nodes.values()));
+        this.clearCaches();
+    }
+
+    /**
+     * Index attributes by walking the full ontology tree, children included.
+     * Top-level nodes own no attributes of their own in the legacy array mode,
+     * so indexing only the roots would drop every attribute the rules target.
+     */
+    private indexAttributes(nodes: OntologyNode[]): void {
+        for (const node of nodes) {
             for (const [key, attr] of Object.entries(node.attributes ?? {})) {
                 if (!this.attributeIndex.has(key)) {
                     this.attributeIndex.set(key, attr);
                 }
             }
+            if (node.children) {
+                this.indexAttributes(node.children);
+            }
         }
-        this.clearCaches();
     }
 }
