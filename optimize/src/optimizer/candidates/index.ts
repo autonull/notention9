@@ -4,7 +4,7 @@ import {
     type StrategyParamConfig,
     type ParamSpec,
 } from '../types/index.js';
-import { createHash } from 'node:crypto';
+import { validatePatch, hashPatch, createCandidate as coreCreateCandidate } from '@notention/core/utils';
 
 /**
  * Enumerate candidates from a strategy's ParamSpec using grid search
@@ -87,56 +87,24 @@ export function enumerateCandidatesFromParamSpec(
 }
 
 function createCandidate(strategy: StrategyParamConfig, patch: Record<string, unknown>): OptimizerCandidate {
-    return {
-        id: `cand_${strategy.seam.role}_${strategy.id}_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
-        seamRole: strategy.seam.role,
+    return coreCreateCandidate({
+        strategyRole: strategy.seam.role,
         strategyId: strategy.id,
         patch,
         paramSpec: strategy.paramSpec,
-        provenance: {
-            generator: 'grid',
-            seed: 42,
-            generatedAt: new Date().toISOString(),
-        },
-    };
+        generator: 'grid',
+        seed: 42,
+    }) as OptimizerCandidate;
 }
 
 /**
  * Validate a patch against a ParamSpec
+ * Re-exported from core for single source of truth
  */
-export function validatePatch(paramSpec: ParamSpec, patch: Record<string, unknown>): { valid: boolean; errors: string[] } {
-    const errors: string[] = [];
-    for (const [key, value] of Object.entries(patch)) {
-        const def = paramSpec[key];
-        if (!def) {
-            errors.push(`Unknown parameter: ${key}`);
-            continue;
-        }
-        switch (def.type) {
-            case 'number':
-                if (typeof value !== 'number') errors.push(`${key} must be a number`);
-                else {
-                    if (def.min !== undefined && value < def.min) errors.push(`${key} below minimum ${def.min}`);
-                    if (def.max !== undefined && value > def.max) errors.push(`${key} above maximum ${def.max}`);
-                }
-                break;
-            case 'boolean':
-                if (typeof value !== 'boolean') errors.push(`${key} must be a boolean`);
-                break;
-            case 'enum':
-                if (!def.options?.includes(value as string)) errors.push(`${key} must be one of ${def.options?.join(', ')}`);
-                break;
-            case 'string':
-                if (typeof value !== 'string') errors.push(`${key} must be a string`);
-                break;
-        }
-    }
-    return { valid: errors.length === 0, errors };
-}
+export { validatePatch } from '@notention/core/utils';
 
 /**
  * Create a deterministic hash for a patch object
+ * Re-exported from core for single source of truth
  */
-export function hashPatch(patch: Record<string, unknown>): string {
-    return createHash('sha256').update(JSON.stringify(patch, Object.keys(patch).sort())).digest('hex').slice(0, 16);
-}
+export { hashPatch } from '@notention/core/utils';

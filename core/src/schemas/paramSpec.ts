@@ -7,6 +7,8 @@
 import { z } from 'zod';
 import type { ParamSpec, ParamDef } from '../ui/strategy.js';
 
+export type { ParamSpec } from '../ui/strategy.js';
+
 // --- Zod type mapping from ParamDef.type ---
 
 function paramDefToZod(def: ParamDef): z.ZodTypeAny {

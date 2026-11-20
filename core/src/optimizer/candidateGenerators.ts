@@ -17,6 +17,7 @@ import type {
 } from './types.js';
 import { createInstanceRegistry, ValidationHelpers } from '../utils/Registry.js';
 import { Plugin, isDefaultPoint, createSeededRandom, generateCandidateId } from '../utils/BasePlugin.js';
+import { validatePatch } from '../utils/candidateValidation.js';
 
 // --- SearchSpace from S1 (re-exported for convenience) ---
 export { getSearchSpace, sampleSearchSpace, gridSearchSpace, type SearchSpace } from '../schemas/paramSpec.js';
@@ -290,33 +291,7 @@ Only return valid JSON.`;
     }
 
     private validatePatch(paramSpec: ParamSpec, patch: Record<string, unknown>): { valid: boolean; errors: string[] } {
-        const errors: string[] = [];
-        for (const [key, value] of Object.entries(patch)) {
-            const def = paramSpec[key];
-            if (!def) {
-                errors.push(`Unknown parameter: ${key}`);
-                continue;
-            }
-            switch (def.type) {
-                case 'number':
-                    if (typeof value !== 'number') errors.push(`${key} must be a number`);
-                    else {
-                        if (def.min !== undefined && value < def.min) errors.push(`${key} below minimum ${def.min}`);
-                        if (def.max !== undefined && value > def.max) errors.push(`${key} above maximum ${def.max}`);
-                    }
-                    break;
-                case 'boolean':
-                    if (typeof value !== 'boolean') errors.push(`${key} must be a boolean`);
-                    break;
-                case 'enum':
-                    if (!def.options?.includes(value as string)) errors.push(`${key} must be one of ${def.options?.join(', ')}`);
-                    break;
-                case 'string':
-                    if (typeof value !== 'string') errors.push(`${key} must be a string`);
-                    break;
-            }
-        }
-        return { valid: errors.length === 0, errors };
+        return validatePatch(paramSpec, patch);
     }
 }
 

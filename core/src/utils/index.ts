@@ -25,3 +25,4 @@ export * from './BasePlugin.js';
 export * from './resolutionUtils.js';
 export * from './mutex.js';
 export * from './piiRedaction.js';
+export * from './candidateValidation.js';

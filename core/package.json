@@ -270,6 +270,21 @@
       "node": "./dist/schemas/index.js",
       "browser": "./dist/browser/schemas/index.js"
     },
+    "./utils": {
+      "import": "./dist/utils/index.js",
+      "node": "./dist/utils/index.js",
+      "browser": "./dist/browser/utils/index.js"
+    },
+    "./utils/candidateValidation": {
+      "import": "./dist/utils/candidateValidation.js",
+      "node": "./dist/utils/candidateValidation.js",
+      "browser": "./dist/browser/utils/candidateValidation.js"
+    },
+    "./optimizer/types": {
+      "import": "./dist/optimizer/index.js",
+      "node": "./dist/optimizer/index.js",
+      "browser": "./dist/browser/optimizer/index.js"
+    },
     "./schemas/paramSpec": {
       "import": "./dist/schemas/paramSpec.js",
       "node": "./dist/schemas/paramSpec.js",
@@ -299,6 +314,11 @@
       "import": "./dist/schemas/evidence.js",
       "node": "./dist/schemas/evidence.js",
       "browser": "./dist/browser/schemas/evidence.js"
+    },
+    "./schemas/verdictTypes": {
+      "import": "./dist/schemas/verdictTypes.js",
+      "node": "./dist/schemas/verdictTypes.js",
+      "browser": "./dist/browser/schemas/verdictTypes.js"
     },
     "./schemas/generated/seam-definitions": {
       "import": "./dist/schemas/generated/seam-definitions.js",

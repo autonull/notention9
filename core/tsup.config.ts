@@ -246,6 +246,10 @@ export default defineConfig([
     },
     onSuccess: async () => {
       console.log('✅ Node.js bundles complete');
+      // Create index.js that re-exports from index.node.js for proper package resolution
+      const { writeFileSync } = await import('node:fs');
+      const { resolve } = await import('node:path');
+      writeFileSync(resolve('dist', 'index.js'), "export * from './index.node.js';\n");
     },
   },
   // Browser entry points (for UI)

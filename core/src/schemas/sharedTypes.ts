@@ -13,6 +13,7 @@ import type { MetricVerdict, FloorCheck, CaseVerdict, RunVerdict, VerdictConfig,
 import type { ResolutionContext, ResolvedStrategy, ResolutionStrategy, ResolutionStrategyConfig } from '../ui/resolutionStrategy.js';
 import type { SplitStrategyConfig, SplitStrategy } from '../eval/splitStrategies/index.js';
 import type { VerdictEngine } from '../eval/verdictEngines/index.js';
+import type { OptimizerConfig, OptimizerCost } from '../optimizer/types.js';
 
 // --- Revision Types ---
 
@@ -144,24 +145,6 @@ export interface ResolutionReason {
     [key: string]: unknown;
 }
 
-export interface OptimizerConfig {
-    targetSeams: string[];
-    maxCandidatesPerSeam: number;
-    maxBrowserRuns: number;
-    maxTimeMinutes: number;
-    maxTokens: number;
-    useSuccessiveHalving: boolean;
-    initialSliceFraction: number;
-    minPromote: number;
-    maxIntentCases?: number;
-}
-
-export interface OptimizerCost {
-    browserRuns: number;
-    tokensUsed: number;
-    durationMs: number;
-}
-
 // --- LedgerPayload as discriminated union ---
 
 export type LedgerPayload =
@@ -240,57 +223,7 @@ export interface RegistrableRevisionDriver extends RevisionDriver {
     validateConfig(config: RevisionDriverConfig): { valid: boolean; errors: string[] };
 }
 
-// --- Optimizer Types ---
-
-export interface OptimizerCandidate {
-    id: string;
-    seamRole: string;
-    strategyId: string;
-    patch: Record<string, unknown>;
-    paramSpec: ParamSpec;
-    provenance: CandidateProvenance;
-    evaluation?: CandidateEvaluationResult;
-}
-
-export interface CandidateProvenance {
-    generator: 'grid' | 'random' | 'model' | 'human';
-    model?: string;
-    seed?: number;
-    parentRevisionId?: string;
-    generatedAt: string;
-}
-
-export interface GeneratorOptions {
-    maxCandidates: number;
-    budget?: BudgetConstraints;
-    seed?: number;
-    previousCandidates?: OptimizerCandidate[];
-    previousResults?: CandidateEvaluationResult[];
-    initialFraction?: number;
-    minPromote?: number;
-    [key: string]: unknown;
-}
-
-export interface CandidateEvaluationResult {
-    candidateId: string;
-    revisionId: string;
-    qualityResults: Record<string, unknown>;
-    intentResults?: Record<string, unknown>;
-    verdict: 'improved' | 'degraded' | 'inconclusive' | 'invalid';
-    primaryDelta: number;
-    cost: { browserRuns: number; tokensUsed: number; durationMs: number };
-}
-
-export interface BudgetConstraints {
-    maxBrowserRuns?: number;
-    maxTimeMinutes?: number;
-    maxTokens?: number;
-    promotionFraction?: number;
-    minPromote?: number;
-    maxResource?: number;
-    reductionFactor?: number;
-    [key: string]: unknown;
-}
+// Optimizer types are exported via @notention/core/optimizer barrel
 
 // Re-export StrategyParamConfig from constants
 export type { StrategyParamConfig } from '../constants/strategyParams.js';
