@@ -3,7 +3,7 @@
  * Generates a ranked digest of match events and pending actions
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { getDefaultAdapter } from '@notention/core/storage';
 import { join } from 'node:path';
 import { existsSync, mkdirSync, readFileSync, writeFileSync, appendFileSync } from 'node:fs';
@@ -162,3 +162,5 @@ export class MatchDigestCommand extends Command {
         }
     }
 }
+
+registerCommand(MatchDigestCommand);

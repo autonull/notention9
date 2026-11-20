@@ -4,54 +4,15 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 
 import { commandRegistry, type Command } from './cli/Command.js';
-import {
-    OptimizeCommand,
-    ReplayCommand,
-    GenerateTestCommand,
-    ReproduceCommand,
-    MarkFixedCommand,
-    FindingsCommand,
-    UXEvaluateCommand,
-    FrictionDigestCommand,
-    MatchDigestCommand,
-    EvalCanaryCommand,
-    EvalMatchCommand,
-    EvalLocalCommand,
-    OntologyAuditCommand,
-    EvalConfidenceCommand,
-    PerfBudgetCommand,
-    MigrateCommand,
-    LLMTelemetryCommand,
-    I18nAuditCommand,
-    RestoreVerifyCommand,
-} from './cli/commands/index.js';
+
+// Import commands to trigger auto-registration
+import './cli/commands/index.js';
 
 // Import to register journeys
 import './journeys.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-// Register all commands
-commandRegistry.register(new OptimizeCommand());
-commandRegistry.register(new ReplayCommand());
-commandRegistry.register(new GenerateTestCommand());
-commandRegistry.register(new ReproduceCommand());
-commandRegistry.register(new MarkFixedCommand());
-commandRegistry.register(new FindingsCommand());
-commandRegistry.register(new UXEvaluateCommand());
-commandRegistry.register(new FrictionDigestCommand());
-commandRegistry.register(new MatchDigestCommand());
-commandRegistry.register(new EvalCanaryCommand());
-commandRegistry.register(new EvalMatchCommand());
-commandRegistry.register(new EvalLocalCommand());
-commandRegistry.register(new OntologyAuditCommand());
-commandRegistry.register(new EvalConfidenceCommand());
-commandRegistry.register(new PerfBudgetCommand());
-commandRegistry.register(new MigrateCommand());
-commandRegistry.register(new LLMTelemetryCommand());
-commandRegistry.register(new I18nAuditCommand());
-commandRegistry.register(new RestoreVerifyCommand());
 
 interface ParsedFlags {
     positionals: string[];

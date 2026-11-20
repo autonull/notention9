@@ -3,7 +3,7 @@
  * Generates a ranked digest of friction events from the journal
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { Journal } from '@notention/core/telemetry/journal';
 import { generateDigest, generateJsonDigest, DEFAULT_DIGEST_CONFIG } from '@notention/core/telemetry/digestPipeline';
 import { createDigestConfig } from '@notention/core/telemetry/frictionUtils';
@@ -63,3 +63,5 @@ export class FrictionDigestCommand extends Command {
         }
     }
 }
+
+registerCommand(FrictionDigestCommand);

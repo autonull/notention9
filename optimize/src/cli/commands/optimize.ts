@@ -1,4 +1,4 @@
-import { Command, ParsedArgs, CommandOption } from '../Command.js';
+import { Command, ParsedArgs, CommandOption, registerCommand } from '../Command.js';
 import { getJourney, getReadyJourneys } from '../../registry.js';
 import { runOptimizeTest, createRunId } from '../../runner.js';
 
@@ -52,3 +52,5 @@ export class OptimizeCommand extends Command {
         }
     }
 }
+
+registerCommand(OptimizeCommand);

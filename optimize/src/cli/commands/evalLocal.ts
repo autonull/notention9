@@ -3,7 +3,7 @@
  * Force multiplier for W1 quality iteration: caches per-case results so 4B runs stay < 5 min.
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -524,3 +524,5 @@ export class EvalLocalCommand extends Command {
         console.log('='.repeat(70));
     }
 }
+
+registerCommand(EvalLocalCommand);

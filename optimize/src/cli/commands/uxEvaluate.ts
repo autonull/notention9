@@ -1,4 +1,4 @@
-import { Command, ParsedArgs, CommandOption } from '../Command.js';
+import { Command, ParsedArgs, CommandOption, registerCommand } from '../Command.js';
 import { UXEvaluationConfig } from '../../uiuxEvaluator.js';
 import { uxEvaluator } from '../../uiuxEvaluator.js';
 
@@ -137,3 +137,5 @@ export class UXEvaluateCommand extends Command {
         }
     }
 }
+
+registerCommand(UXEvaluateCommand);

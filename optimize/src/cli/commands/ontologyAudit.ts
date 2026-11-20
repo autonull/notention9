@@ -4,7 +4,7 @@
  * Reports gaps, unused keys, coverage % — evidence base for W2.2-W2.4
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readFile } from 'node:fs/promises';
@@ -438,3 +438,5 @@ export class OntologyAuditCommand extends Command {
         await import('node:fs/promises').then(fs => fs.writeFile(path, lines.join('\n')));
     }
 }
+
+registerCommand(OntologyAuditCommand);

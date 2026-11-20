@@ -1,4 +1,4 @@
-import { Command, ParsedArgs, CommandOption } from '../Command.js';
+import { Command, ParsedArgs, CommandOption, registerCommand } from '../Command.js';
 import { listFindings } from '../../findingRepository.js';
 import { isA11yFinding } from '../../cliHandlers/utils.js';
 
@@ -64,3 +64,5 @@ export class FindingsCommand extends Command {
         }
     }
 }
+
+registerCommand(FindingsCommand);

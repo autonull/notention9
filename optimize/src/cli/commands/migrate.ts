@@ -1,4 +1,4 @@
-import {Command, ParsedArgs} from '../Command.js';
+import {Command, ParsedArgs, registerCommand} from '../Command.js';
 import {STORAGE_SCHEMA_VERSION, migrateStorageSchema, dryRunMigration, type StorageSchema, type DryRunResult} from '@notention/core/storage/migrations';
 import type {Note, AppSettings} from '@notention/core/types/index.js';
 
@@ -169,3 +169,5 @@ export class MigrateCommand extends Command {
         };
     }
 }
+
+registerCommand(MigrateCommand);

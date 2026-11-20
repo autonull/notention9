@@ -3,7 +3,7 @@
  * Measures and validates performance budgets for the application
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { ExtractionPipeline, defaultStages, createExtractionPipeline } from '@notention/core/extraction';
 import { OntologyService } from '@notention/core/ontology/ontologyService';
 import { collectOntologyKeys } from '@notention/core/ontology';
@@ -394,3 +394,5 @@ export class PerfBudgetCommand extends Command {
         }
     }
 }
+
+registerCommand(PerfBudgetCommand);

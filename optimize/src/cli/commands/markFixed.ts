@@ -1,4 +1,4 @@
-import { Command, ParsedArgs, CommandOption } from '../Command.js';
+import { Command, ParsedArgs, CommandOption, registerCommand } from '../Command.js';
 import { findFindingById } from '../../findingRepository.js';
 import { updateFindingStatus } from '../../replay.js';
 
@@ -48,3 +48,5 @@ export class MarkFixedCommand extends Command {
         }
     }
 }
+
+registerCommand(MarkFixedCommand);

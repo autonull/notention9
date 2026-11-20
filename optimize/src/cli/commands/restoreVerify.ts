@@ -4,7 +4,7 @@
  * against the original. This is the safety net for every storage migration.
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join, basename } from 'node:path';
 import { readFile, writeFile, mkdir, rm, mkdtemp } from 'node:fs/promises';
@@ -379,3 +379,5 @@ Examples:
 `);
     }
 }
+
+registerCommand(RestoreVerifyCommand);

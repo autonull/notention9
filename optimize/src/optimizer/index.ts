@@ -1,8 +1,6 @@
 import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
 import { logEvent } from '@notention/core/telemetry/ledger';
-import { readManifest, readIntentCases } from '@notention/core/eval/caseManifest';
-import { writeFileSync, mkdirSync, existsSync } from 'node:fs';
-import { join } from 'node:path';
+import { readManifest } from '@notention/core/eval/caseManifest';
 import {
     type OptimizerConfig,
     type OptimizerCandidate,
@@ -13,27 +11,14 @@ import {
     defaultOptimizerConfig,
 } from './types/index.js';
 import { runIntentEvaluationForRevision, cleanupPreviewServer } from './evaluation/intentEvaluation.js';
-import {
-    computeCaseVerdictsFromIntentResults,
-    createRunVerdict,
-    checkEvaluationPower,
-} from './evaluation/verdicts.js';
+import { checkEvaluationPower } from './evaluation/verdicts.js';
 import { getCandidateCache } from './cache/index.js';
-import { enumerateCandidatesFromParamSpec } from './candidates/index.js';
-import { getRunDir } from './constants.js';
-import {
-    DEFAULT_MDE_COMPLETION,
-    DEFAULT_MDE_STEPS,
-    DEFAULT_MDE_CORRECTIONS,
-    DEFAULT_MDE_PRECISION,
-    DEFAULT_MDE_RECALL,
-    DEFAULT_MDE_F1,
-    DEFAULT_MIN_SAMPLE_SIZE,
-    SCHEMA_VALIDITY_FLOOR,
-} from '@notention/core/telemetry/constants';
-import { getStrategyParamConfigsByRole } from '@notention/core/constants/strategyParams';
-import { createCandidateHypothesesFromFriction, type CandidateHypothesis } from '../loop/prioritize.js';
-import { getFrictionCounts } from '@notention/core/telemetry/journal';
+import { enumerateAllCandidates } from './enumerateCandidates.js';
+import { evaluateSingleCandidate, runBaselineEvaluations } from './evaluateCandidate.js';
+import { runSuccessiveHalvingPromotion } from './successiveHalving.js';
+import { classifyCandidates, calculateTotalCost, createEmptyResult } from './classify.js';
+import { createVerdictConfig } from './verdictConfig.js';
+import { saveResults } from './saveResults.js';
 
 /**
  * Run a single optimizer cycle
@@ -98,7 +83,7 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
                 manifestHash: manifest.hash,
             };
         }
-        console.log(`✅ Power check passed: ${intentCaseIds.length} cases × 3 reps = ${intentCaseIds.length * 3} samples (min ${DEFAULT_MIN_SAMPLE_SIZE})`);
+        console.log(`✅ Power check passed: ${intentCaseIds.length} cases × 3 reps = ${intentCaseIds.length * 3} samples (min ${verdictConfig.minSampleSize})`);
 
         // 3. Evaluate candidates
         console.log('\n🚀 Evaluating candidates...');
@@ -163,94 +148,6 @@ export async function runOptimizerCycle(config: OptimizerConfig = defaultOptimiz
     }
 }
 
-async function enumerateAllCandidates(config: OptimizerConfig): Promise<OptimizerCandidate[]> {
-    const allCandidates: OptimizerCandidate[] = [];
-
-    // 1. Grid-search candidates from ParamSpec (existing behavior)
-    for (const seamRole of config.targetSeams) {
-        const strategyConfigs = getStrategyParamConfigsByRole(seamRole as any);
-        console.log(`   Found ${strategyConfigs.length} strategies for seam "${seamRole}"`);
-
-        for (const strategy of strategyConfigs) {
-            const candidates = enumerateCandidatesFromParamSpec(strategy, config.maxCandidatesPerSeam);
-            console.log(`     ${strategy.id}: ${candidates.length} candidates`);
-            allCandidates.push(...candidates);
-        }
-    }
-
-    // 2. Friction-driven candidates (B3.3)
-    if (config.useFrictionCandidates !== false) {
-        const frictionHypotheses = createCandidateHypothesesFromFriction();
-        console.log(`\n   Friction hypotheses: ${frictionHypotheses.length}`);
-        
-        for (const hypothesis of frictionHypotheses) {
-            // Only generate candidates for target seams
-            if (!config.targetSeams.includes(hypothesis.seamRole)) continue;
-            
-            const strategyConfigs = getStrategyParamConfigsByRole(hypothesis.seamRole as any);
-            for (const strategy of strategyConfigs) {
-                // Filter paramSpec to only include hypothesized params
-                const filteredParamSpec: Record<string, any> = {};
-                for (const paramKey of hypothesis.paramHypotheses) {
-                    if (strategy.paramSpec[paramKey]) {
-                        filteredParamSpec[paramKey] = strategy.paramSpec[paramKey];
-                    }
-                }
-                
-                if (Object.keys(filteredParamSpec).length === 0) continue;
-                
-                // Create a temporary strategy config with filtered params
-                const filteredStrategy = {
-                    ...strategy,
-                    paramSpec: filteredParamSpec,
-                };
-                
-                const candidates = enumerateCandidatesFromParamSpec(filteredStrategy, config.maxCandidatesPerSeam);
-                
-                // Add friction provenance to each candidate
-                for (const candidate of candidates) {
-                    candidate.provenance = {
-                        generator: 'friction',
-                        seed: 42,
-                        generatedAt: new Date().toISOString(),
-                        frictionProvenance: {
-                            class: 'observed',
-                            source: 'journal',
-                            kinds: hypothesis.provenance.kinds,
-                            counts: hypothesis.provenance.counts,
-                        },
-                    };
-                }
-                
-                console.log(`     ${strategy.id} (friction): ${candidates.length} candidates`);
-                allCandidates.push(...candidates);
-            }
-        }
-    }
-
-    return allCandidates;
-}
-
-async function runBaselineEvaluations(config: OptimizerConfig): Promise<{
-    baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>;
-    intentCaseIds: string[];
-}> {
-    console.log('\n📏 Running baseline intent evaluation (validation split)...');
-    const intentCases = readIntentCases('validation'); // Use validation (10 cases)
-    const maxIntentCases = config.maxIntentCases ?? 10;
-    const intentCaseIds = intentCases.slice(0, maxIntentCases).map(c => c.id);
-    const baselineIntentConfig: IntentEvaluationConfig = {
-        split: 'validation',
-        repetitions: 3, // Match full evaluation for powered comparison
-        headless: true,
-        caseFilter: intentCaseIds,
-        revisionPatch: {},
-    };
-    const baselineIntentResult = await runIntentEvaluationForRevision('incumbent', baselineIntentConfig);
-
-    return { baselineIntentResult, intentCaseIds };
-}
-
 async function evaluateCandidates(
     candidates: OptimizerCandidate[],
     config: OptimizerConfig,
@@ -286,7 +183,8 @@ async function evaluateCandidates(
             baselineIntentResult,
             intentCaseIds,
             verdictConfig,
-            candidateCache
+            candidateCache,
+            false
         );
 
         candidate.evaluation = evaluation;
@@ -294,193 +192,6 @@ async function evaluateCandidates(
     }
 
     return evaluatedCandidates;
-}
-
-async function evaluateSingleCandidate(
-    candidate: OptimizerCandidate,
-    baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>,
-    intentCaseIds: string[],
-    verdictConfig: VerdictConfig,
-    candidateCache: ReturnType<typeof getCandidateCache>,
-    fullEvaluation = false
-): Promise<CandidateEvaluation> {
-    // Check cache first
-    const cachedEvaluation = candidateCache.get(candidate.seamRole, candidate.strategyId, candidate.patch);
-    if (cachedEvaluation) {
-        console.log(`     → Cache hit`);
-        return cachedEvaluation;
-    }
-
-    // Determine evaluation intensity based on phase
-    const repetitions = fullEvaluation ? 3 : 1;
-    const caseFilter = fullEvaluation ? intentCaseIds : intentCaseIds.slice(0, Math.max(1, Math.floor(intentCaseIds.length * 0.25)));
-
-    // Run intent evaluation for candidate (UI params affect capture/match behavior)
-    // Note: Quality evaluation is NOT run per-candidate because strategy params are UI-only
-    // and don't affect core extraction/matching quality. Baseline quality is run once.
-    console.log(`     🌐 Running intent evaluation (${caseFilter.length} cases × ${repetitions} reps)...`);
-    const candidateIntentResult = await runIntentEvaluationForRevision(candidate.id, {
-        split: 'validation',
-        repetitions,
-        headless: true,
-        caseFilter,
-        revisionPatch: candidate.patch,
-    });
-
-    // Compute verdict based on intent results (primary: completion)
-    const caseVerdicts = computeCaseVerdictsFromIntentResults(
-        baselineIntentResult,
-        candidateIntentResult,
-        verdictConfig
-    );
-
-    const runVerdict = createRunVerdict(
-        `opt-${candidate.id}`,
-        baselineIntentResult.manifestHash,
-        candidate.id,
-        'baseline',
-        caseVerdicts,
-        'completion'
-    );
-
-    const evaluation: CandidateEvaluation = {
-        candidateId: candidate.id,
-        revisionId: candidate.id,
-        qualityResults: null, // Not evaluated per-candidate (UI params don't affect core quality)
-        verdict: runVerdict.overallVerdict,
-        primaryDelta: runVerdict.primaryMetricAggregate.meanDelta,
-        cost: {
-            browserRuns: candidateIntentResult.results.length,
-            tokensUsed: 0,
-            durationMs: 0,
-        },
-    };
-
-    // Cache the evaluation
-    candidateCache.set(candidate.seamRole, candidate.strategyId, candidate.patch, evaluation);
-
-    return evaluation;
-}
-
-async function runSuccessiveHalvingPromotion(
-    evaluatedCandidates: OptimizerCandidate[],
-    allCandidates: OptimizerCandidate[],
-    config: OptimizerConfig,
-    baselineIntentResult: Awaited<ReturnType<typeof runIntentEvaluationForRevision>>,
-    intentCaseIds: string[]
-): Promise<OptimizerCandidate[]> {
-    console.log('\n🔼 Successive halving: promoting top candidates...');
-
-    // Sort by primaryDelta descending
-    const sortedCandidates = evaluatedCandidates
-        .filter(c => c.evaluation)
-        .sort((a, b) => (b.evaluation!.primaryDelta ?? -Infinity) - (a.evaluation!.primaryDelta ?? -Infinity));
-
-    const promoteCount = Math.max(config.minPromote, Math.ceil(sortedCandidates.length * config.initialSliceFraction));
-    const promoted = sortedCandidates.slice(0, promoteCount);
-
-    console.log(`   Promoted ${promoted.length} candidates for full evaluation (${config.initialSliceFraction * 100}% slice)`);
-
-    // Evaluate ONLY the promoted candidates with full evaluation (more cases, more repetitions)
-    // The non-promoted candidates keep their initial evaluation (already done in first slice)
-    const promotedEvaluated: OptimizerCandidate[] = [];
-    const candidateCache = getCandidateCache();
-    const verdictConfig = createVerdictConfig();
-
-    for (const candidate of promoted) {
-        console.log(`   [Full] ${candidate.id} (${candidate.seamRole}/${candidate.strategyId})`);
-
-        // Re-evaluate with full case set and repetitions
-        const evaluation = await evaluateSingleCandidate(
-            candidate,
-            baselineIntentResult,
-            intentCaseIds, // Full case set
-            verdictConfig,
-            candidateCache,
-            true // fullEvaluation flag
-        );
-
-        candidate.evaluation = evaluation;
-        promotedEvaluated.push(candidate);
-    }
-
-    return promotedEvaluated;
-}
-
-function classifyCandidates(evaluatedCandidates: OptimizerCandidate[]): {
-    winners: OptimizerCandidate[];
-    losers: OptimizerCandidate[];
-    inconclusive: OptimizerCandidate[];
-} {
-    const winners = evaluatedCandidates.filter(c => c.evaluation?.verdict === 'improved');
-    const losers = evaluatedCandidates.filter(c => c.evaluation?.verdict === 'degraded' || c.evaluation?.verdict === 'invalid');
-    const inconclusive = evaluatedCandidates.filter(c => c.evaluation?.verdict === 'inconclusive');
-    return { winners, losers, inconclusive };
-}
-
-function calculateTotalCost(evaluatedCandidates: OptimizerCandidate[], startTime: number): {
-    browserRuns: number;
-    tokensUsed: number;
-    durationMs: number;
-} {
-    return {
-        browserRuns: evaluatedCandidates.reduce((sum, c) => sum + (c.evaluation?.cost.browserRuns ?? 0), 0),
-        tokensUsed: evaluatedCandidates.reduce((sum, c) => sum + (c.evaluation?.cost.tokensUsed ?? 0), 0),
-        durationMs: Date.now() - startTime,
-    };
-}
-
-function createVerdictConfig(): VerdictConfig {
-    return {
-        primaryMetric: 'completion',
-        mde: {
-            completion: DEFAULT_MDE_COMPLETION,
-            steps: DEFAULT_MDE_STEPS,
-            corrections: DEFAULT_MDE_CORRECTIONS,
-            precision: DEFAULT_MDE_PRECISION,
-            recall: DEFAULT_MDE_RECALL,
-            f1: DEFAULT_MDE_F1,
-        },
-        floors: { schemaValidity: SCHEMA_VALIDITY_FLOOR },
-        minSampleSize: DEFAULT_MIN_SAMPLE_SIZE,
-    };
-}
-
-function createEmptyResult(cycleId: string, manifestHash: string, startTime: number): OptimizerResult {
-    return {
-        cycleId,
-        timestamp: new Date().toISOString(),
-        candidatesEvaluated: 0,
-        winners: [],
-        losers: [],
-        totalCost: { browserRuns: 0, tokensUsed: 0, durationMs: Date.now() - startTime },
-        manifestHash,
-    };
-}
-
-async function saveResults(
-    cycleId: string,
-    manifestHash: string,
-    evaluatedCandidates: OptimizerCandidate[],
-    winners: OptimizerCandidate[],
-    losers: OptimizerCandidate[],
-    inconclusive: OptimizerCandidate[],
-    totalCost: { browserRuns: number; tokensUsed: number; durationMs: number }
-): Promise<void> {
-    const outputDir = getRunDir(cycleId);
-    if (!existsSync(outputDir)) {
-        mkdirSync(outputDir, { recursive: true });
-    }
-    writeFileSync(join(outputDir, 'results.json'), JSON.stringify({
-        cycleId,
-        timestamp: new Date().toISOString(),
-        candidatesEvaluated: evaluatedCandidates.length,
-        winners: winners.map(c => ({ id: c.id, patch: c.patch, delta: c.evaluation?.primaryDelta })),
-        losers: losers.map(c => ({ id: c.id, patch: c.patch, delta: c.evaluation?.primaryDelta })),
-        inconclusive: inconclusive.map(c => ({ id: c.id, patch: c.patch, delta: c.evaluation?.primaryDelta })),
-        totalCost,
-        manifestHash,
-    }, null, 2));
 }
 
 // Re-export types and utilities for external use

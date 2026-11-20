@@ -1,4 +1,4 @@
-import { Command, ParsedArgs, CommandOption } from '../Command.js';
+import { Command, ParsedArgs, CommandOption, registerCommand } from '../Command.js';
 import { loadBundle } from '../../replay.js';
 import { runOptimizeTest, createRunId } from '../../runner.js';
 import { verifyReplay } from '../../replay.js';
@@ -45,3 +45,5 @@ export class ReplayCommand extends Command {
         }
     }
 }
+
+registerCommand(ReplayCommand);

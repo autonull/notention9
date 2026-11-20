@@ -4,7 +4,7 @@
  * Reports missing keys, orphan keys, pseudo-locale expansion, RTL layout leaks
  */
 
-import { Command, ParsedArgs } from '../Command.js';
+import { Command, ParsedArgs, registerCommand } from '../Command.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -386,3 +386,5 @@ export class I18nAuditCommand extends Command {
         await writeFile(path, lines.join('\n'));
     }
 }
+
+registerCommand(I18nAuditCommand);

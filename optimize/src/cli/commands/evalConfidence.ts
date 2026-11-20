@@ -4,7 +4,7 @@
  * Outputs calibration map for use in UI confidence bucketing
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { join } from 'node:path';
 import { writeFile, mkdir } from 'node:fs/promises';
 import { runConfidenceCalibration, type CalibrationResult, DEFAULT_CALIBRATION_CONFIG } from '@notention/core/extraction';
@@ -99,3 +99,5 @@ export class EvalConfidenceCommand extends Command {
         }
     }
 }
+
+registerCommand(EvalConfidenceCommand);

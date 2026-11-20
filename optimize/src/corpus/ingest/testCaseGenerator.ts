@@ -83,14 +83,6 @@ export function generateTestCasesFromCorpus(terms: ExtractedTerm[], vocabulary: 
 export function generateMatchCasesFromCorpus(terms: ExtractedTerm[]): MatchTestCase[] {
     const matchCases: MatchTestCase[] = [];
 
-    // Valid ontology property keys for matching
-    const validPropertyKeys = new Set([
-        'role', 'skills', 'experience', 'budget', 'rate', 'price', 'location',
-        'remote', 'availability', 'deadline', 'project', 'task', 'intent',
-        'company', 'title', 'description', 'duration', 'deliveryTime',
-        'channel', 'from', 'to', 'subject', 'body', 'email', 'phone',
-    ]);
-
     // Group by category for related match cases
     const byCategory = new Map<string, ExtractedTerm[]>();
     for (const term of terms) {
@@ -106,7 +98,7 @@ export function generateMatchCasesFromCorpus(terms: ExtractedTerm[]): MatchTestC
         if (topTerms.length < 2) continue;
 
         // Filter to terms that map to valid property keys
-        const validTerms = topTerms.filter(t => validPropertyKeys.has(inferPropertyKey(t.term, category)));
+        const validTerms = topTerms.filter(t => VALID_PROPERTY_KEYS.has(inferPropertyKey(t.term, category)));
         if (validTerms.length < 2) continue;
 
         // Create request/offer pairs from same category using natural language

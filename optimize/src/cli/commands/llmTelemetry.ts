@@ -3,7 +3,7 @@
  * Generates a report of LLM call metrics (latency, tokens, success rate)
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { getLLMTelemetry } from '@notention/core/telemetry/llmTelemetry';
 
 export class LLMTelemetryCommand extends Command {
@@ -88,3 +88,5 @@ export class LLMTelemetryCommand extends Command {
         return text;
     }
 }
+
+registerCommand(LLMTelemetryCommand);

@@ -4,7 +4,7 @@
  * and writes a report to data/eval/canary/
  */
 
-import { Command } from '../Command.js';
+import { Command, registerCommand } from '../Command.js';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
@@ -335,3 +335,5 @@ export class EvalCanaryCommand extends Command {
         console.log('='.repeat(60));
     }
 }
+
+registerCommand(EvalCanaryCommand);

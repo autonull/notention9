@@ -87,7 +87,7 @@ ${this.options
 }
 
 /**
- * Registry for CLI commands
+ * Registry for CLI commands with auto-registration support
  */
 export class CommandRegistry {
     private commands = new Map<string, Command>();
@@ -110,3 +110,12 @@ export class CommandRegistry {
 }
 
 export const commandRegistry = new CommandRegistry();
+
+/**
+ * Register a command class for auto-registration.
+ * Call this in the command file's top level to register on import.
+ */
+export function registerCommand<T extends Command>(ctor: new () => T): void {
+    const instance = new ctor();
+    commandRegistry.register(instance);
+}

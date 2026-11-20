@@ -1,4 +1,4 @@
-import { Command, ParsedArgs, CommandOption } from '../Command.js';
+import { Command, ParsedArgs, CommandOption, registerCommand } from '../Command.js';
 import { loadBundle } from '../../replay.js';
 import { findFindingById } from '../../findingRepository.js';
 import { runOptimizeTest, createRunId } from '../../runner.js';
@@ -92,3 +92,5 @@ export class ReproduceCommand extends Command {
         }
     }
 }
+
+registerCommand(ReproduceCommand);

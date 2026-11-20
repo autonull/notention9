@@ -1,4 +1,4 @@
-import { Command, ParsedArgs, CommandOption } from '../Command.js';
+import { Command, ParsedArgs, CommandOption, registerCommand } from '../Command.js';
 import { loadBundle } from '../../replay.js';
 import { findFindingById } from '../../findingRepository.js';
 import { getKnownJourney } from '../../knownJourneys.js';
@@ -117,3 +117,5 @@ export class GenerateTestCommand extends Command {
         }
     }
 }
+
+registerCommand(GenerateTestCommand);
