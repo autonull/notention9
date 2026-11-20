@@ -1,0 +1,117 @@
+.strip {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardWrapper {
+  /* Card styles are in NextStepCard.module.css */
+}
+
+.loading,
+.error,
+.empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 16px;
+  font-size: 13px;
+  color: var(--color-text-muted, #9ca3af);
+  background: var(--color-surface, #181818);
+  border: 1px solid var(--color-border, #333);
+  border-radius: 8px;
+}
+
+.loading {
+  min-height: 48px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--color-border, #333);
+  border-top-color: var(--color-accent, #3b82f6);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  color: var(--color-error, #ef4444);
+  border-color: var(--color-error-muted, #3a1a1a);
+  background: var(--color-error-bg, #1a0a0a);
+}
+
+.retryButton {
+  padding: 4px 12px;
+  font-size: 12px;
+  background: var(--color-error, #ef4444);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.retryButton:hover {
+  opacity: 0.9;
+}
+
+.empty {
+  min-height: 48px;
+}
+
+.refreshButton {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-surface-hover, #2a2a2a);
+  border: 1px solid var(--color-border, #333);
+  border-radius: 6px;
+  color: var(--color-text-muted, #9ca3af);
+  cursor: pointer;
+  font-size: 14px;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.refreshButton:hover {
+  background: var(--color-surface-hover-strong, #333);
+  color: var(--color-text, #e8e8e8);
+}
+
+.openDrawer {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text-muted, #9ca3af);
+  background: var(--color-surface, #181818);
+  border: 1px solid var(--color-border, #333);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  min-height: 36px;
+  align-self: center;
+}
+
+.openDrawer:hover {
+  background: var(--color-surface-hover, #2a2a2a);
+  color: var(--color-text, #e8e8e8);
+  border-color: var(--color-border-hover, #444);
+}
+
+.openDrawer:focus-visible {
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 2px;
+}

@@ -7,6 +7,8 @@ import {useNotes} from '../../hooks/useNotes';
 import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import {useNoteSuggestions} from '../../hooks/useNoteSuggestions';
+import {useNextSteps, SimpleMatch} from '../../hooks/useNextSteps';
+import {flags} from '../../config/flags';
 import type {Note, OntologyNode, ScoredMatch, NoteSuggestion} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
@@ -16,6 +18,7 @@ import {InspectorSidebar} from './InspectorPanel';
 import {EditorModals} from './EditorModals';
 import {PublishErrorBanner} from './PublishErrorBanner';
 import {MobileBackdrop} from './MobileBackdrop';
+import {NextStepStrip, NextStepsDrawer} from '../next-steps';
 
 interface EditorManagerProps {
     note: Note;
@@ -58,15 +61,23 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         redo
     } = useEditorLogic({note, onSave});
 
-    const { applySuggestion, dismissSuggestion } = useNoteSuggestions({ note: dirtyNote });
+    const { applySuggestion, dismissSuggestion, undoApply, undoDismiss } = useNoteSuggestions({ note: dirtyNote });
 
-    const handleSuggestionApplied = useCallback((suggestion: NoteSuggestion) => {
-        applySuggestion(suggestion.id);
+    const handleSuggestionApplied = useCallback((suggestionId: string) => {
+        applySuggestion(suggestionId);
     }, [applySuggestion]);
 
-    const handleSuggestionDismissed = useCallback((suggestion: NoteSuggestion) => {
-        dismissSuggestion(suggestion.id);
+    const handleSuggestionDismissed = useCallback((suggestionId: string) => {
+        dismissSuggestion(suggestionId);
     }, [dismissSuggestion]);
+
+    const handleSuggestionUndoApply = useCallback((suggestionId: string) => {
+        undoApply(suggestionId);
+    }, [undoApply]);
+
+    const handleSuggestionUndoDismiss = useCallback((suggestionId: string) => {
+        undoDismiss(suggestionId);
+    }, [undoDismiss]);
 
     const {
         isInspectorOpen, setIsInspectorOpen,
@@ -167,6 +178,26 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         setSelectedNoteId(match.note.id);
     }, [setSelectedNoteId]);
 
+    // Next Steps drawer state
+    const [isNextStepsDrawerOpen, setIsNextStepsDrawerOpen] = useState(false);
+
+    // Get matches for the drawer (empty for now - will be populated by match system)
+    const localMatches: SimpleMatch[] = [];
+    const networkMatches: SimpleMatch[] = [];
+
+    const handleOpenNextStepsDrawer = useCallback(() => {
+        setIsNextStepsDrawerOpen(true);
+    }, []);
+
+    const handleCloseNextStepsDrawer = useCallback(() => {
+        setIsNextStepsDrawerOpen(false);
+    }, []);
+
+    const handleNavigateToMatch = useCallback((noteId: string) => {
+        setSelectedNoteId(noteId);
+        setIsNextStepsDrawerOpen(false);
+    }, [setSelectedNoteId]);
+
     return (
         <div className="flex flex-col h-full relative">
             <EditorHeader
@@ -206,11 +237,38 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onRedo={handleRedo}
                 onSuggestionApplied={handleSuggestionApplied}
                 onSuggestionDismissed={handleSuggestionDismissed}
+                onSuggestionUndoApply={handleSuggestionUndoApply}
+                onSuggestionUndoDismiss={handleSuggestionUndoDismiss}
                 showSuggestionStrip={true}
             />
             {publishError && (
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />
             )}
+
+            {/* Next Steps Strip + Drawer (NEW) */}
+            {flags.NEXT_STEPS_UI && (
+                <>
+                    <NextStepStrip
+                        note={dirtyNote}
+                        localMatches={localMatches}
+                        networkMatches={networkMatches}
+                        onStepApplied={handleSuggestionApplied}
+                        onStepDismissed={handleSuggestionDismissed}
+                        onOpenDrawer={handleOpenNextStepsDrawer}
+                    />
+                    <NextStepsDrawer
+                        isOpen={isNextStepsDrawerOpen}
+                        onClose={handleCloseNextStepsDrawer}
+                        note={dirtyNote}
+                        localMatches={localMatches}
+                        networkMatches={networkMatches}
+                        onStepApplied={handleSuggestionApplied}
+                        onStepDismissed={handleSuggestionDismissed}
+                        onNavigateToMatch={handleNavigateToMatch}
+                    />
+                </>
+            )}
+
             <div className="flex flex-1 overflow-hidden relative">
                 <EditorContent
                     editorRef={editorRef}

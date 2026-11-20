@@ -43,8 +43,10 @@ interface EditorHeaderProps {
     canRedo?: boolean;
     onUndo?: () => void;
     onRedo?: () => void;
-    onSuggestionApplied?: (suggestion: NoteSuggestion) => void;
-    onSuggestionDismissed?: (suggestion: NoteSuggestion) => void;
+    onSuggestionApplied?: (suggestionId: string) => void;
+    onSuggestionDismissed?: (suggestionId: string) => void;
+    onSuggestionUndoApply?: (suggestionId: string) => void;
+    onSuggestionUndoDismiss?: (suggestionId: string) => void;
     showSuggestionStrip?: boolean;
 }
 
@@ -85,6 +87,8 @@ export function EditorHeader({
     onRedo,
     onSuggestionApplied,
     onSuggestionDismissed,
+    onSuggestionUndoApply,
+    onSuggestionUndoDismiss,
     showSuggestionStrip = true
 }: EditorHeaderProps) {
     const [isTagInputVisible, setIsTagInputVisible] = useState(tags.length > 0);
@@ -186,6 +190,8 @@ export function EditorHeader({
                         maxVisible={3}
                         onSuggestionApplied={onSuggestionApplied}
                         onSuggestionDismissed={onSuggestionDismissed}
+                        onSuggestionUndoApply={onSuggestionUndoApply}
+                        onSuggestionUndoDismiss={onSuggestionUndoDismiss}
                         showAllAction={() => onToggleInspector?.()}
                     />
                 </div>

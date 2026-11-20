@@ -4,15 +4,20 @@ import { suggestionSignature } from '@notention/core/suggestions/note/signature.
 
 export interface UseNoteSuggestionsOptions {
   note: Note | null;
-  autoRefresh?: boolean;
-  refreshInterval?: number;
+}
+
+export interface AppliedSuggestion {
+  suggestion: NoteSuggestion;
+  appliedAt: number;
+  resultNoteIds: string[];
+  fitCount?: number;
 }
 
 export interface UseNoteSuggestionsReturn {
   suggestions: NoteSuggestion[];
   activeSuggestions: NoteSuggestion[];
   staleSuggestions: NoteSuggestion[];
-  appliedSuggestions: NoteSuggestion[];
+  appliedSuggestions: AppliedSuggestion[];
   isGenerating: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
@@ -23,8 +28,9 @@ export interface UseNoteSuggestionsReturn {
 }
 
 export function useNoteSuggestions(options: UseNoteSuggestionsOptions): UseNoteSuggestionsReturn {
-  const { note, autoRefresh = false, refreshInterval = 30000 } = options;
+  const { note } = options;
   const [suggestions, setSuggestions] = useState<NoteSuggestion[]>([]);
+  const [appliedHistory, setAppliedHistory] = useState<AppliedSuggestion[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<Error | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -109,15 +115,41 @@ export function useNoteSuggestions(options: UseNoteSuggestionsOptions): UseNoteS
         });
         break;
       case 'suggestion-removed':
-      case 'suggestion-applied':
       case 'suggestion-dismissed':
         setSuggestions(prev => prev.filter(s => s.id !== event.suggestion?.id));
+        break;
+      case 'suggestion-applied':
+        // Move from active to applied history
+        if (event.suggestion) {
+          setSuggestions(prev => prev.filter(s => s.id !== event.suggestion?.id));
+          setAppliedHistory(prev => [
+            ...prev,
+            {
+              suggestion: event.suggestion!,
+              appliedAt: event.timestamp,
+              resultNoteIds: [],
+              fitCount: undefined,
+            },
+          ]);
+        }
         break;
       case 'generation-completed':
         setSuggestions(event.suggestions || []);
         break;
       case 'state-changed':
         setSuggestions(event.suggestions || []);
+        // Restore applied history from state
+        if (event.suggestions) {
+          const applied = event.suggestions
+            .filter(s => s.status === 'applied')
+            .map(s => ({
+              suggestion: s,
+              appliedAt: s.appliedAt ?? Date.now(),
+              resultNoteIds: [],
+              fitCount: undefined,
+            }));
+          setAppliedHistory(applied);
+        }
         break;
     }
   }, []);
@@ -138,6 +170,7 @@ export function useNoteSuggestions(options: UseNoteSuggestionsOptions): UseNoteS
             ...state.applied.map(a => a.suggestion)
           ];
           setSuggestions(allSuggestions);
+          setAppliedHistory(state.applied);
           contentHashRef.current = state.contentHash;
         }
         setHydrated(true);
@@ -240,16 +273,11 @@ export function useNoteSuggestions(options: UseNoteSuggestionsOptions): UseNoteS
     [suggestions]
   );
 
-  const appliedSuggestions = useMemo(
-    () => suggestions.filter(s => s.status === 'applied'),
-    [suggestions]
-  );
-
   return {
     suggestions,
     activeSuggestions,
     staleSuggestions,
-    appliedSuggestions,
+    appliedSuggestions: appliedHistory,
     isGenerating,
     error,
     refresh,

@@ -111,8 +111,8 @@ export class SuggestionOrchestrator extends EventEmitter {
       .map(s => ({
         suggestion: s,
         appliedAt: s.appliedAt ?? Date.now(),
-        resultNoteIds: [],
-        fitCount: undefined
+        resultNoteIds: (s as any).resultNoteIds ?? [],
+        fitCount: (s as any).fitCount
       } as AppliedSuggestion));
 
     return {
@@ -481,6 +481,9 @@ export class SuggestionOrchestrator extends EventEmitter {
         suggestion.status = 'applied';
         suggestion.appliedAt = Date.now();
         suggestion.updatedAt = Date.now();
+        // Store result info on the suggestion for history
+        (suggestion as any).resultNoteIds = resultNoteIds;
+        (suggestion as any).fitCount = fitCount;
 
         this.emitEvent({
           type: 'suggestion-applied',

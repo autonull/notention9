@@ -7,8 +7,10 @@ import styles from './SuggestionStrip.module.css';
 interface SuggestionStripProps {
   note: Note | null;
   maxVisible?: number;
-  onSuggestionApplied?: (suggestion: NoteSuggestion) => void;
-  onSuggestionDismissed?: (suggestion: NoteSuggestion) => void;
+  onSuggestionApplied?: (suggestionId: string) => void;
+  onSuggestionDismissed?: (suggestionId: string) => void;
+  onSuggestionUndoApply?: (suggestionId: string) => void;
+  onSuggestionUndoDismiss?: (suggestionId: string) => void;
   showAllAction?: () => void;
 }
 
@@ -17,6 +19,8 @@ export function SuggestionStrip({
   maxVisible = 3,
   onSuggestionApplied,
   onSuggestionDismissed,
+  onSuggestionUndoApply,
+  onSuggestionUndoDismiss,
   showAllAction
 }: SuggestionStripProps) {
   const {
@@ -25,20 +29,32 @@ export function SuggestionStrip({
     error,
     refresh,
     applySuggestion,
-    dismissSuggestion
-  } = useNoteSuggestions({ note, autoRefresh: false });
+    dismissSuggestion,
+    undoApply,
+    undoDismiss
+  } = useNoteSuggestions({ note });
 
   const handleApply = (suggestionId: string) => {
-    const suggestion = activeSuggestions.find(s => s.id === suggestionId);
-    if (suggestion && applySuggestion(suggestionId)) {
-      onSuggestionApplied?.(suggestion);
+    if (applySuggestion(suggestionId)) {
+      onSuggestionApplied?.(suggestionId);
     }
   };
 
   const handleDismiss = (suggestionId: string) => {
-    const suggestion = activeSuggestions.find(s => s.id === suggestionId);
-    if (suggestion && dismissSuggestion(suggestionId)) {
-      onSuggestionDismissed?.(suggestion);
+    if (dismissSuggestion(suggestionId)) {
+      onSuggestionDismissed?.(suggestionId);
+    }
+  };
+
+  const handleUndoApply = (suggestionId: string) => {
+    if (undoApply(suggestionId)) {
+      onSuggestionUndoApply?.(suggestionId);
+    }
+  };
+
+  const handleUndoDismiss = (suggestionId: string) => {
+    if (undoDismiss(suggestionId)) {
+      onSuggestionUndoDismiss?.(suggestionId);
     }
   };
 
@@ -87,6 +103,8 @@ export function SuggestionStrip({
             suggestion={suggestion}
             onApply={handleApply}
             onDismiss={handleDismiss}
+            onUndoApply={handleUndoApply}
+            onUndoDismiss={handleUndoDismiss}
           />
         ))}
       </div>

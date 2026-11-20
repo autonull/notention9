@@ -1,0 +1,346 @@
+.drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  animation: fadeIn 0.2s ease-out;
+}
+
+.panel {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--color-surface, #181818);
+  border-left: 1px solid var(--color-border, #333);
+  max-width: 420px;
+  width: 100%;
+  margin-left: auto;
+  animation: slideIn 0.3s ease-out;
+}
+
+@media (max-width: 767px) {
+  .panel {
+    max-width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--color-border, #333);
+    border-radius: 16px 16px 0 0;
+    margin-left: 0;
+    margin-top: auto;
+    animation: slideUp 0.3s ease-out;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.handle {
+  width: 36px;
+  height: 4px;
+  background: var(--color-border, #333);
+  border-radius: 2px;
+  margin: 12px auto 0;
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .handle {
+    display: block;
+  }
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid var(--color-border, #333);
+  flex-shrink: 0;
+}
+
+.title {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-text, #e8e8e8);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.count {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-accent, #3b82f6);
+  background: var(--color-accent-muted, #1e3a5f);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.refreshButton,
+.closeButton {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  color: var(--color-text-muted, #9ca3af);
+  cursor: pointer;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.refreshButton:hover,
+.closeButton:hover {
+  background: var(--color-surface-hover, #2a2a2a);
+  color: var(--color-text, #e8e8e8);
+}
+
+.refreshButton:focus-visible,
+.closeButton:focus-visible {
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 2px;
+}
+
+.refreshButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--color-error-bg, #1a0a0a);
+  border-bottom: 1px solid var(--color-error-muted, #3a1a1a);
+  color: var(--color-error, #ef4444);
+  font-size: 13px;
+}
+
+.retryButton {
+  padding: 6px 12px;
+  font-size: 12px;
+  background: var(--color-error, #ef4444);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.retryButton:hover {
+  opacity: 0.9;
+}
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted, #9ca3af);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.appliedCount {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-accent, #3b82f6);
+}
+
+.appliedToggle {
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.appliedToggle:focus-visible {
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.stepsList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.appliedList {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.matchesList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.matchCard {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  background: var(--color-surface-raised, #1e1e1e);
+  border: 1px solid var(--color-border, #333);
+  border-radius: 8px;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.15s, background-color 0.15s;
+}
+
+.matchCard:hover {
+  border-color: var(--color-border-hover, #444);
+  background: var(--color-surface-hover, #2a2a2a);
+}
+
+.matchCard:focus-visible {
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 2px;
+}
+
+.matchMain {
+  flex: 1;
+  min-width: 0;
+}
+
+.matchInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.matchTitle {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--color-text, #e8e8e8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.matchMeta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sourceChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--color-text-muted, #9ca3af);
+  background: var(--color-surface, #181818);
+  border-radius: 4px;
+}
+
+.fitCount {
+  font-size: 11px;
+  color: var(--color-accent, #3b82f6);
+  font-weight: 500;
+}
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--color-text-muted, #9ca3af);
+}
+
+.refreshButtonSmall {
+  padding: 8px 16px;
+  font-size: 13px;
+  background: var(--color-accent, #3b82f6);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.refreshButtonSmall:hover {
+  background: var(--color-accent-hover, #2563eb);
+}
