@@ -916,3 +916,16 @@ Decisions applied:
   - Added `AlertTriangleIcon`, `WifiOffIcon`, `ServerIcon` to `ui/src/components/ui/icons.tsx`
   - Exported from `ui/src/components/ui/Primitives.tsx`
 - **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 1010+, UI 42, optimize 127, simulator 116), `pnpm verify` ✅.
+
+### 2026-11-19 — W6.6 Corruption detection with restore from backup complete
+- **Implemented**: Full corruption detection and user-driven restore flow:
+  - `EnvelopeStore.load()` in `core/src/storage/envelope.ts` now dispatches `storage-corrupt` event on checksum failure
+  - `AppShell` handles `storage-corrupt` with `DegradedModeBanner` showing "Restore from Backup" action
+  - `handleRestoreFromBackup` in `AppShell` supports both plain and encrypted backup files with passphrase prompt
+  - Restored backup is written to localforage using envelope format (creates new valid checksum)
+  - Added 3 corruption fixture tests in `core/src/storage/envelope.test.ts`:
+    - Plain envelope checksum mismatch detection
+    - Encrypted envelope AES-GCM auth tag failure on corrupted ciphertext
+    - End-to-end load returns null and `verifyIntegrity()` returns false on corruption
+  - UI integration: user clicks "Restore from Backup" banner action → file picker → JSON parsed → optional passphrase prompt → data restored → page reload
+- **All gates**: `pnpm build` ✅, `pnpm test` ✅ (core 23/23 envelope tests pass), `pnpm verify` ✅.

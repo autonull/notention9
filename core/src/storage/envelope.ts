@@ -232,6 +232,15 @@ export class EnvelopeStore {
             const envelope = JSON.parse(raw) as StorageEnvelope;
             return await openEnvelope(envelope, this.passphrase ?? undefined);
         } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            if (message.includes('checksum') || message.includes('corrupt')) {
+                // Dispatch event for UI to show degraded mode with restore action
+                if (typeof window !== 'undefined') {
+                    window.dispatchEvent(new CustomEvent('storage-corrupt', {
+                        detail: {key: this.envelopeKey, message: 'Checksum verification failed: data may be corrupted'}
+                    }));
+                }
+            }
             console.error('Failed to load envelope:', error);
             return null;
         }

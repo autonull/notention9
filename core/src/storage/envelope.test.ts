@@ -289,5 +289,74 @@ describe('EnvelopeStore lock timeout', () => {
     });
 });
 
+describe('Corruption detection', () => {
+    it('should detect corrupted envelope payload via checksum mismatch', async () => {
+        const schema = createTestSchema();
+        const envelope = createEnvelope(schema);
+
+        // Verify integrity before corruption
+        expect(verifyEnvelopeIntegrity(envelope)).toBe(true);
+
+        // Corrupt the payload
+        const corruptedEnvelope: StorageEnvelope = {
+            ...envelope,
+            payload: {...schema, notes: []}, // Remove all notes
+        };
+
+        // Verify integrity after corruption
+        expect(verifyEnvelopeIntegrity(corruptedEnvelope)).toBe(false);
+
+        // Opening corrupted envelope should throw
+        await expect(openEnvelope(corruptedEnvelope)).rejects.toThrow('Checksum verification failed');
+    });
+
+    it('should detect corrupted encrypted envelope at decryption (AES-GCM auth tag)', async () => {
+        const schema = createTestSchema();
+        const envelope = await createEnvelopeAsync(schema, 'test-passphrase');
+
+        // Verify it's encrypted
+        expect(isEncryptedEnvelope(envelope)).toBe(true);
+
+        // Corrupt the ciphertext - AES-GCM will fail at decryption due to auth tag mismatch
+        const corruptedEnvelope: StorageEnvelope = {
+            ...envelope,
+            cipher: {...envelope.cipher!, ciphertext: 'corrupted-ciphertext'},
+        };
+
+        // Opening corrupted encrypted envelope should throw at decryption
+        await expect(openEnvelope(corruptedEnvelope, 'test-passphrase')).rejects.toThrow();
+    });
+
+    it('should return null and log error when loading corrupted envelope', async () => {
+        const mockLocalForage = new Map<string, unknown>();
+        const createMockDriver = () => ({
+            getItem: vi.fn(async (key: string) => mockLocalForage.get(key) ?? null),
+            setItem: vi.fn(async (key: string, value: unknown) => { mockLocalForage.set(key, value); }),
+            removeItem: vi.fn(async (key: string) => { mockLocalForage.delete(key); }),
+            clear: vi.fn(async () => { mockLocalForage.clear(); }),
+        });
+
+        const storage = new EnvelopeValidatedStorage({driver: createMockDriver() as any});
+
+        // Save valid envelope first
+        const schema = createTestSchema();
+        await storage.save(schema);
+
+        // Corrupt the stored envelope
+        const raw = await storage['store']['adapter'].getItem('notention-envelope');
+        const envelope = JSON.parse(raw as string) as StorageEnvelope;
+        const corruptedEnvelope = {...envelope, payload: {...schema, notes: []}};
+        await storage['store']['adapter'].setItem('notention-envelope', JSON.stringify(corruptedEnvelope));
+
+        // Load should return null (corruption detected)
+        const loaded = await storage.load();
+        expect(loaded).toBeNull();
+
+        // verifyIntegrity should return false
+        const integrity = await storage.verifyIntegrity();
+        expect(integrity).toBe(false);
+    });
+});
+
 // Import isEncryptedEnvelope for tests
 import {isEncryptedEnvelope} from './envelope.js';

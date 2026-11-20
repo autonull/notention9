@@ -7,7 +7,9 @@ import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
 import {KeyboardShortcutsHelp} from './ui/Primitives';
 import {NoteIcon} from './ui/icons';
-import {getTextFromHtml} from '@notention/core';
+import {getTextFromHtml, readExportEnvelope, isEncryptedBackup, decryptBackup, type ExportEnvelope, type EncryptedBackup} from '@notention/core';
+import localforage from 'localforage';
+import {STORAGE_KEYS} from '../config/storageKeys';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
@@ -107,6 +109,29 @@ export function AppShell() {
                 message: detail?.message ?? 'Data corruption detected. A backup has been restored.',
                 severity: 'error',
                 dismissible: false,
+                action: {
+                    label: 'Restore from Backup',
+                    onClick: () => {
+                        const input = document.createElement('input');
+                        input.type = 'file';
+                        input.accept = '.json';
+                        input.onchange = async (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (file) {
+                                try {
+                                    const text = await file.text();
+                                    const backup = JSON.parse(text);
+                                    // Dispatch event for the backup restore handler
+                                    window.dispatchEvent(new CustomEvent('restore-from-backup', {detail: backup}));
+                                    removeDegradedMode('storage-corrupt');
+                                } catch (err) {
+                                    addToast('Failed to restore backup: ' + (err instanceof Error ? err.message : String(err)), 'error');
+                                }
+                            }
+                        };
+                        input.click();
+                    }
+                }
             });
         };
 
@@ -127,17 +152,64 @@ export function AppShell() {
             });
         };
 
+        const handleRestoreFromBackup = async (event: Event) => {
+            const backup = (event as CustomEvent<ExportEnvelope | EncryptedBackup>).detail;
+            if (!backup) {
+                addToast('No backup data provided', 'error');
+                return;
+            }
+
+            try {
+                let envelope: ExportEnvelope;
+
+                if (isEncryptedBackup(backup)) {
+                    const passphrase = prompt('Enter passphrase to decrypt backup:');
+                    if (!passphrase) return;
+                    try {
+                        envelope = await decryptBackup(backup, passphrase);
+                    } catch {
+                        addToast('Decryption failed. Incorrect passphrase or corrupted backup.', 'error', 5000);
+                        return;
+                    }
+                } else {
+                    envelope = readExportEnvelope(backup);
+                }
+
+                // Save to localforage using envelope format (will create new checksum)
+                await localforage.setItem(STORAGE_KEYS.notes, envelope.notes);
+                await localforage.setItem(STORAGE_KEYS.settings, envelope.settings);
+                
+                // Clear legacy keys to force envelope format on next load
+                await Promise.all([
+                    localforage.removeItem(STORAGE_KEYS.envelope),
+                    localforage.removeItem(STORAGE_KEYS.schemaVersion),
+                    localforage.removeItem(STORAGE_KEYS.sortOrder),
+                    localforage.removeItem(STORAGE_KEYS.sidebarViewMode),
+                    localforage.removeItem(STORAGE_KEYS.suggestions),
+                ]);
+
+                addToast('Backup restored successfully. Reloading...', 'success');
+                removeDegradedMode('storage-corrupt');
+                setTimeout(() => window.location.reload(), 1500);
+            } catch (err) {
+                const message = err instanceof Error ? err.message : String(err);
+                addToast('Restore failed: ' + message, 'error');
+            }
+        };
+
         const handleOpenShortcutsHelp = () => setIsShortcutsHelpOpen(true);
 
         window.addEventListener('storage-error', handleStorageError);
         window.addEventListener('storage-corrupt', handleStorageCorrupt);
         window.addEventListener('sync-failed', handleSyncFailed);
+        window.addEventListener('restore-from-backup', handleRestoreFromBackup);
         window.addEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
 
         return () => {
             window.removeEventListener('storage-error', handleStorageError);
             window.removeEventListener('storage-corrupt', handleStorageCorrupt);
             window.removeEventListener('sync-failed', handleSyncFailed);
+            window.removeEventListener('restore-from-backup', handleRestoreFromBackup);
             window.removeEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
         };
     }, [addToast, addDegradedMode, removeDegradedMode, setIsShortcutsHelpOpen]);
