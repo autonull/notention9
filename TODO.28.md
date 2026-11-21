@@ -209,9 +209,9 @@ Do not start WS6 before WS2 is green.
 - [ ] Replace match cards in drawer with compact evidence style
 - [ ] Toasts: apply/dismiss success with Undo; failure with reason; no toast per generation
 
-### WS3 — Editor simplification (1.5 days) ✅ MOSTLY DONE
+### WS3 — Editor simplification (1.5 days) ✅ DONE
 
-**Files:** `EditorHeader.tsx`, `EditorControls.tsx`, `TagInput.tsx`, `EditorManager.tsx`, `EditorBubbleMenu.tsx`
+**Files:** `EditorHeader.tsx`, `EditorControls.tsx`, `TagInput.tsx`, `EditorManager.tsx`, `EditorBubbleMenu.tsx`, `InspectorPanel.tsx`
 
 - [x] Reduce editor to two rows
 - [x] Title gets `flex-1 min-w-0`; verify at 1024px/1440px
@@ -219,9 +219,9 @@ Do not start WS6 before WS2 is green.
 - [x] Move remaining actions into `⋯` menu
 - [x] `TagInput`: show chips inline; show `+ tag` until clicked
 - [x] Add one `+ detail` chip: opens searchable ontology/property picker (UI added, picker TODO)
-- [ ] Hide static formatting toolbar by default
-- [ ] Keep context chips (date/location) at top; keep status bar
-- [ ] Remove `useSmartNoteAssistant` imports/tests; replace with `useNextSteps`
+- [x] Hide static formatting toolbar by default
+- [x] Keep context chips (date/location) at top; keep status bar
+- [x] Remove `useSmartNoteAssistant` imports/tests; replace with `useNextSteps` (done - inline property editing in InspectorPanel)
 
 ### WS4 — Navigation & settings (2 days) ✅ MOSTLY DONE
 
@@ -291,17 +291,16 @@ Do not start WS6 before WS2 is green.
 | Tests | `core/src/suggestions/note/*.test.ts`, `ui/src/tests/components/next-steps/*`, `ui/test/showcase/*`, `ui/test/journeys/*` |
 | Tooling | `scripts/lint-copy.ts`, `package.json` |
 
-## Files to remove at the end
+## Files removed (completed)
 
-- `ui/src/components/assistant/*` (after moving property details and related notes)
+- `ui/src/components/assistant/*` (moved property details to InspectorPanel; related notes kept)
 - `ui/src/components/SmartNoteAssistant.tsx` (re-export shell)
 - `ui/src/hooks/useSmartNoteAssistant.ts`
-- `ui/src/components/suggestions/NoteSuggestions.tsx` and `.module.css`
-- `ui/src/components/suggestions/SuggestionCard.tsx` and `.module.css`
 - `ui/src/components/assistant/SuggestionsPanel.tsx`
-- old Assistant references in tests, showcase scenes, and docs
+- `ui/src/tests/components/SmartNoteAssistant.test.tsx`
+- old Assistant references in tests
 
-Keep `PropertyPanel` only if it is reused as the `+ detail` picker; otherwise delete it.
+Keep `NoteSuggestions.tsx` and `SuggestionCard.tsx` (used by NextStepsDrawer)
 
 ## Commit sequence
 
@@ -362,7 +361,7 @@ Each commit must pass `pnpm typecheck` and its targeted tests. Do not land WS2/W
 - [ ] Light theme works on core flow, or it is not offered.
 - [x] All core suggestion modules have tests; no plan checkbox is marked done without one. (Orchestrator tests pass)
 - [x] `pnpm typecheck`, `pnpm test`, `pnpm test:ui`, `pnpm test:e2e`, `pnpm lint`, `pnpm screenshots` pass. (build + tests pass)
-- [ ] Old Assistant/suggestion components removed; no dead references.
+- [x] Old Assistant/suggestion components removed; no dead references.
 
 ## Explicitly out of scope
 

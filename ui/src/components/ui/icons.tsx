@@ -1116,5 +1116,3 @@ export function ServerIcon(props: IconProps) { return (
         />
     </OutlineIcon>
 ); }
-
-export {CogIcon, BookOpenIcon};

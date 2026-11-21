@@ -1,13 +1,19 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, useState} from 'react';
 import type {Note, OntologyNode, Property} from '@notention/core';
 import {parseGeoFromValues} from '@notention/core';
-import {ClockIcon, MapPinIcon, GlobeIcon, SparklesIcon, SearchIcon, LinkIcon} from '../ui/icons';
-import {SmartNoteAssistant} from '../SmartNoteAssistant';
+import {ClockIcon, MapPinIcon, GlobeIcon, SparklesIcon, SearchIcon, LinkIcon, PlusIcon, TrashIcon, EditIcon} from '../ui/icons';
 import {RelatedNotesPanel} from '../assistant/RelatedNotesPanel';
 import {useRelatedNotes} from '../../hooks/useRelatedNotes';
 import {useNotes} from '../../hooks/useNotes';
 import {cn} from '../../utils/ui';
 import type {RelatedNote} from '@notention/core';
+import {PropertyBlock} from '../properties/PropertyBlock';
+import {PropertyEditor} from '../editor/PropertyEditor';
+import {ExtractionReview} from '../editor/ExtractionReview';
+import {usePropertyReview} from '../../hooks/usePropertyReview';
+import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
+import {Button} from '../ui/Button';
+import {useToast} from '../../hooks/useToast';
 
 interface InspectorPanelProps {
     note: Note;
@@ -20,6 +26,12 @@ interface InspectorPanelProps {
     isSidebarOpen?: boolean;
     onToggleSidebar?: () => void;
     className?: string;
+}
+
+interface PropertyReviewState {
+    items: PropertyReviewItem[];
+    accept: (item: PropertyReviewItem) => void;
+    reject: (item: PropertyReviewItem) => void;
 }
 
 interface ContextData {
@@ -44,6 +56,12 @@ export function InspectorPanel({
     const { findRelated, findBacklinks } = useRelatedNotes(note);
     const relatedNotes = findRelated;
     const backlinks = findBacklinks;
+    const { addToast } = useToast();
+    const propertyReview = usePropertyReview(note.content, properties, ontology);
+
+    const [isAddingProperty, setIsAddingProperty] = useState(false);
+    const [editingPropertyIndex, setEditingPropertyIndex] = useState<number | null>(null);
+    const [propertyToDelete, setPropertyToDelete] = useState<Property | null>(null);
 
     const context = useMemo<ContextData>(() => {
         let location: { lat: number; lng: number } | null = null;
@@ -68,6 +86,37 @@ export function InspectorPanel({
     }, [note.properties]);
 
     const hasContext = context.location || context.date;
+
+    const handleSaveProperty = (key: string, operator: string, value: string) => {
+        if (!onUpdateProperty) return;
+
+        const newProp: Property = {
+            key,
+            operator,
+            values: value.split(',').map(v => v.trim())
+        };
+
+        if (editingPropertyIndex !== null && properties) {
+            const oldProp = properties[editingPropertyIndex];
+            onUpdateProperty(oldProp, newProp);
+            setEditingPropertyIndex(null);
+        } else {
+            onUpdateProperty(null, newProp);
+            setIsAddingProperty(false);
+        }
+    };
+
+    const handleCancelEdit = () => {
+        setIsAddingProperty(false);
+        setEditingPropertyIndex(null);
+    };
+
+    const handleDeleteProperty = () => {
+        if (propertyToDelete && onUpdateProperty) {
+            onUpdateProperty(propertyToDelete, null);
+            setPropertyToDelete(null);
+        }
+    };
 
     return (
         <div className={cn('flex flex-col h-full bg-gray-900 border-l border-gray-800', className)}>
@@ -127,12 +176,12 @@ export function InspectorPanel({
                         {isSidebarOpen ? (
                             <>
                                 <SearchIcon className="w-4 h-4" />
-                                Hide Assistant
+                                Hide sidebar
                             </>
                         ) : (
                             <>
                                 <SparklesIcon className="w-4 h-4" />
-                                Show Assistant
+                                Show sidebar
                             </>
                         )}
                     </button>
@@ -140,28 +189,79 @@ export function InspectorPanel({
             )}
 
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
-                <SmartNoteAssistant
-                    note={note}
-                    onNoteUpdate={onNoteUpdate}
-                    className="flex-1 min-h-0 border-none rounded-none bg-transparent"
-                    properties={properties}
-                    onUpdateProperty={onUpdateProperty}
-                    onPickLocation={onPickLocation}
-                    onPickTime={onPickTime}
-                    ontology={ontology}
-                />
-                {(relatedNotes.length > 0 || backlinks.length > 0) && (
-                    <RelatedNotesPanel
-                        note={note}
-                        relatedNotes={relatedNotes}
-                        backlinks={backlinks}
-                        onSelectNote={(selectedNote) => {
-                            // This would need a way to navigate to the note
-                            // For now, we'll dispatch a custom event
-                            window.dispatchEvent(new CustomEvent('navigate-to-note', { detail: selectedNote.id }));
-                        }}
-                    />
-                )}
+                <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {/* Properties section */}
+                    <div className="space-y-3">
+                        {!isAddingProperty && (
+                            <div className="flex justify-between items-center px-1">
+                                <span className="text-xs text-gray-500 font-medium">
+                                    {properties.length} Properties
+                                </span>
+                                <Button
+                                    size="xs"
+                                    variant="ghost"
+                                    icon={PlusIcon}
+                                    onClick={() => setIsAddingProperty(true)}
+                                    className="text-blue-400 hover:bg-blue-900/30"
+                                >
+                                    Add
+                                </Button>
+                            </div>
+                        )}
+
+                        {isAddingProperty && (
+                            <PropertyEditor
+                                initialKey=""
+                                initialOperator="is"
+                                initialValue=""
+                                isAdding={true}
+                                onSave={handleSaveProperty}
+                                onCancel={handleCancelEdit}
+                                onPickLocation={onPickLocation}
+                                onPickTime={onPickTime}
+                                ontology={ontology}
+                            />
+                        )}
+
+                        <div className="space-y-1">
+                            {properties.map((prop, idx) => (
+                                <PropertyBlock
+                                    key={`${prop.key}-${idx}`}
+                                    property={prop}
+                                    onUpdate={(newProp) => handleSaveProperty(newProp.key, newProp.operator, newProp.values.join(','))}
+                                    onDelete={() => setPropertyToDelete(prop)}
+                                    ontology={ontology}
+                                />
+                            ))}
+                        </div>
+
+                        {properties.length === 0 && !isAddingProperty && (
+                            <div className="text-center py-4 text-gray-500 text-xs italic bg-gray-900/30 rounded border border-gray-800 border-dashed">
+                                No properties yet.
+                            </div>
+                        )}
+
+                        {!isAddingProperty && propertyReview && (
+                            <ExtractionReview
+                                items={propertyReview.items}
+                                onAccept={propertyReview.accept}
+                                onReject={propertyReview.reject}
+                            />
+                        )}
+                    </div>
+
+                    {/* Related notes section */}
+                    {(relatedNotes.length > 0 || backlinks.length > 0) && (
+                        <RelatedNotesPanel
+                            note={note}
+                            relatedNotes={relatedNotes}
+                            backlinks={backlinks}
+                            onSelectNote={(selectedNote) => {
+                                window.dispatchEvent(new CustomEvent('navigate-to-note', { detail: selectedNote.id }));
+                            }}
+                        />
+                    )}
+                </div>
             </div>
         </div>
     );

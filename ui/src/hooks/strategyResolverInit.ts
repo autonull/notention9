@@ -66,24 +66,6 @@ type LocalMatchesPanelComponent = React.ComponentType<{
     onSelect: (match: any) => void;
 }>;
 
-type PropertyPanelComponent = React.ComponentType<{
-    properties: any[];
-    isAddingProperty: boolean;
-    setIsAddingProperty: (adding: boolean) => void;
-    editingPropertyIndex: number | null;
-    setEditingPropertyIndex: (index: number | null) => void;
-    propertyToDelete: any | null;
-    setPropertyToDelete: (prop: any | null) => void;
-    onSaveProperty: (key: string, op: string, value: string) => void;
-    onCancelEdit: () => void;
-    onAcceptReview: (item: any) => void;
-    propertyReview: any | null;
-    onDeleteProperty: () => void;
-    onPickLocation?: () => void;
-    onPickTime?: (key: string) => void;
-    ontology?: any[];
-}>;
-
 // Strategy component factories for re-registration with revised params
 const strategyComponentFactories = new Map<string, React.ComponentType<any>>();
 

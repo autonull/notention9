@@ -106,7 +106,7 @@ export const BUILTIN_SEAM_SPECS: Record<string, SeamSpec> = {
             contacts: 'any[]',
             onSelect: '(match: any) => void',
         },
-        components: ['PropertyPanel', 'LocalMatchesPanel'],
+        components: ['LocalMatchesPanel'],
     },
 } as const;
 
