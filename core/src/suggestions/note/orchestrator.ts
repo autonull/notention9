@@ -62,6 +62,7 @@ export class SuggestionOrchestrator extends EventEmitter {
   private allListeners: Set<(event: SuggestionEvent) => void> = new Set();
   private stateStore: SuggestionStateStore | null = null;
   private hydratedNotes = new Set<string>();
+  private suppressedSignatures = new Map<string, Set<string>>(); // noteId -> Set of suppressed signatures
 
   private constructor() {
     super();
@@ -90,6 +91,8 @@ export class SuggestionOrchestrator extends EventEmitter {
       this.suggestions.set(noteId, allSuggestions);
       this.lastGenerationHash.set(noteId, state.contentHash);
       this.lastGenerationId.set(noteId, state.generationId);
+      // Restore suppressed signatures
+      this.suppressedSignatures.set(noteId, new Set(state.suppressed));
       this.hydratedNotes.add(noteId);
 
       this.emitEvent({
@@ -123,7 +126,7 @@ export class SuggestionOrchestrator extends EventEmitter {
       active,
       stale,
       applied,
-      suppressed: [],
+      suppressed: Array.from(this.suppressedSignatures.get(noteId) ?? new Set()),
       updatedAt: Date.now()
     };
   }
@@ -245,8 +248,10 @@ export class SuggestionOrchestrator extends EventEmitter {
 
       // Duplicate load (two hooks, re-render, debounced save) must not wipe the
       // previous result: the second run dedups against the first and stales it.
+      // Refresh trigger bypasses hash dedup by definition.
       const contentHash = this.contentHash(note);
-      if (this.lastGenerationHash.get(note.id) === contentHash && this.suggestions.has(note.id)) {
+      const bypassHashDedup = trigger === 'refresh';
+      if (!bypassHashDedup && this.lastGenerationHash.get(note.id) === contentHash && this.suggestions.has(note.id)) {
         return {
           suggestions: this.suggestions.get(note.id)!,
           generationId: this.lastGenerationId.get(note.id) ?? `gen-${contentHash}`,
@@ -313,9 +318,8 @@ export class SuggestionOrchestrator extends EventEmitter {
     const existingSuggestions = this.suggestions.get(note.id) || [];
     const activeSuggestions = existingSuggestions.filter(s => s.status === 'active');
     const appliedSuggestions = existingSuggestions.filter(s => s.status === 'applied');
-    const suppressedSignatures = new Set(
-      existingSuggestions.filter(s => s.status === 'dismissed').map(suggestionSignature)
-    );
+    // Use persisted suppressed signatures (survives regeneration and reload)
+    const suppressedSignatures = this.suppressedSignatures.get(note.id) ?? new Set();
 
     const context: SuggestionGenerationContext = {
       note,
@@ -431,6 +435,7 @@ export class SuggestionOrchestrator extends EventEmitter {
 
     const suggestions = this.suggestions.get(noteId) || [];
     const contentHash = this.lastGenerationHash.get(noteId) ?? '';
+    const suppressed = this.suppressedSignatures.get(noteId) ?? new Set();
 
     const state: SuggestionState = {
       version: 1,
@@ -444,12 +449,10 @@ export class SuggestionOrchestrator extends EventEmitter {
         .map(s => ({
           suggestion: s,
           appliedAt: s.appliedAt ?? Date.now(),
-          resultNoteIds: [],
-          fitCount: undefined
+          resultNoteIds: (s as any).resultNoteIds ?? [],
+          fitCount: (s as any).fitCount
         })),
-      suppressed: suggestions
-        .filter(s => s.status === 'dismissed')
-        .map(suggestionSignature),
+      suppressed: Array.from(suppressed),
       updatedAt: Date.now()
     };
 
@@ -511,6 +514,12 @@ export class SuggestionOrchestrator extends EventEmitter {
         suggestion.dismissedAt = Date.now();
         suggestion.updatedAt = Date.now();
 
+        // Persist the signature for suppression across regenerations
+        const sig = suggestionSignature(suggestion);
+        const suppressed = this.suppressedSignatures.get(noteId) ?? new Set();
+        suppressed.add(sig);
+        this.suppressedSignatures.set(noteId, suppressed);
+
         this.emitEvent({
           type: 'suggestion-dismissed',
           noteId,
@@ -554,6 +563,13 @@ export class SuggestionOrchestrator extends EventEmitter {
         suggestion.status = 'active';
         suggestion.dismissedAt = undefined;
         suggestion.updatedAt = Date.now();
+
+        // Remove from suppressed signatures
+        const sig = suggestionSignature(suggestion);
+        const suppressed = this.suppressedSignatures.get(noteId);
+        if (suppressed) {
+          suppressed.delete(sig);
+        }
 
         this.emitEvent({
           type: 'suggestion-updated',

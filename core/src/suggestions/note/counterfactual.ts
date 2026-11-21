@@ -40,9 +40,11 @@ function findNumericWidenings(note: Note, context: CounterfactualContext): Widen
 
     let testValues: number[] = [];
     if (prop.operator === 'gte') {
-      testValues = [currentValue * 1.5, currentValue * 2, currentValue * 3];
-    } else {
+      // Widening gte means LOWERING the threshold (easier to satisfy)
       testValues = [currentValue * 0.75, currentValue * 0.5, currentValue * 0.25];
+    } else {
+      // Widening lte means RAISING the threshold (easier to satisfy)
+      testValues = [currentValue * 1.5, currentValue * 2, currentValue * 3];
     }
 
     for (const testValue of testValues) {

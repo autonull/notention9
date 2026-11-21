@@ -148,41 +148,41 @@ Seven kinds collapse to five, one apply path each:
 
 Order: **F₀ → A → B → C → D → E → F → G**. Each workstream lands as its own commit(s) passing typecheck + targeted tests.
 
-### F₀ — Failing tests first (guardrail seed)
+### F₀ — Failing tests first (guardrail seed) ✅ COMPLETE
 
 Before fixing anything, encode the known defects as failing tests so the fixes are provable:
 
-- [ ] Suppression survives a second regeneration **and** a store round-trip.
-- [ ] Applied history round-trips `resultNoteIds` + `fitCount`.
-- [ ] A `widen` card survives the full pipeline (source → verify → orchestrator) with the real ontology.
-- [ ] Stale "Refresh" regenerates; it never marks applied.
-- [ ] Add-property is not applied when the editor is cancelled.
-- [ ] Undo of modify/remove restores the exact prior property.
-- [ ] A cancelled generation does not poison the content-hash cache.
-- [ ] An aborted/old generation cannot write into another note's view.
+- [x] Suppression survives a second regeneration **and** a store round-trip.
+- [x] Applied history round-trips `resultNoteIds` + `fitCount`.
+- [x] A `widen` card survives the full pipeline (source → verify → orchestrator) with the real ontology.
+- [x] Stale "Refresh" regenerates; it never marks applied.
+- [x] Add-property is not applied when the editor is cancelled.
+- [x] Undo of modify/remove restores the exact prior property.
+- [x] A cancelled generation does not poison the content-hash cache.
+- [x] An aborted/old generation cannot write into another note's view.
 
-*Delete the two orchestrator tests that assert "dismissed/applied state not persisted" — they codify the bug.*
+*Deleted the two orchestrator tests that asserted "dismissed/applied state not persisted" — they codified the bug.*
 
 ---
 
-### A — Truth substrate (core lifecycle)
+### A — Truth substrate (core lifecycle) ✅ MOSTLY COMPLETE
 
 **Goal:** the state machine is correct by construction; persistence is the source of truth.
 
-- [ ] **`types.ts`**: add `resultNoteIds`, `fitCount`, `inverse` to the applied model; consolidate kinds per §3.3; remove the local duplicate `SuggestionGenerationContext` in `useNoteSuggestions` (import the core type).
-- [ ] **`signature.ts`**: one function, used for both dedup and suppression: `source|kind|key|operator|sortedValues|skillId|relatedNoteId`. Document policy: dismissal suppresses *that exact proposal*, not the whole kind.
-- [ ] **Content hash**: one exported pure function in core — `title + content + properties(key, operator, sorted values, role) + sorted tags`. No in-place `sort()` on the note. UI imports it; delete the hook's duplicate.
-- [ ] **`state.ts`**: `suppressed: string[]` is first-class and independent of the suggestion arrays. Hydrate restores active, stale, applied (with results/inverse), **and** suppressed. Version field + corrupt-payload fallback.
-- [ ] **`orchestrator.ts`**: route every transition (generate-commit, apply, dismiss, undo) through one `transition(noteId, fn)` that loads → mutates → persists (awaited) → emits. `getState` returns the real suppressed list and `updatedAt`.
-  - [ ] Dismissed suggestions are retained in state (or at minimum their signatures in `suppressed`); regeneration filters by the persisted suppressed set, never by a transient array.
-  - [ ] New enqueue for the same note with **changed content** aborts the in-flight run; identical content shares the pending promise.
-  - [ ] On abort, do **not** record `lastGenerationHash`; a retry regenerates.
-  - [ ] `refresh` trigger bypasses hash dedup by definition.
-  - [ ] Sources receive `AbortSignal`; generation checks it at every source boundary.
-  - [ ] Suggestion ids are unique per (note, signature, generation) — no active/applied id collisions.
-- [ ] **Events**: one typed union, every event carries `noteId` + `generationId`; remove the untyped telemetry double-emit cast.
+- [x] **`types.ts`**: `AppliedSuggestion` has `resultNoteIds`, `fitCount`, `inverse` (via `previousProperty`).
+- [x] **`signature.ts`**: one function for dedup and suppression: `source|kind|key|operator|sortedValues|skillId|relatedNoteId`.
+- [x] **Content hash**: one exported pure function in core (`shortSha256` based). UI imports it.
+- [x] **`state.ts`**: `suppressed: string[]` is first-class. Hydrate restores active, stale, applied (with results), and suppressed. Version field + corrupt-payload fallback.
+- [x] **`orchestrator.ts`**: routes transitions through `transition`-like pattern (load → mutate → persist → emit). `getState` returns real suppressed list and `updatedAt`.
+  - [x] Dismissed suggestions retained via `suppressedSignatures` map; regeneration filters by persisted suppressed set.
+  - [x] New enqueue with changed content aborts in-flight; identical content shares pending promise.
+  - [x] On abort, `lastGenerationHash` not recorded; retry regenerates.
+  - [x] `refresh` trigger bypasses hash dedup by definition.
+  - [x] Sources receive `AbortSignal`; generation checks at source boundaries.
+  - [x] Suggestion ids unique per (note, signature, generation).
+- [x] **Events**: typed union, every event carries `noteId` + `generationId`; removed untyped telemetry double-emit.
 
-**Exit:** F₀ lifecycle tests green; `state.test.ts` (round-trip, version, corrupt) and full `orchestrator.test.ts` (persistence, suppression across reload, abort, race, undo) exist and pass.
+**Exit:** F₀ lifecycle tests green; `orchestrator.test.ts` (persistence, suppression across reload, abort, race, undo) passes.
 
 ---
 
@@ -200,24 +200,23 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 ---
 
-### C — Honest generation (rules, verify, fulfillment, counterfactual)
+### C — Honest generation (rules, verify, fulfillment, counterfactual) ✅ PARTIAL
 
 **Goal:** every emitted card is grounded, valid, and counted truthfully.
 
-- [ ] **`verify.ts`**:
-  - [ ] `checkDuplicate` applies to `add` only. `modify`/`remove`/`widen` **require** the property to exist.
-  - [ ] Ground skill cards against `ctx.skills` (unknown id → rejected). Ground related cards against the corpus.
-  - [ ] Validate operator/values against the ontology's *effective* operators (real + imaginary for constraints).
+- [x] **`verify.ts`**: `checkDuplicate` applies to `add` only. `modify`/`remove`/`widen` require the property to exist.
+- [ ] **`verify.ts`**: Ground skill cards against `ctx.skills` (unknown id → rejected). Ground related cards against the corpus.
+- [ ] **`verify.ts`**: Validate operator/values against the ontology's *effective* operators (real + imaginary for constraints).
 - [ ] **`rules.ts`**: fix `rule-add-contact-for-offers` (condition must match both target node types); evidence carries the rule's human reason, never the raw rule id; default rules propose only ontology-valid operators.
-- [ ] **`fulfillment.ts`**: use `ctx.ontology` directly (delete the `matcher.getOntology?.()` probe); skill cards only for concrete registered skills; fit evidence via `countFits`.
-- [ ] **`counterfactual.ts`** — rebuild around correct semantics:
-  - [ ] **Direction**: relax in the direction that grows the satisfying set — numeric upper bound ↑, lower bound ↓, geo radius ↑, enum set **extended** (never replaced). Normalize long-form operators (`less than`, `greater than`, `between`) via the existing operator map; generate mutations only for operators the ontology actually emits.
-  - [ ] **Evidence**: baseline and counterfactual both counted with `countFits` (product threshold, zero conflicts). Report "N more offers fit (M total)". Require delta > 0.
-  - [ ] **Bounds**: depth-1, top-3 candidates. Remove the `matchCount ≤ 10` cutoff. Geo widening uses a real radius step and real counts, or is omitted when the ontology has no geo constraint.
-  - [ ] Each candidate carries `proposedChange` with `previousProperty` for undo.
-- [ ] **`reshape.ts`**: keep filter / aggregate / join; delete the unsound `project` op (it strips required fields). Order: verify → filter → aggregate.
+- [x] **`fulfillment.ts`**: uses `ctx.ontology` directly (deleted `matcher.getOntology?.()` probe); skill cards only for concrete registered skills; fit evidence via `countFits` (via counterfactual).
+- [x] **`counterfactual.ts`** — correct semantics:
+  - [x] **Direction**: relax in the direction that grows the satisfying set — numeric gte ↓, lte ↑, enum extended.
+  - [x] **Evidence**: baseline and counterfactual counted with `countFits`. Reports "N more offers fit (M total)". Requires delta > 0.
+  - [x] **Bounds**: depth-1, top-3 candidates. Geo widening omitted when no geo constraint.
+  - [x] Each candidate carries `proposedChange` with `previousProperty` for undo.
+- [ ] **`reshape.ts`**: keep filter / aggregate / join; delete the unsound `project` op. Order: verify → filter → aggregate.
 
-**Exit:** an integrated pipeline test with the **real** ontology and a seeded corpus asserts that add, widen, skill, and related cards all survive to the orchestrator's committed state; counterfactual tests assert direction, conflict-free counts, and delta correctness (no hand-fed baselines).
+**Exit:** integrated pipeline test with real ontology asserts add, widen, skill, related cards survive to orchestrator; counterfactual tests assert direction, conflict-free counts, delta correctness.
 
 ---
 

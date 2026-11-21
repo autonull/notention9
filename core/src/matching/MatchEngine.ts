@@ -84,8 +84,8 @@ export class MatchEngine {
       ? Math.max(0, totalScore / requiredConstraintCount)
       : 0;
 
-    // Apply priority factor
-    const priority = request.priority ?? 1.0;
+    // Apply priority factor (default to 1.0 if priority is 0 or not set)
+    const priority = request.priority > 0 ? request.priority : 1.0;
     const finalScore = normalizedScore * priority;
 
     return { score: finalScore, matches, conflicts, missing };

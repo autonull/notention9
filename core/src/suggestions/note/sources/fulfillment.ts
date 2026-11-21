@@ -10,8 +10,10 @@ export class FulfillmentSource implements SourcePlugin {
   private matcher: SkillPatternMatcher;
   private matchEngine: MatchEngine;
   private allNotes: Note[] = [];
+  private ontology: OntologyNode[];
 
   constructor(ontology: OntologyNode[]) {
+    this.ontology = ontology;
     this.matcher = new SkillPatternMatcher(ontology);
     this.matchEngine = new MatchEngine(ontology);
   }
@@ -38,7 +40,7 @@ export class FulfillmentSource implements SourcePlugin {
     // Generate counterfactual widen suggestions
     const currentMatches = this.findCurrentMatches(note);
     const counterfactualSuggestions = generateCounterfactualSuggestions(note, currentMatches, {
-      ontology: this.matcher.getOntology?.() ?? [],
+      ontology: this.ontology,
       allNotes: this.allNotes
     });
 

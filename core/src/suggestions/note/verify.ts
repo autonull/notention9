@@ -28,6 +28,15 @@ export function verifySuggestion(
     reasons.push(...propCheck.reasons);
   }
 
+  // Duplicate check only applies to 'add' type changes
+  if (suggestion.proposedChange?.type === 'add') {
+    const duplicateCheck = checkDuplicate(suggestion, note);
+    if (!duplicateCheck.valid) {
+      valid = false;
+      reasons.push(...duplicateCheck.reasons);
+    }
+  }
+
   if (suggestion.kind === 'related-note' && suggestion.relatedNoteId) {
     const relatedNote = allNotes.find(n => n.id === suggestion.relatedNoteId);
     if (relatedNote) {
@@ -46,12 +55,6 @@ export function verifySuggestion(
     valid = valid && skillCheck.valid;
     confidence = Math.min(confidence, skillCheck.confidence);
     reasons.push(...skillCheck.reasons);
-  }
-
-  const duplicateCheck = checkDuplicate(suggestion, note);
-  if (!duplicateCheck.valid) {
-    valid = false;
-    reasons.push(...duplicateCheck.reasons);
   }
 
   return {
