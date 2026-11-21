@@ -388,7 +388,7 @@ export {
 } from './utils/attributeValidation.js';
 
 // New extensibility modules (namespace exports)
-export * as suggestions from './suggestions/SuggestionStore.browser.js';
+export * as suggestions from './suggestions/note/index.js';
 
 // Telemetry - Ledger
 export {

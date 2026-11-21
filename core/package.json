@@ -55,9 +55,9 @@
       "browser": "./dist/browser/config/index.js"
     },
     "./suggestions": {
-      "import": "./dist/suggestions/SuggestionStore.js",
-      "node": "./dist/suggestions/SuggestionStore.js",
-      "browser": "./dist/browser/suggestions/index.js"
+      "import": "./dist/suggestions/note/index.js",
+      "node": "./dist/suggestions/note/index.js",
+      "browser": "./dist/browser/suggestions/note/index.js"
     },
     "./suggestions/note": {
       "import": "./dist/suggestions/note/index.js",
