@@ -223,20 +223,20 @@ Do not start WS6 before WS2 is green.
 - [ ] Keep context chips (date/location) at top; keep status bar
 - [ ] Remove `useSmartNoteAssistant` imports/tests; replace with `useNextSteps`
 
-### WS4 — Navigation & settings (2 days) ⏳ PENDING
+### WS4 — Navigation & settings (2 days) ✅ MOSTLY DONE
 
 **Files:** `utils/navigation.ts`, `types/ui.ts`, `useViewContext.ts`, `useUrlRouting.ts`, `MainView.tsx`, `Header.tsx`, `MobileBottomNav.tsx`, `views/NotesView.tsx`, `views/ConnectionsView.tsx` (new), `views/SettingsView.tsx`
 
 - [x] Add `View` values `capture` and `connections`; legacy aliases (in navigation.ts)
 - [x] `PRIMARY_NAV` = Capture, Notes, Connections; Settings on right (in navigation.ts)
-- [ ] `MOBILE_NAV` = Capture, Notes, Connections, Settings; move Search to header; move Help to overflow
-- [ ] Add `NotesSection` and `NotesMode` to view state and URL
-- [ ] `NotesView`: section chips (All/Tasks/Tags/Trash); mode switch (List/Board/Map/Timeline)
-- [ ] Add `ConnectionsView`: tabs Feed/Matches/Replies/Chat
-- [ ] URL routing with legacy aliases
-- [ ] Settings: 6 groups (General, AI & automation, Network & identity, Data & metrics, Accessibility, Advanced)
-- [ ] Settings default tab General; move Skills+Ontology under Advanced
-- [ ] Header: 3 primary nav + Settings; command palette; status; no More menu
+- [x] `MOBILE_NAV` = Capture, Notes, Connections, Settings; move Search to header; move Help to overflow
+- [x] Add `NotesSection` and `NotesMode` to view state and URL
+- [x] `NotesView`: section chips (All/Tasks/Tags/Trash); mode switch (List/Board/Map/Timeline)
+- [x] Add `ConnectionsView`: tabs Feed/Matches/Replies/Chat
+- [x] URL routing with legacy aliases
+- [x] Settings: 6 groups (General, AI & automation, Network & identity, Data & metrics, Accessibility, Advanced)
+- [x] Settings default tab General; move Skills+Ontology under Advanced
+- [x] Header: 3 primary nav + Settings; command palette; status; no More menu
 
 ### WS5 — Visual system & accessibility (2 days) ⏳ PENDING
 
@@ -309,8 +309,8 @@ Keep `PropertyPanel` only if it is reused as the `+ detail` picker; otherwise de
 2. `fix(suggestions): persist state, abort stale runs, suppress dismissals` ✅
 3. `feat(ui): add next-step strip and drawer` ✅
 4. `refactor(editor): two-row header and inline details` ✅
-5. `refactor(nav): four destinations + Connections` ⏳
-6. `refactor(settings): general default + advanced group` ⏳
+5. `refactor(nav): four destinations + Connections` ✅
+6. `refactor(settings): general default + advanced group` ✅
 7. `style(ui): semantic tokens, type scale, focus and live regions` ⏳
 8. `feat(suggestions): counterfactual widen suggestions` ⏳
 9. `chore(ui): remove assistant surfaces and regenerate screenshots` ⏳

@@ -9,18 +9,15 @@ import {useChatNotifications} from '../hooks/useChatNotifications';
 import {useMetaprogramming} from '../hooks/useMetaprogramming';
 import {LoadingSpinner} from './ui/icons';
 import {ChatView} from './views/ChatView';
-import {MapView} from './views/MapView';
-import {TimelineView} from './views/TimelineView';
 import {NetworkView} from './views/NetworkView';
 import {NotesView} from './views/NotesView';
-import {TrashView} from './views/TrashView';
 import {SettingsView} from './views/SettingsView';
 import {ResponsesView} from './views/ResponsesView';
-import {ActionsView} from './views/ActionsView';
 import {InboxView} from './views/InboxView';
-import {LabelsView} from './views/LabelsView';
 import {OntologyView} from './views/OntologyView';
 import {SkillManagementView} from './skills';
+import {ConnectionsView} from './views/ConnectionsView';
+import {LEGACY_VIEW_ALIASES} from '../utils/navigation';
 
 interface MainViewProps {
     sortedNotes?: Note[];
@@ -45,36 +42,31 @@ export function MainView({sortedNotes}: MainViewProps) {
     }
 
     const renderView = () => {
-        switch (activeView) {
-            case 'inbox':
+        // Handle legacy view aliases
+        const resolvedView = LEGACY_VIEW_ALIASES[activeView] ?? activeView;
+
+        switch (resolvedView) {
+            case 'capture':
                 return <InboxView sortedNotes={sortedNotes}/>;
             case 'notes':
-                return <NotesView sortedNotes={sortedNotes} sidebarViewMode={sidebarViewMode}/>;
-            case 'trash':
-                return <TrashView/>;
-            case 'actions':
-                return <ActionsView/>;
-            case 'responses':
-                return <ResponsesView/>;
-            case 'labels':
-                return <LabelsView/>;
+                return <NotesView sortedNotes={sortedNotes}/>;
+            case 'connections':
+                return <ConnectionsView/>;
+            case 'settings':
+                return <SettingsView/>;
+            case 'skills':
+                return <SkillManagementView/>;
             case 'ontology':
                 return <OntologyView/>;
-            case 'map':
-                return <MapView/>;
-            case 'timeline':
-                return <TimelineView/>;
+            case 'chat':
+                return <ChatView/>;
             case 'network':
                 const matchNote = matchingNoteId
                     ? notes.find((n) => n.id === matchingNoteId)
                     : null;
                 return <NetworkView matchAgainst={matchNote}/>;
-            case 'chat':
-                return <ChatView/>;
-            case 'settings':
-                return <SettingsView/>;
-            case 'skills':
-                return <SkillManagementView/>;
+            case 'responses':
+                return <ResponsesView/>;
             default:
                 return <InboxView sortedNotes={sortedNotes}/>;
         }

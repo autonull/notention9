@@ -1,6 +1,6 @@
 import type { Template } from './domain.js';
 
-export type View = 'notes' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'inbox' | 'actions' | 'responses' | 'labels' | 'ontology' | 'skills';
+export type View = 'notes' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'inbox' | 'actions' | 'responses' | 'labels' | 'ontology' | 'skills' | 'capture' | 'connections';
 
 export type SidebarViewMode = 'list' | 'grid';
 

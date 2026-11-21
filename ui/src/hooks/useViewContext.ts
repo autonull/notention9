@@ -27,6 +27,10 @@ export function useView() {
         setSearchTerm: navigation.setSearchTerm,
         sortOrder: navigation.sortOrder,
         setSortOrder: navigation.setSortOrder,
+        notesSection: navigation.notesSection,
+        setNotesSection: navigation.setNotesSection,
+        notesMode: navigation.notesMode,
+        setNotesMode: navigation.setNotesMode,
 
         // Selection
         selectedNoteId: selection.selectedNoteId,

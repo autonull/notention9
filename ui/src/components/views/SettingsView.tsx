@@ -19,7 +19,7 @@ import {ShortcutsTab} from '../settings/ShortcutsTab';
 import {SyncTab} from '../settings/SyncTab';
 import {RelayDiscoverySection} from '../settings/RelayDiscoverySection';
 import {AppearanceTab} from '../settings/AppearanceTab';
-import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon, PaletteIcon} from '../../components/ui/icons';
+import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon, PaletteIcon, CogIcon, BookOpenIcon} from '../../components/ui/icons';
 
 interface SettingsGroup {
     id: string;
@@ -40,7 +40,7 @@ export function SettingsView() {
     const direction = useDirection();
     const isRTL = direction === 'rtl';
 
-    const [activeTab, setActiveTab] = useState('profile');
+    const [activeTab, setActiveTab] = useState('general');
     const tabRefs = useRef(new Map<string, HTMLButtonElement>());
 
     const groups: SettingsGroup[] = [
@@ -49,7 +49,7 @@ export function SettingsView() {
             label: 'General',
             icon: <UserGroupIcon className="h-5 w-5" />,
             tabs: [
-                {id: 'profile', label: 'Profile & Strategies', icon: <UserGroupIcon className="h-4 w-4" />},
+                {id: 'general', label: 'General', icon: <CogIcon className="h-4 w-4" />},
                 {id: 'appearance', label: 'Appearance', icon: <PaletteIcon className="h-4 w-4" />},
                 {id: 'labels', label: 'Labels', icon: <TagIcon className="h-4 w-4" />},
                 {id: 'language', label: 'Language & Region', icon: <GlobeIcon className="h-4 w-4" />},
@@ -95,6 +95,15 @@ export function SettingsView() {
                 {id: 'accessibility', label: 'Accessibility', icon: <ShieldIcon className="h-4 w-4" />},
             ],
         },
+        {
+            id: 'advanced',
+            label: 'Advanced',
+            icon: <BookOpenIcon className="h-5 w-5" />,
+            tabs: [
+                {id: 'skills', label: 'Skills', icon: <ShieldIcon className="h-4 w-4" />},
+                {id: 'ontology', label: 'Ontology', icon: <BookOpenIcon className="h-4 w-4" />},
+            ],
+        },
     ];
 
     const renderTabContent = () => {
@@ -115,7 +124,7 @@ export function SettingsView() {
                 return <DataTab/>;
             case 'metrics':
                 return <MetricsTab/>;
-            case 'profile':
+            case 'general':
                 return <ProfileSettings/>;
             case 'appearance':
                 return <AppearanceTab/>;
@@ -131,6 +140,10 @@ export function SettingsView() {
                 return <SyncTab/>;
             case 'relayDiscovery':
                 return <RelayDiscoverySection/>;
+            case 'skills':
+                return <div className="p-4"><h3 className="text-lg font-medium mb-4">Skills</h3><p className="text-gray-400">Skills management coming soon.</p></div>;
+            case 'ontology':
+                return <div className="p-4"><h3 className="text-lg font-medium mb-4">Ontology</h3><p className="text-gray-400">Ontology management coming soon.</p></div>;
             default:
                 return null;
         }

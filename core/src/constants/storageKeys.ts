@@ -6,6 +6,8 @@ export const STORAGE_KEYS = {
     suggestions: 'notention-suggestions',
     schemaVersion: 'notention-schema-version',
     envelope: 'notention-envelope',
+    notesSection: 'notention-notes-section',
+    notesMode: 'notention-notes-mode',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];
