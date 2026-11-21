@@ -272,16 +272,6 @@ Do not start WS6 before WS2 is green.
 - [x] Delete old Assistant code, old suggestion cards, old screenshots
 - [x] Run full gate (core + UI tests pass; full suite passes except task-first infra timeout)
 
-- [ ] Update showcase scenes for Next Steps
-- [ ] Add `next-steps.scene.ts`: empty, one, multiple, applied, stale, zero-match, mobile
-- [ ] Update screenshot manifest + gallery
-- [ ] Add `next-steps.spec.ts`: publish→strip; apply→undo→history; dismiss→reload→suppressed; edit→stale→regen
-- [ ] Add `axe-audit.spec.ts` for strip + drawer
-- [ ] Update `task-first` audit
-- [ ] Flip `NEXT_STEPS_UI` on for all tests; remove flag
-- [x] Delete old Assistant code, old suggestion cards, old screenshots
-- [ ] Run full gate
-
 ---
 ## Session Summary (2026-11-21)
 
