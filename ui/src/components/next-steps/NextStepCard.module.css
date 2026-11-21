@@ -1,26 +1,30 @@
 .card {
   background: var(--color-surface-raised, #1e1e1e);
   border: 1px solid var(--color-border, #333);
-  border-radius: 8px;
-  padding: 12px;
+  border-radius: 10px;
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
   transition: border-color 0.2s, box-shadow 0.2s;
+  min-height: 92px;
+  border-left-width: 4px;
+  border-left-color: var(--color-accent, #3b82f6);
 }
 
 .card:hover {
   border-color: var(--color-border-hover, #444);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 
 .card.stale {
-  opacity: 0.7;
-  border-color: var(--color-border-muted, #2a2a2a);
+  opacity: 0.85;
+  border-left-color: var(--color-warning, #f59e0b);
 }
 
 .card.applied {
-  border-color: var(--color-accent-muted, #2d5a2d);
-  background: var(--color-surface-applied, #1a2a1a);
+  border-left-color: var(--color-success, #10b981);
+  opacity: 0.9;
 }
 
 .mainRow {
@@ -40,15 +44,15 @@
 
 .title {
   margin: 0;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--color-text, #e8e8e8);
-  line-height: 1.4;
+  line-height: 1.3;
 }
 
 .evidence {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--color-text-muted, #9ca3af);
   display: flex;
   align-items: center;
@@ -57,7 +61,7 @@
 }
 
 .sourceIcon {
-  font-size: 11px;
+  font-size: 12px;
   flex-shrink: 0;
 }
 
@@ -98,14 +102,16 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 12px;
-  font-size: 13px;
-  font-weight: 500;
-  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 8px;
   border: none;
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
-  min-height: 36px;
+  transition: background-color 0.15s, color 0.15s, transform 0.1s;
+  min-height: 44px;
+  min-width: 88px;
+  justify-content: center;
 }
 
 .primaryAction:not(.undoAction):not(.refreshAction) {
@@ -113,33 +119,42 @@
   color: white;
 }
 
-.primaryAction:not(.undoAction):not(.refreshAction):hover {
+.primaryAction:not(.undoAction):not(.refreshAction):hover:not(:disabled) {
   background: var(--color-accent-hover, #2563eb);
+  transform: translateY(-1px);
 }
 
 .primaryAction.refreshAction {
-  background: var(--color-surface-hover, #2a2a2a);
-  color: var(--color-text, #e8e8e8);
-  border: 1px solid var(--color-border, #333);
+  background: var(--color-warning, #f59e0b);
+  color: white;
+  border: none;
 }
 
-.primaryAction.refreshAction:hover {
-  background: var(--color-surface-hover-strong, #333);
+.primaryAction.refreshAction:hover:not(:disabled) {
+  background: var(--color-warning-hover, #d97706);
+  transform: translateY(-1px);
 }
 
 .primaryAction.undoAction {
-  background: var(--color-surface-hover, #2a2a2a);
-  color: var(--color-text, #e8e8e8);
-  border: 1px solid var(--color-border, #333);
+  background: var(--color-text-muted, #6b7280);
+  color: white;
+  border: none;
 }
 
-.primaryAction.undoAction:hover {
-  background: var(--color-surface-hover-strong, #333);
+.primaryAction.undoAction:hover:not(:disabled) {
+  background: var(--color-text-secondary, #4b5563);
+  transform: translateY(-1px);
 }
 
 .primaryAction:focus-visible {
   outline: 2px solid var(--color-accent, #3b82f6);
   outline-offset: 2px;
+}
+
+.primaryAction:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
 }
 
 .actionIcon {
@@ -149,24 +164,26 @@
 }
 
 .whyButton {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: none;
-  border-radius: 6px;
+  border: 1px solid var(--color-border, #333);
+  border-radius: 8px;
   color: var(--color-text-muted, #9ca3af);
   cursor: pointer;
   padding: 0;
-  transition: background-color 0.15s, color 0.15s;
-  min-width: 32px;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .whyButton:hover {
   background: var(--color-surface-hover, #2a2a2a);
   color: var(--color-text, #e8e8e8);
+  border-color: var(--color-accent, #3b82f6);
 }
 
 .whyButton:focus-visible {
@@ -175,24 +192,26 @@
 }
 
 .dismissButton {
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: none;
-  border-radius: 6px;
+  border: 1px solid var(--color-border, #333);
+  border-radius: 8px;
   color: var(--color-text-muted, #9ca3af);
   cursor: pointer;
   padding: 0;
-  transition: background-color 0.15s, color 0.15s;
-  min-width: 32px;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  min-width: 44px;
+  min-height: 44px;
 }
 
 .dismissButton:hover {
-  background: var(--color-error-muted, #3a1a1a);
+  background: var(--color-error-bg, #7f1d1d);
   color: var(--color-error, #ef4444);
+  border-color: var(--color-error, #ef4444);
 }
 
 .dismissButton:focus-visible {
@@ -204,16 +223,16 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 4px 8px;
-  font-size: 11px;
+  padding: 6px 12px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--color-text-muted, #9ca3af);
   background: var(--color-surface, #181818);
-  border-radius: 4px;
+  border-radius: 999px;
   align-self: flex-start;
-  margin-top: 4px;
+  margin-top: 8px;
 }
 
 .sourceChip .sourceIcon {
-  font-size: 10px;
+  font-size: 11px;
 }

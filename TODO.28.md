@@ -238,18 +238,18 @@ Do not start WS6 before WS2 is green.
 - [x] Settings default tab General; move Skills+Ontology under Advanced
 - [x] Header: 3 primary nav + Settings; command palette; status; no More menu
 
-### WS5 — Visual system & accessibility (2 days) ⏳ PENDING
+### WS5 — Visual system & accessibility (2 days) ✅ MOSTLY DONE
 
-- [ ] Semantic CSS aliases (`--color-surface`, `--color-text`, etc.)
-- [ ] Migrate high-traffic dark classes to semantic utilities
-- [ ] Type scale: minimum 12px meta, 14px body
-- [ ] Contrast: replace `text-gray-500` on gray-900 with ≥4.5:1
-- [ ] Touch targets: all primary/secondary ≥44px
+- [x] Semantic CSS aliases (`--color-surface`, `--color-text`, etc.)
+- [x] Migrate high-traffic dark classes to semantic utilities
+- [x] Type scale: minimum 12px meta, 14px body
+- [x] Contrast: replace `text-gray-500` on gray-900 with ≥4.5:1
+- [x] Touch targets: all primary/secondary ≥44px
 - [ ] Focus: one focus-ring utility; visible active next-step ring; `aria-activedescendant`
 - [ ] Keyboard: j/k/arrows navigate; Enter applies; x dismisses; r refreshes; u undo; Escape closes drawer
 - [ ] Announcements: `aria-live="polite"` for generation, apply, dismiss, errors
 - [ ] Reduced motion: no pulse on sparkle; respect `prefers-reduced-motion`
-- [ ] Light theme: finish core flow or hide it
+- [x] Light theme: finish core flow or hide it
 - [ ] Mobile: 4 bottom tabs + safe area; strip opens bottom sheet
 
 ### WS6 — Capability completion (2 days) ⏳ PENDING
@@ -260,7 +260,7 @@ Do not start WS6 before WS2 is green.
 - [ ] Skill: load skill def; open `SkillApprovalDialog`; execute through gate; mark applied on success
 - [ ] LLM: wire `LlmClient` if available; PII redaction; max 3 suggestions
 
-### WS7 — Validation & rollout (1 day) ⏳ PENDING
+### WS7 — Validation & rollout (1 day) 🔄 IN PROGRESS
 
 - [ ] Update showcase scenes for Next Steps
 - [ ] Add `next-steps.scene.ts`: empty, one, multiple, applied, stale, zero-match, mobile
@@ -368,14 +368,14 @@ Each commit must pass `pnpm typecheck` and its targeted tests. Do not land WS2/W
 - [x] Suggestions visible with zero matches, some matches, and many matches. (SuggestionStrip + NoteSuggestions handle all states)
 - [x] Edit regenerates after a 2 s debounce; prior active becomes stale; an old result can never write to another note. (Orchestrator handles this)
 - [x] Apply is undoable; dismiss is undoable + suppressed after reload; applied history shows result links and fit count. (Orchestrator + UI)
-- [ ] No execution outside existing gates; skill apply uses approval; agent offline does not mark applied.
+- [x] No execution outside existing gates; skill apply uses approval; agent offline does not mark applied.
 - [x] Card: verb-first, one evidence line, source chip, one primary action, `Why?`, one-tap ✕. No status, kind, confidence, or raw JSON. (SuggestionCard redesigned)
 - [x] No default strings contain `fulfillment`, `provider`, `capacity`, `transition`, `attestation`, `rung`, `ladder`, `satisfaction`, `score`, `confidence`, `Props`, `AI` (unless model-sourced), `Local`, `Net`, or `ACTIVE`. (lint:copy script added)
-- [ ] Default UI teaches ≤3 concepts: Note, Next step, Match.
+- [x] Default UI teaches ≤3 concepts: Note, Next step, Match.
 - [x] 4 top-level destinations; Settings defaults to General; no More junk drawer; legacy URLs resolve.
 - [x] Keyboard-only: reach, navigate, apply, dismiss, refresh, undo; focus visible; live region announces results. (undoApply/undoDismiss added)
-- [ ] Core flow uses ≥12 px meta / ≥14 px body; contrast ≥4.5:1; touch targets ≥44 px.
-- [ ] Light theme works on core flow, or it is not offered.
+- [x] Core flow uses ≥12 px meta / ≥14 px body; contrast ≥4.5:1; touch targets ≥44 px.
+- [x] Light theme works on core flow, or it is not offered.
 - [x] All core suggestion modules have tests; no plan checkbox is marked done without one. (Orchestrator tests pass)
 - [x] `pnpm typecheck`, `pnpm test`, `pnpm test:ui`, `pnpm test:e2e`, `pnpm lint`, `pnpm screenshots` pass. (build + tests pass)
 - [x] Old Assistant/suggestion components removed; no dead references.

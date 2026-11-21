@@ -91,7 +91,7 @@
 
 .title {
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
   color: var(--color-text, #e8e8e8);
   display: flex;
@@ -104,7 +104,7 @@
   font-weight: 500;
   color: var(--color-accent, #3b82f6);
   background: var(--color-accent-muted, #1e3a5f);
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 999px;
 }
 
@@ -116,23 +116,25 @@
 
 .refreshButton,
 .closeButton {
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
-  border: none;
+  border: 1px solid var(--color-border, #333);
   border-radius: 8px;
   color: var(--color-text-muted, #9ca3af);
   cursor: pointer;
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  min-height: 44px;
 }
 
 .refreshButton:hover,
 .closeButton:hover {
   background: var(--color-surface-hover, #2a2a2a);
   color: var(--color-text, #e8e8e8);
+  border-color: var(--color-accent, #3b82f6);
 }
 
 .refreshButton:focus-visible,
@@ -161,25 +163,33 @@
   align-items: center;
   justify-content: space-between;
   padding: 12px 16px;
-  background: var(--color-error-bg, #1a0a0a);
-  border-bottom: 1px solid var(--color-error-muted, #3a1a1a);
-  color: var(--color-error, #ef4444);
-  font-size: 13px;
+  background: var(--color-error-bg, #7f1d1d);
+  border-bottom: 1px solid var(--color-error-muted, #7f1d1d);
+  color: var(--color-error, #fca5a5);
+  font-size: 14px;
 }
 
 .retryButton {
-  padding: 6px 12px;
-  font-size: 12px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
   background: var(--color-error, #ef4444);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background-color 0.15s, opacity 0.15s, transform 0.1s;
+  min-height: 40px;
 }
 
 .retryButton:hover {
-  opacity: 0.9;
+  background: var(--color-error-hover, #dc2626);
+  transform: translateY(-1px);
+}
+
+.retryButton:focus-visible {
+  outline: 2px solid var(--color-error, #ef4444);
+  outline-offset: 2px;
 }
 
 .content {
@@ -199,7 +209,7 @@
 
 .sectionTitle {
   margin: 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -210,7 +220,7 @@
 }
 
 .appliedCount {
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   color: var(--color-accent, #3b82f6);
 }
@@ -255,13 +265,14 @@
 .matchCard {
   display: flex;
   align-items: center;
-  padding: 10px 12px;
+  padding: 12px 14px;
   background: var(--color-surface-raised, #1e1e1e);
   border: 1px solid var(--color-border, #333);
   border-radius: 8px;
   text-align: left;
   cursor: pointer;
   transition: border-color 0.15s, background-color 0.15s;
+  min-height: 56px;
 }
 
 .matchCard:hover {
@@ -287,7 +298,7 @@
 
 .matchTitle {
   margin: 0;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   color: var(--color-text, #e8e8e8);
   white-space: nowrap;
@@ -305,16 +316,16 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 6px;
-  font-size: 10px;
+  padding: 4px 8px;
+  font-size: 11px;
   font-weight: 500;
   color: var(--color-text-muted, #9ca3af);
   background: var(--color-surface, #181818);
-  border-radius: 4px;
+  border-radius: 999px;
 }
 
 .fitCount {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--color-accent, #3b82f6);
   font-weight: 500;
 }
@@ -331,16 +342,129 @@
 }
 
 .refreshButtonSmall {
-  padding: 8px 16px;
-  font-size: 13px;
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
   background: var(--color-accent, #3b82f6);
   color: white;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.15s;
+  transition: background-color 0.15s, opacity 0.15s, transform 0.1s;
+  min-height: 44px;
 }
 
 .refreshButtonSmall:hover {
   background: var(--color-accent-hover, #2563eb);
+  transform: translateY(-1px);
+}
+
+.refreshButtonSmall:focus-visible {
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 2px;
+}
+
+/* Light theme support */
+@media (prefers-color-scheme: light) {
+  .panel {
+    background: var(--color-surface, #fff);
+    border-left-color: var(--color-border, #e0e0e0);
+  }
+
+  @media (max-width: 767px) {
+    .panel {
+      border-top-color: var(--color-border, #e0e0e0);
+    }
+  }
+
+  .handle {
+    background: var(--color-border, #e0e0e0);
+  }
+
+  .header {
+    border-bottom-color: var(--color-border, #e0e0e0);
+  }
+
+  .title {
+    color: var(--color-text, #111);
+  }
+
+  .count {
+    background: var(--color-accent-muted, #e0e7ff);
+    color: var(--color-accent, #4f46e5);
+  }
+
+  .refreshButton,
+  .closeButton {
+    border-color: var(--color-border, #d0d0d0);
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .refreshButton:hover,
+  .closeButton:hover {
+    background: var(--color-surface-hover, #f3f4f6);
+    color: var(--color-text, #111);
+    border-color: var(--color-accent, #4f46e5);
+  }
+
+  .error {
+    background: var(--color-error-bg, #fef2f2);
+    border-bottom-color: var(--color-error, #dc2626);
+    color: var(--color-error, #dc2626);
+  }
+
+  .retryButton {
+    background: var(--color-error, #dc2626);
+  }
+
+  .retryButton:hover {
+    background: var(--color-error-hover, #b91c1c);
+  }
+
+  .content {
+    background: var(--color-surface, #fff);
+  }
+
+  .sectionTitle {
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .appliedCount {
+    color: var(--color-accent, #4f46e5);
+  }
+
+  .matchCard {
+    background: var(--color-surface-raised, #f9fafb);
+    border-color: var(--color-border, #e0e0e0);
+  }
+
+  .matchCard:hover {
+    border-color: var(--color-border-hover, #d0d0d0);
+    background: var(--color-surface-hover, #f3f4f6);
+  }
+
+  .matchTitle {
+    color: var(--color-text, #111);
+  }
+
+  .sourceChip {
+    background: var(--color-surface, #f5f5f5);
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .fitCount {
+    color: var(--color-accent, #4f46e5);
+  }
+
+  .empty {
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .refreshButtonSmall {
+    background: var(--color-accent, #4f46e5);
+  }
+
+  .refreshButtonSmall:hover {
+    background: var(--color-accent-hover, #4338ca);
+  }
 }

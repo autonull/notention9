@@ -16,7 +16,7 @@
   justify-content: center;
   gap: 8px;
   padding: 16px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--color-text-muted, #9ca3af);
   background: var(--color-surface, #181818);
   border: 1px solid var(--color-border, #333);
@@ -30,7 +30,7 @@
 .spinner {
   width: 16px;
   height: 16px;
-  border: 2px solid var(--color-border, #333);
+  border: 2px solid var(--color-border, #444);
   border-top-color: var(--color-accent, #3b82f6);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
@@ -43,24 +43,32 @@
 }
 
 .error {
-  color: var(--color-error, #ef4444);
-  border-color: var(--color-error-muted, #3a1a1a);
-  background: var(--color-error-bg, #1a0a0a);
+  color: var(--color-error, #fca5a5);
+  border-color: var(--color-error-muted, #7f1d1d);
+  background: var(--color-error-bg, #7f1d1d);
 }
 
 .retryButton {
-  padding: 4px 12px;
-  font-size: 12px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
   background: var(--color-error, #ef4444);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: background-color 0.15s, opacity 0.15s, transform 0.1s;
+  min-height: 40px;
 }
 
 .retryButton:hover {
-  opacity: 0.9;
+  background: var(--color-error-hover, #dc2626);
+  transform: translateY(-1px);
+}
+
+.retryButton:focus-visible {
+  outline: 2px solid var(--color-error, #ef4444);
+  outline-offset: 2px;
 }
 
 .empty {
@@ -68,23 +76,30 @@
 }
 
 .refreshButton {
-  width: 28px;
-  height: 28px;
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-surface-hover, #2a2a2a);
   border: 1px solid var(--color-border, #333);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--color-text-muted, #9ca3af);
   cursor: pointer;
   font-size: 14px;
-  transition: background-color 0.15s, color 0.15s;
+  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+  min-height: 44px;
 }
 
 .refreshButton:hover {
   background: var(--color-surface-hover-strong, #333);
   color: var(--color-text, #e8e8e8);
+  border-color: var(--color-accent, #3b82f6);
+}
+
+.refreshButton:focus-visible {
+  outline: 2px solid var(--color-accent, #3b82f6);
+  outline-offset: 2px;
 }
 
 .openDrawer {
@@ -92,16 +107,16 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 8px 12px;
+  padding: 10px 16px;
   font-size: 13px;
   font-weight: 500;
   color: var(--color-text-muted, #9ca3af);
   background: var(--color-surface, #181818);
   border: 1px solid var(--color-border, #333);
-  border-radius: 6px;
+  border-radius: 8px;
   cursor: pointer;
   transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-  min-height: 36px;
+  min-height: 44px;
   align-self: center;
 }
 
@@ -114,4 +129,71 @@
 .openDrawer:focus-visible {
   outline: 2px solid var(--color-accent, #3b82f6);
   outline-offset: 2px;
+}
+
+/* Mobile adjustments */
+@media (max-width: 640px) {
+  .retryButton {
+    min-height: 44px;
+  }
+  
+  .refreshButton {
+    min-height: 44px;
+  }
+  
+  .openDrawer {
+    min-height: 44px;
+  }
+}
+
+/* Light theme support */
+@media (prefers-color-scheme: light) {
+  .loading,
+  .empty {
+    background: var(--color-surface, #f5f5f5);
+    border-color: var(--color-border, #d0d0d0);
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .error {
+    background: var(--color-error-bg, #fef2f2);
+    border-color: var(--color-error, #dc2626);
+    color: var(--color-error, #dc2626);
+  }
+
+  .spinner {
+    border-color: var(--color-border, #d0d0d0);
+  }
+
+  .retryButton {
+    background: var(--color-error, #dc2626);
+  }
+
+  .retryButton:hover {
+    background: var(--color-error-hover, #b91c1c);
+  }
+
+  .refreshButton {
+    background: var(--color-surface-hover, #e5e7eb);
+    border-color: var(--color-border, #d0d0d0);
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .refreshButton:hover {
+    background: var(--color-surface-hover-strong, #d1d5db);
+    color: var(--color-text, #111);
+    border-color: var(--color-accent, #3b82f6);
+  }
+
+  .openDrawer {
+    background: var(--color-surface, #f9fafb);
+    border-color: var(--color-border, #d0d0d0);
+    color: var(--color-text-muted, #6b7280);
+  }
+
+  .openDrawer:hover {
+    background: var(--color-surface-hover, #f3f4f6);
+    color: var(--color-text, #111);
+    border-color: var(--color-border-hover, #bbb);
+  }
 }

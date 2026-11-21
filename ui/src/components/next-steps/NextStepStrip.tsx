@@ -2,7 +2,8 @@ import React from 'react';
 import { Note } from '@notention/core';
 import { ChevronDownIcon, SparklesIcon } from '../ui/icons';
 import { NextStepCard } from './NextStepCard';
-import { useNextSteps, NextStep, SimpleMatch } from '../../hooks/useNextSteps';
+import { useNextSteps, NextStep, SimpleMatch, SkillApprovalState } from '../../hooks/useNextSteps';
+import { SkillApprovalDialog } from '../skills/SkillApprovalDialog';
 import styles from './NextStepStrip.module.css';
 
 interface NextStepStripProps {
@@ -29,6 +30,8 @@ export function NextStepStrip({
     error,
     refresh,
     nextSteps,
+    skillApproval,
+    closeSkillApproval,
   } = useNextSteps({ note, localMatches, networkMatches });
 
   const handleApply = (stepId: string) => {
@@ -111,6 +114,21 @@ export function NextStepStrip({
           <span>{nextSteps.length} next steps</span>
           <ChevronDownIcon className="w-4 h-4" />
         </button>
+      )}
+      {skillApproval.isOpen && skillApproval.step && (
+        <SkillApprovalDialog
+          isOpen={skillApproval.isOpen}
+          onClose={closeSkillApproval}
+          onApprove={skillApproval.onApprove}
+          onReject={skillApproval.onReject}
+          skillName={skillApproval.step.skillName || ''}
+          skillDescription={skillApproval.step.skillDescription || ''}
+          actions={skillApproval.step.skillActions || []}
+          domains={skillApproval.step.skillDomains || []}
+          requiresAuth={skillApproval.step.skillRequiresAuth || false}
+          expectedOutcome={skillApproval.step.skillExpectedOutcome}
+          preview={skillApproval.step.skillPreview}
+        />
       )}
     </div>
   );

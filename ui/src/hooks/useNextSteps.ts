@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Note, NoteSuggestion } from '@notention/core';
 import { useNoteSuggestions } from './useNoteSuggestions';
 
@@ -15,6 +15,23 @@ export interface NextStep {
   apply?: () => void;
   dismiss?: () => void;
   undo?: () => void;
+  // Skill approval fields
+  skillId?: string;
+  skillName?: string;
+  skillDescription?: string;
+  skillActions?: Array<{ type: string; description: string; url?: string; selector?: string }>;
+  skillDomains?: string[];
+  skillRequiresAuth?: boolean;
+  skillExpectedOutcome?: string;
+  skillPreview?: string;
+}
+
+export interface SkillApprovalState {
+  isOpen: boolean;
+  stepId: string | null;
+  step: NextStep | null;
+  onApprove: (autoExecute: boolean) => void;
+  onReject: () => void;
 }
 
 export interface SimpleMatch {
@@ -37,6 +54,9 @@ export interface UseNextStepsReturn {
   isGenerating: boolean;
   error: Error | null;
   refresh: () => Promise<void>;
+  skillApproval: SkillApprovalState;
+  requestSkillApproval: (step: NextStep) => void;
+  closeSkillApproval: () => void;
 }
 
 function mapSource(suggestion: NoteSuggestion): NextStepSource {
@@ -129,6 +149,41 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
     undoDismiss,
   } = useNoteSuggestions({ note });
 
+  // Skill approval state
+  const [skillApproval, setSkillApproval] = useState<SkillApprovalState>({
+    isOpen: false,
+    stepId: null,
+    step: null,
+    onApprove: () => {},
+    onReject: () => {},
+  });
+
+  const requestSkillApproval = useCallback((step: NextStep) => {
+    setSkillApproval({
+      isOpen: true,
+      stepId: step.id,
+      step,
+      onApprove: (autoExecute: boolean) => {
+        // Apply the suggestion after approval
+        applySuggestion(step.id);
+        // Optionally store auto-execute preference
+        if (autoExecute && step.skillId) {
+          try {
+            localStorage.setItem(`skill-auto-execute-${step.skillId}`, 'true');
+          } catch {}
+        }
+        setSkillApproval({ ...skillApproval, isOpen: false, stepId: null, step: null });
+      },
+      onReject: () => {
+        setSkillApproval({ ...skillApproval, isOpen: false, stepId: null, step: null });
+      },
+    });
+  }, [applySuggestion]);
+
+  const closeSkillApproval = useCallback(() => {
+    setSkillApproval({ ...skillApproval, isOpen: false, stepId: null, step: null });
+  }, []);
+
   const nextSteps = useMemo((): NextStep[] => {
     if (!note) return [];
 
@@ -140,17 +195,41 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
       const isSkill = suggestion.kind === 'fulfillment-hint' || suggestion.kind === 'skill-match';
       const isCounterfactual = suggestion.kind === 'inferred-constraint';
 
-      steps.push({
+      // Check if auto-execute is enabled for this skill
+      let autoExecute = false;
+      if (isSkill && suggestion.skillId) {
+        try {
+          autoExecute = localStorage.getItem(`skill-auto-execute-${suggestion.skillId}`) === 'true';
+        } catch {}
+      }
+
+      // Get skill details from evidence
+      const evidence = suggestion.evidence[0];
+      const skillDetails = evidence?.details as Record<string, unknown> | undefined;
+
+      const step: NextStep = {
         id: suggestion.id,
         title: getVerbTitle(suggestion),
         evidence: getEvidenceLine(suggestion),
         why: suggestion.description,
         source,
         state: 'active',
-        actionLabel: isSkill ? 'Preview & approve' : isCounterfactual ? 'Widen' : 'Apply',
-        apply: () => { applySuggestion(suggestion.id); },
+        actionLabel: isSkill ? (autoExecute ? 'Run' : 'Preview & approve') : isCounterfactual ? 'Widen' : 'Apply',
+        apply: isSkill && !autoExecute
+          ? () => { requestSkillApproval(step); }
+          : () => { applySuggestion(suggestion.id); },
         dismiss: () => { dismissSuggestion(suggestion.id); },
-      });
+        // Skill approval fields
+        skillName: skillDetails?.skillName as string,
+        skillDescription: skillDetails?.skillDescription as string,
+        skillActions: skillDetails?.actions as Array<{ type: string; description: string; url?: string; selector?: string }>,
+        skillDomains: skillDetails?.domains as string[],
+        skillRequiresAuth: skillDetails?.requiresAuth as boolean,
+        skillExpectedOutcome: skillDetails?.expectedOutcome as string,
+        skillPreview: skillDetails?.preview as string,
+        skillId: suggestion.skillId,
+      };
+      steps.push(step);
     }
 
     // Stale suggestions
@@ -230,6 +309,7 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
     applySuggestion,
     dismissSuggestion,
     undoApply,
+    requestSkillApproval,
   ]);
 
   const topNextStep = useMemo(() => {
@@ -244,5 +324,8 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
     isGenerating,
     error,
     refresh,
+    skillApproval,
+    requestSkillApproval,
+    closeSkillApproval,
   };
 }

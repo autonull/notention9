@@ -6,7 +6,7 @@
   border-left-width: 4px;
   border-left-color: var(--accent-primary, #6366f1);
   transition: box-shadow 0.2s, border-color 0.2s;
-  min-height: 88px;
+  min-height: 92px;
 }
 
 .card:hover {
@@ -41,17 +41,17 @@
   margin-top: 8px;
   padding-top: 8px;
   border-top: 1px dashed var(--border-color, #333);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--success-color, #10b981);
   font-weight: 500;
 }
 
 .appliedIcon {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .appliedText {
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .mainRow {
@@ -67,7 +67,7 @@
 
 .title {
   margin: 0 0 4px;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary, #fff);
   line-height: 1.3;
@@ -75,7 +75,7 @@
 
 .description {
   margin: 0 0 8px;
-  font-size: 13px;
+  font-size: 14px;
   color: var(--text-secondary, #aaa);
   line-height: 1.4;
 }
@@ -86,7 +86,7 @@
   padding: 8px 10px;
   margin-bottom: 8px;
   font-family: ui-monospace, SFMono-Regular, monospace;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .property {
@@ -113,8 +113,8 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
-  color: var(--text-muted, #666);
+  font-size: 12px;
+  color: var(--text-muted, #999);
   padding-top: 4px;
 }
 
@@ -140,18 +140,18 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 14px;
+  padding: 10px 16px;
   border-radius: 8px;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 600;
   cursor: pointer;
   border: none;
   background: var(--accent-primary, #6366f1);
   color: #fff;
   transition: background-color 0.15s, opacity 0.15s, transform 0.1s;
-  min-width: 80px;
+  min-width: 88px;
   justify-content: center;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 .primaryAction:hover:not(:disabled) {
@@ -200,15 +200,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   cursor: pointer;
   border: 1px solid var(--border-color, #333);
   background: transparent;
-  color: var(--text-secondary, #888);
+  color: var(--text-secondary, #aaa);
   transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 .whyButton:hover {
@@ -226,15 +226,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   border-radius: 8px;
   cursor: pointer;
   border: 1px solid var(--border-color, #333);
   background: transparent;
-  color: var(--text-muted, #666);
+  color: var(--text-muted, #888);
   transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-  min-height: 40px;
+  min-height: 44px;
 }
 
 .dismissButton:hover {
@@ -253,18 +253,18 @@
   align-items: center;
   gap: 4px;
   margin-top: 10px;
-  padding: 4px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
   background: var(--bg-tertiary, #2a2a3e);
-  color: var(--text-secondary, #888);
+  color: var(--text-secondary, #aaa);
   border: 1px solid var(--border-color, #333);
   max-width: fit-content;
 }
 
 .sourceChip .sourceIcon {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 /* Mobile adjustments */
@@ -307,56 +307,77 @@
 @media (prefers-color-scheme: light) {
   .card {
     background: var(--bg-secondary, #fff);
-    border-color: var(--border-color, #e0e0e0);
+    border-color: var(--border-color, #d0d0d0);
   }
 
   .card:hover {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-    border-color: var(--border-hover, #ccc);
+    border-color: var(--border-hover, #bbb);
   }
 
   .proposedChange {
-    background: var(--bg-tertiary, #f5f5f5);
+    background: var(--bg-tertiary, #f0f0f0);
   }
 
   .whyButton,
   .dismissButton {
-    border-color: var(--border-color, #e0e0e0);
+    border-color: var(--border-color, #d0d0d0);
   }
 
   .whyButton:hover {
-    background: var(--bg-tertiary, #f5f5f5);
+    background: var(--bg-tertiary, #f0f0f0);
     color: var(--text-primary, #111);
   }
 
   .dismissButton:hover {
     background: var(--error-bg, #fef2f2);
-    color: var(--error-color, #ef4444);
-    border-color: var(--error-color, #ef4444);
+    color: var(--error-color, #dc2626);
+    border-color: var(--error-color, #dc2626);
   }
 
   .sourceChip {
-    background: var(--bg-tertiary, #f5f5f5);
-    border-color: var(--border-color, #e0e0e0);
+    background: var(--bg-tertiary, #f0f0f0);
+    border-color: var(--border-color, #d0d0d0);
+    color: var(--text-secondary, #444);
   }
 
   .card.applied {
-    border-left-color: var(--success-color, #10b981);
+    border-left-color: var(--success-color, #059669);
   }
 
   .card.dismissed {
-    border-left-color: var(--text-muted, #999);
+    border-left-color: var(--text-muted, #9ca3af);
   }
 
   .appliedLine {
-    color: var(--success-color, #10b981);
+    color: var(--success-color, #059669);
   }
 
   .primaryAction.undoAction {
-    background: var(--text-muted, #999);
+    background: var(--text-muted, #9ca3af);
   }
 
   .primaryAction.undoAction:hover:not(:disabled) {
-    background: var(--text-secondary, #666);
+    background: var(--text-secondary, #6b7280);
+  }
+
+  .title {
+    color: var(--text-primary, #111);
+  }
+
+  .description {
+    color: var(--text-secondary, #4b5563);
+  }
+
+  .propertyKey {
+    color: var(--accent-primary, #4f46e5);
+  }
+
+  .propertyValue {
+    color: var(--text-primary, #111);
+  }
+
+  .evidence {
+    color: var(--text-muted, #6b7280);
   }
 }
