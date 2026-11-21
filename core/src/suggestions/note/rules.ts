@@ -243,7 +243,10 @@ export function getDefaultRules(): SuggestionRule[] {
       name: 'Add contact for offer notes',
       description: 'Offers should include contact information',
       targetNodeIds: ['offer/skill-offer', 'offer/service-offer'],
-      condition: { type: 'nodeType', nodeId: 'offer/skill-offer' },
+      condition: { type: 'or', conditions: [
+        { type: 'nodeType', nodeId: 'offer/skill-offer' },
+        { type: 'nodeType', nodeId: 'offer/service-offer' }
+      ]},
       action: {
         type: 'suggestAddProperty',
         key: 'contact',

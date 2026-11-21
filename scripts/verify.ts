@@ -31,7 +31,8 @@ async function main(): Promise<void> {
     run('pnpm exec tsx scripts/check-purity.ts', 'L0: Native dependency purity check');
 
     // L0 + L1: Unit tests (pure + fast quality)
-    run('pnpm test', 'L0+L1: Unit tests (core, agent, cli, optimize)');
+    // Exclude simulator tests (too slow for regular verify; run separately with pnpm --filter @notention/simulator test)
+    run('pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test', 'L0+L1: Unit tests (core, agent, cli, optimize)');
 
     // L1 continued: UI unit tests (batched)
     run('pnpm test:ui', 'L1: UI unit tests (batched)');

@@ -205,9 +205,9 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 **Goal:** every emitted card is grounded, valid, and counted truthfully.
 
 - [x] **`verify.ts`**: `checkDuplicate` applies to `add` only. `modify`/`remove`/`widen` require the property to exist.
-- [ ] **`verify.ts`**: Ground skill cards against `ctx.skills` (unknown id → rejected). Ground related cards against the corpus.
-- [ ] **`verify.ts`**: Validate operator/values against the ontology's *effective* operators (real + imaginary for constraints).
-- [ ] **`rules.ts`**: fix `rule-add-contact-for-offers` (condition must match both target node types); evidence carries the rule's human reason, never the raw rule id; default rules propose only ontology-valid operators.
+- [x] **`verify.ts`**: Ground skill cards against `ctx.skills` (unknown id → rejected). Ground related cards against the corpus.
+- [x] **`verify.ts`**: Validate operator/values against the ontology's *effective* operators (real + imaginary for constraints).
+- [x] **`rules.ts`**: fix `rule-add-contact-for-offers` (condition must match both target node types); evidence carries the rule's human reason, never the raw rule id; default rules propose only ontology-valid operators.
 - [x] **`fulfillment.ts`**: uses `ctx.ontology` directly (deleted `matcher.getOntology?.()` probe); skill cards only for concrete registered skills; fit evidence via `countFits` (via counterfactual).
 - [x] **`counterfactual.ts`** — correct semantics:
   - [x] **Direction**: relax in the direction that grows the satisfying set — numeric gte ↓, lte ↑, enum extended.

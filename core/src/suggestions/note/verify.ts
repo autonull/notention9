@@ -1,5 +1,5 @@
 import type { Note, Property, OntologyNode } from '../../types/index.js';
-import type { NoteSuggestion, VerificationResult } from './types.js';
+import type { NoteSuggestion, VerificationResult, SkillDefinition } from './types.js';
 import { OntologyService } from '../../ontology/ontologyService.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 
@@ -7,6 +7,7 @@ export interface VerificationContext {
   note: Note;
   ontology: OntologyNode[];
   allNotes: Note[];
+  skills?: SkillDefinition[];
 }
 
 export function verifySuggestion(
@@ -51,7 +52,7 @@ export function verifySuggestion(
   }
 
   if (suggestion.kind === 'fulfillment-hint' && suggestion.skillId) {
-    const skillCheck = verifySkillMatch(suggestion.skillId, note);
+    const skillCheck = verifySkillMatch(suggestion.skillId, note, context.skills);
     valid = valid && skillCheck.valid;
     confidence = Math.min(confidence, skillCheck.confidence);
     reasons.push(...skillCheck.reasons);
@@ -165,12 +166,18 @@ function verifyRelatedMatch(
   return { valid, confidence, reasons };
 }
 
-function verifySkillMatch(skillId: string, note: Note): VerificationResult {
+function verifySkillMatch(skillId: string, note: Note, skills: SkillDefinition[] = []): VerificationResult {
   const reasons: string[] = [];
   let confidence = 0.7;
   let valid = true;
 
-  // skillId is always concrete now; no 'auto' fallback
+  const skill = skills.find(s => s.id === skillId);
+  if (!skill) {
+    reasons.push(`Skill '${skillId}' not found in available skills`);
+    valid = false;
+    confidence = 0;
+  }
+
   return { valid, confidence, reasons };
 }
 

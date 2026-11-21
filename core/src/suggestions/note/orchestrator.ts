@@ -345,7 +345,8 @@ export class SuggestionOrchestrator extends EventEmitter {
     const verificationContext: VerificationContext = {
       note,
       ontology: this.environment.ontology,
-      allNotes: this.environment.notes
+      allNotes: this.environment.notes,
+      skills: this.environment.skills
     };
 
     const verified = filterValidSuggestions(reshaped, verificationContext, 0.5);
