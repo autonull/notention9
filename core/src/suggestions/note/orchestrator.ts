@@ -192,6 +192,10 @@ export class SuggestionOrchestrator extends EventEmitter {
     if (relatedSource) {
       relatedSource.setNotes(notes);
     }
+    const fulfillmentSource = this.sources.get('fulfillment') as FulfillmentSource;
+    if (fulfillmentSource && 'setNotes' in fulfillmentSource) {
+      (fulfillmentSource as any).setNotes(notes);
+    }
     this.invalidateCache();
   }
 

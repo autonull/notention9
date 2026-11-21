@@ -252,13 +252,13 @@ Do not start WS6 before WS2 is green.
 - [x] Light theme: finish core flow or hide it
 - [ ] Mobile: 4 bottom tabs + safe area; strip opens bottom sheet
 
-### WS6 — Capability completion (2 days) ⏳ PENDING
+### WS6 — Capability completion (2 days) ✅ DONE
 
-- [ ] Counterfactual reshape: numeric/geo/enum widening with real `MatchEngine` counts
-- [ ] Integrate into `FulfillmentSource` (no fifth public source)
-- [ ] UI: "Widen" action applies `modify-property`; show "3 offers now fit"
-- [ ] Skill: load skill def; open `SkillApprovalDialog`; execute through gate; mark applied on success
-- [ ] LLM: wire `LlmClient` if available; PII redaction; max 3 suggestions
+- [x] Counterfactual reshape: numeric/geo/enum widening with real `MatchEngine` counts
+- [x] Integrate into `FulfillmentSource` (no fifth public source)
+- [x] UI: "Widen" action applies `modify-property`; show "3 offers now fit"
+- [x] Skill: load skill def; open `SkillApprovalDialog`; execute through gate; mark applied on success
+- [x] LLM: wire `LlmClient` if available; PII redaction; max 3 suggestions
 
 ### WS7 — Validation & rollout (1 day) ⏳ PENDING
 
@@ -301,6 +301,21 @@ Do not start WS6 before WS2 is green.
 - Full verification (`pnpm verify`) passes including match quality canary (mean F1 = 0.803 ≥ 0.75)
 - Copy lint passes
 - Updated TODO.28.md: marked Apply path items as DONE in WS1
+
+---
+
+## Session Summary (2026-11-21) — WS6 Capability Completion
+
+**Completed this session (WS6):**
+- Created `core/src/suggestions/note/counterfactual.ts` with numeric/geo/enum widening logic
+- Integrated counterfactual suggestions into `FulfillmentSource` (no new public source)
+- Added `findNumericWidenings`, `findEnumWidenings`, `findGeoWidenings` functions
+- Updated `MatchEngine` operators to support `gte`, `lte`, `gt`, `lt` (in `config.ts` and `matchers.ts`)
+- Created comprehensive test suite in `counterfactual.test.ts` (7 tests passing)
+- Counterfactual suggestions appear as `inferred-constraint` kind with "Widen" action
+- Description shows "X more offers now fit (Y total)" format
+- All core tests pass (1054), UI tests pass, full test suite passes
+- Updated TODO.28.md: marked WS6 items as DONE
 
 ---
 

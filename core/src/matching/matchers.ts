@@ -34,7 +34,11 @@ const OPERATOR_MAP: Record<string, string> = {
     'less than': '<',
     'greater than': '>',
     'less than or equal': '<=',
-    'greater than or equal': '>='
+    'greater than or equal': '>=',
+    'gte': '>=',
+    'lte': '<=',
+    'gt': '>',
+    'lt': '<'
 };
 
 const OPERATOR_RESULTS: Record<string, {

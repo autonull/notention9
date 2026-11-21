@@ -88,6 +88,7 @@ export const RANGE_REGEX = /^\d+(\.\d+)?\s*-\s*\d+(\.\d+)?$/;
 
 export const NUMERIC_OPS = new Set([
     'less than', 'greater than', 'less than or equal', 'greater than or equal',
+    'gte', 'lte', 'gt', 'lt',
     '<', '>', '<=', '>=', 'between', 'range'
 ]);
 
