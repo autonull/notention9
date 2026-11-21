@@ -1,5 +1,33 @@
 [
   {
+    "area": "inbox",
+    "state": "empty",
+    "file": "inbox/empty.png",
+    "viewport": "desktop",
+    "description": "First run with an empty notebook and a sample-workspace affordance."
+  },
+  {
+    "area": "inbox",
+    "state": "populated",
+    "file": "inbox/populated.png",
+    "viewport": "desktop",
+    "description": "Stats, an offline match preview, recent activity, and tools."
+  },
+  {
+    "area": "network",
+    "state": "connect-identity",
+    "file": "network/connect-identity.png",
+    "viewport": "desktop",
+    "description": "Network view before an identity exists, prompting setup."
+  },
+  {
+    "area": "network",
+    "state": "feed",
+    "file": "network/feed.png",
+    "viewport": "desktop",
+    "description": "Public feed with signed notes from a local relay, including structured details."
+  },
+  {
     "area": "next-steps",
     "state": "applied",
     "file": "next-steps/applied.png",
@@ -53,48 +81,34 @@
     "state": "zero-match",
     "file": "next-steps/zero-match.png",
     "viewport": "desktop",
-    "description": "Skill-matched note shows fulfillment next step but zero local/network matches."
+    "description": "Note with next step shows zero local/network matches in drawer."
   },
   {
-    "area": "suggestions",
-    "state": "empty-state",
-    "file": "suggestions/empty-state.png",
+    "area": "notes",
+    "state": "grid",
+    "file": "notes/grid.png",
     "viewport": "desktop",
-    "description": "Simple note with no matching rules shows empty suggestions state with refresh button."
+    "description": "Grid mode with pinned and private notes visible at a glance."
   },
   {
-    "area": "suggestions",
-    "state": "job-request-missing-budget",
-    "file": "suggestions/job-request-missing-budget.png",
+    "area": "notes",
+    "state": "list-selected",
+    "file": "notes/list-selected.png",
     "viewport": "desktop",
-    "description": "Job request note triggers \"Add budget\" suggestion via deterministic rules."
+    "description": "List mode with a note open in the editor."
   },
   {
-    "area": "suggestions",
-    "state": "meetup-request-missing-location",
-    "file": "suggestions/meetup-request-missing-location.png",
+    "area": "notes",
+    "state": "trash",
+    "file": "notes/trash.png",
     "viewport": "desktop",
-    "description": "Meetup request note triggers \"Add location\" suggestion via deterministic rules."
+    "description": "Trash with restore and permanent-delete affordances."
   },
   {
-    "area": "suggestions",
-    "state": "multiple-suggestions",
-    "file": "suggestions/multiple-suggestions.png",
+    "area": "settings",
+    "state": "networks",
+    "file": "settings/networks.png",
     "viewport": "desktop",
-    "description": "Note with multiple triggers shows multiple suggestion cards (add budget, add deadline, fulfillment hint)."
-  },
-  {
-    "area": "suggestions",
-    "state": "skill-matched-fulfillment-hint",
-    "file": "suggestions/skill-matched-fulfillment-hint.png",
-    "viewport": "desktop",
-    "description": "Note matching skill patterns shows fulfillment hint suggestion."
-  },
-  {
-    "area": "suggestions",
-    "state": "urgent-request-missing-deadline",
-    "file": "suggestions/urgent-request-missing-deadline.png",
-    "viewport": "desktop",
-    "description": "Urgent request note triggers \"Add deadline\" suggestion via deterministic rules."
+    "description": "Provider status and relay management."
   }
 ]

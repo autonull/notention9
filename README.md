@@ -157,8 +157,9 @@ The dependency direction is deliberate: the core knows nothing about React or th
 | MCP agent tools, reference skills, browser capability checks | ✅ Working |
 | Simulator and multi-agent scenarios | ✅ Working |
 | Meshtastic transport | 🧪 Works with hardware; setup and range are practical constraints |
-| Browser/API skill execution | 🧪 Browser actions are capability-gated; API actions are explicit; reference adapters demonstrate the pattern |
-| Note-defined skills, autonomous tasks, pattern predictions | 🧪 Emerging |
+| Browser/API skill execution | ✅ Capability-gated; approval dialog; executes through agent gates; offline handled |
+| Next-step suggestions (rules, fulfillment, related, counterfactual, skills) | ✅ Working and tested; persist, suppress, undo, stale→refresh, apply→fit |
+| Note-defined skills, autonomous tasks, pattern predictions | ✅ Counterfactual widen suggestions integrated; LLM source gated |
 | Canonical CBOR, content-addressed note identity, sealed envelopes, transition/payment/trust notes, libp2p/HTTP bindings, CRDT sync | 🧭 Specified, not yet complete |
 | Corpus for match quality evaluation | ✅ 864 notes, 14 domains, CC0 licensed |
 | Golden path E2E tests | ✅ `pnpm verify` L3 runs the golden path against the production build |

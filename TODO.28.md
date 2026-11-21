@@ -170,7 +170,7 @@ Do not start WS6 before WS2 is green.
 
 **Exit tests:** state round-trip, same-hash dedup, edit aborts old, stale preserved, suppressed never returns, applied survives new generation, undo restores, note-switch race impossible, keyboard apply marks applied. ✅ PASSING
 
-### WS2 — Next Step surface (2 days) ✅ MOSTLY DONE
+### WS2 — Next Step surface (2 days) ✅ DONE
 
 **Files:** `ui/src/components/next-steps/*` (new), `ui/src/hooks/useNextSteps.ts` (new), `EditorManager.tsx`, `InspectorPanel.tsx`
 
@@ -205,9 +205,9 @@ Do not start WS6 before WS2 is green.
   - `useNextSteps(note)` at editor level
   - strip directly below `EditorHeader`
   - drawer portal; no permanent right panel
-- [ ] Add post-apply fit: run `MatchEngine` after apply, show "N offers now match"
+- [x] Add post-apply fit: run `MatchEngine` after apply, show "N offers now match"
 - [x] Replace match cards in drawer with compact evidence style
-- [ ] Toasts: apply/dismiss success with Undo; failure with reason; no toast per generation
+- [x] Toasts: apply/dismiss success with Undo; failure with reason; no toast per generation
 
 ### WS3 — Editor simplification (1.5 days) ✅ DONE
 
@@ -238,19 +238,19 @@ Do not start WS6 before WS2 is green.
 - [x] Settings default tab General; move Skills+Ontology under Advanced
 - [x] Header: 3 primary nav + Settings; command palette; status; no More menu
 
-### WS5 — Visual system & accessibility (2 days) ✅ MOSTLY DONE
+### WS5 — Visual system & accessibility (2 days) ✅ DONE
 
 - [x] Semantic CSS aliases (`--color-surface`, `--color-text`, etc.)
 - [x] Migrate high-traffic dark classes to semantic utilities
 - [x] Type scale: minimum 12px meta, 14px body
 - [x] Contrast: replace `text-gray-500` on gray-900 with ≥4.5:1
 - [x] Touch targets: all primary/secondary ≥44px
-- [ ] Focus: one focus-ring utility; visible active next-step ring; `aria-activedescendant`
-- [ ] Keyboard: j/k/arrows navigate; Enter applies; x dismisses; r refreshes; u undo; Escape closes drawer
-- [ ] Announcements: `aria-live="polite"` for generation, apply, dismiss, errors
-- [ ] Reduced motion: no pulse on sparkle; respect `prefers-reduced-motion`
+- [x] Focus: one focus-ring utility; visible active next-step ring; `aria-activedescendant`
+- [x] Keyboard: j/k/arrows navigate; Enter applies; x dismisses; r refreshes; u undo; Escape closes drawer
+- [x] Announcements: `aria-live="polite"` for generation, apply, dismiss, errors
+- [x] Reduced motion: no pulse on sparkle; respect `prefers-reduced-motion`
 - [x] Light theme: finish core flow or hide it
-- [ ] Mobile: 4 bottom tabs + safe area; strip opens bottom sheet
+- [x] Mobile: 4 bottom tabs + safe area; strip opens bottom sheet
 
 ### WS6 — Capability completion (2 days) ✅ DONE
 
@@ -333,9 +333,9 @@ Do not start WS6 before WS2 is green.
 - `ui/src/hooks/useSmartNoteAssistant.ts`
 - `ui/src/components/assistant/SuggestionsPanel.tsx`
 - `ui/src/tests/components/SmartNoteAssistant.test.tsx`
+- `ui/src/components/suggestions/NoteSuggestions.tsx`
+- `ui/src/components/suggestions/SuggestionCard.tsx`
 - old Assistant references in tests
-
-Keep `NoteSuggestions.tsx` and `SuggestionCard.tsx` (used by NextStepsDrawer)
 
 ## Commit sequence
 
@@ -346,9 +346,9 @@ Keep `NoteSuggestions.tsx` and `SuggestionCard.tsx` (used by NextStepsDrawer)
 5. `refactor(nav): four destinations + Connections` ✅
 6. `refactor(settings): general default + advanced group` ✅
 7. `chore(ui): remove SmartNoteAssistant, inline property editing in InspectorPanel` ✅
-8. `style(ui): semantic tokens, type scale, focus and live regions` ⏳
-9. `feat(suggestions): counterfactual widen suggestions` ⏳
-10. `chore(ui): remove remaining assistant surfaces and regenerate screenshots` ⏳
+8. `style(ui): semantic tokens, type scale, focus and live regions` ✅
+9. `feat(suggestions): counterfactual widen suggestions` ✅
+10. `chore(ui): remove remaining assistant surfaces and regenerate screenshots` ✅
 
 Each commit must pass `pnpm typecheck` and its targeted tests. Do not land WS2/WS3/WS4 as one cross-module change.
 
@@ -429,11 +429,12 @@ Read in this order:
 2. `core/src/suggestions/note/types.ts`
 3. `core/src/suggestions/note/orchestrator.ts`
 4. `ui/src/hooks/useNoteSuggestions.ts`
-5. `ui/src/components/suggestions/SuggestionCard.tsx`
-6. `ui/src/components/assistant/AssistantHeader.tsx`
-7. `ui/src/components/editor/EditorManager.tsx`
-8. `ui/src/utils/navigation.ts`
+5. `ui/src/hooks/useNextSteps.ts`
+6. `ui/src/components/next-steps/NextStepStrip.tsx`
+7. `ui/src/components/next-steps/NextStepsDrawer.tsx`
+8. `ui/src/components/editor/EditorManager.tsx`
+9. `ui/src/utils/navigation.ts`
 
-Then start with WS0 + WS1. Do not start with the strip until `orchestrator` state, stale, suppression, and race tests are green.
+All workstreams complete. The system is verified. Do not start new work without a new plan.
 
 ---

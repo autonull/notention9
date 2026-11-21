@@ -156,21 +156,40 @@ test('next-steps: multiple next steps', async ({page}) => {
 // Applied history
 // ============================================================================
 test('next-steps: applied history shows result links and fit count', async ({page}) => {
-    // This test requires pre-seeding applied suggestions in localStorage
-    // For now, we'll test the strip shows the applied state
+    // Pre-seed applied suggestion state in localStorage
+    await page.addInitScript(() => {
+        const appliedState = {
+            version: 1,
+            notes: {
+                'scene-multi-trigger-note': {
+                    active: [],
+                    stale: [],
+                    applied: [{
+                        suggestionId: 'test-suggestion-1',
+                        suggestionHash: 'test-hash',
+                        appliedAt: Date.now(),
+                        resultNoteIds: ['scene-multi-trigger-note'],
+                        fitCount: 2,
+                        inverse: {op: 'remove-property', property: 'budget'}
+                    }],
+                    suppressed: [],
+                    contentHash: 'test-hash'
+                }
+            }
+        };
+        localStorage.setItem('suggestion-state', JSON.stringify(appliedState));
+    });
+    
     await seed(page, {
-        notes: [jobRequestNote()],
+        notes: [multiTriggerNote()],
         settings: defaultSettings({aiEnabled: false, developerMode: true}),
-        hash: '#notes/scene-job-request-note'
+        hash: '#notes/scene-multi-trigger-note'
     });
     await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
-    await page.locator('[data-testid^="next-step-card-"]').first().waitFor({timeout: 10_000});
     
-    // Click apply on first card (actionLabel is "Add" for add-property)
-    await page.locator('[data-testid^="next-step-card-"]').first().locator('button:has-text("Add")').click();
-    
-    // Wait for applied state
-    await page.waitForSelector('[data-testid^="next-step-card-"]', {timeout: 5_000});
+    // Open drawer to see applied history (multiTriggerNote has multiple steps)
+    await page.locator('button:has-text("next steps")').first().click();
+    await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
     
     await snap(page, {
         area: 'next-steps',
@@ -211,17 +230,24 @@ test('next-steps: stale state after edit', async ({page}) => {
 // Zero match (has suggestions but no matching offers)
 // ============================================================================
 test('next-steps: zero match state', async ({page}) => {
+    // Use multiTriggerNote which has multiple suggestions
+    // but no matching offers in the seed data
     await seed(page, {
-        notes: [skillMatchedNote()],
+        notes: [multiTriggerNote()],
         settings: defaultSettings({aiEnabled: false, developerMode: true}),
-        hash: '#notes/scene-skill-matched-note'
+        hash: '#notes/scene-multi-trigger-note'
     });
     await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
     await page.locator('[data-testid^="next-step-card-"]').first().waitFor({timeout: 10_000});
+    
+    // Open drawer to see matches section (should be empty)
+    await page.locator('button:has-text("next steps")').first().click();
+    await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
+    
     await snap(page, {
         area: 'next-steps',
         state: 'zero-match',
-        description: 'Skill-matched note shows fulfillment next step but zero local/network matches.',
+        description: 'Note with next step shows zero local/network matches in drawer.',
     });
 });
 

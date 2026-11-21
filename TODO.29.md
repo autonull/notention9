@@ -282,12 +282,12 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 ---
 
-### G — Rollout & cleanup ✅ MOSTLY COMPLETE
+### G — Rollout & cleanup ✅ COMPLETE
 
 - [x] Flip `NEXT_STEPS_UI` on by default; run the full gate; then **delete the flag** and every old-path remnant (`SuggestionStrip`, `NoteSuggestions`/`SuggestionCard` if unused, assistant leftovers).
 - [x] Delete dead code: duplicate `return createPortal`, unused hook calls, `skillId: 'auto'`, the `project` reshape op, core's self-referential `@notention/core` type import in `sources/rules.ts`.
 - [x] Audit `core/src/suggestions/{SuggestionStore,SuggestionTypes}.ts` against `note/`: consolidate into one vocabulary or namespace the property-level system explicitly; no ambiguous twin models. **Deleted the extensibility SuggestionStore/SuggestionTypes** — they were unused in the UI and agent; the property-level system in `note/` is the single vocabulary.
-- [ ] Update `README.md` status table and `TODO.28.md` to reflect verified reality; regenerate screenshots once.
+- [x] Update `README.md` status table and `TODO.28.md` to reflect verified reality; regenerate screenshots once.
 
 ---
 
@@ -349,7 +349,7 @@ A may proceed in parallel with F₀ authoring; C and D depend on A/B contracts; 
 - [x] Suppression and applied history survive reload with results and fit intact.
 - [x] One surface, flag-free, keyboard- and screen-reader-complete, both themes, lint-clean copy.
 - [x] `verify` includes the browser lanes and copy lint; showcase gallery regenerated; no dead code, no `as any`, no stub returns.
-- [ ] `README.md` / `TODO.28.md` describe only verified behavior.
+- [x] `README.md` / `TODO.28.md` describe only verified behavior.
 
 ---
 
