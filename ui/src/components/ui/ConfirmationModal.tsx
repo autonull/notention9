@@ -11,6 +11,7 @@ export interface ConfirmationModalProps {
     confirmLabel?: string;
     cancelLabel?: string;
     isDestructive?: boolean;
+    children?: React.ReactNode;
 }
 
 export function ConfirmationModal({
@@ -22,11 +23,13 @@ export function ConfirmationModal({
     confirmLabel = 'Confirm',
     cancelLabel = 'Cancel',
     isDestructive = false,
+    children,
 }: ConfirmationModalProps) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title}>
             <div className="space-y-6">
                 <p className="text-gray-300 leading-relaxed">{message}</p>
+                {children}
                 <div className="flex justify-end gap-3 pt-2">
                     <Button
                         onClick={onClose}

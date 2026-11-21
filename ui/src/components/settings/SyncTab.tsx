@@ -11,7 +11,7 @@ export function SyncTab() {
     const { addToast } = useToast();
     const {
         providers,
-        nostr,
+        nostrSettings,
         isPrivateMode,
         syncNow,
         fullSync,
@@ -96,11 +96,11 @@ export function SyncTab() {
 
     // Update budget status and metrics when settings change
     useEffect(() => {
-        if (nostr) {
+        if (nostrSettings) {
             setBudgetStatus(getSyncBudgetStatus());
             setMetrics(getSyncMetrics());
         }
-    }, [nostr, syncSettings]);
+    }, [nostrSettings, syncSettings]);
 
     // Update lastSyncAt from settings
     useEffect(() => {
@@ -109,7 +109,7 @@ export function SyncTab() {
         }
     }, [syncSettings?.lastSyncAt]);
 
-    const isEnabled = !!nostr?.config.privkey && !isPrivateMode;
+    const isEnabled = !!nostrSettings?.privkey && !isPrivateMode;
 
     return (
         <div className="bg-gray-900/70 p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
@@ -147,9 +147,8 @@ export function SyncTab() {
                                 size="md"
                                 className="text-gray-500 hover:text-white"
                                 aria-label={showPrivkey ? 'Hide key' : 'Show key'}
-                            >
-                                {showPrivkey ? <QuestionMarkCircleIcon className="w-5 h-5" /> : <QuestionMarkCircleIcon className="w-5 h-5" />}
-                            </IconButton>
+                                icon={QuestionMarkCircleIcon}
+                            />
                             <Button onClick={handleEnableSync} variant="primary" icon={<KeyIcon className="w-4 h-4" />}>
                                 Enable Sync
                             </Button>
@@ -344,9 +343,8 @@ export function SyncTab() {
                                                         variant="ghost"
                                                         size="sm"
                                                         className="text-gray-500 hover:text-white"
-                                                    >
-                                                        {isExpanded ? <XIcon className="w-4 h-4" /> : <QuestionMarkCircleIcon className="w-4 h-4" />}
-                                                    </IconButton>
+                                                        icon={isExpanded ? XIcon : QuestionMarkCircleIcon}
+                                                    />
                                                 </div>
 
                                                 {isExpanded && (

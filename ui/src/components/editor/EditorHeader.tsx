@@ -5,7 +5,6 @@ import {IconButton} from '../ui/Button';
 import {EditorControls} from './EditorControls';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {PrivacyControl} from '../publish/PrivacyControl';
-import {NextStepStrip} from '../next-steps';
 import type {Note} from '@notention/core';
 
 interface EditorHeaderProps {
@@ -34,8 +33,6 @@ interface EditorHeaderProps {
     canRedo?: boolean;
     onUndo?: () => void;
     onRedo?: () => void;
-    onSuggestionApplied?: (suggestionId: string) => void;
-    onSuggestionDismissed?: (suggestionId: string) => void;
 }
 
 export function EditorHeader({
@@ -64,8 +61,6 @@ export function EditorHeader({
     canRedo = false,
     onUndo,
     onRedo,
-    onSuggestionApplied,
-    onSuggestionDismissed
 }: EditorHeaderProps) {
     const handleAddDetail = () => {
         // TODO: Open searchable ontology/property picker
@@ -147,14 +142,6 @@ export function EditorHeader({
                     autoFocus={false}
                     className="input"
                     onAddDetail={handleAddDetail}
-                />
-            </div>
-
-            <div className="px-3 pb-3 border-t border-gray-700/30">
-                <NextStepStrip
-                    note={note}
-                    onStepApplied={onSuggestionApplied}
-                    onStepDismissed={onSuggestionDismissed}
                 />
             </div>
         </header>

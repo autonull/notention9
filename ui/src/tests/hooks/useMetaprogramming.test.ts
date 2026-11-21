@@ -5,6 +5,8 @@ import { Note, AppSettings } from '@notention/core';
 describe('getUpdatedSettings', () => {
     const defaultSettings: AppSettings = {
         theme: 'dark',
+        density: 'comfortable',
+        accentColor: 'blue',
         developerMode: false,
         aiEnabled: false,
         ontology: [],

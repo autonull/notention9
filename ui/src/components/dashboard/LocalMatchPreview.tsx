@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useMemo} from 'react';
 import {Button} from '../ui/Button';
-import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon, ThumbsUpIcon, ThumbsDownIcon, EditIcon, MapIcon, ChartBarIcon, DocumentTextIcon} from '../ui/icons';
+import {CheckCircleIcon, XCircleIcon, MinusIcon, InformationCircleIcon, ArrowPathIcon, PencilIcon, XMarkIcon, ThumbsUpIcon, ThumbsDownIcon, EditIcon, MapIcon, ChartBarIcon} from '../ui/icons';
 import type {MatchResult, PropertyMatch, Property, Note, MatchDetails} from '@notention/core';
 import {recordFriction} from '@notention/core/telemetry/journal';
 import {getEffectiveCrossKeyMap} from '@notention/core';

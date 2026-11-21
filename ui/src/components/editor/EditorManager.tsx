@@ -7,7 +7,7 @@ import {useNotes} from '../../hooks/useNotes';
 import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import {useNoteSuggestions} from '../../hooks/useNoteSuggestions';
-import {useNextSteps, SimpleMatch} from '../../hooks/useNextSteps';
+import {SimpleMatch} from '../../hooks/useNextSteps';
 
 import type {Note, OntologyNode, ScoredMatch, NoteSuggestion} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
@@ -231,18 +231,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         return { success: false, error: 'Skill execution not yet implemented' };
     }, []);
 
-    // Use NextSteps hook for the strip and drawer
-    const nextStepsResult = useNextSteps({
-        note: dirtyNote,
-        localMatches,
-        networkMatches,
-        onOpenPropertyEditor: handleOpenPropertyEditor,
-        onUpdateProperty: handleUpdateProperty,
-        onRemoveProperty: handleRemoveProperty,
-        onNavigateToNote: handleNavigateToNote,
-        onExecuteSkill: handleExecuteSkill,
-    });
-
     return (
         <div className="flex flex-col h-full relative">
             <EditorHeader
@@ -271,8 +259,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 canRedo={canRedo}
                 onUndo={handleUndo}
                 onRedo={handleRedo}
-                onSuggestionApplied={handleSuggestionApplied}
-                onSuggestionDismissed={handleSuggestionDismissed}
             />
             {publishError && (
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />

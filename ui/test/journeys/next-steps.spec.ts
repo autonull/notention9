@@ -114,18 +114,15 @@ test.describe('Next Steps E2E', () => {
         // Click dismiss on first card
         await page.locator('[data-testid^="next-step-card-"]').first().locator('button[aria-label="Dismiss suggestion"]').click();
 
-        // Verify the card is gone (or shows dismissed state)
-        // Note: dismissed suggestions are removed from active list
-
         // Reload the page
         await page.reload();
         await page.waitForSelector('[data-ready]');
-        await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
+        
+        // Wait for suggestions to regenerate or show empty state
+        await page.waitForTimeout(3000);
 
-        // The dismissed suggestion should not appear again (suppressed)
-        // This is a bit tricky to test without knowing the exact suggestion ID
-        // For now, verify the strip loads without error
-        await expect(page.locator('[data-testid="next-step-strip"]')).toBeVisible();
+        // The strip should be visible (either with suggestions or empty state)
+        await expect(page.locator('[data-testid="next-step-strip"]')).toBeVisible({timeout: 15_000});
     });
 
     test('edit → stale → regenerate', async ({page}) => {

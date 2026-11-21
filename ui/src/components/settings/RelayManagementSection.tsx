@@ -87,9 +87,9 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
 
     const handleTestRelay = async (url: string) => {
         setTestingRelay(url);
+        const { nostrRelayHealth } = await import('@notention/core');
+        const start = Date.now();
         try {
-            const { nostrRelayHealth } = await import('@notention/core');
-            const start = Date.now();
             const ws = new WebSocket(url);
             await new Promise<void>((resolve, reject) => {
                 const timeout = setTimeout(() => {
@@ -114,7 +114,6 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
             setRelayHealth(prev => ({ ...prev, [url]: health }));
         } catch (e) {
             const latency = Date.now() - start;
-            const { nostrRelayHealth } = await import('@notention/core');
             nostrRelayHealth.relayHealthManager.recordConnect(url, latency, false, String(e));
             addToast(`${url} - Failed: ${String(e)}`, 'error');
             const health = nostrRelayHealth.relayHealthManager.getStatus(url);

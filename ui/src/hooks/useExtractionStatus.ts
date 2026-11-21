@@ -25,7 +25,7 @@ function getBestProviderStatus(providers: ProviderConfig[]): {status: Extraction
     return {status: 'ai', providerName: best.name, providerKind: best.kind};
 }
 
-export function useExtractionStatus(): ExtractionStatusState {
+export function useExtractionStatus(): ExtractionStatusState & {recordFallback: () => void} {
     const [state, setState] = useState<ExtractionStatusState>({
         status: 'unknown',
         providerName: 'none',

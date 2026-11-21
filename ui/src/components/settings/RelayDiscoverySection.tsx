@@ -1,5 +1,5 @@
 import React, {useState, useEffect, useMemo} from 'react';
-import {NetworkIcon, PlusIcon, RefreshCwIcon, ArrowPathIcon, SignalIcon, LinkIcon} from '../ui/icons';
+import {NetworkIcon, PlusIcon, ArrowPathIcon, SignalIcon, LinkIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 import {IconButton} from '../ui/Button';
 import {Input} from '../ui/Input';
@@ -233,7 +233,7 @@ export function RelayDiscoverySection({settings, setSettings}: RelayDiscoverySec
                                 size="sm"
                                 className="text-gray-500 hover:text-red-400"
                                 title="Remove Relay"
-                                icon={<LinkIcon />}
+                                icon={LinkIcon}
                             />
                         </div>
                     ))}

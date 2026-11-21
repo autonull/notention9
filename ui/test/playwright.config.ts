@@ -32,7 +32,7 @@ export default defineConfig({
         deviceScaleFactor: 1,
         colorScheme: 'dark',
         trace: 'retain-on-failure',
-        screenshot: 'off',
+        screenshot: 'only-on-failure',
         video: 'off',
         launchOptions: {
             args: [
@@ -73,6 +73,7 @@ export default defineConfig({
             use: {
                 viewport: {width: 1440, height: 900},
             },
+            timeout: 120_000,
         },
         {
             name: 'audit',

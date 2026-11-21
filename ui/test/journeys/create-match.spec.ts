@@ -11,9 +11,13 @@ test('compose a detail through the popup without bracket syntax', async ({page})
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
 
     await page.getByTestId('add-detail').click();
-    await page.getByPlaceholder('e.g. status, price, deadline').fill('skill');
-    await page.getByPlaceholder('e.g. Active, 100, 2024-01-01').fill('React');
-    await page.getByRole('dialog').getByRole('button', {name: 'Add detail'}).click();
+    const dialog = page.getByRole('dialog');
+    // Key input has placeholder "Key (e.g. price)"
+    await dialog.getByPlaceholder('Key (e.g. price)').fill('skill');
+    // Value input for string type has placeholder "e.g. Active, 100, 2024-01-01"
+    await dialog.getByPlaceholder('e.g. Active, 100, 2024-01-01').fill('React');
+    // Save button is an IconButton with title="Save" -> aria-label="Save"
+    await dialog.getByRole('button', {name: 'Save'}).click();
 
     await expect(page.locator('.node-property').last()).toContainText('skill');
     await expect(page.locator('.node-property').last()).toContainText('React');
@@ -26,6 +30,8 @@ test('compose a detail through the popup without bracket syntax', async ({page})
 test('chips open the same popup for editing', async ({page}) => {
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await page.locator('.node-property').first().click();
-    await expect(page.getByText('Edit detail')).toBeVisible();
-    await expect(page.locator('input[list="learned-keys"]')).toHaveValue('status');
+    // Modal title is a heading with "Edit detail"
+    await expect(page.getByRole('heading', {name: 'Edit detail'})).toBeVisible();
+    // Key input has list="property-keys"
+    await expect(page.locator('input[list="property-keys"]')).toHaveValue('status');
 });

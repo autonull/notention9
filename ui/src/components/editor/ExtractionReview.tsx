@@ -1,4 +1,5 @@
 import React from 'react';
+import type {Property} from '@notention/core';
 import {CheckIcon, SparklesIcon, XMarkIcon, CpuChipIcon, BrainIcon} from '../ui/icons';
 import type {PropertyReviewItem} from '../../hooks/usePropertyReview';
 import {Button} from '../ui/Button';

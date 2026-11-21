@@ -162,6 +162,7 @@ export * from './network/nostr/privacy.js';
 export * from './network/nostr/discovery.js';
 export * from './network/nostr/relay.js';
 export * from './network/nostr/relayHealth.js';
+export * as nostrRelayHealth from './network/nostr/relayHealth.js';
 export * from './network/nostr/syncProtocol.js';
 export * from './network/nostr/relayDiscovery.js';
 export {

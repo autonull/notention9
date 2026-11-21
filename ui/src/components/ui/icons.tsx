@@ -2,6 +2,7 @@ import React from 'react';
 import {BaseIcon, IconProps, OutlineIcon, SolidIcon} from './Icon';
 
 export type {IconProps};
+export type LucideIcon = React.ComponentType<IconProps>;
 
 export function NoteIcon(props: IconProps) { return (
         <OutlineIcon {...props}>

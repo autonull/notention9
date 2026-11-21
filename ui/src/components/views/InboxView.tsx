@@ -23,7 +23,7 @@ import {useSettings} from '../../hooks/useSettingsContext';
 import {NoteListItem} from '../sidebar/NoteListItem';
 import {EmptyState, NotesEmptyIllustration} from '../ui/Primitives';
 import {Skeleton} from '../ui/Skeleton';
-import {CheckCircleIcon, InformationCircleIcon, MapIcon, ChartBarIcon} from '../ui/icons';
+import {CheckCircleIcon, InformationCircleIcon, MapIcon, ChartBarIcon, FileTextIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {useCaptureTracking, useMatchTracking} from '../../hooks/useFrictionRecorder';
@@ -317,6 +317,7 @@ export function InboxView(_props: InboxViewProps) {
                 {localMatch && (
                     <LocalMatchCard
                         localMatch={localMatch}
+                        settings={settings}
                         onSelectNote={handleSelectNote}
                         onAccept={handleAcceptMatch}
                         onReject={handleRejectMatch}
@@ -379,6 +380,7 @@ export function InboxView(_props: InboxViewProps) {
 
 function LocalMatchCard({
     localMatch,
+    settings,
     onSelectNote,
     onAccept,
     onReject,
@@ -388,6 +390,7 @@ function LocalMatchCard({
     onDismissed,
 }: {
     localMatch: any;
+    settings: AppSettings;
     onSelectNote: (id: string) => void;
     onAccept: (requestId: string, noteId: string, score: number) => void;
     onReject: (requestId: string, noteId: string) => void;
@@ -561,7 +564,7 @@ function LocalMatchCard({
                             {/* Offer excerpt */}
                             <div className="p-3 bg-gray-800/50 border border-gray-600/50 rounded-lg">
                                 <div className="flex items-center gap-2 text-gray-400 font-bold text-xs uppercase tracking-wide mb-2">
-                                    <DocumentTextIcon className="w-3 h-3"/> Offer excerpt
+                                    <FileTextIcon className="w-3 h-3"/> Offer excerpt
                                 </div>
                                 <div className="text-sm text-gray-300 line-clamp-3">
                                     {getTextFromHtml(localMatch.note.content).slice(0, 300)}

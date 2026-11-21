@@ -139,7 +139,7 @@ export function SettingsView() {
             case 'sync':
                 return <SyncTab/>;
             case 'relayDiscovery':
-                return <RelayDiscoverySection/>;
+                return <RelayDiscoverySection settings={settings} setSettings={setSettings}/>;
             case 'skills':
                 return <div className="p-4"><h3 className="text-lg font-medium mb-4">Skills</h3><p className="text-gray-400">Skills management coming soon.</p></div>;
             case 'ontology':

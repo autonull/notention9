@@ -1,5 +1,6 @@
 import type { Note, Property, OntologyNode } from '../../types/index.js';
-import type { NoteSuggestion, VerificationResult, SkillDefinition } from './types.js';
+import type { NoteSuggestion, VerificationResult } from './types.js';
+import type { SkillDefinition } from '../../skills/skillPatternMatcher.js';
 import { OntologyService } from '../../ontology/ontologyService.js';
 import { MatchEngine } from '../../matching/MatchEngine.js';
 

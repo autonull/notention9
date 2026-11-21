@@ -3,7 +3,7 @@ import { actionRegistry } from '@notention/core/ui';
 import type { ActionContext, RegisteredAction } from '@notention/core/ui/actionRegistry';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
-import { KeyIcon, SearchSparkleIcon, MenuIcon, ChevronRightIcon, type LucideIcon } from '../ui/icons';
+import { KeyIcon, SearchIcon, SearchSparkleIcon, MenuIcon, ChevronRightIcon, type LucideIcon } from '../ui/icons';
 import { useView } from '../../hooks/useViewContext';
 import { useNotes } from '../../hooks/useNotes';
 import { getTextFromHtml } from '@notention/core';

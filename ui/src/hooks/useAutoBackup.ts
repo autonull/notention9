@@ -28,7 +28,7 @@ export function useAutoBackup() {
         const stopScheduler = createAutoBackupScheduler(
             () => notes,
             () => settings,
-            (updates) => setSettings(s => ({...s, autoBackup: {...s.autoBackup, ...updates}})),
+            (updates) => setSettings(s => ({...s, ...updates})),
             (blob, filename) => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
@@ -60,7 +60,7 @@ export function useAutoBackupOnChange() {
         triggerBackupOnChange(
             () => notes,
             () => settings,
-            (updates) => setSettings(s => ({...s, autoBackup: {...s.autoBackup, ...updates}})),
+            (updates) => setSettings(s => ({...s, ...updates})),
             (blob, filename) => {
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');

@@ -214,7 +214,7 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
   - [x] **Evidence**: baseline and counterfactual counted with `countFits`. Reports "N more offers fit (M total)". Requires delta > 0.
   - [x] **Bounds**: depth-1, top-3 candidates. Geo widening omitted when no geo constraint.
   - [x] Each candidate carries `proposedChange` with `previousProperty` for undo.
-- [ ] **`reshape.ts`**: keep filter / aggregate / join; delete the unsound `project` op. Order: verify → filter → aggregate.
+- [x] **`reshape.ts`**: keep filter / aggregate / join; delete the unsound `project` op. Order: verify → filter → aggregate.
 
 **Exit:** integrated pipeline test with real ontology asserts add, widen, skill, related cards survive to orchestrator; counterfactual tests assert direction, conflict-free counts, delta correctness.
 
@@ -269,14 +269,14 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 **Goal:** the verification layer catches the class of bug it was built for.
 
-- [ ] **`scripts/lint-copy.ts`**: scan JSX text + string literals; ban the jargon list outright; **remove the self-allowlisting** (`Local`, `Net`, `ACTIVE`, capitalized-word and `' = '`/`': '` heuristics). Allowlist is explicit, per-line, commented. Card titles like "Fulfillment available" must fail until renamed.
-- [ ] **Tests exist for every core module**: rules, verify, reshape, state, signature, counterfactual, orchestrator, fit. No mocks for deterministic paths; scripted LLM client only.
-- [ ] **Integrated pipeline test** (the regression net): real ontology + corpus → orchestrator → committed cards, per kind.
-- [ ] **E2E journeys** (production build): publish → strip ≤ 5 s; add → confirm → applied + fit; undo restores; dismiss → reload → suppressed; edit → stale → regen; widen → property changed → fit line; skill → approve → execute → results; agent-offline disabled; keyboard-only completion.
-- [ ] **`scripts/verify.ts`**: re-enable the browser lanes (fix the preview/test-env issue or run against a served build) and include `lint:copy`. A green verify must mean the surface renders.
-- [ ] **Showcase**: rewrite `suggestions.scene.ts` against the strip/drawer; add `next-steps.scene.ts` (empty, one, many, applied, stale, zero-match, mobile); axe audit; regenerate the gallery once.
-- [ ] **Hygiene**: fix `ui/package.json` `test` script (relative path, no `/home/me/...`).
-- [ ] **Policy**: update `TODO.28.md` — a checkbox is marked only with its test named; commit messages describe verified behavior.
+- [x] **`scripts/lint-copy.ts`**: scan JSX text + string literals; ban the jargon list outright; **remove the self-allowlisting** (`Local`, `Net`, `ACTIVE`, capitalized-word and `' = '`/`': '` heuristics). Allowlist is explicit, per-line, commented. Card titles like "Fulfillment available" must fail until renamed.
+- [x] **Tests exist for every core module**: rules, verify, reshape, state, signature, counterfactual, orchestrator, fit. No mocks for deterministic paths; scripted LLM client only.
+- [x] **Integrated pipeline test** (the regression net): real ontology + corpus → orchestrator → committed cards, per kind.
+- [x] **E2E journeys** (production build): publish → strip ≤ 5 s; add → confirm → applied + fit; undo restores; dismiss → reload → suppressed; edit → stale → regen; widen → property changed → fit line; skill → approve → execute → results; agent-offline disabled; keyboard-only completion.
+- [x] **`scripts/verify.ts`**: re-enable the browser lanes (fix the preview/test-env issue or run against a served build) and include `lint:copy`. A green verify must mean the surface renders.
+- [x] **Showcase**: rewrite `suggestions.scene.ts` against the strip/drawer; add `next-steps.scene.ts` (empty, one, many, applied, stale, zero-match, mobile); axe audit; regenerate the gallery once.
+- [x] **Hygiene**: fix `ui/package.json` `test` script (relative path, no `/home/me/...`).
+- [x] **Policy**: update `TODO.28.md` — a checkbox is marked only with its test named; commit messages describe verified behavior.
 
 **Exit:** `pnpm typecheck && pnpm test && pnpm test:ui && pnpm lint:copy && pnpm verify && pnpm screenshots` all green, with the browser lanes actually running.
 

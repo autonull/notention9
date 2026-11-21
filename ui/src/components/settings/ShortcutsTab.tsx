@@ -5,7 +5,7 @@ import {IconButton} from '../ui/Button';
 import {Input} from '../ui/Input';
 import {ConfirmationModal} from '../ui/Primitives';
 import {useToast} from '../../hooks/useToast';
-import {KeyIcon, TrashIcon, DownloadIcon, ArrowPathIcon, QuestionMarkCircleIcon} from '../ui/icons';
+import {KeyIcon, TrashIcon, DownloadIcon, ArrowPathIcon, QuestionMarkCircleIcon, EditIcon} from '../ui/icons';
 
 interface ShortcutEditorProps {
     action: RegisteredAction;
@@ -283,9 +283,8 @@ export function ShortcutsTab() {
                                                                     size="sm"
                                                                     className="text-gray-500 hover:text-blue-400"
                                                                     aria-label={`Edit shortcut for ${action.label}`}
-                                                                >
-                                                                    <span className="text-xs">✎</span>
-                                                                </IconButton>
+                                                                    icon={EditIcon}
+                                                                />
                                                                 <IconButton
                                                                     onClick={() => handleRemoveShortcut(action.id)}
                                                                     variant="ghost"
