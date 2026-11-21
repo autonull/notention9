@@ -260,7 +260,17 @@ Do not start WS6 before WS2 is green.
 - [ ] Skill: load skill def; open `SkillApprovalDialog`; execute through gate; mark applied on success
 - [ ] LLM: wire `LlmClient` if available; PII redaction; max 3 suggestions
 
-### WS7 — Validation & rollout (1 day) 🔄 IN PROGRESS
+### WS7 — Validation & rollout (1 day) ⏳ PENDING
+
+- [ ] Update showcase scenes for Next Steps
+- [ ] Add `next-steps.scene.ts`: empty, one, multiple, applied, stale, zero-match, mobile
+- [ ] Update screenshot manifest + gallery
+- [ ] Add `next-steps.spec.ts`: publish→strip; apply→undo→history; dismiss→reload→suppressed; edit→stale→regen
+- [ ] Add `axe-audit.spec.ts` for strip + drawer
+- [ ] Update `task-first` audit
+- [ ] Flip `NEXT_STEPS_UI` on for all tests; remove flag
+- [x] Delete old Assistant code, old suggestion cards, old screenshots
+- [ ] Run full gate
 
 - [ ] Update showcase scenes for Next Steps
 - [ ] Add `next-steps.scene.ts`: empty, one, multiple, applied, stale, zero-match, mobile
