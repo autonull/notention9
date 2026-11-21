@@ -103,7 +103,7 @@ export function NextStepStrip({
 
   if (!hasNextSteps) {
     return (
-      <div className={styles.empty}>
+      <div className={styles.empty} data-testid="next-step-strip">
         <span>No next steps</span>
         <button onClick={refresh} className={styles.refreshButton} aria-label="Refresh">
           ⟳
@@ -113,7 +113,7 @@ export function NextStepStrip({
   }
 
   return (
-    <div className={styles.strip} role="region" aria-label="Next steps">
+    <div className={styles.strip} role="region" aria-label="Next steps" data-testid="next-step-strip">
       <div className={styles.cardWrapper}>
         {topNextStep && (
           <NextStepCard

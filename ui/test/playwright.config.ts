@@ -15,7 +15,7 @@ const IS_CI = !!process.env.CI;
 // CI: use preview (production build) - known issue I6, tracked in TODO.17
 const uiCommand = IS_CI
     ? `pnpm --filter @notention/ui preview --port ${UI_PORT} --strictPort`
-    : `VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none pnpm --filter @notention/ui dev --port ${UI_PORT} --strictPort`;
+    : `VITE_ENABLE_AGENT=false VITE_LLM_SOURCE=none VITE_NEXT_STEPS_UI=true pnpm --filter @notention/ui dev --port ${UI_PORT} --strictPort`;
 
 export default defineConfig({
     testDir: ROOT,

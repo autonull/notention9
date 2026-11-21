@@ -153,6 +153,7 @@ export function NextStepsDrawer({
         role="dialog"
         aria-modal="true"
         aria-label="Next steps"
+        data-testid="next-steps-drawer"
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
@@ -300,9 +301,6 @@ export function NextStepsDrawer({
       )}
     </>
   );
-
-  // Render as portal to body for proper overlay behavior
-  return createPortal(drawerContent, document.body);
 
   // Render as portal to body for proper overlay behavior
   return createPortal(drawerContent, document.body);

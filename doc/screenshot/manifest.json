@@ -1,170 +1,100 @@
 [
   {
-    "area": "actions",
-    "state": "board",
-    "file": "actions/board.png",
-    "description": "No description available"
+    "area": "next-steps",
+    "state": "applied",
+    "file": "next-steps/applied.png",
+    "viewport": "desktop",
+    "description": "After applying a next step, it shows in applied history with fit count and undo button."
   },
   {
-    "area": "chat",
-    "state": "thread",
-    "file": "chat/thread.png",
-    "description": "No description available"
+    "area": "next-steps",
+    "state": "drawer-open",
+    "file": "next-steps/drawer-open.png",
+    "viewport": "desktop",
+    "description": "Next steps drawer opens showing all steps with sections for active, applied history, and matches."
   },
   {
-    "area": "editor",
-    "state": "add-detail",
-    "file": "editor/add-detail.png",
-    "description": "No description available"
-  },
-  {
-    "area": "editor",
-    "state": "extraction-review",
-    "file": "editor/extraction-review.png",
-    "description": "No description available"
-  },
-  {
-    "area": "editor",
-    "state": "property-chips",
-    "file": "editor/property-chips.png",
-    "description": "No description available"
-  },
-  {
-    "area": "editor",
-    "state": "property-inspector",
-    "file": "editor/property-inspector.png",
-    "description": "No description available"
-  },
-  {
-    "area": "editor",
-    "state": "publish-panel",
-    "file": "editor/publish-panel.png",
-    "description": "No description available"
-  },
-  {
-    "area": "editor",
-    "state": "template-selector",
-    "file": "editor/template-selector.png",
-    "description": "No description available"
-  },
-  {
-    "area": "inbox",
+    "area": "next-steps",
     "state": "empty",
-    "file": "inbox/empty.png",
-    "description": "No description available"
+    "file": "next-steps/empty.png",
+    "viewport": "desktop",
+    "description": "Simple note with no matching rules shows empty next steps state with refresh button."
   },
   {
-    "area": "map",
-    "state": "pins",
-    "file": "map/pins.png",
-    "description": "No description available"
+    "area": "next-steps",
+    "state": "mobile",
+    "file": "next-steps/mobile.png",
+    "viewport": "mobile",
+    "description": "Next steps strip on mobile viewport shows single card with touch-friendly targets."
   },
   {
-    "area": "matching",
-    "state": "explanation",
-    "file": "matching/explanation.png",
-    "description": "No description available"
+    "area": "next-steps",
+    "state": "multiple",
+    "file": "next-steps/multiple.png",
+    "viewport": "desktop",
+    "description": "Note with multiple triggers shows multiple next step cards (Add budget, Add deadline, Fulfillment hint)."
   },
   {
-    "area": "matching",
-    "state": "results",
-    "file": "matching/results.png",
-    "description": "No description available"
+    "area": "next-steps",
+    "state": "single",
+    "file": "next-steps/single.png",
+    "viewport": "desktop",
+    "description": "Job request note triggers single \"Add budget\" next step via deterministic rules."
   },
   {
-    "area": "mobile",
-    "state": "notes",
-    "file": "mobile/notes.png",
-    "description": "No description available"
+    "area": "next-steps",
+    "state": "stale",
+    "file": "next-steps/stale.png",
+    "viewport": "desktop",
+    "description": "After editing a note, prior next steps become stale (showing refresh action) and new generation starts."
   },
   {
-    "area": "modals",
-    "state": "command-palette",
-    "file": "modals/command-palette.png",
-    "description": "No description available"
-  },
-  {
-    "area": "modals",
-    "state": "help",
-    "file": "modals/help.png",
-    "description": "No description available"
-  },
-  {
-    "area": "network",
-    "state": "connect-identity",
-    "file": "network/connect-identity.png",
-    "description": "No description available"
-  },
-  {
-    "area": "network",
-    "state": "feed",
-    "file": "network/feed.png",
-    "description": "No description available"
-  },
-  {
-    "area": "notes",
-    "state": "list-selected",
-    "file": "notes/list-selected.png",
-    "description": "No description available"
-  },
-  {
-    "area": "notes",
-    "state": "trash",
-    "file": "notes/trash.png",
-    "description": "No description available"
-  },
-  {
-    "area": "ontology",
-    "state": "graph",
-    "file": "ontology/graph.png",
-    "description": "No description available"
-  },
-  {
-    "area": "settings",
-    "state": "networks",
-    "file": "settings/networks.png",
-    "description": "No description available"
+    "area": "next-steps",
+    "state": "zero-match",
+    "file": "next-steps/zero-match.png",
+    "viewport": "desktop",
+    "description": "Skill-matched note shows fulfillment next step but zero local/network matches."
   },
   {
     "area": "suggestions",
     "state": "empty-state",
     "file": "suggestions/empty-state.png",
-    "description": "No description available"
+    "viewport": "desktop",
+    "description": "Simple note with no matching rules shows empty suggestions state with refresh button."
   },
   {
     "area": "suggestions",
     "state": "job-request-missing-budget",
     "file": "suggestions/job-request-missing-budget.png",
-    "description": "No description available"
+    "viewport": "desktop",
+    "description": "Job request note triggers \"Add budget\" suggestion via deterministic rules."
   },
   {
     "area": "suggestions",
     "state": "meetup-request-missing-location",
     "file": "suggestions/meetup-request-missing-location.png",
-    "description": "No description available"
+    "viewport": "desktop",
+    "description": "Meetup request note triggers \"Add location\" suggestion via deterministic rules."
   },
   {
     "area": "suggestions",
     "state": "multiple-suggestions",
     "file": "suggestions/multiple-suggestions.png",
-    "description": "No description available"
+    "viewport": "desktop",
+    "description": "Note with multiple triggers shows multiple suggestion cards (add budget, add deadline, fulfillment hint)."
   },
   {
     "area": "suggestions",
     "state": "skill-matched-fulfillment-hint",
     "file": "suggestions/skill-matched-fulfillment-hint.png",
-    "description": "No description available"
+    "viewport": "desktop",
+    "description": "Note matching skill patterns shows fulfillment hint suggestion."
   },
   {
     "area": "suggestions",
     "state": "urgent-request-missing-deadline",
     "file": "suggestions/urgent-request-missing-deadline.png",
-    "description": "No description available"
-  },
-  {
-    "area": "timeline",
-    "state": "month",
-    "file": "timeline/month.png",
-    "description": "No description available"
+    "viewport": "desktop",
+    "description": "Urgent request note triggers \"Add deadline\" suggestion via deterministic rules."
   }
 ]
