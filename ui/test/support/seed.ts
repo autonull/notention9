@@ -32,7 +32,8 @@ const put = async (page: Page, entries: Record<string, unknown>) => {
 export async function seed(page: Page, options: SeedOptions) {
     // App uses hash-based routing; callers pass '#view' values.
     const hash = options.hash ? (options.hash.startsWith('#') ? options.hash : `#${options.hash}`) : '';
-    const url = hash ? `/${hash}` : '/';
+    const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4199';
+    const url = hash ? `${baseURL}/${hash}` : baseURL;
     await page.goto(url);
     await page.waitForSelector('[data-ready]');
     await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 300)));
@@ -51,7 +52,8 @@ export async function seed(page: Page, options: SeedOptions) {
 }
 
 export async function clearStorage(page: Page) {
-    await page.goto('/');
+    const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4199';
+    await page.goto(baseURL);
     await page.waitForSelector('[data-ready]');
     await page.evaluate(async () => {
         localStorage.clear();

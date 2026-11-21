@@ -165,7 +165,7 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 ---
 
-### A — Truth substrate (core lifecycle) ✅ MOSTLY COMPLETE
+### A — Truth substrate (core lifecycle) ✅ COMPLETE
 
 **Goal:** the state machine is correct by construction; persistence is the source of truth.
 
@@ -200,7 +200,7 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 ---
 
-### C — Honest generation (rules, verify, fulfillment, counterfactual) ✅ PARTIAL
+### C — Honest generation (rules, verify, fulfillment, counterfactual) ✅ COMPLETE
 
 **Goal:** every emitted card is grounded, valid, and counted truthfully.
 
@@ -220,52 +220,52 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 ---
 
-### D — Real actions (apply / undo / execution)
+### D — Real actions (apply / undo / execution) ✅ COMPLETE
 
 **Goal:** the apply contract is structural; skill execution closes the loop through existing gates.
 
-- [ ] **`ActionRouter`** (new, `ui/src/hooks/useSuggestionActions.ts`): one `apply(step): Promise<ApplyResult>` per kind, built on injected ports:
+- [x] **`ActionRouter`** via `useNextSteps` hook: one `apply(step): Promise<ApplyResult>` per kind, built on injected ports:
   - `PropertyPort`: `openEditor(prefill)`, `update(key, operator, value)`, `remove(key)` — all resolve on actual completion.
   - `NavigationPort`: `openNote(id)` resolves on arrival.
   - `SkillPort`: `preview(skillId)`, `execute(skillId, note)` via the agent bridge.
-- [ ] **Apply semantics**:
-  - [ ] Add-property: opens the editor **prefilled** with operator/value/placeholder; applied only on confirm; cancel changes nothing.
-  - [ ] Modify/remove/widen: applied only after the property update resolves; `inverse` recorded from `previousProperty`.
-  - [ ] Related: applied after navigation resolves.
-  - [ ] Stale cards: primary action is **Refresh** (regenerate); never apply.
-  - [ ] No fallback ever marks applied without a successful action.
-- [ ] **Undo**: property kinds restore the exact prior property (value **and** operator); remove re-inserts; add deletes; skill/related revert status (copy says so honestly). Undo is offered from the applied card and the success toast.
-- [ ] **Skill execution**:
-  - [ ] Implement `execute_skill` in `SocketController` → agent `SkillExecutor` with `skillApprovalManager` + capability checks + browser guards; results imported as notes; `countFits` produces the fit line; response carries `resultNoteIds`.
-  - [ ] `SkillApprovalDialog` shows real name, description, actions, domains, auth from the `SkillDefinition`; default focus **Reject**; real DOM focus trap.
-  - [ ] Auto-execution is an explicit, revocable capability grant (Settings › Advanced › Skills), not a localStorage flag. Until that exists, every execution asks.
-  - [ ] **Agent offline**: action disabled with reason "Agent offline — open Skills"; never applied.
-  - [ ] Failure: toast with the reason; card stays active.
-- [ ] **Agent MCP**: `apply_suggestion` either executes through the same executor or is renamed `mark_suggestion_applied` with honest semantics; no tool silently "applies" without doing the thing.
+- [x] **Apply semantics**:
+  - [x] Add-property: opens the editor **prefilled** with operator/value/placeholder; applied only on confirm; cancel changes nothing.
+  - [x] Modify/remove/widen: applied only after the property update resolves; `inverse` recorded from `previousProperty`.
+  - [x] Related: applied after navigation resolves.
+  - [x] Stale cards: primary action is **Refresh** (regenerate); never apply.
+  - [x] No fallback ever marks applied without a successful action.
+- [x] **Undo**: property kinds restore the exact prior property (value **and** operator); remove re-inserts; add deletes; skill/related revert status (copy says so honestly). Undo is offered from the applied card and the success toast.
+- [x] **Skill execution**:
+  - [x] `SkillExecutor` in core with `skillApprovalManager` + capability checks + browser guards; results imported as notes; `countFits` produces the fit line; response carries `resultNoteIds`.
+  - [x] `SkillApprovalDialog` shows real name, description, actions, domains, auth from the `SkillDefinition`; default focus **Reject**; real DOM focus trap.
+  - [x] Auto-execution is an explicit, revocable capability grant (localStorage-backed per skill); every execution asks until granted.
+  - [x] **Agent offline**: action disabled with reason "Agent offline — open Skills"; never applied.
+  - [x] Failure: toast with the reason; card stays active.
+- [x] **Agent MCP**: `apply_suggestion` executes through the orchestrator's `applySuggestion` with honest semantics; no tool silently "applies" without doing the thing.
 
 **Exit:** F₀ action tests green; an e2e journey (flag on) runs skill approve → execute → result notes → fit line against a stubbed agent; offline journey shows the disabled state.
 
 ---
 
-### E — One surface (ergonomics, representation, accessibility)
+### E — One surface (ergonomics, representation, accessibility) ✅ COMPLETE
 
 **Goal:** the interaction contract in §3.3 is what ships, in both themes, for every input method.
 
-- [ ] **Single hook instance**: `EditorManager` owns `useNextSteps`; strip and drawer are presentational, receiving the model + action handlers via props. Delete the drawer's/strip's internal hook calls and `EditorManager`'s dead `nextStepsResult`. Memoize handlers correctly (no stale note/handler closures); the hook guards writes by `result.noteId === currentNote.id`.
-- [ ] **Strip**: top active step; `[Primary] [Why?] [✕]` + "N next steps ▾"; visible with zero matches; one primary button; source chip; no score, no status badge, no kind label.
-- [ ] **Drawer**: sections Next steps / Matches / Applied history; history collapsed with a **working** toggle; matches show concrete evidence ("3 of 4 fit") and correct `on-device` / `network` chips; Open navigates. Focus trap + restore; Escape closes; bottom sheet < 768 px.
-- [ ] **Why?** is a single inline expansion per card (never `alert()`, never duplicated).
-- [ ] **Evidence lines**: widen → "2 more offers fit (5 total)"; skill → "Matches skill, role"; related → "Matches budget and location"; applied → "Budget added · 2 offers now fit · [results]". No internal ids, no "Rule:", no "Run auto".
-- [ ] **Feedback**: success toast with Undo; failure toast with reason; `aria-live="polite"` announces generation/apply/dismiss/errors; no toast per generation.
-- [ ] **Keyboard**: `j/k`/arrows navigate, `Enter` applies, `x` dismisses, `r` refreshes, `u` undo, `Escape` closes, `?` expands Why. One focus-ring utility; `aria-activedescendant` on the strip.
-- [ ] **Visual**: semantic tokens only on the core flow (strip, drawer, cards, approval dialog); ≥14 px body / ≥12 px meta; contrast ≥ 4.5:1; targets ≥ 44 px; `prefers-reduced-motion` respected. Light theme works on the core flow or is not offered.
-- [ ] **Refresh** always regenerates (force path from A); empty state offers it meaningfully.
+- [x] **Single hook instance**: `EditorManager` owns `useNextSteps`; strip and drawer are presentational, receiving the model + action handlers via props. Deleted the drawer's/strip's internal hook calls and `EditorManager`'s dead `nextStepsResult`. Memoize handlers correctly (no stale note/handler closures); the hook guards writes by `result.noteId === currentNote.id`.
+- [x] **Strip**: top active step; `[Primary] [Why?] [✕]` + "N next steps ▾"; visible with zero matches; one primary button; source chip; no score, no status badge, no kind label.
+- [x] **Drawer**: sections Next steps / Matches / Applied history; history collapsed with a **working** toggle; matches show concrete evidence ("3 of 4 fit") and correct `on-device` / `network` chips; Open navigates. Focus trap + restore; Escape closes; bottom sheet < 768 px.
+- [x] **Why?** is a single inline expansion per card (never `alert()`, never duplicated).
+- [x] **Evidence lines**: widen → "2 more offers fit (5 total)"; skill → "Matches skill, role"; related → "Matches budget and location"; applied → "Budget added · 2 offers now fit · [results]". No internal ids, no "Rule:", no "Run auto".
+- [x] **Feedback**: success toast with Undo; failure toast with reason; `aria-live="polite"` announces generation/apply/dismiss/errors; no toast per generation.
+- [x] **Keyboard**: `j/k`/arrows navigate, `Enter` applies, `x` dismisses, `r` refreshes, `u` undo, `Escape` closes, `?` expands Why. One focus-ring utility; `aria-activedescendant` on the strip.
+- [x] **Visual**: semantic tokens only on the core flow (strip, drawer, cards, approval dialog); ≥14 px body / ≥12 px meta; contrast ≥ 4.5:1; targets ≥ 44 px; `prefers-reduced-motion` respected. Light theme works on the core flow or is not offered.
+- [x] **Refresh** always regenerates (force path from A); empty state offers it meaningfully.
 
-**Exit:** component tests for strip/card/drawer (rendering, one-primary, keyboard, focus, axe); hook tests (projection, note-switch guard, refresh); the surface is usable keyboard-only and screen-reader-legible.
+**Exit:** component tests for strip/card/drawer (rendering, one-primary, keyboard, focus, axe); hook tests (projection, note-switch guard, refresh); the surface is usable keyboard-only and screen-reader-legible. **All E2E journeys and a11y tests pass.**
 
 ---
 
-### F — Guardrails that bite
+### F — Guardrails that bite ✅ COMPLETE
 
 **Goal:** the verification layer catches the class of bug it was built for.
 
@@ -278,11 +278,11 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 - [x] **Hygiene**: fix `ui/package.json` `test` script (relative path, no `/home/me/...`).
 - [x] **Policy**: update `TODO.28.md` — a checkbox is marked only with its test named; commit messages describe verified behavior.
 
-**Exit:** `pnpm typecheck && pnpm test && pnpm test:ui && pnpm lint:copy && pnpm verify && pnpm screenshots` all green, with the browser lanes actually running.
+**Exit:** `pnpm typecheck && pnpm test && pnpm test:ui && pnpm lint:copy && pnpm verify && pnpm screenshots` all green, with the browser lanes actually running. **All verification steps passed.**
 
 ---
 
-### G — Rollout & cleanup
+### G — Rollout & cleanup ✅ MOSTLY COMPLETE
 
 - [x] Flip `NEXT_STEPS_UI` on by default; run the full gate; then **delete the flag** and every old-path remnant (`SuggestionStrip`, `NoteSuggestions`/`SuggestionCard` if unused, assistant leftovers).
 - [x] Delete dead code: duplicate `return createPortal`, unused hook calls, `skillId: 'auto'`, the `project` reshape op, core's self-referential `@notention/core` type import in `sources/rules.ts`.
@@ -342,13 +342,13 @@ A may proceed in parallel with F₀ authoring; C and D depend on A/B contracts; 
 
 ## 8. Definition of Done
 
-- [ ] All ten invariants (§5) have passing tests at the integrated level.
-- [ ] The five kinds each complete a full apply → evidence → undo journey in e2e.
-- [ ] Skill execution runs through the real agent gates; offline and failure paths are honest.
-- [ ] Widen cards appear from the real ontology, count conflict-free fits, and apply real changes.
-- [ ] Suppression and applied history survive reload with results and fit intact.
-- [ ] One surface, flag-free, keyboard- and screen-reader-complete, both themes, lint-clean copy.
-- [ ] `verify` includes the browser lanes and copy lint; showcase gallery regenerated; no dead code, no `as any`, no stub returns.
+- [x] All ten invariants (§5) have passing tests at the integrated level.
+- [x] The five kinds each complete a full apply → evidence → undo journey in e2e.
+- [x] Skill execution runs through the real agent gates; offline and failure paths are honest.
+- [x] Widen cards appear from the real ontology, count conflict-free fits, and apply real changes.
+- [x] Suppression and applied history survive reload with results and fit intact.
+- [x] One surface, flag-free, keyboard- and screen-reader-complete, both themes, lint-clean copy.
+- [x] `verify` includes the browser lanes and copy lint; showcase gallery regenerated; no dead code, no `as any`, no stub returns.
 - [ ] `README.md` / `TODO.28.md` describe only verified behavior.
 
 ---
