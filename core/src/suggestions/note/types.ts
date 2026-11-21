@@ -1,6 +1,17 @@
 import type { Note, Property, OntologyNode } from '../../types/index.js';
+import type { SkillDefinition } from '../../skills/skillPatternMatcher.js';
+import type { CapabilityManager } from '../../security/CapabilityManager.js';
+import type { LlmClient } from './sources/llm.js';
 
 export type SuggestionSource = 'rules' | 'fulfillment' | 'related' | 'llm';
+
+export interface SuggestionEnvironment {
+  ontology: OntologyNode[];
+  notes: Note[];
+  skills: SkillDefinition[];
+  llm?: { client: LlmClient; capabilityManager: CapabilityManager; enabled: boolean; maxSuggestions: number };
+  store: import('./state.js').SuggestionStateStore;
+}
 
 export type SuggestionKind =
   | 'add-property'

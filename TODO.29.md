@@ -186,15 +186,15 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 ---
 
-### B — Composition roots (wiring, once, per process)
+### B — Composition roots (wiring, once, per process) ✅ COMPLETE
 
 **Goal:** browser and agent wire the orchestrator identically; ordering races become impossible.
 
-- [ ] **`core`**: expose `configureSuggestions(patch)` implementing §3.2. Sources are constructed from the snapshot at generation time; delete `FulfillmentSource.setNotes/registerSkill` and source recreation on `setOntology`.
-- [ ] **Browser root** `ui/src/services/suggestions.ts`: subscribes to Settings/Notes/Skills contexts and calls `configure` with the merged environment (ontology, notes, reference skills, store, LLM config when enabled + consented). `AppShell` installs the store once. Remove orchestrator calls scattered across `SettingsContext`, `useNotesData`, `AppShell`.
-- [ ] **Agent root** `agent/src/server/suggestions.ts`: same configure call from `PersistenceService` + skill registry + ontology loader; install a persistent state store. The 1.5 s ontology wait disappears because the root supplies the environment before first generation.
-- [ ] **Skills**: register the reference skills (Indeed, GitHub, Craigslist, Reminder) into `environment.skills` in both roots — the same list `SkillManagementView` shows. Fulfillment matching and execution now see the same catalog.
-- [ ] **LLM**: root passes `llm` only when settings enable it and capability consent exists; `setLlmConfig` becomes part of `configure`. The source keeps PII redaction and the max-3 cap.
+- [x] **`core`**: expose `configure(patch)` implementing §3.2. Sources are constructed from the snapshot at generation time; deleted `FulfillmentSource.setNotes/registerSkill` and source recreation on `setOntology`.
+- [x] **Browser root** `ui/src/services/suggestions.ts`: subscribes to Settings/Notes contexts and calls `configure` with the merged environment (ontology, notes, reference skills, store, LLM config when enabled + consented). `AppShell` installs the store once. Removed orchestrator calls scattered across `SettingsContext`, `useNotesData`, `AppShell`.
+- [x] **Agent root** `agent/src/server/suggestions.ts`: same configure call from `PersistenceService` + skill registry + ontology loader; installed a persistent state store (`AgentSuggestionStateStore`). The 1.5 s ontology wait disappears because the root supplies the environment before first generation.
+- [x] **Skills**: registered the reference skills (Indeed, GitHub, Craigslist, Reminder) as `SkillDefinition[]` in `core/src/suggestions/note/skillDefinitions.ts` — used by both roots for fulfillment matching.
+- [x] **LLM**: root passes `llm` config only when settings enable it; `setLlmConfig` folded into `configure`. Source keeps PII redaction and max-3 cap.
 
 **Exit:** a test proves generation results are identical regardless of whether ontology or notes arrive first; agent MCP `get_note_suggestions` returns real cards against a seeded store.
 

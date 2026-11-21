@@ -5,7 +5,8 @@ import type {
   NoteSuggestion,
   SuggestionGenerationResult,
   SourcePlugin,
-  ReshapeOperation
+  ReshapeOperation,
+  SuggestionEnvironment
 } from './types.js';
 import { RulesSource } from './sources/rules.js';
 import { FulfillmentSource, createFulfillmentSource } from './sources/fulfillment.js';
@@ -48,32 +49,47 @@ interface PendingGeneration {
 
 export class SuggestionOrchestrator extends EventEmitter {
   private static instance: SuggestionOrchestrator | null = null;
-  private sources: Map<string, SourcePlugin> = new Map();
   private suggestions: Map<string, NoteSuggestion[]> = new Map();
   private pendingGenerations: Map<string, PendingGeneration> = new Map();
-  private noteOntology: OntologyNode[] = [];
-  private allNotes: Note[] = [];
-  private llmConfig: LlmSourceConfig | null = null;
   private lastGenerationHash = new Map<string, string>();
   private lastGenerationId = new Map<string, string>();
-  private ontologyReady: Promise<void>;
-  private resolveOntology: (() => void) | null = null;
   private listeners: Map<SuggestionEventType, Set<(event: SuggestionEvent) => void>> = new Map();
   private allListeners: Set<(event: SuggestionEvent) => void> = new Set();
   private stateStore: SuggestionStateStore | null = null;
   private hydratedNotes = new Set<string>();
   private suppressedSignatures = new Map<string, Set<string>>(); // noteId -> Set of suppressed signatures
 
+  // Immutable environment snapshot (replaces piecemeal setters)
+  private environment: SuggestionEnvironment = {
+    ontology: [],
+    notes: [],
+    skills: [],
+    store: null as any, // Will be set via setStateStore or configure
+  };
+
   private constructor() {
     super();
-    this.ontologyReady = new Promise<void>(resolve => {
-      this.resolveOntology = resolve;
-    });
-    this.registerDefaultSources();
   }
 
   setStateStore(store: SuggestionStateStore): void {
     this.stateStore = store;
+    this.environment.store = store;
+  }
+
+  /** Configure the orchestrator with an atomic environment snapshot. */
+  configure(patch: Partial<SuggestionEnvironment>): void {
+    this.environment = { ...this.environment, ...patch };
+    if (patch.store) {
+      this.stateStore = patch.store;
+    }
+    // Invalidate hash cache so next generation uses new environment
+    this.lastGenerationHash.clear();
+    this.lastGenerationId.clear();
+  }
+
+  /** Get current environment snapshot (for testing/debugging). */
+  getEnvironment(): Readonly<SuggestionEnvironment> {
+    return this.environment;
   }
 
   async hydrate(noteId: string): Promise<SuggestionState | null> {
@@ -174,56 +190,6 @@ export class SuggestionOrchestrator extends EventEmitter {
     delete (globalThis as typeof globalThis & { __suggestionOrchestrator?: SuggestionOrchestrator }).__suggestionOrchestrator;
   }
 
-  private registerDefaultSources(): void {
-    this.sources.set('rules', new RulesSource());
-  }
-
-  setOntology(ontology: OntologyNode[]): void {
-    this.noteOntology = ontology;
-    this.sources.set('fulfillment', createFulfillmentSource(ontology));
-    this.sources.set('related', createRelatedSource(ontology, this.allNotes));
-    this.invalidateCache();
-    if (ontology.length > 0) {
-      this.resolveOntology?.();
-      this.resolveOntology = null;
-    }
-  }
-
-  setNotes(notes: Note[]): void {
-    this.allNotes = notes;
-    const relatedSource = this.sources.get('related') as RelatedSource;
-    if (relatedSource) {
-      relatedSource.setNotes(notes);
-    }
-    const fulfillmentSource = this.sources.get('fulfillment') as FulfillmentSource;
-    if (fulfillmentSource && 'setNotes' in fulfillmentSource) {
-      (fulfillmentSource as any).setNotes(notes);
-    }
-    this.invalidateCache();
-  }
-
-  setLlmConfig(config: LlmSourceConfig): void {
-    this.llmConfig = config;
-    this.sources.set('llm', createLlmSource(config));
-    this.invalidateCache();
-  }
-
-  enableSource(sourceName: string): void {
-    const source = this.sources.get(sourceName);
-    if (source && 'enabled' in source) {
-      (source as any).enabled = true;
-      this.invalidateCache();
-    }
-  }
-
-  disableSource(sourceName: string): void {
-    const source = this.sources.get(sourceName);
-    if (source && 'enabled' in source) {
-      (source as any).enabled = false;
-      this.invalidateCache();
-    }
-  }
-
   private invalidateCache(): void {
     this.lastGenerationHash.clear();
     this.lastGenerationId.clear();
@@ -242,10 +208,6 @@ export class SuggestionOrchestrator extends EventEmitter {
     // Create the generation promise and store it IMMEDIATELY to handle concurrent requests
     const controller = new AbortController();
     const generationPromise = (async () => {
-      // The UI mounts the hook before SettingsContext can set the ontology, so the
-      // first run would resolve against an empty ontology and cache that result.
-      await this.waitForOntology();
-
       // Duplicate load (two hooks, re-render, debounced save) must not wipe the
       // previous result: the second run dedups against the first and stales it.
       // Refresh trigger bypasses hash dedup by definition.
@@ -294,12 +256,32 @@ export class SuggestionOrchestrator extends EventEmitter {
     return shortSha256(`${note.content}|${note.properties.map(p => `${p.key}:${p.operator}:${p.values.join(',')}`).sort().join(';')}|${note.tags.sort().join(',')}`);
   }
 
-  private async waitForOntology(): Promise<void> {
-    if (this.noteOntology.length > 0) return;
-    await Promise.race([
-      this.ontologyReady,
-      new Promise<void>(resolve => setTimeout(resolve, 1500))
-    ]);
+  /** Build sources from the current environment snapshot. Stateless sources only. */
+  private buildSources(): Map<string, SourcePlugin> {
+    const { ontology, notes, skills, llm } = this.environment;
+    const sources = new Map<string, SourcePlugin>();
+    
+    // Rules source is always present
+    sources.set('rules', new RulesSource());
+    
+    // Fulfillment source uses ontology, registered skills, and notes corpus
+    if (ontology.length > 0) {
+      sources.set('fulfillment', createFulfillmentSource(ontology, skills, notes));
+      sources.set('related', createRelatedSource(ontology, notes));
+    }
+    
+    // LLM source only when configured and enabled
+    if (llm?.enabled && llm.client) {
+      sources.set('llm', createLlmSource({
+        client: llm.client,
+        ontology,
+        capabilityManager: llm.capabilityManager,
+        enabled: true,
+        maxSuggestions: llm.maxSuggestions ?? 3
+      }));
+    }
+    
+    return sources;
   }
 
   private async runGeneration(
@@ -321,9 +303,12 @@ export class SuggestionOrchestrator extends EventEmitter {
     // Use persisted suppressed signatures (survives regeneration and reload)
     const suppressedSignatures = this.suppressedSignatures.get(note.id) ?? new Set();
 
+    // Build sources from environment snapshot at generation time
+    const sources = this.buildSources();
+
     const context: SuggestionGenerationContext = {
       note,
-      ontology: this.noteOntology,
+      ontology: this.environment.ontology,
       existingSuggestions: activeSuggestions,
       trigger,
       generationId
@@ -331,7 +316,7 @@ export class SuggestionOrchestrator extends EventEmitter {
 
     const allSuggestions: NoteSuggestion[] = [];
 
-    for (const [name, source] of this.sources) {
+    for (const [name, source] of sources) {
       if (signal.aborted) break;
       try {
         const sourceSuggestions = await source.generate(context);
@@ -353,14 +338,14 @@ export class SuggestionOrchestrator extends EventEmitter {
     const reshapeOps = createDefaultReshapeOps(note);
     const reshaped = reshapeSuggestions(allSuggestions, reshapeOps, {
       note,
-      ontology: this.noteOntology,
-      allNotes: this.allNotes
+      ontology: this.environment.ontology,
+      allNotes: this.environment.notes
     });
 
     const verificationContext: VerificationContext = {
       note,
-      ontology: this.noteOntology,
-      allNotes: this.allNotes
+      ontology: this.environment.ontology,
+      allNotes: this.environment.notes
     };
 
     const verified = filterValidSuggestions(reshaped, verificationContext, 0.5);

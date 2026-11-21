@@ -10,6 +10,7 @@ import { ConfigProcessor } from './configurator/ConfigProcessor.js';
 import { NoteSkillLoader } from './skills/NoteSkillLoader.js';
 import { PluginLoader } from './skills/PluginLoader.js';
 import { SYSTEM_TAGS } from './constants.js';
+import { initializeAgentSuggestions } from './server/suggestions.js';
 
 export interface BootstrapResult {
 	skillRegistry: AgentSkillRegistry;
@@ -42,6 +43,9 @@ export class Bootstrap {
 			await PersistenceService.saveNoteSafe(onboardingNote);
 			log('Init', `Onboarding note created: ${onboardingNote.id}`);
 		}
+
+		// Initialize suggestions composition root
+		await initializeAgentSuggestions();
 
 		return { skillRegistry: this.skillRegistry, feedbackCollector: this.feedbackCollector };
 	}

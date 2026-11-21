@@ -9,17 +9,18 @@ export class FulfillmentSource implements SourcePlugin {
   name = 'fulfillment' as const;
   private matcher: SkillPatternMatcher;
   private matchEngine: MatchEngine;
-  private allNotes: Note[] = [];
+  private allNotes: Note[];
   private ontology: OntologyNode[];
 
-  constructor(ontology: OntologyNode[]) {
+  constructor(ontology: OntologyNode[], skills: SkillDefinition[] = [], notes: Note[] = []) {
     this.ontology = ontology;
-    this.matcher = new SkillPatternMatcher(ontology);
-    this.matchEngine = new MatchEngine(ontology);
-  }
-
-  setNotes(notes: Note[]): void {
     this.allNotes = notes;
+    this.matcher = new SkillPatternMatcher(ontology);
+    // Register skills from the environment snapshot
+    for (const skill of skills) {
+      this.matcher.registerSkill(skill);
+    }
+    this.matchEngine = new MatchEngine(ontology);
   }
 
   async generate(context: SuggestionGenerationContext): Promise<NoteSuggestion[]> {
@@ -122,14 +123,6 @@ export class FulfillmentSource implements SourcePlugin {
     };
   }
 
-  registerSkill(skill: SkillDefinition): void {
-    this.matcher.registerSkill(skill);
-  }
-
-  unregisterSkill(skillId: string): void {
-    this.matcher.unregisterSkill(skillId);
-  }
-
   private isDuplicate(suggestion: NoteSuggestion, existing: NoteSuggestion[]): boolean {
     return existing.some(e => 
       e.noteId === suggestion.noteId &&
@@ -144,6 +137,6 @@ function generateSuggestionId(noteId: string, skillId: string, suffix: string): 
   return `sugg-${shortSha256(`${noteId}|${skillId}|${suffix}`)}`;
 }
 
-export function createFulfillmentSource(ontology: OntologyNode[]): FulfillmentSource {
-  return new FulfillmentSource(ontology);
+export function createFulfillmentSource(ontology: OntologyNode[], skills: SkillDefinition[] = [], notes: Note[] = []): FulfillmentSource {
+  return new FulfillmentSource(ontology, skills, notes);
 }

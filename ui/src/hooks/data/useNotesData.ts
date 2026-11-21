@@ -13,7 +13,6 @@ import {useSettings} from '../useSettingsContext';
 import {useAgentSync} from './useAgentSync';
 import {STORAGE_KEYS} from '../../config/storageKeys';
 import {createNotePersistence} from './notePersistence';
-import {suggestionOrchestrator} from '@notention/core';
 
 const expressesNeed = (note: Note): boolean =>
     !note.deletedAt &&
@@ -86,13 +85,6 @@ export function useNotesData(driver?: LocalForage): UseNotesDataResult {
         }),
         [settings.ontology, settings.nostr]
     );
-
-    // Keep suggestion orchestrator notes in sync
-    useEffect(() => {
-        if (!loading) {
-            suggestionOrchestrator.setNotes(notes);
-        }
-    }, [notes, loading]);
 
     // --- Sync Logic ---
     useAgentSync(setNotes);

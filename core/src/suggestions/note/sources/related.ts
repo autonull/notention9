@@ -12,15 +12,11 @@ export interface SuggestionRelatedNote {
 export class RelatedSource implements SourcePlugin {
   name = 'related' as const;
   private matchEngine: MatchEngine;
-  private allNotes: Note[] = [];
+  private allNotes: Note[];
 
   constructor(ontology: OntologyNode[], allNotes: Note[] = []) {
     this.matchEngine = new MatchEngine(ontology);
     this.allNotes = allNotes;
-  }
-
-  setNotes(notes: Note[]): void {
-    this.allNotes = notes;
   }
 
   async generate(context: SuggestionGenerationContext): Promise<NoteSuggestion[]> {

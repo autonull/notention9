@@ -2,6 +2,8 @@ import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { SuggestionOrchestrator, suggestionOrchestrator } from './orchestrator.js';
 import type { Note, OntologyNode, Property } from '../../types/index.js';
 import { createMockNote, createMockOntology, createMockProperty } from '../../test-utils/index.js';
+import { memorySuggestionStateStore } from './state.js';
+import { referenceSkillDefinitions } from './skillDefinitions.js';
 
 function createTestNote(overrides: Partial<Note> = {}): Note {
   return createMockNote({
@@ -118,6 +120,15 @@ function createTestOntology(): OntologyNode[] {
   ];
 }
 
+function createTestEnvironment() {
+  return {
+    ontology: createTestOntology(),
+    notes: [createOfferNote(), createRequestNote()],
+    skills: referenceSkillDefinitions,
+    store: memorySuggestionStateStore,
+  };
+}
+
 describe('SuggestionOrchestrator', () => {
   let orchestrator: SuggestionOrchestrator;
 
@@ -125,7 +136,7 @@ describe('SuggestionOrchestrator', () => {
     vi.useFakeTimers();
     SuggestionOrchestrator.resetInstance();
     orchestrator = SuggestionOrchestrator.getInstance();
-    orchestrator.setOntology(createTestOntology());
+    orchestrator.configure(createTestEnvironment());
   });
 
   afterEach(() => {
@@ -343,11 +354,10 @@ describe('SuggestionOrchestrator', () => {
       // Store round-trip should also persist suppression
       SuggestionOrchestrator.resetInstance();
       const freshOrchestrator = SuggestionOrchestrator.getInstance();
-      freshOrchestrator.setOntology(createTestOntology());
+      freshOrchestrator.configure(createTestEnvironment());
       
       // Need to set up state store for persistence test
-      const stateStore = freshOrchestrator['stateStore'];
-      // Note: state store is set via setStateStore - this test will need a mock store
+      // Note: state store is set via configure - this test will need a mock store
       // For now, test the in-memory suppression survives regeneration
     });
 
@@ -372,6 +382,7 @@ describe('SuggestionOrchestrator', () => {
 
     it('should generate widen card that survives full pipeline with real ontology', async () => {
       const note = createTestNote({
+        id: 'test-request-1',
         properties: [
           { key: 'type', operator: 'is', values: ['request/need-request'], role: 'marker', provenance: 'user' },
           createMockProperty('skill', 'is', ['typescript']),
@@ -409,7 +420,7 @@ describe('SuggestionOrchestrator', () => {
         }),
       ];
       
-      orchestrator.setNotes(offers);
+      orchestrator.configure({ ...createTestEnvironment(), notes: offers });
       
       const result = await orchestrator.enqueueGeneration(note, 'publish');
       const widenSuggestions = result.suggestions.filter(s => s.kind === 'inferred-constraint');
@@ -597,7 +608,7 @@ describe('SuggestionOrchestrator', () => {
       // Default rules can fire without ontology
       expect(result1.suggestions.length).toBeGreaterThanOrEqual(0);
       
-      freshOrchestrator.setOntology(createTestOntology());
+      freshOrchestrator.configure(createTestEnvironment());
       
       const result2 = await freshOrchestrator.enqueueGeneration(note, 'publish');
       // With ontology, more suggestions may be generated

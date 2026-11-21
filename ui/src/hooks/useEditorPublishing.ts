@@ -2,7 +2,7 @@ import {useCallback, useState} from 'react';
 import type {Note} from '@notention/core';
 import {usePublish} from './usePublish';
 import {useToast} from './useToast';
-import {emitActionTrace, suggestionOrchestrator} from '@notention/core';
+import {emitActionTrace} from '@notention/core';
 import {usePendingConfirmations} from './usePendingConfirmations';
 
 interface UseEditorPublishingProps {
@@ -133,9 +133,6 @@ export function useEditorPublishing({
                 stateChanges: [{ path: 'privacy', from: dirtyNote.privacy, to: 'public' }],
                 outcome: 'ok',
             });
-
-            // Enqueue suggestion generation on publish
-            await suggestionOrchestrator.onNotePublished(updatedNote);
         } catch (e) {
             // If user cancelled privacy modal, it throws 'Publishing cancelled' or similar.
             // We might want to swallow that error or show it as info.

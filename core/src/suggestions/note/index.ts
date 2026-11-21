@@ -9,6 +9,7 @@ export * from './verify.js';
 export * from './orchestrator.js';
 export * from './state.js';
 export * from './signature.js';
+export * from './skillDefinitions.js';
 
 export {
   SuggestionOrchestrator,

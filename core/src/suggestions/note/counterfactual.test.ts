@@ -14,8 +14,11 @@ function createTestNote(overrides: Partial<Note> = {}): Note {
       { key: 'priority', operator: 'is', values: ['high'], role: 'constraint', provenance: 'user' },
     ],
     tags: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+    privacy: 'public',
+    priority: 0,
     ...overrides,
   };
 }
@@ -85,8 +88,11 @@ function createOfferNote(id: string, skill: string, budget: string, priority: st
       { key: 'contact', operator: 'is', values: ['dev@example.com'], role: 'constraint', provenance: 'user' },
     ],
     tags: [],
-    createdAt: Date.now(),
-    updatedAt: Date.now(),
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+    privacy: 'public',
+    priority: 0,
   };
 }
 
@@ -175,8 +181,11 @@ describe('generateCounterfactualSuggestions', () => {
         { key: 'priority', operator: 'is', values: ['low'], role: 'constraint', provenance: 'user' },
       ],
       tags: [],
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+      privacy: 'public',
+      priority: 0,
     };
     
     // Multiple typescript offers with different priorities (none have 'low')
