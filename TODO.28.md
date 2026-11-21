@@ -269,8 +269,24 @@ Do not start WS6 before WS2 is green.
 - [ ] Add `axe-audit.spec.ts` for strip + drawer
 - [ ] Update `task-first` audit
 - [ ] Flip `NEXT_STEPS_UI` on for all tests; remove flag
-- [ ] Delete old Assistant code, old suggestion cards, old screenshots
+- [x] Delete old Assistant code, old suggestion cards, old screenshots
 - [ ] Run full gate
+
+---
+## Session Summary (2026-11-20)
+
+**Completed this session:**
+- Removed `SmartNoteAssistant`, `AssistantContent`, `AssistantHeader`, `AssistantModals`, `NetworkMatchesPanel`, `PropertyPanel`, `SuggestionsPanel` (8 files deleted)
+- Removed `useSmartNoteAssistant.ts` hook
+- Removed `SmartNoteAssistant.test.tsx`
+- Inlined property editing (add/edit/delete, extraction review) into `InspectorPanel.tsx`
+- Updated `strategyResolverInit.ts`: removed `PropertyPanelComponent` type
+- Updated `core/constants/seams.ts`: removed `PropertyPanel` from components
+- Updated `EditorManager.test.tsx`: removed `useSmartNoteAssistant` mock
+- Updated `TODO.28.md`: marked WS3/WS4 as DONE, tracked file removals
+- All core + UI tests pass
+- Full verification (`pnpm verify`) passes
+- Copy lint passes
 
 ---
 
@@ -310,9 +326,10 @@ Keep `NoteSuggestions.tsx` and `SuggestionCard.tsx` (used by NextStepsDrawer)
 4. `refactor(editor): two-row header and inline details` ✅
 5. `refactor(nav): four destinations + Connections` ✅
 6. `refactor(settings): general default + advanced group` ✅
-7. `style(ui): semantic tokens, type scale, focus and live regions` ⏳
-8. `feat(suggestions): counterfactual widen suggestions` ⏳
-9. `chore(ui): remove assistant surfaces and regenerate screenshots` ⏳
+7. `chore(ui): remove SmartNoteAssistant, inline property editing in InspectorPanel` ✅
+8. `style(ui): semantic tokens, type scale, focus and live regions` ⏳
+9. `feat(suggestions): counterfactual widen suggestions` ⏳
+10. `chore(ui): remove remaining assistant surfaces and regenerate screenshots` ⏳
 
 Each commit must pass `pnpm typecheck` and its targeted tests. Do not land WS2/WS3/WS4 as one cross-module change.
 
