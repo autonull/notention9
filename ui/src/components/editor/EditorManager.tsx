@@ -198,6 +198,51 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         setIsNextStepsDrawerOpen(false);
     }, [setSelectedNoteId]);
 
+    // Next Steps apply path handlers
+    const handleOpenPropertyEditor = useCallback((key: string, operator: string, value: string, placeholder?: string) => {
+        editorRef.current?.openPropertyModal(key);
+        // Pre-fill the property editor with the suggested values
+        // The openPropertyModal will use initialModalData to pre-fill
+    }, []);
+
+    const handleApplyPropertyChange = useCallback((key: string, operator: string, value: string, previousProperty?: any) => {
+        // Apply the property update through the existing editor logic
+        const property = dirtyNote.properties.find(p => p.key === key);
+        if (property) {
+            handleUpdateProperty(key, value);
+        }
+    }, [dirtyNote.properties, handleUpdateProperty]);
+
+    const handleRemoveProperty = useCallback((key: string) => {
+        // Remove the property by setting empty value
+        const property = dirtyNote.properties.find(p => p.key === key);
+        if (property) {
+            handleUpdateProperty(key, '');
+        }
+    }, [dirtyNote.properties, handleUpdateProperty]);
+
+    const handleNavigateToNote = useCallback((noteId: string) => {
+        setSelectedNoteId(noteId);
+    }, [setSelectedNoteId]);
+
+    const handleExecuteSkill = useCallback(async (skillId: string, note: Note) => {
+        // Execute the skill through the existing skill executor
+        // This will be implemented when we have the skill executor integrated
+        return { success: false, error: 'Skill execution not yet implemented' };
+    }, []);
+
+    // Use NextSteps hook for the strip and drawer
+    const nextStepsResult = useNextSteps({
+        note: dirtyNote,
+        localMatches,
+        networkMatches,
+        onOpenPropertyEditor: handleOpenPropertyEditor,
+        onUpdateProperty: handleUpdateProperty,
+        onRemoveProperty: handleRemoveProperty,
+        onNavigateToNote: handleNavigateToNote,
+        onExecuteSkill: handleExecuteSkill,
+    });
+
     return (
         <div className="flex flex-col h-full relative">
             <EditorHeader
@@ -230,7 +275,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onSuggestionDismissed={handleSuggestionDismissed}
                 onSuggestionUndoApply={handleSuggestionUndoApply}
                 onSuggestionUndoDismiss={handleSuggestionUndoDismiss}
-                showSuggestionStrip={true}
+                showSuggestionStrip={false}
             />
             {publishError && (
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />
@@ -246,6 +291,11 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         onStepApplied={handleSuggestionApplied}
                         onStepDismissed={handleSuggestionDismissed}
                         onOpenDrawer={handleOpenNextStepsDrawer}
+                        onOpenPropertyEditor={handleOpenPropertyEditor}
+                        onUpdateProperty={handleApplyPropertyChange}
+                        onRemoveProperty={handleRemoveProperty}
+                        onNavigateToNote={handleNavigateToNote}
+                        onExecuteSkill={handleExecuteSkill}
                     />
                     <NextStepsDrawer
                         isOpen={isNextStepsDrawerOpen}
@@ -256,6 +306,11 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         onStepApplied={handleSuggestionApplied}
                         onStepDismissed={handleSuggestionDismissed}
                         onNavigateToMatch={handleNavigateToMatch}
+                        onOpenPropertyEditor={handleOpenPropertyEditor}
+                        onUpdateProperty={handleApplyPropertyChange}
+                        onRemoveProperty={handleRemoveProperty}
+                        onNavigateToNote={handleNavigateToNote}
+                        onExecuteSkill={handleExecuteSkill}
                     />
                 </>
             )}

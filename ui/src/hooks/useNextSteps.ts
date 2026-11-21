@@ -45,6 +45,12 @@ export interface UseNextStepsOptions {
   note: Note | null;
   localMatches?: SimpleMatch[];
   networkMatches?: SimpleMatch[];
+  // Apply path handlers
+  onOpenPropertyEditor?: (key: string, operator: string, value: string, placeholder?: string) => void;
+  onUpdateProperty?: (key: string, operator: string, value: string, previousProperty?: any) => void;
+  onRemoveProperty?: (key: string) => void;
+  onNavigateToNote?: (noteId: string) => void;
+  onExecuteSkill?: (skillId: string, note: Note) => Promise<{ success: boolean; resultNoteIds?: string[]; fitCount?: number; error?: string }>;
 }
 
 export interface UseNextStepsReturn {
@@ -134,7 +140,16 @@ function getAppliedLine(suggestion: NoteSuggestion, fitCount?: number): string {
 }
 
 export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
-  const { note, localMatches = [], networkMatches = [] } = options;
+  const { 
+    note, 
+    localMatches = [], 
+    networkMatches = [],
+    onOpenPropertyEditor,
+    onUpdateProperty,
+    onRemoveProperty,
+    onNavigateToNote,
+    onExecuteSkill,
+  } = options;
 
   const {
     activeSuggestions,
@@ -163,9 +178,21 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
       isOpen: true,
       stepId: step.id,
       step,
-      onApprove: (autoExecute: boolean) => {
-        // Apply the suggestion after approval
-        applySuggestion(step.id);
+      onApprove: async (autoExecute: boolean) => {
+        // Execute the skill through existing gates
+        if (step.skillId && onExecuteSkill) {
+          const result = await onExecuteSkill(step.skillId, note!);
+          if (result.success) {
+            // Mark as applied only after success
+            applySuggestion(step.id, result.resultNoteIds, result.fitCount);
+          } else {
+            // Show error but don't mark as applied
+            console.error('Skill execution failed:', result.error);
+          }
+        } else {
+          // Fallback: just mark as applied
+          applySuggestion(step.id);
+        }
         // Optionally store auto-execute preference
         if (autoExecute && step.skillId) {
           try {
@@ -178,7 +205,7 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
         setSkillApproval({ ...skillApproval, isOpen: false, stepId: null, step: null });
       },
     });
-  }, [applySuggestion]);
+  }, [applySuggestion, note, onExecuteSkill]);
 
   const closeSkillApproval = useCallback(() => {
     setSkillApproval({ ...skillApproval, isOpen: false, stepId: null, step: null });
@@ -194,6 +221,10 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
       const source = mapSource(suggestion);
       const isSkill = suggestion.kind === 'fulfillment-hint' || suggestion.kind === 'skill-match';
       const isCounterfactual = suggestion.kind === 'inferred-constraint';
+      const isAddProperty = suggestion.kind === 'add-property';
+      const isModifyProperty = suggestion.kind === 'modify-property';
+      const isRemoveProperty = suggestion.kind === 'remove-property';
+      const isRelatedNote = suggestion.kind === 'related-note';
 
       // Check if auto-execute is enabled for this skill
       let autoExecute = false;
@@ -206,6 +237,62 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
       // Get skill details from evidence
       const evidence = suggestion.evidence[0];
       const skillDetails = evidence?.details as Record<string, unknown> | undefined;
+      const proposedChange = suggestion.proposedChange;
+
+      // Determine action label and apply handler based on suggestion kind
+      let actionLabel: string;
+      let apply: () => void;
+
+      if (isAddProperty && onOpenPropertyEditor) {
+        // Add-property: prefill and open property editor
+        const key = proposedChange?.property?.key || '';
+        const operator = proposedChange?.property?.operator || 'is';
+        const value = proposedChange?.property?.values?.[0] || '';
+        const placeholder = proposedChange?.placeholder;
+        actionLabel = 'Add';
+        apply = () => { onOpenPropertyEditor(key, operator, value, placeholder); };
+      } else if (isModifyProperty && onUpdateProperty) {
+        // Modify-property: apply through existing property update
+        const key = proposedChange?.property?.key || '';
+        const operator = proposedChange?.property?.operator || 'is';
+        const value = proposedChange?.property?.values?.[0] || '';
+        const previousProperty = proposedChange?.previousProperty;
+        actionLabel = 'Change';
+        apply = () => { onUpdateProperty(key, operator, value, previousProperty); };
+      } else if (isRemoveProperty && onRemoveProperty) {
+        // Remove-property: apply through existing property update
+        const key = proposedChange?.previousProperty?.key || '';
+        actionLabel = 'Remove';
+        apply = () => { onRemoveProperty(key); };
+      } else if (isRelatedNote && onNavigateToNote && suggestion.relatedNoteId) {
+        // Related: open note; mark applied only after navigation succeeds
+        actionLabel = 'Open';
+        apply = () => { onNavigateToNote(suggestion.relatedNoteId!); applySuggestion(suggestion.id); };
+      } else if (isSkill && !autoExecute) {
+        // Skill: open SkillApprovalDialog
+        actionLabel = 'Preview & approve';
+        apply = () => { requestSkillApproval(step); };
+      } else if (isSkill && autoExecute) {
+        // Skill with auto-execute
+        actionLabel = 'Run';
+        apply = async () => {
+          if (suggestion.skillId && onExecuteSkill) {
+            const result = await onExecuteSkill(suggestion.skillId, note);
+            if (result.success) {
+              applySuggestion(suggestion.id, result.resultNoteIds, result.fitCount);
+            }
+          } else {
+            applySuggestion(suggestion.id);
+          }
+        };
+      } else if (isCounterfactual) {
+        // Counterfactual: "Widen" action
+        actionLabel = 'Widen';
+        apply = () => { applySuggestion(suggestion.id); };
+      } else {
+        actionLabel = 'Apply';
+        apply = () => { applySuggestion(suggestion.id); };
+      }
 
       const step: NextStep = {
         id: suggestion.id,
@@ -214,10 +301,8 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
         why: suggestion.description,
         source,
         state: 'active',
-        actionLabel: isSkill ? (autoExecute ? 'Run' : 'Preview & approve') : isCounterfactual ? 'Widen' : 'Apply',
-        apply: isSkill && !autoExecute
-          ? () => { requestSkillApproval(step); }
-          : () => { applySuggestion(suggestion.id); },
+        actionLabel,
+        apply,
         dismiss: () => { dismissSuggestion(suggestion.id); },
         // Skill approval fields
         skillName: skillDetails?.skillName as string,
@@ -235,17 +320,52 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
     // Stale suggestions
     for (const suggestion of staleSuggestions) {
       const source = mapSource(suggestion);
-      steps.push({
+      const isSkill = suggestion.kind === 'fulfillment-hint' || suggestion.kind === 'skill-match';
+      let autoExecute = false;
+      if (isSkill && suggestion.skillId) {
+        try {
+          autoExecute = localStorage.getItem(`skill-auto-execute-${suggestion.skillId}`) === 'true';
+        } catch {}
+      }
+
+      let actionLabel = 'Refresh';
+      let apply: () => void;
+
+      if (isSkill && !autoExecute) {
+        actionLabel = 'Preview & approve';
+        apply = () => { requestSkillApproval(step); };
+      } else if (isSkill && autoExecute) {
+        actionLabel = 'Run';
+        apply = async () => {
+          if (suggestion.skillId && onExecuteSkill) {
+            const result = await onExecuteSkill(suggestion.skillId, note);
+            if (result.success) {
+              applySuggestion(suggestion.id, result.resultNoteIds, result.fitCount);
+            }
+          } else {
+            applySuggestion(suggestion.id);
+          }
+        };
+      } else {
+        actionLabel = 'Refresh';
+        apply = () => { applySuggestion(suggestion.id); };
+      }
+
+      // Create a temporary step for the skill approval reference
+      const step: NextStep = {
         id: suggestion.id,
         title: getVerbTitle(suggestion),
         evidence: getEvidenceLine(suggestion),
         why: suggestion.description,
         source,
         state: 'stale',
-        actionLabel: 'Refresh',
-        apply: () => { applySuggestion(suggestion.id); },
+        actionLabel,
+        apply,
         dismiss: () => { dismissSuggestion(suggestion.id); },
-      });
+        skillId: suggestion.skillId,
+      };
+
+      steps.push(step);
     }
 
     // Applied history

@@ -13,6 +13,12 @@ interface NextStepStripProps {
   onStepApplied?: (stepId: string) => void;
   onStepDismissed?: (stepId: string) => void;
   onOpenDrawer?: () => void;
+  // Apply path handlers
+  onOpenPropertyEditor?: (key: string, operator: string, value: string, placeholder?: string) => void;
+  onUpdateProperty?: (key: string, operator: string, value: string, previousProperty?: any) => void;
+  onRemoveProperty?: (key: string) => void;
+  onNavigateToNote?: (noteId: string) => void;
+  onExecuteSkill?: (skillId: string, note: Note) => Promise<{ success: boolean; resultNoteIds?: string[]; fitCount?: number; error?: string }>;
 }
 
 export function NextStepStrip({
@@ -22,6 +28,11 @@ export function NextStepStrip({
   onStepApplied,
   onStepDismissed,
   onOpenDrawer,
+  onOpenPropertyEditor,
+  onUpdateProperty,
+  onRemoveProperty,
+  onNavigateToNote,
+  onExecuteSkill,
 }: NextStepStripProps) {
   const {
     topNextStep,
@@ -32,7 +43,16 @@ export function NextStepStrip({
     nextSteps,
     skillApproval,
     closeSkillApproval,
-  } = useNextSteps({ note, localMatches, networkMatches });
+  } = useNextSteps({ 
+    note, 
+    localMatches, 
+    networkMatches,
+    onOpenPropertyEditor,
+    onUpdateProperty,
+    onRemoveProperty,
+    onNavigateToNote,
+    onExecuteSkill,
+  });
 
   const handleApply = (stepId: string) => {
     const step = nextSteps.find(s => s.id === stepId);

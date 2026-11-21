@@ -44,6 +44,7 @@ export interface PropertyChange {
   type: 'add' | 'modify' | 'remove';
   property?: Property;
   previousProperty?: Property;
+  placeholder?: string;
 }
 
 export interface SuggestionRule {
@@ -69,7 +70,7 @@ export type RuleCondition =
   | { type: 'propertyValueIn'; key: string; values: string[] };
 
 export type RuleAction =
-  | { type: 'suggestAddProperty'; key: string; operator: string; value: string; reason: string }
+  | { type: 'suggestAddProperty'; key: string; operator: string; value: string; reason: string; placeholder?: string }
   | { type: 'suggestModifyProperty'; key: string; operator: string; value: string; reason: string }
   | { type: 'suggestRemoveProperty'; key: string; reason: string }
   | { type: 'suggestFulfillment'; skillId: string; reason: string }

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { Note } from '@notention/core';
 import { XIcon, ChevronDownIcon, ChevronUpIcon, SparklesIcon, ArrowPathIcon } from '../ui/icons';
 import { NextStepCard } from './NextStepCard';
 import { useNextSteps, NextStep, SimpleMatch, SkillApprovalState } from '../../hooks/useNextSteps';
@@ -10,12 +11,18 @@ import styles from './NextStepsDrawer.module.css';
 interface NextStepsDrawerProps {
   isOpen: boolean;
   onClose: () => void;
-  note: any | null;
+  note: Note | null;
   localMatches?: SimpleMatch[];
   networkMatches?: SimpleMatch[];
   onStepApplied?: (stepId: string) => void;
   onStepDismissed?: (stepId: string) => void;
   onNavigateToMatch?: (noteId: string) => void;
+  // Apply path handlers
+  onOpenPropertyEditor?: (key: string, operator: string, value: string, placeholder?: string) => void;
+  onUpdateProperty?: (key: string, operator: string, value: string, previousProperty?: any) => void;
+  onRemoveProperty?: (key: string) => void;
+  onNavigateToNote?: (noteId: string) => void;
+  onExecuteSkill?: (skillId: string, note: Note) => Promise<{ success: boolean; resultNoteIds?: string[]; fitCount?: number; error?: string }>;
 }
 
 export function NextStepsDrawer({
@@ -27,6 +34,11 @@ export function NextStepsDrawer({
   onStepApplied,
   onStepDismissed,
   onNavigateToMatch,
+  onOpenPropertyEditor,
+  onUpdateProperty,
+  onRemoveProperty,
+  onNavigateToNote,
+  onExecuteSkill,
 }: NextStepsDrawerProps) {
   const drawerRef = useRef<HTMLDivElement>(null);
   const contentRef = useFocusTrap(isOpen, onClose);
@@ -39,7 +51,16 @@ export function NextStepsDrawer({
     refresh,
     skillApproval,
     closeSkillApproval,
-  } = useNextSteps({ note, localMatches, networkMatches });
+  } = useNextSteps({ 
+    note, 
+    localMatches, 
+    networkMatches,
+    onOpenPropertyEditor,
+    onUpdateProperty,
+    onRemoveProperty,
+    onNavigateToNote,
+    onExecuteSkill,
+  });
 
   // Focus management
   useEffect(() => {

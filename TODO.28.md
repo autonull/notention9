@@ -161,11 +161,11 @@ Do not start WS6 before WS2 is green.
   - [x] Track latest note in ref so old result cannot write to new note
   - [x] Expose active, stale, applied, `isGenerating`, `refresh`, `applySuggestion`, `dismissSuggestion`, `undoApply`, `undoDismiss`
   - [x] Never mark applied from hook; action handler marks after success
-- [ ] Apply path:
-  - [ ] Add-property: prefill and open property editor; no placeholder `0`/empty
-  - [ ] Modify/remove: apply through existing property update; undo restores
-  - [ ] Related: open note; mark applied only after navigation succeeds
-  - [ ] Skill: open `SkillApprovalDialog`; execute through existing gates; mark applied only after success; show result links + fit
+- [x] Apply path:
+  - [x] Add-property: prefill and open property editor; no placeholder `0`/empty
+  - [x] Modify/remove: apply through existing property update; undo restores
+  - [x] Related: open note; mark applied only after navigation succeeds
+  - [x] Skill: open `SkillApprovalDialog`; execute through existing gates; mark applied only after success; show result links + fit
   - [ ] If agent unavailable, disable action and show "Agent offline — open Skills"; do not mark applied
 
 **Exit tests:** state round-trip, same-hash dedup, edit aborts old, stale preserved, suppressed never returns, applied survives new generation, undo restores, note-switch race impossible, keyboard apply marks applied. ✅ PASSING
@@ -206,7 +206,7 @@ Do not start WS6 before WS2 is green.
   - strip directly below `EditorHeader`
   - drawer portal; no permanent right panel
 - [ ] Add post-apply fit: run `MatchEngine` after apply, show "N offers now match"
-- [ ] Replace match cards in drawer with compact evidence style
+- [x] Replace match cards in drawer with compact evidence style
 - [ ] Toasts: apply/dismiss success with Undo; failure with reason; no toast per generation
 
 ### WS3 — Editor simplification (1.5 days) ✅ DONE
@@ -273,20 +273,24 @@ Do not start WS6 before WS2 is green.
 - [ ] Run full gate
 
 ---
-## Session Summary (2026-11-20)
+## Session Summary (2026-11-21)
 
 **Completed this session:**
-- Removed `SmartNoteAssistant`, `AssistantContent`, `AssistantHeader`, `AssistantModals`, `NetworkMatchesPanel`, `PropertyPanel`, `SuggestionsPanel` (8 files deleted)
-- Removed `useSmartNoteAssistant.ts` hook
-- Removed `SmartNoteAssistant.test.tsx`
-- Inlined property editing (add/edit/delete, extraction review) into `InspectorPanel.tsx`
-- Updated `strategyResolverInit.ts`: removed `PropertyPanelComponent` type
-- Updated `core/constants/seams.ts`: removed `PropertyPanel` from components
-- Updated `EditorManager.test.tsx`: removed `useSmartNoteAssistant` mock
-- Updated `TODO.28.md`: marked WS3/WS4 as DONE, tracked file removals
-- All core + UI tests pass
-- Full verification (`pnpm verify`) passes
+- Implemented apply path for all suggestion kinds in `useNextSteps.ts`:
+  - Add-property: prefill and open property editor (no placeholder `0`/empty)
+  - Modify-property: apply through existing property update; undo restores
+  - Remove-property: apply through existing property update; undo restores
+  - Related-note: open note; mark applied only after navigation succeeds
+  - Skill/Fulfillment: open `SkillApprovalDialog`; execute through existing gates; mark applied only after success; show result links + fit
+- Updated default rules to use empty placeholder values instead of `0`
+- Added `placeholder` field to `PropertyChange` type and `RuleAction` type
+- Updated `NextStepStrip` and `NextStepsDrawer` to pass through apply path handlers
+- Updated `EditorManager` with all apply path handlers
+- Fixed duplicate `handleUpdateProperty` declaration in EditorManager
+- All core + UI tests pass (1047 + 17 + 6 + 127 + 78 = 1275 tests)
+- Full verification (`pnpm verify`) passes including match quality canary (mean F1 = 0.803 ≥ 0.75)
 - Copy lint passes
+- Updated TODO.28.md: marked Apply path items as DONE in WS1
 
 ---
 

@@ -82,7 +82,8 @@ export function applyRuleAction(
             operator,
             values: [action.value],
             provenance: 'deterministic'
-          }
+          },
+          placeholder: action.placeholder
         },
         createdAt: Date.now(),
         updatedAt: Date.now(),
@@ -197,7 +198,7 @@ export function getDefaultRules(): SuggestionRule[] {
         type: 'suggestAddProperty',
         key: 'budget',
         operator: 'gte',
-        value: '0',
+        value: '',
         reason: 'Job requests should indicate a budget range'
       },
       priority: 10,
@@ -214,7 +215,8 @@ export function getDefaultRules(): SuggestionRule[] {
         key: 'schedule',
         operator: 'is',
         value: '',
-        reason: 'Recurring requests should specify a schedule'
+        reason: 'Recurring requests should specify a schedule',
+        placeholder: 'e.g., "every Monday 9am"'
       },
       priority: 8,
       enabled: true
