@@ -170,11 +170,7 @@ function verifySkillMatch(skillId: string, note: Note): VerificationResult {
   let confidence = 0.7;
   let valid = true;
 
-  if (skillId === 'auto') {
-    reasons.push('Auto skill matching - manual review recommended');
-    confidence = 0.6;
-  }
-
+  // skillId is always concrete now; no 'auto' fallback
   return { valid, confidence, reasons };
 }
 

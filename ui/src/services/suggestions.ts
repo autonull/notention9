@@ -3,8 +3,8 @@ import { useSettings } from '../hooks/useSettingsContext';
 import { useNotes } from '../hooks/useNotes';
 import { browserSuggestionStateStore } from './suggestionStateStore';
 import { suggestionOrchestrator, type SuggestionEnvironment } from '@notention/core';
-import { referenceSkillDefinitions } from '@notention/core/suggestions/note/skillDefinitions.js';
-import { CapabilityManager } from '@notention/core/security/CapabilityManager.js';
+import { referenceSkillDefinitions } from '@notention/core/suggestions/note';
+import { CapabilityManager } from '@notention/core/security';
 
 let initialized = false;
 

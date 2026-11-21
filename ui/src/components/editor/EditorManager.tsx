@@ -8,7 +8,7 @@ import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import {useNoteSuggestions} from '../../hooks/useNoteSuggestions';
 import {useNextSteps, SimpleMatch} from '../../hooks/useNextSteps';
-import {flags} from '../../config/flags';
+
 import type {Note, OntologyNode, ScoredMatch, NoteSuggestion} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
@@ -273,47 +273,39 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onRedo={handleRedo}
                 onSuggestionApplied={handleSuggestionApplied}
                 onSuggestionDismissed={handleSuggestionDismissed}
-                onSuggestionUndoApply={handleSuggestionUndoApply}
-                onSuggestionUndoDismiss={handleSuggestionUndoDismiss}
-                showSuggestionStrip={false}
             />
             {publishError && (
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />
             )}
 
-            {/* Next Steps Strip + Drawer (NEW) */}
-            {flags.NEXT_STEPS_UI && (
-                <>
-                    <NextStepStrip
-                        note={dirtyNote}
-                        localMatches={localMatches}
-                        networkMatches={networkMatches}
-                        onStepApplied={handleSuggestionApplied}
-                        onStepDismissed={handleSuggestionDismissed}
-                        onOpenDrawer={handleOpenNextStepsDrawer}
-                        onOpenPropertyEditor={handleOpenPropertyEditor}
-                        onUpdateProperty={handleApplyPropertyChange}
-                        onRemoveProperty={handleRemoveProperty}
-                        onNavigateToNote={handleNavigateToNote}
-                        onExecuteSkill={handleExecuteSkill}
-                    />
-                    <NextStepsDrawer
-                        isOpen={isNextStepsDrawerOpen}
-                        onClose={handleCloseNextStepsDrawer}
-                        note={dirtyNote}
-                        localMatches={localMatches}
-                        networkMatches={networkMatches}
-                        onStepApplied={handleSuggestionApplied}
-                        onStepDismissed={handleSuggestionDismissed}
-                        onNavigateToMatch={handleNavigateToMatch}
-                        onOpenPropertyEditor={handleOpenPropertyEditor}
-                        onUpdateProperty={handleApplyPropertyChange}
-                        onRemoveProperty={handleRemoveProperty}
-                        onNavigateToNote={handleNavigateToNote}
-                        onExecuteSkill={handleExecuteSkill}
-                    />
-                </>
-            )}
+            <NextStepStrip
+                note={dirtyNote}
+                localMatches={localMatches}
+                networkMatches={networkMatches}
+                onStepApplied={handleSuggestionApplied}
+                onStepDismissed={handleSuggestionDismissed}
+                onOpenDrawer={handleOpenNextStepsDrawer}
+                onOpenPropertyEditor={handleOpenPropertyEditor}
+                onUpdateProperty={handleApplyPropertyChange}
+                onRemoveProperty={handleRemoveProperty}
+                onNavigateToNote={handleNavigateToNote}
+                onExecuteSkill={handleExecuteSkill}
+            />
+            <NextStepsDrawer
+                isOpen={isNextStepsDrawerOpen}
+                onClose={handleCloseNextStepsDrawer}
+                note={dirtyNote}
+                localMatches={localMatches}
+                networkMatches={networkMatches}
+                onStepApplied={handleSuggestionApplied}
+                onStepDismissed={handleSuggestionDismissed}
+                onNavigateToMatch={handleNavigateToMatch}
+                onOpenPropertyEditor={handleOpenPropertyEditor}
+                onUpdateProperty={handleApplyPropertyChange}
+                onRemoveProperty={handleRemoveProperty}
+                onNavigateToNote={handleNavigateToNote}
+                onExecuteSkill={handleExecuteSkill}
+            />
 
             <div className="flex flex-1 overflow-hidden relative">
                 <EditorContent

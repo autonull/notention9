@@ -192,20 +192,7 @@ export const workDomain: OntologyNode[] = [
                         priority: 10,
                         enabled: true
                     },
-                    {
-                        id: 'rule-suggest-fulfillment-for-job',
-                        name: 'Suggest fulfillment for job requests',
-                        description: 'When a job request matches a skill pattern, suggest fulfillment',
-                        targetNodeIds: ['work/job-request'],
-                        condition: { type: 'hasAnyProperty', keys: ['skill', 'role', 'service', 'task'] },
-                        action: {
-                            type: 'suggestFulfillment',
-                            skillId: 'auto',
-                            reason: 'This job request matches available fulfillment skills'
-                        },
-                        priority: 15,
-                        enabled: true
-                    }
+                    
                 ],
                 attributes: {
                     title: { type: 'string', description: 'Job title', icon: 'title', operators: { real: ['is'], imaginary: ['is not', 'contains'] } },
@@ -417,20 +404,7 @@ export const requestDomain: OntologyNode[] = [
                         priority: 12,
                         enabled: true
                     },
-                    {
-                        id: 'rule-suggest-fulfillment-for-need',
-                        name: 'Suggest fulfillment for need requests',
-                        description: 'When a need request matches a skill pattern, suggest fulfillment',
-                        targetNodeIds: ['request/need-request'],
-                        condition: { type: 'hasAnyProperty', keys: ['skill', 'role', 'service', 'task'] },
-                        action: {
-                            type: 'suggestFulfillment',
-                            skillId: 'auto',
-                            reason: 'This request matches available fulfillment skills'
-                        },
-                        priority: 15,
-                        enabled: true
-                    }
+                    
                 ],
                 attributes: {
                     need: { type: 'string', description: 'What is needed.', icon: 'sparkles', operators: { real: ['is', 'contains'], imaginary: ['is not', 'contains'] } },

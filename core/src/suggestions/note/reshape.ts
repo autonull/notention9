@@ -28,8 +28,6 @@ function applyOperation(
   context: ReshapeContext
 ): NoteSuggestion[] {
   switch (operation.type) {
-    case 'project':
-      return projectSuggestions(suggestions, operation.params);
     case 'filter':
       return filterSuggestions(suggestions, operation.params);
     case 'join':
@@ -39,24 +37,6 @@ function applyOperation(
     default:
       return suggestions;
   }
-}
-
-function projectSuggestions(
-  suggestions: NoteSuggestion[],
-  params: Record<string, unknown>
-): NoteSuggestion[] {
-  const fields = params.fields as string[] || [];
-  if (fields.length === 0) return suggestions;
-
-  return suggestions.map(s => {
-    const projected: NoteSuggestion = { ...s };
-    for (const key of Object.keys(projected) as (keyof NoteSuggestion)[]) {
-      if (!fields.includes(key)) {
-        delete projected[key];
-      }
-    }
-    return projected;
-  });
 }
 
 function filterSuggestions(

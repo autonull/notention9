@@ -221,20 +221,7 @@ export function getDefaultRules(): SuggestionRule[] {
       priority: 8,
       enabled: true
     },
-    {
-      id: 'rule-suggest-fulfillment-for-skills',
-      name: 'Suggest fulfillment for skill-matched notes',
-      description: 'When a note matches a skill pattern, suggest fulfillment',
-      targetNodeIds: ['request/need-request', 'work/job-request', 'social/meetup-request'],
-      condition: { type: 'hasAnyProperty', keys: ['skill', 'role', 'service', 'task'] },
-      action: {
-        type: 'suggestFulfillment',
-        skillId: 'auto',
-        reason: 'This request matches available fulfillment skills'
-      },
-      priority: 15,
-      enabled: true
-    },
+    
     {
       id: 'rule-add-deadline-for-urgent',
       name: 'Add deadline for urgent requests',

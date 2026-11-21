@@ -108,7 +108,7 @@ export interface SourcePlugin {
 }
 
 export interface ReshapeOperation {
-  type: 'project' | 'filter' | 'join' | 'aggregate';
+  type: 'filter' | 'join' | 'aggregate';
   input: NoteSuggestion[];
   params: Record<string, unknown>;
 }

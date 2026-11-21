@@ -284,8 +284,8 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 ### G — Rollout & cleanup
 
-- [ ] Flip `NEXT_STEPS_UI` on by default; run the full gate; then **delete the flag** and every old-path remnant (`SuggestionStrip`, `NoteSuggestions`/`SuggestionCard` if unused, assistant leftovers).
-- [ ] Delete dead code: duplicate `return createPortal`, unused hook calls, `skillId: 'auto'`, the `project` reshape op, core's self-referential `@notention/core` type import in `sources/rules.ts`.
+- [x] Flip `NEXT_STEPS_UI` on by default; run the full gate; then **delete the flag** and every old-path remnant (`SuggestionStrip`, `NoteSuggestions`/`SuggestionCard` if unused, assistant leftovers).
+- [x] Delete dead code: duplicate `return createPortal`, unused hook calls, `skillId: 'auto'`, the `project` reshape op, core's self-referential `@notention/core` type import in `sources/rules.ts`.
 - [ ] Audit `core/src/suggestions/{SuggestionStore,SuggestionTypes}.ts` against `note/`: consolidate into one vocabulary or namespace the property-level system explicitly; no ambiguous twin models.
 - [ ] Update `README.md` status table and `TODO.28.md` to reflect verified reality; regenerate screenshots once.
 

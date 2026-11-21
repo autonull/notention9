@@ -1,4 +1,4 @@
-import type { Note, OntologyNode } from '@notention/core';
+import type { Note, OntologyNode } from '../../../types/index.js';
 import type { SuggestionGenerationContext, NoteSuggestion, SuggestionRule, SourcePlugin } from '../types.js';
 import { getDefaultRules, evaluateCondition, applyRuleAction } from '../rules.js';
 

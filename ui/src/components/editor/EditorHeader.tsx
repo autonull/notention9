@@ -36,9 +36,6 @@ interface EditorHeaderProps {
     onRedo?: () => void;
     onSuggestionApplied?: (suggestionId: string) => void;
     onSuggestionDismissed?: (suggestionId: string) => void;
-    onSuggestionUndoApply?: (suggestionId: string) => void;
-    onSuggestionUndoDismiss?: (suggestionId: string) => void;
-    showSuggestionStrip?: boolean;
 }
 
 export function EditorHeader({
@@ -68,10 +65,7 @@ export function EditorHeader({
     onUndo,
     onRedo,
     onSuggestionApplied,
-    onSuggestionDismissed,
-    onSuggestionUndoApply,
-    onSuggestionUndoDismiss,
-    showSuggestionStrip = true
+    onSuggestionDismissed
 }: EditorHeaderProps) {
     const handleAddDetail = () => {
         // TODO: Open searchable ontology/property picker
@@ -156,15 +150,13 @@ export function EditorHeader({
                 />
             </div>
 
-            {showSuggestionStrip && (
-                <div className="px-3 pb-3 border-t border-gray-700/30">
-                    <NextStepStrip
-                        note={note}
-                        onStepApplied={onSuggestionApplied}
-                        onStepDismissed={onSuggestionDismissed}
-                    />
-                </div>
-            )}
+            <div className="px-3 pb-3 border-t border-gray-700/30">
+                <NextStepStrip
+                    note={note}
+                    onStepApplied={onSuggestionApplied}
+                    onStepDismissed={onSuggestionDismissed}
+                />
+            </div>
         </header>
     );
 };

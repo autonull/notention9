@@ -37,6 +37,7 @@ export default defineConfig({
             '@notention/core/templates': path.resolve(__dirname, '../core/src/templates/index.ts'),
             '@notention/core/patternRecognition': path.resolve(__dirname, '../core/src/patternRecognition/index.ts'),
             '@notention/core/security': path.resolve(__dirname, '../core/src/security/index.ts'),
+            '@notention/core/suggestions/note': path.resolve(__dirname, '../core/src/suggestions/note/index.ts'),
             '@notention/core/feedback': path.resolve(__dirname, '../core/src/feedback/index.ts'),
             '@notention/core/events': path.resolve(__dirname, '../core/src/events/index.ts'),
             '@notention/core/utils': path.resolve(__dirname, '../core/src/utils/index.browser.ts'),

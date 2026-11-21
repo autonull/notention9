@@ -216,6 +216,7 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/templates', replacement: path.resolve(__dirname, isDev ? '../core/src/templates/index.ts' : '../core/dist/browser/templates/index.js') },
                 { find: '@notention/core/patternRecognition', replacement: path.resolve(__dirname, isDev ? '../core/src/patternRecognition/index.ts' : '../core/dist/browser/patternRecognition/index.js') },
                 { find: '@notention/core/security', replacement: path.resolve(__dirname, isDev ? '../core/src/security/index.ts' : '../core/dist/browser/security/index.js') },
+                { find: '@notention/core/suggestions/note', replacement: path.resolve(__dirname, isDev ? '../core/src/suggestions/note/index.ts' : '../core/dist/browser/suggestions/note/index.js') },
                 { find: '@notention/core/feedback', replacement: path.resolve(__dirname, isDev ? '../core/src/feedback/index.ts' : '../core/dist/browser/feedback/index.js') },
                 { find: '@notention/core/events', replacement: path.resolve(__dirname, isDev ? '../core/src/events/index.ts' : '../core/dist/browser/events/index.js') },
                 { find: '@notention/core/utils', replacement: path.resolve(__dirname, isDev ? '../core/src/utils/index.browser.ts' : '../core/dist/browser/utils/index.js') },

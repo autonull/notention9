@@ -2,7 +2,7 @@
 // All flags default to OFF for safety; enable via Vite env vars (VITE_<FLAG_NAME>)
 
 const flagDefaults: Record<string, boolean> = {
-  NEXT_STEPS_UI: false,
+  NEXT_STEPS_UI: true,
   // Add future flags here
 };
 

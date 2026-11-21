@@ -59,6 +59,11 @@
       "node": "./dist/suggestions/SuggestionStore.js",
       "browser": "./dist/browser/suggestions/index.js"
     },
+    "./suggestions/note": {
+      "import": "./dist/suggestions/note/index.js",
+      "node": "./dist/suggestions/note/index.js",
+      "browser": "./dist/browser/suggestions/note/index.js"
+    },
     "./extraction": {
       "import": "./dist/extraction/index.js",
       "node": "./dist/extraction/index.js",
