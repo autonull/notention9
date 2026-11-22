@@ -1,7 +1,7 @@
 import React from 'react';
 import {useDegradedMode} from '../../hooks/useDegradedMode';
 import {cn} from '../../utils/ui';
-import {componentTokens} from '../../styles/tokens';
+import {tone, toneClass, type Tone} from '../../styles/tone';
 import {AlertTriangleIcon, WifiOffIcon, DatabaseIcon, ZapIcon, ServerIcon} from '../ui/icons';
 
 const MODE_CONFIG: Record<string, {
@@ -55,10 +55,10 @@ const MODE_CONFIG: Record<string, {
     },
 };
 
-const COLOR_CLASSES: Record<'amber' | 'red' | 'blue', string> = {
-    amber: 'bg-amber-500/10 border-amber-500/30 text-amber-200',
-    red: 'bg-red-500/10 border-red-500/30 text-red-200',
-    blue: 'bg-blue-500/10 border-blue-500/30 text-blue-200',
+const TONES: Record<'amber' | 'red' | 'blue', Tone> = {
+    amber: 'warning',
+    red: 'danger',
+    blue: 'accent',
 };
 
 export function DegradedModeBanner() {
@@ -75,14 +75,14 @@ export function DegradedModeBanner() {
         >
             {degradedModes.map((mode) => {
                 const config = MODE_CONFIG[mode.type];
-                const colorClass = COLOR_CLASSES[config.color];
+                const modeTone = TONES[config.color];
 
                 return (
                     <div
                         key={mode.type}
                         className={cn(
                             'flex items-center gap-3 rounded-lg border px-3 py-2 text-xs',
-                            colorClass
+                            toneClass(modeTone)
                         )}
                         data-testid={`degraded-${mode.type}`}
                     >
@@ -95,12 +95,9 @@ export function DegradedModeBanner() {
                             <button
                                 onClick={mode.action.onClick}
                                 className={cn(
-                                    'flex-shrink-0 px-2 py-1 text-xs font-medium rounded transition-colors',
-                                    config.color === 'red'
-                                        ? 'bg-red-500/20 hover:bg-red-500/30 text-red-100 border border-red-500/30'
-                                        : config.color === 'amber'
-                                            ? 'bg-amber-500/20 hover:bg-amber-500/30 text-amber-100 border border-amber-500/30'
-                                            : 'bg-blue-500/20 hover:bg-blue-500/30 text-blue-100 border border-blue-500/30'
+                                    'flex-shrink-0 rounded border px-2 py-1 text-xs font-medium transition-colors hover:bg-[var(--app-hover)]',
+                                    tone[modeTone].border,
+                                    tone[modeTone].text
                                 )}
                             >
                                 {mode.action.label}

@@ -67,14 +67,14 @@ export function AccessibilityTab() {
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">Motion</h3>
+                <h3 className="text-[13px] font-semibold text-[var(--app-text)] mb-2">Motion</h3>
                 <p className="text-[var(--app-muted)] text-sm mb-4">
                     Reduce animations and transitions for users sensitive to motion.
                     When enabled, all animations and transitions are disabled or significantly reduced.
                 </p>
                 <div className="flex items-center justify-between p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-neutral-700/50 rounded-lg text-blue-400">
+                        <div className="p-2 bg-[var(--app-raised)] rounded-lg text-blue-400">
                             <SparklesIcon className="w-5 h-5" />
                         </div>
                         <div>
@@ -106,14 +106,14 @@ export function AccessibilityTab() {
             </div>
             
             <div>
-                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">Contrast</h3>
+                <h3 className="text-[13px] font-semibold text-[var(--app-text)] mb-2">Contrast</h3>
                 <p className="text-[var(--app-muted)] text-sm mb-4">
                     Increase contrast for better readability. When enabled, borders are stronger,
                     text is more legible, and focus indicators are more prominent.
                 </p>
                 <div className="flex items-center justify-between p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-neutral-700/50 rounded-lg text-yellow-400">
+                        <div className="p-2 bg-[var(--app-raised)] rounded-lg text-yellow-400">
                             <ShieldIcon className="w-5 h-5" />
                         </div>
                         <div>
@@ -145,7 +145,7 @@ export function AccessibilityTab() {
             </div>
             
             <div>
-                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">Color-blind friendly</h3>
+                <h3 className="text-[13px] font-semibold text-[var(--app-text)] mb-2">Color-blind friendly</h3>
                 <p className="text-[var(--app-muted)] text-sm mb-4">
                     All status indicators use both color and text/icons. No essential information
                     is conveyed by color alone.

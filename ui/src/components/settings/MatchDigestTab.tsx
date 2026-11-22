@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {Toggle, Button, Select} from '../ui/Primitives';
+import {SectionHeader} from '../ui/kit';
 import {cn} from '../../utils/ui';
 import {
     InboxIcon, BellIcon, SettingsIcon,
@@ -110,22 +111,18 @@ export function MatchDigestTab() {
     };
 
     return (
-        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-6">
-            <div className="flex flex-col gap-2">
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] flex items-center gap-3">
-                    <InboxIcon className="h-6 w-6 text-green-400"/>
-                    Match Digest & Notifications
-                </h2>
-                <p className="text-sm text-[var(--app-muted)]">
-                    Opt-in daily or on-demand digest of new matches and pending actions. Respects quiet hours.
-                </p>
-            </div>
+        <div className="space-y-8">
+            <SectionHeader
+                title="Match digest and notifications"
+                description="Opt-in daily or on-demand digest. Respects quiet hours."
+                icon={InboxIcon}
+            />
 
             <div className="p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex-grow">
                         <label className="font-medium text-[var(--app-text-secondary)]">Enable Match Digest</label>
-                        <p className="text-sm text-[var(--app-muted)] mt-1">
+                        <p className="text-[12px] text-[var(--app-muted)] mt-1">
                             Receive digests of new matches, accepted matches, pending actions, and completed actions.
                         </p>
                     </div>
@@ -202,7 +199,7 @@ export function MatchDigestTab() {
                         <div className="pt-4 border-t border-[var(--app-line)]">
                             <label className="block text-sm font-medium text-[var(--app-text-secondary)] mb-2">Include in Digest</label>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                <label className="flex items-center gap-2 text-sm text-[var(--app-text-secondary)]">
+                                <label className="flex items-center gap-2 text-[13px] text-[var(--app-text-secondary)]">
                                     <Toggle
                                         checked={matchDigestSettings.includePendingActions}
                                         onChange={(v) => handleSettingChange('includePendingActions', v)}
@@ -210,7 +207,7 @@ export function MatchDigestTab() {
                                     />
                                     <span>⚡ Pending Actions</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-[var(--app-text-secondary)]">
+                                <label className="flex items-center gap-2 text-[13px] text-[var(--app-text-secondary)]">
                                     <Toggle
                                         checked={matchDigestSettings.includeAcceptedMatches}
                                         onChange={(v) => handleSettingChange('includeAcceptedMatches', v)}
@@ -218,7 +215,7 @@ export function MatchDigestTab() {
                                     />
                                     <span>✅ Accepted Matches</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-[var(--app-text-secondary)]">
+                                <label className="flex items-center gap-2 text-[13px] text-[var(--app-text-secondary)]">
                                     <Toggle
                                         checked={matchDigestSettings.includeDismissedMatches}
                                         onChange={(v) => handleSettingChange('includeDismissedMatches', v)}
@@ -226,7 +223,7 @@ export function MatchDigestTab() {
                                     />
                                     <span>❌ Dismissed Matches</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-[var(--app-text-secondary)]">
+                                <label className="flex items-center gap-2 text-[13px] text-[var(--app-text-secondary)]">
                                     <Toggle
                                         checked={matchDigestSettings.includeCompletedActions}
                                         onChange={(v) => handleSettingChange('includeCompletedActions', v)}
@@ -244,7 +241,7 @@ export function MatchDigestTab() {
                 <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
                     <div className="flex-grow">
                         <label className="block text-sm font-medium text-[var(--app-text-secondary)] mb-1">Generate Digest</label>
-                        <p className="text-sm text-[var(--app-muted)]">Create an on-demand digest of recent match activity.</p>
+                        <p className="text-[12px] text-[var(--app-muted)]">Create an on-demand digest of recent match activity.</p>
                     </div>
                     <div className="flex gap-2">
                         <Button
@@ -335,7 +332,7 @@ export function MatchDigestTab() {
                             </button>
                         </div>
                     </div>
-                    <pre className="text-sm text-[var(--app-text-secondary)] bg-neutral-950 p-4 rounded overflow-x-auto max-h-96 overflow-y-auto font-mono whitespace-pre-wrap">
+                    <pre className="text-[13px] text-[var(--app-text-secondary)] bg-[var(--app-bg)] p-4 rounded overflow-x-auto max-h-96 overflow-y-auto font-mono whitespace-pre-wrap">
                         {digest}
                     </pre>
                 </div>

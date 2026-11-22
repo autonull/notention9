@@ -38,7 +38,7 @@ describe('ProfileSettings', () => {
             </StrategyProvider>
         );
 
-        expect(screen.getByRole('heading', {name: 'Profile & strategy'})).toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: 'Profile and strategy'})).toBeInTheDocument();
         expect(screen.getByText('Manual profile selection')).toBeInTheDocument();
         expect(screen.getByText('Active profile')).toBeInTheDocument();
     });

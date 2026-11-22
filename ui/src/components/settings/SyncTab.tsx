@@ -6,6 +6,7 @@ import { IconButton } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Toggle } from '../ui/Toggle';
 import { NetworkIcon, ArrowPathIcon, ExclamationTriangleIcon, QuestionMarkCircleIcon, MergeIcon, CheckIcon, XIcon, KeyIcon, WifiIcon, DatabaseIcon, ZapIcon } from '../ui/icons';
+import {SectionHeader} from '../ui/kit';
 
 export function SyncTab() {
     const { addToast } = useToast();
@@ -112,23 +113,17 @@ export function SyncTab() {
     const isEnabled = !!nostrSettings?.privkey && !isPrivateMode;
 
     return (
-        <div className="bg-[var(--app-surface)] p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
-            <div className="flex flex-col gap-2 shrink-0">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-600/20 rounded-lg text-blue-400">
-                        <NetworkIcon className="h-6 w-6" />
-                    </div>
-                    <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Multi-Device Sync</h2>
-                </div>
-                <p className="text-sm text-[var(--app-muted)]">
-                    Synchronize notes across devices using Nostr. Uses revision log with last-write-wins and conflict detection.
-                </p>
-            </div>
+        <div className="space-y-8">
+            <SectionHeader
+                title="Multi-device sync"
+                description="Sync notes over Nostr with a revision log and conflict detection."
+                icon={NetworkIcon}
+            />
 
             <div className="mt-4 lg:overflow-y-auto custom-scrollbar lg:flex-1 lg:min-h-0 space-y-6">
                 {!isEnabled ? (
                     <div className="bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-6">
-                        <h3 className="text-lg font-medium text-[var(--app-text)] mb-4">Enable Sync</h3>
+                        <h3 className="text-[13px] font-medium text-[var(--app-text)] mb-4">Enable Sync</h3>
                         <p className="text-[var(--app-muted)] mb-4">
                             Enter your Nostr private key (nsec or hex) to enable multi-device sync.
                             Your notes will be synced as a revision log across all linked devices.
@@ -168,7 +163,7 @@ export function SyncTab() {
                                             {isSyncing ? 'Syncing...' : 'Sync Enabled'}
                                         </span>
                                     </div>
-                                    <span className="text-xs text-[var(--app-muted)] px-2 py-1 bg-neutral-700 rounded">
+                                    <span className="text-xs text-[var(--app-muted)] px-2 py-1 bg-[var(--app-raised)] rounded">
                                         Last sync: {formatTime(lastSyncAt)}
                                     </span>
                                 </div>
@@ -206,7 +201,7 @@ export function SyncTab() {
                             <div className={`bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-4 ${budgetStatus.status === 'exceeded' ? 'border-red-500/50' : budgetStatus.status === 'warning' ? 'border-yellow-500/50' : ''}`}>
                                 <div className="flex items-center gap-2 mb-3">
                                     <DatabaseIcon className={`w-5 h-5 ${budgetStatus.status === 'exceeded' ? 'text-red-400' : budgetStatus.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}`} />
-                                    <h3 className="text-lg font-medium text-[var(--app-text)]">Sync Budget</h3>
+                                    <h3 className="text-[13px] font-medium text-[var(--app-text)]">Sync Budget</h3>
                                     <span className={`text-xs px-2 py-1 rounded ${
                                         budgetStatus.status === 'exceeded' ? 'bg-red-500/20 text-red-300' :
                                         budgetStatus.status === 'warning' ? 'bg-yellow-500/20 text-yellow-300' :
@@ -215,7 +210,7 @@ export function SyncTab() {
                                         {budgetStatus.status.toUpperCase()}
                                     </span>
                                 </div>
-                                <p className="text-sm text-[var(--app-muted)] mb-4">{budgetStatus.message}</p>
+                                <p className="text-[12px] text-[var(--app-muted)] mb-4">{budgetStatus.message}</p>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
                                         <span className="text-[var(--app-muted)]">Last Payload:</span>
@@ -239,7 +234,7 @@ export function SyncTab() {
 
                         {/* Sync Settings */}
                         <div className="bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-4">
-                            <h3 className="text-lg font-medium text-[var(--app-text)] mb-4">Bandwidth & Battery Budget</h3>
+                            <h3 className="text-[13px] font-medium text-[var(--app-text)] mb-4">Bandwidth & Battery Budget</h3>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div>
@@ -316,11 +311,11 @@ export function SyncTab() {
                             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4">
                                 <div className="flex items-center gap-2 mb-3">
                                     <ExclamationTriangleIcon className="w-5 h-5 text-yellow-400" />
-                                    <h3 className="text-lg font-medium text-yellow-300">
+                                    <h3 className="text-[13px] font-medium text-yellow-300">
                                         {pendingConflicts.length} Conflict{pendingConflicts.length !== 1 ? 's' : ''} Detected
                                     </h3>
                                 </div>
-                                <p className="text-sm text-[var(--app-muted)] mb-4">
+                                <p className="text-[12px] text-[var(--app-muted)] mb-4">
                                     Concurrent edits were detected on the same notes. Choose how to resolve each conflict.
                                 </p>
                                 <div className="space-y-3">
@@ -408,8 +403,8 @@ export function SyncTab() {
                         )}
 
                         <div className="bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-4">
-                            <h3 className="text-lg font-medium text-[var(--app-text)] mb-3">How Sync Works</h3>
-                            <ul className="text-sm text-[var(--app-muted)] space-y-2">
+                            <h3 className="text-[13px] font-medium text-[var(--app-text)] mb-3">How Sync Works</h3>
+                            <ul className="text-[12px] text-[var(--app-muted)] space-y-2">
                                 <li>• <strong>Revision log:</strong> Every note change creates a signed revision event</li>
                                 <li>• <strong>Last-write-wins:</strong> Sequential edits automatically merge</li>
                                 <li>• <strong>Conflict detection:</strong> Concurrent edits on different devices are flagged</li>

@@ -3,6 +3,7 @@ import { useNetworkManagement } from '../../hooks/useNetworkManagement';
 import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
 import { GlobeIcon, SignalIcon, LoadingSpinner, LockIcon } from '../ui/icons';
+import {SectionHeader} from '../ui/kit';
 import { agentService } from '../../services/AgentService';
 import { useToast } from '../../hooks/useToast';
 import { MeshDevice } from "@meshtastic/core";
@@ -112,17 +113,23 @@ export function NetworkManagementSection() {
     };
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-8">
+            <SectionHeader
+                title="Network providers"
+                description="Choose what can connect and leave this device."
+                icon={GlobeIcon}
+            />
+
             {/* Privacy Mode Toggle */}
-            <div className="p-4 rounded-lg border bg-[var(--app-raised)] border-[var(--app-line)]">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className={`p-2 rounded-lg ${isPrivateMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'}`}>
+            <div className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
+                <div className="flex items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <div className={`shrink-0 rounded-lg p-2 ${isPrivateMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-[var(--app-raised)] text-[var(--app-text-secondary)]'}`}>
                             <LockIcon className="h-5 w-5" />
                         </div>
-                        <div>
-                            <h4 className="font-medium text-[var(--app-text)]">Local-Only Mode</h4>
-                            <p className="text-sm text-[var(--app-muted)]">
+                        <div className="min-w-0">
+                            <h4 className="text-[13px] font-medium text-[var(--app-text)]">Local-only mode</h4>
+                            <p className="text-[12px] text-[var(--app-muted)]">
                                 {isPrivateMode 
                                     ? 'All network providers disabled. No data leaves this device. Notes sync when re-enabled.' 
                                     : 'Network providers can connect and sync data. Nostr and Meshtastic are available.'}
@@ -136,7 +143,7 @@ export function NetworkManagementSection() {
                             checked={isPrivateMode}
                             onChange={(e) => setPrivacyMode(e.target.checked ? 'local-only' : 'shared')}
                         />
-                        <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                        <div className="w-11 h-6 bg-[var(--app-raised)] peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-[var(--app-line-strong)] after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
                         <span className={`ml-3 text-sm font-medium ${isPrivateMode ? 'text-yellow-400' : 'text-[var(--app-muted)]'}`}>
                             {isPrivateMode ? 'Enabled' : 'Disabled'}
                         </span>
@@ -144,17 +151,7 @@ export function NetworkManagementSection() {
                 </div>
             </div>
 
-            <div className="flex items-center justify-between">
-                <div>
-                    <h3 className="text-lg font-medium text-[var(--app-text)] flex items-center gap-2">
-                        <GlobeIcon className="h-5 w-5 text-blue-400" />
-                        Network Providers
-                    </h3>
-                    <p className="text-sm text-[var(--app-muted)]">Enable or disable external network protocols.</p>
-                </div>
-            </div>
-
-            <div className="divide-y divide-neutral-800 overflow-hidden rounded-xl border border-neutral-800">
+            <div className="divide-y divide-[var(--app-line)] overflow-hidden rounded-lg border border-[var(--app-line)]">
                 {providers.map(provider => {
                     const status = provider.getStatus();
                     const statusLabel = status.details || (status.connected ? 'Connected' : provider.enabled ? 'Enabled' : 'Disabled');
@@ -171,9 +168,9 @@ export function NetworkManagementSection() {
                                 <div className="min-w-0 flex-1">
                                     <h4 className="truncate text-sm font-medium text-[var(--app-text)]">{provider.name}</h4>
                                     <p className="mt-0.5 flex items-center gap-1.5 truncate text-meta text-[var(--app-muted)]">
-                                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-blue-400' : 'bg-neutral-600'}`}/>
+                                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-blue-400' : 'bg-[var(--app-faint)]'}`}/>
                                         <span>{statusLabel}</span>
-                                        <span className="text-neutral-600">·</span>
+                                        <span className="text-[var(--app-faint)]">·</span>
                                         <span>{publishEnabled ? 'Publishing enabled' : 'Publishing off'}</span>
                                     </p>
                                 </div>
@@ -199,18 +196,18 @@ export function NetworkManagementSection() {
                                         aria-label={`Enable ${provider.name}`}
                                         aria-checked={provider.enabled}
                                     />
-                                    <div className="h-6 w-11 rounded-full bg-neutral-700 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-neutral-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"/>
+                                    <div className="h-6 w-11 rounded-full bg-[var(--app-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-[var(--app-line-strong)] after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"/>
                                 </label>
                             </div>
                             {provider.enabled && provider.id === 'meshtastic' && (
-                                <details className="border-t border-neutral-800 bg-[var(--app-surface)]/20" open>
+                                <details className="border-t border-[var(--app-line)] bg-[var(--app-surface)]/20" open>
                                     <summary className="cursor-pointer px-4 py-2 text-meta text-[var(--app-muted)]">Connection settings</summary>
                                     <div className="space-y-4 px-4 pb-4">
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div>
                                                 <label className="mb-1 block text-xs font-medium text-[var(--app-muted)]">Connection Type</label>
                                                 <select
-                                                    className="w-full rounded border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-sm text-[var(--app-text-secondary)]"
+                                                    className="w-full rounded border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-[13px] text-[var(--app-text-secondary)]"
                                                     value={connectionType}
                                                     onChange={(event) => setConnectionType(event.target.value as 'webserial' | 'server-proxy')}
                                                 >

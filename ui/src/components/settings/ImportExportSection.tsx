@@ -2,6 +2,7 @@ import React, {useRef, useState} from 'react';
 import {ArrowDownIcon, ArrowUpIcon, DocumentDuplicateIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 import {ConfirmationModal} from '../ui/Primitives';
+import {SectionHeader} from '../ui/kit';
 import {useToast} from '../../hooks/useToast';
 import localforage from 'localforage';
 import type {AppSettings, ExportEnvelope, ExportNote, Note} from '@notention/core';
@@ -228,12 +229,13 @@ export function ImportExportSection({
     };
 
     return (
-        <div>
-            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
-                <DocumentDuplicateIcon className="h-6 w-6 text-blue-400"/>
-                Backup & Restore
-            </h2>
-            <div className="flex flex-wrap gap-4">
+        <div className="space-y-3">
+            <SectionHeader
+                title="Backup and restore"
+                description="Export a readable JSON file or an encrypted backup."
+                icon={DocumentDuplicateIcon}
+            />
+            <div className="flex flex-wrap gap-3">
                 <Button
                     onClick={handleExport}
                     variant="primary"
@@ -244,7 +246,7 @@ export function ImportExportSection({
 
                 <Button
                     onClick={handleExportEncrypted}
-                    variant="primary"
+                    variant="secondary"
                     icon={ArrowDownIcon}
                 >
                     Export Encrypted Backup
@@ -281,7 +283,7 @@ export function ImportExportSection({
                     onChange={handleImportFile}
                 />
             </div>
-            <p className="text-sm text-[var(--app-muted)] mt-2">
+            <p className="text-[12px] text-[var(--app-muted)] mt-2">
                 Backups include notes and settings, never your private key. Encrypted backups require a passphrase. Single notes can be exported from the editor menu.
             </p>
 

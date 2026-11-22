@@ -314,18 +314,6 @@ export const componentTokens = {
   },
   toast: {
     base: "relative flex items-start gap-3 overflow-hidden rounded-xl border p-3 shadow-[var(--app-shadow)] animate-slide-in-up",
-    types: {
-      info: "border-sky-500/30 bg-[var(--app-panel)] text-[var(--app-text)]",
-      success: "border-emerald-500/30 bg-[var(--app-panel)] text-[var(--app-text)]",
-      warning: "border-amber-500/30 bg-[var(--app-panel)] text-[var(--app-text)]",
-      error: "border-red-500/30 bg-[var(--app-panel)] text-[var(--app-text)]",
-    },
-    progress: {
-      info: "bg-sky-500",
-      success: "bg-emerald-500",
-      warning: "bg-amber-500",
-      error: "bg-red-500",
-    },
   },
 } as const;
 

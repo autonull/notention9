@@ -6,6 +6,7 @@ import {Input} from '../ui/Input';
 import {ConfirmationModal} from '../ui/Primitives';
 import {useToast} from '../../hooks/useToast';
 import {KeyIcon, TrashIcon, DownloadIcon, ArrowPathIcon, QuestionMarkCircleIcon, EditIcon} from '../ui/icons';
+import {SectionHeader} from '../ui/kit';
 
 interface ShortcutEditorProps {
     action: RegisteredAction;
@@ -193,32 +194,24 @@ export function ShortcutsTab() {
     const categoryOrder = ['Navigation', 'Capture', 'Note', 'Search', 'Match', 'Palette', 'Help', 'Other'];
 
     return (
-        <div className="bg-[var(--app-surface)] p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
-            <div className="flex flex-col gap-2 shrink-0">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-purple-600/20 rounded-lg text-purple-400">
-                            <KeyIcon className="h-6 w-6" />
-                        </div>
-                        <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Keyboard Shortcuts</h2>
-                    </div>
-                    <div className="flex items-center gap-2">
+        <div className="space-y-8">
+            <SectionHeader
+                title="Keyboard shortcuts"
+                description="Press keys to set a shortcut. Conflicts are detected. On a Mac, ⌘ is Command and ⌥ is Option."
+                actions={
+                    <div className="flex shrink-0 items-center gap-1">
                         <Button variant="ghost" size="sm" onClick={handleExport} icon={DownloadIcon}>
                             Export
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => setShowImportModal(true)} icon={ArrowPathIcon}>
                             Import
                         </Button>
-                        <Button variant="ghost" size="sm" onClick={() => setShowResetConfirm(true)} icon={ArrowPathIcon} className="text-amber-400 hover:text-amber-300">
-                            Reset to Defaults
+                        <Button variant="ghost" size="sm" onClick={() => setShowResetConfirm(true)} icon={ArrowPathIcon}>
+                            Reset
                         </Button>
                     </div>
-                </div>
-                <p className="text-sm text-[var(--app-muted)]">
-                    Customize keyboard shortcuts for actions. Press keys to set a shortcut (e.g., Ctrl+K, ⌘+Shift+P).
-                    Conflicts are detected automatically. Mac users: ⌘ = Command, ⌥ = Option, ⇧ = Shift.
-                </p>
-            </div>
+                }
+            />
 
             <div className="mt-4 lg:overflow-y-auto custom-scrollbar lg:flex-1 lg:min-h-0">
                 {categoryOrder.map(category => {
@@ -226,8 +219,8 @@ export function ShortcutsTab() {
                     if (!catActions || catActions.length === 0) return null;
                     
                     return (
-                        <div key={category} className="mb-6">
- <h3 className="text-xs font-bold text-[var(--app-muted)] tracking-widest mb-4 px-2">
+                        <div key={category} className="mb-4">
+                            <h3 className="mb-2 px-1 text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--app-faint)]">
                                 {category}
                             </h3>
                             <div className="space-y-2">

@@ -14,6 +14,7 @@ import {
     type BackupRecord,
 } from '@notention/core';
 import {ArrowDownIcon, BellIcon, CalendarIcon, LockIcon, TrashIcon, HistoryIcon} from '../ui/icons';
+import {SectionHeader} from '../ui/kit';
 import {formatDistanceToNow, parseISO, isPast} from 'date-fns';
 
 interface AutoBackupSectionProps {
@@ -134,11 +135,12 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
     };
 
     return (
-        <div className="border-t border-[var(--app-line)] pt-6">
-            <h3 className="text-lg font-semibold text-[var(--app-text)] mb-4 flex items-center gap-2">
-                <BellIcon className="h-5 w-5 text-blue-400"/>
-                Auto-Backup
-            </h3>
+        <div className="space-y-3">
+            <SectionHeader
+                title="Automatic backup"
+                description="Reminders and scheduled backups to this browser."
+                icon={BellIcon}
+            />
 
             <div className="space-y-4">
                 {/* Enable toggle */}
@@ -149,14 +151,14 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                         onChange={(e) => updateAutoBackup({enabled: e.target.checked})}
                         className="w-4 h-4 text-blue-500 border-[var(--app-line-strong)] rounded focus:ring-blue-500"
                     />
-                    <span className="text-sm text-[var(--app-text-secondary)]">Enable automatic backup reminders</span>
+                    <span className="text-[13px] text-[var(--app-text-secondary)]">Enable automatic backup reminders</span>
                 </label>
 
                 {autoBackup.enabled && (
                     <>
                         {/* Frequency */}
                         <div className="pl-7">
-                            <label className="block text-sm text-[var(--app-muted)] mb-1">Backup frequency</label>
+                            <label className="block text-[12px] text-[var(--app-muted)] mb-1">Backup frequency</label>
                             <select
                                 value={autoBackup.frequency}
                                 onChange={(e) => updateAutoBackup({frequency: e.target.value as any})}
@@ -178,13 +180,13 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                     onChange={(e) => updateAutoBackup({encrypt: e.target.checked})}
                                     className="w-4 h-4 text-blue-500 border-[var(--app-line-strong)] rounded focus:ring-blue-500"
                                 />
-                                <span className="text-sm text-[var(--app-text-secondary)]">Encrypt backups (recommended)</span>
+                                <span className="text-[13px] text-[var(--app-text-secondary)]">Encrypt backups (recommended)</span>
                                 <LockIcon className="h-4 w-4 text-[var(--app-muted)]"/>
                             </label>
 
                             {autoBackup.encrypt && (
                                 <div className="pl-7 mt-2 space-y-2">
-                                    <label className="block text-sm text-[var(--app-muted)] mb-1">Passphrase</label>
+                                    <label className="block text-[12px] text-[var(--app-muted)] mb-1">Passphrase</label>
                                     <div className="flex gap-2">
                                         <input
                                             type={showPassphrase ? 'text' : 'password'}
@@ -211,7 +213,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
 
                         {/* Rotation count */}
                         <div className="pl-7">
-                            <label className="block text-sm text-[var(--app-muted)] mb-1">
+                            <label className="block text-[12px] text-[var(--app-muted)] mb-1">
                                 Rotation count: {autoBackup.rotationCount} backups
                             </label>
                             <input
@@ -220,7 +222,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                 max="30"
                                 value={autoBackup.rotationCount}
                                 onChange={(e) => updateAutoBackup({rotationCount: parseInt(e.target.value)})}
-                                className="w-full md:w-64 h-2 bg-neutral-700 rounded-lg appearance-none accent-blue-500"
+                                className="w-full md:w-64 h-2 bg-[var(--app-raised)] rounded-lg appearance-none accent-blue-500"
                             />
                             <p className="text-xs text-[var(--app-muted)] mt-1">
                                 Old backups beyond this count will be purged on next backup.
@@ -258,7 +260,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                 </div>
                                 <div className="max-h-48 overflow-y-auto space-y-1">
                                     {backupHistory.map((record, index) => (
-                                        <div key={index} className="text-xs text-[var(--app-muted)] flex items-center gap-2 px-2 py-1 hover:bg-neutral-700/50 rounded">
+                                        <div key={index} className="text-xs text-[var(--app-muted)] flex items-center gap-2 px-2 py-1 hover:bg-[var(--app-raised)] rounded">
                                             <span className="w-32">{formatBackupDate(record.timestamp)}</span>
                                             <span className="text-[var(--app-muted)]">|</span>
                                             <span>{record.noteCount} notes</span>

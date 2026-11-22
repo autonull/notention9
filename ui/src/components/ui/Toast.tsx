@@ -1,6 +1,7 @@
 import React from 'react';
 import { cn } from '../../utils/ui';
 import { componentTokens } from '../../styles/tokens';
+import {tone, type Tone} from '../../styles/tone';
 
 export interface ToastProps {
     id: string;
@@ -50,8 +51,8 @@ export function Toast({ id, message, type = 'info', duration = 4000, onClose, ac
     }, [id, duration, onClose, persistent, isHovered]);
 
     const tokens = componentTokens.toast;
-    const progressColors = tokens.progress;
     const buttonTokens = componentTokens.button;
+    const toastTone: Tone = ({info: 'accent', success: 'success', warning: 'warning', error: 'danger'} as Record<string, Tone>)[type];
 
     const icons = {
         info: (
@@ -80,7 +81,8 @@ export function Toast({ id, message, type = 'info', duration = 4000, onClose, ac
         <div
             className={cn(
                 tokens.base,
-                tokens.types[type]
+                tone[toastTone].border,
+                'bg-[var(--app-panel)] text-[var(--app-text)]'
             )}
             role="alert"
             aria-live={persistent ? 'assertive' : 'polite'}
@@ -90,11 +92,8 @@ export function Toast({ id, message, type = 'info', duration = 4000, onClose, ac
             {/* Progress bar for auto-dismiss */}
             {!persistent && duration > 0 && (
                 <div
-                    className="absolute bottom-0 left-0 h-1 transition-all duration-100"
-                    style={{
-                        width: `${progress}%`,
-                        backgroundColor: progressColors[type]
-                    }}
+                    className={cn('absolute bottom-0 left-0 h-1 transition-all duration-100', tone[toastTone].bar)}
+                    style={{width: `${progress}%`}}
                 />
             )}
 

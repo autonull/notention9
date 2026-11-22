@@ -1,5 +1,4 @@
-import React, {useMemo, useRef} from 'react';
-import {cn} from '../../utils/ui';
+import React, {useMemo} from 'react';
 
 import {useView} from '../../hooks/useViewContext';
 import {useSettingsView} from '../../hooks/useSettingsView';
@@ -24,26 +23,26 @@ import {OntologyView} from './OntologyView';
 import {SkillManagementView} from '../skills';
 import type {SettingsTab} from '@notention/core';
 import {SETTINGS_GROUPS} from '../../config/uiSurfaces';
+import {SettingsDirectory} from '../patterns/SettingsDirectory';
 
-const GROUPS = SETTINGS_GROUPS;
+const TABS = SETTINGS_GROUPS.flatMap(group => group.tabs);
 
 export function SettingsView() {
     const {settings, setSettings} = useSettingsView();
-    const direction = useDirection();
-    const isRTL = direction === 'rtl';
+    const isRTL = useDirection() === 'rtl';
     const {settingsTab, setSettingsTab, setActiveView} = useView();
-    const tabRefs = useRef(new Map<SettingsTab, HTMLButtonElement>());
 
-    const tabs = useMemo(() => GROUPS.flatMap(group => group.tabs), []);
-    const activeLabel = tabs.find(tab => tab.id === settingsTab)?.label ?? 'Settings';
+    const activeLabel = useMemo(
+        () => TABS.find(tab => tab.id === settingsTab)?.label ?? 'Settings',
+        [settingsTab]
+    );
 
     const selectTab = (id: SettingsTab) => {
         setSettingsTab(id);
         setActiveView('settings');
-        tabRefs.current.get(id)?.focus();
     };
 
-    const renderTabContent = () => {
+    const renderTab = () => {
         switch (settingsTab) {
             case 'ai': return <AITab settings={settings} setSettings={setSettings}/>;
             case 'automation': return <AutomationTab/>;
@@ -67,18 +66,6 @@ export function SettingsView() {
         }
     };
 
-    const handleTabKeyDown = (event: React.KeyboardEvent) => {
-        const index = tabs.findIndex(tab => tab.id === settingsTab);
-        const next =
-            event.key === 'ArrowDown' || event.key === 'ArrowRight' ? (index + 1) % tabs.length :
-            event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? (index - 1 + tabs.length) % tabs.length :
-            event.key === 'Home' ? 0 :
-            event.key === 'End' ? tabs.length - 1 : -1;
-        if (next < 0) return;
-        event.preventDefault();
-        selectTab(tabs[next].id);
-    };
-
     return (
         <div className="flex h-full flex-col overflow-hidden bg-[var(--app-bg)]">
             <div className="mx-auto flex min-h-0 w-full max-w-[1120px] flex-1 flex-col px-4 md:px-6">
@@ -89,7 +76,7 @@ export function SettingsView() {
                         onChange={(event) => selectTab(event.target.value as SettingsTab)}
                         className="h-9 w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] px-2.5 text-[13px] text-[var(--app-text)] focus:border-[var(--app-accent-line)] focus:outline-none"
                     >
-                        {GROUPS.map(group => (
+                        {SETTINGS_GROUPS.map(group => (
                             <optgroup key={group.id} label={group.label}>
                                 {group.tabs.map(tab => (
                                     <option key={tab.id} value={tab.id}>{tab.label}</option>
@@ -100,43 +87,12 @@ export function SettingsView() {
                 </label>
 
                 <div className="grid min-h-0 flex-1 gap-6 pb-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-10">
-                    <nav aria-label="Settings sections" className="hidden lg:block lg:overflow-y-auto custom-scrollbar">
-                        <div role="tablist" aria-orientation="vertical" onKeyDown={handleTabKeyDown}>
-                            {GROUPS.map(group => (
-                                <div key={group.id} className="mb-4">
-                                    <div className="px-2 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-[var(--app-faint)]">
-                                        {group.label}
-                                    </div>
-                                    <div className="space-y-0.5">
-                                        {group.tabs.map(tab => (
-                                            <button
-                                                key={tab.id}
-                                                ref={(element) => {
-                                                    if (element) tabRefs.current.set(tab.id, element);
-                                                    else tabRefs.current.delete(tab.id);
-                                                }}
-                                                role="tab"
-                                                id={`settings-tab-${tab.id}`}
-                                                aria-selected={settingsTab === tab.id}
-                                                aria-controls={`settings-panel-${tab.id}`}
-                                                tabIndex={settingsTab === tab.id ? 0 : -1}
-                                                onClick={() => selectTab(tab.id)}
-                                                className={cn(
-                                                    'flex h-8 w-full items-center rounded-md px-2 text-[13px] transition-colors',
-                                                    isRTL ? 'text-right' : 'text-left',
-                                                    settingsTab === tab.id
-                                                        ? 'bg-[var(--app-raised)] font-medium text-[var(--app-text)]'
-                                                        : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)]'
-                                                )}
-                                            >
-                                                <span className="truncate">{tab.label}</span>
-                                            </button>
-                                        ))}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </nav>
+                    <SettingsDirectory
+                        value={settingsTab}
+                        onSelect={selectTab}
+                        rtl={isRTL}
+                        className="hidden lg:block"
+                    />
 
                     <section
                         role="tabpanel"
@@ -145,7 +101,7 @@ export function SettingsView() {
                         aria-label={activeLabel}
                         className="min-w-0 max-w-[840px] overflow-y-auto pb-10 custom-scrollbar"
                     >
-                        {renderTabContent()}
+                        {renderTab()}
                     </section>
                 </div>
             </div>

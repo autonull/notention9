@@ -13,13 +13,13 @@ export function LanguageTab() {
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">{t('settings.languageRegion')}</h3>
+                <h3 className="text-[13px] font-semibold text-[var(--app-text)] mb-2">{t('settings.languageRegion')}</h3>
                 <p className="text-[var(--app-muted)] text-sm mb-4">
                     {t('settings.language')}: Choose your preferred language. The interface will update immediately.
                 </p>
                 <div className="flex items-center justify-between p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-neutral-700/50 rounded-lg text-blue-400">
+                        <div className="p-2 bg-[var(--app-raised)] rounded-lg text-blue-400">
                             <GlobeIcon className="w-5 h-5" />
                         </div>
                         <div>
@@ -34,26 +34,26 @@ export function LanguageTab() {
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">{t('settings.textDirection')}</h3>
+                <h3 className="text-[13px] font-semibold text-[var(--app-text)] mb-2">{t('settings.textDirection')}</h3>
                 <p className="text-[var(--app-muted)] text-sm mb-4">
                     {t('settings.currentDirection')}: <strong className="text-[var(--app-text)]">{directionLabel}</strong>.
                     {t('settings.autoDetermined')}
                 </p>
                 <div className="p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                        <div className="p-3 bg-[var(--app-raised)] rounded-lg">
                             <p className="text-[var(--app-muted)]">{t('common.language')}</p>
                             <p className="text-[var(--app-text)] font-medium">{language}</p>
                         </div>
-                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                        <div className="p-3 bg-[var(--app-raised)] rounded-lg">
                             <p className="text-[var(--app-muted)]">{t('settings.textDirection')}</p>
                             <p className="text-[var(--app-text)] font-medium">{direction.toUpperCase()}</p>
                         </div>
-                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                        <div className="p-3 bg-[var(--app-raised)] rounded-lg">
                             <p className="text-[var(--app-muted)]">RTL</p>
                             <p className="text-[var(--app-text)] font-medium">{direction === 'rtl' ? t('common.yes') : t('common.no')}</p>
                         </div>
-                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                        <div className="p-3 bg-[var(--app-raised)] rounded-lg">
                             <p className="text-[var(--app-muted)]">Native Name</p>
                             <p className="text-[var(--app-text)] font-medium">
                                 {supportedLanguages.find(l => l.code === language)?.nativeName || language}
@@ -64,7 +64,7 @@ export function LanguageTab() {
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">{t('settings.availableLanguages')}</h3>
+                <h3 className="text-[13px] font-semibold text-[var(--app-text)] mb-2">{t('settings.availableLanguages')}</h3>
                 <p className="text-[var(--app-muted)] text-sm mb-4">
                     {t('settings.supportedLanguagesCount', {count: supportedLanguages.length})}
                 </p>

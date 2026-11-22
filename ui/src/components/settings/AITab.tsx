@@ -8,6 +8,7 @@ import {Toggle} from '../ui/Primitives';
 import {Input} from '../ui/Input';
 import {Button} from '../ui/Button';
 import {Select} from '../ui/Select';
+import {SectionHeader} from '../ui/kit';
 
 interface AITabProps {
     settings: AppSettings;
@@ -59,16 +60,12 @@ export function AITab({settings, setSettings}: AITabProps) {
     };
 
     return (
-        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-6">
-            <div className="flex flex-col gap-2">
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] flex items-center gap-3">
-                    <SparklesIcon className="h-6 w-6 text-blue-400"/>
-                    AI Enhancements
-                </h2>
-                <p className="text-sm text-[var(--app-muted)]">
-                    Configure how the Gardener AI works.
-                </p>
-            </div>
+        <div className="space-y-8">
+            <SectionHeader
+                title="AI enhancements"
+                description="Choose the model and how it helps."
+                icon={SparklesIcon}
+            />
 
             <div className="p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]">
                 <Select
@@ -138,7 +135,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                            className={`font-medium ${isEnabled || (isWebLLM) ? 'text-[var(--app-text-secondary)]' : 'text-[var(--app-muted)]'}`}>
                         Enable AI Features
                     </label>
-                    <p className="text-sm text-[var(--app-muted)] mt-1">
+                    <p className="text-[12px] text-[var(--app-muted)] mt-1">
                         Enables features like note summarization, auto-tagging, and ontology gardening.
                     </p>
                 </div>
@@ -168,7 +165,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                         <label htmlFor="ai-remote-consent" className="font-medium text-[var(--app-text-secondary)]">
                             Allow sending note text to Google Gemini
                         </label>
-                        <p className="text-sm text-[var(--app-muted)] mt-1">
+                        <p className="text-[12px] text-[var(--app-muted)] mt-1">
                             Off by default. When allowed, the text you describe is sent to the remote provider once you
                             confirm it in the composer.
                         </p>
@@ -189,7 +186,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                             <label htmlFor="ai-pii-redaction" className="font-medium text-[var(--app-text-secondary)]">
                                 Redact PII before sending
                             </label>
-                            <p className="text-sm text-[var(--app-muted)] mt-1">
+                            <p className="text-[12px] text-[var(--app-muted)] mt-1">
                                 Automatically mask emails, phone numbers, and SSNs in text sent to the remote provider.
                                 Recommended for privacy.
                             </p>
@@ -207,7 +204,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                             <label htmlFor="ai-pii-override" className="font-medium text-[var(--app-text-secondary)]">
                                 Allow sending unredacted (override)
                             </label>
-                            <p className="text-sm text-[var(--app-muted)] mt-1">
+                            <p className="text-[12px] text-[var(--app-muted)] mt-1">
                                 Explicitly allow sending text with detected PII unmasked. Use with caution.
                             </p>
                         </div>

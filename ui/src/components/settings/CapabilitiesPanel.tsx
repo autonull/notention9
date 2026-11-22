@@ -5,6 +5,7 @@ import {ConfirmationModal} from '../ui/Primitives';
 import {useNotes} from '../../hooks/useNotes';
 import {CapabilityManager, type Permission} from '@notention/core';
 import {Badge} from '../ui/Badge';
+import {SectionHeader} from '../ui/kit';
 
 const capabilityManager = new CapabilityManager();
 
@@ -67,12 +68,12 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
 
     if (grants.length === 0) {
         return (
-            <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in">
-                <div className="flex items-center gap-3 text-[var(--app-muted)]">
-                    <ShieldIcon className="h-6 w-6"/>
+            <div className="space-y-8">
+                <div className="flex items-start gap-2 text-[var(--app-muted)]">
+                    <ShieldIcon className="mt-0.5 h-4 w-4 shrink-0"/>
                     <div>
-                        <h3 className="font-medium text-[var(--app-text-secondary)]">No capability grants</h3>
-                        <p className="text-sm">Add <code className="text-blue-400">[@allow:browser:navigate:example.com]</code> to a note to grant capabilities.</p>
+                        <h3 className="text-[13px] font-medium text-[var(--app-text-secondary)]">No capability grants</h3>
+                        <p className="mt-0.5 text-[12px]">Add <code className="font-mono text-[var(--app-accent-text)]">[@allow:browser:navigate:example.com]</code> to a note to grant capabilities.</p>
                     </div>
                 </div>
             </div>
@@ -80,14 +81,12 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
     }
 
     return (
-        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-6">
-            <div className="flex items-center gap-3">
-                <ShieldIcon className="h-6 w-6 text-green-400"/>
-                <div>
-                    <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Capability Grants</h2>
-                    <p className="text-sm text-[var(--app-muted)]">Active permissions granted by notes. Revoke to remove access immediately.</p>
-                </div>
-            </div>
+        <div className="space-y-8">
+            <SectionHeader
+                title="Capability grants"
+                description="Permissions granted by notes. Revoke to remove access immediately."
+                icon={ShieldIcon}
+            />
 
             <div className="space-y-4">
                 {Object.entries(groupedByNote).map(([noteId, noteGrants]) => (

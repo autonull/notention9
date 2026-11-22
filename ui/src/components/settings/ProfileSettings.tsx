@@ -7,6 +7,7 @@ import { Select } from '../ui/Select';
 import { Toggle } from '../ui/Toggle';
 import { useState, useMemo } from 'react';
 import { UserGroupIcon, ChevronDownIcon, ChevronUpIcon } from '../ui/icons';
+import {SectionHeader} from '../ui/kit';
 
 export function ProfileSettings() {
     const {
@@ -54,15 +55,13 @@ export function ProfileSettings() {
     };
 
     return (
-        <div className="divide-y divide-[var(--app-line)]">
-            <section className="pb-6">
-                <h2 className="text-[15px] font-semibold text-[var(--app-text)]">Profile & strategy</h2>
-                <p className="mt-0.5 text-[12px] text-[var(--app-muted)]">
-                    Choose how capture, matching, and layout strategies are resolved.
-                </p>
-            </section>
+        <div className="space-y-8">
+            <SectionHeader
+                title="Profile and strategy"
+                description="Choose how capture, matching, and layout strategies are resolved."
+            />
 
-            <div className="space-y-6 py-6">
+            <div className="space-y-6">
             {/* Manual Mode Toggle */}
             <div className="flex items-center justify-between">
                 <div>
@@ -97,7 +96,7 @@ export function ProfileSettings() {
                     <div className="space-y-3 pl-4 border-l-2 border-[var(--app-line)]">
                         {/* Existing overrides */}
                         {Object.entries(overrides).length === 0 ? (
-                            <p className="text-sm text-[var(--app-muted)]">No overrides set. Using profile defaults.</p>
+                            <p className="text-[12px] text-[var(--app-muted)]">No overrides set. Using profile defaults.</p>
                         ) : (
                             Object.entries(overrides).map(([seamId, strategyId]) => {
                                 // Find the role for this seam ID
@@ -121,7 +120,7 @@ export function ProfileSettings() {
                         {/* Add new override */}
                         <div className="pt-2 border-t border-[var(--app-line)]">
                             <div className="flex items-center gap-2 mb-2">
-                                <p className="text-sm text-[var(--app-muted)]">Add new override:</p>
+                                <p className="text-[12px] text-[var(--app-muted)]">Add new override:</p>
                                 {addingOverrideSeam && (
                                     <Button variant="ghost" size="sm" onClick={() => setAddingOverrideSeam(null)}>
                                         Cancel
@@ -152,7 +151,7 @@ export function ProfileSettings() {
 
             {/* Profile Info */}
             <details className="group">
-                <summary className="cursor-pointer flex items-center gap-2 text-sm text-[var(--app-muted)]">
+                <summary className="cursor-pointer flex items-center gap-2 text-[12px] text-[var(--app-muted)]">
                     <UserGroupIcon className="w-4 h-4" />
                     Available Profiles
                 </summary>
@@ -169,7 +168,7 @@ export function ProfileSettings() {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium">{profile.name}</p>
-                                    <p className="text-sm text-[var(--app-muted)]">{profile.description}</p>
+                                    <p className="text-[12px] text-[var(--app-muted)]">{profile.description}</p>
                                 </div>
                                 {profile.id === activeProfileId && (
                                     <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">

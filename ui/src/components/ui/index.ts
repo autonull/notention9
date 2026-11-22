@@ -1,8 +1,6 @@
 export * from './Primitives';
 export * from './Navigation';
 export * from './Overlay';
-export * from './VirtualizedList';
-export * from './EnhancedCommandPalette';
 export * from './Skeleton';
 export * from './CollapsibleSection';
 
@@ -10,5 +8,3 @@ export * from './CollapsibleSection';
 export type {ButtonProps, IconButtonProps, CardProps, InputProps, BadgeProps, AvatarProps, ModalProps, ToastProps, ToastContainerProps} from './Primitives';
 export type {TabProps, TabsProps, TabPanelProps, BreadcrumbProps, PaginationProps, StepperProps, NavItem, NavProps} from './Navigation';
 export type {DrawerProps, PopoverProps, TooltipProps as TooltipProps2, DropdownProps, CommandPaletteProps, CommandPaletteItem, ConfirmationDialogProps} from './Overlay';
-export type {VirtualizedListProps, VirtualizedListRef} from './VirtualizedList';
-export type {EnhancedCommandPaletteProps} from './EnhancedCommandPalette';

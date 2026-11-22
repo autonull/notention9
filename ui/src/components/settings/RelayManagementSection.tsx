@@ -142,7 +142,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                 Network Relays
             </h2>
             <div className="space-y-4 max-w-lg">
-                <p className="text-sm text-[var(--app-muted)]">
+                <p className="text-[12px] text-[var(--app-muted)]">
                     Manage the relays you connect to. These servers store and broadcast your notes.
                     Relays are automatically sorted by health (latency + success rate) for publishing.
                 </p>
@@ -153,7 +153,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                         const score = health?.score ?? 0.5;
                         return (
                             <div key={idx}
-                                 className="flex justify-between items-center px-4 py-3 border-b border-[var(--app-line)] last:border-0 hover:bg-neutral-750">
+                                 className="flex justify-between items-center px-4 py-3 border-b border-[var(--app-line)] last:border-0 hover:bg-[var(--app-hover)]">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <span className={`font-mono text-sm truncate ${getHealthColor(score)}`}>{relay}</span>
                                     {health && (

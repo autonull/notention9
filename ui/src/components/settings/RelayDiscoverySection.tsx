@@ -4,6 +4,7 @@ import {Button} from '../ui/Button';
 import {IconButton} from '../ui/Button';
 import {Input} from '../ui/Input';
 import {ConfirmationModal} from '../ui/Primitives';
+import {SectionHeader} from '../ui/kit';
 import {useToast} from '../../hooks/useToast';
 import type {AppSettings} from '@notention/core';
 import {DEFAULT_RELAYS} from '@notention/core';
@@ -126,12 +127,13 @@ export function RelayDiscoverySection({settings, setSettings}: RelayDiscoverySec
 
     return (
         <div className="border-t border-[var(--app-line)] pt-6">
-            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
-                <NetworkIcon className="h-6 w-6 text-purple-400"/>
-                Relay Discovery
-            </h2>
+            <SectionHeader
+                title="Relay discovery"
+                description="Add well-known relays, sorted by health."
+                icon={NetworkIcon}
+            />
             <div className="space-y-4 max-w-lg">
-                <p className="text-sm text-[var(--app-muted)]">
+                <p className="text-[12px] text-[var(--app-muted)]">
                     Discover and add Nostr relays from well-known lists. Relays are automatically sorted by health (latency + success rate).
                 </p>
 
@@ -145,7 +147,7 @@ export function RelayDiscoverySection({settings, setSettings}: RelayDiscoverySec
                         {isDiscovering ? 'Discovering...' : 'Discover Relays'}
                     </Button>
                     {lastDiscovered && (
-                        <span className="flex items-center gap-1 text-sm text-[var(--app-muted)] px-3 py-1.5 bg-[var(--app-raised)] rounded-lg">
+                        <span className="flex items-center gap-1 text-[12px] text-[var(--app-muted)] px-3 py-1.5 bg-[var(--app-raised)] rounded-lg">
                             Last updated: {new Date(lastDiscovered).toLocaleTimeString()}
                         </span>
                     )}
@@ -166,7 +168,7 @@ export function RelayDiscoverySection({settings, setSettings}: RelayDiscoverySec
                                 const latency = relay.latencyMs;
                                 return (
                                     <div key={idx}
-                                         className={`flex justify-between items-center px-4 py-3 border-b border-[var(--app-line)] last:border-0 hover:bg-neutral-750 ${isConfigured ? 'bg-[var(--app-surface)]/50' : ''}`}>
+                                         className={`flex justify-between items-center px-4 py-3 border-b border-[var(--app-line)] last:border-0 hover:bg-[var(--app-hover)] ${isConfigured ? 'bg-[var(--app-surface)]/50' : ''}`}>
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
                                             <span className={`font-mono text-sm truncate ${getHealthColor(relay.healthScore)}`}>{relay.url}</span>
                                             <span className={`text-xs font-medium px-2 py-0.5 rounded ${getHealthColor(score)} bg-opacity-10`}>
@@ -225,7 +227,7 @@ export function RelayDiscoverySection({settings, setSettings}: RelayDiscoverySec
                     </div>
                     {currentRelays.map((relay, idx) => (
                         <div key={idx}
-                             className="flex justify-between items-center px-4 py-3 border-b border-[var(--app-line)] last:border-0 hover:bg-neutral-750">
+                             className="flex justify-between items-center px-4 py-3 border-b border-[var(--app-line)] last:border-0 hover:bg-[var(--app-hover)]">
                             <span className="text-[var(--app-text-secondary)] text-sm font-mono truncate">{relay}</span>
                             <IconButton
                                 onClick={() => setRelayToRemove(relay)}

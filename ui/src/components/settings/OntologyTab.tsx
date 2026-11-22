@@ -23,7 +23,7 @@ export function OntologyTab() {
         <div className="space-y-6">
             <div className="bg-[var(--app-surface)]/50 p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold text-[var(--app-text)]">Ontology Graph</h3>
+                    <h3 className="text-[13px] font-semibold text-[var(--app-text)]">Ontology Graph</h3>
                     <button
                         onClick={handleAddNode}
                         className="bg-blue-600 hover:bg-blue-700 text-[var(--app-text)] px-3 py-1 rounded text-sm"

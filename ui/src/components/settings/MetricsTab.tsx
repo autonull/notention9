@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Button} from '../ui/Button';
 import {useMetrics, Metrics, hasConsent, setConsent} from '../../hooks/useMetrics';
 import {ArrowUpTrayIcon, TrashIcon, ChevronDownIcon, ChevronUpIcon, ExclamationTriangleIcon, CheckCircleIcon, ClockIcon, InformationCircleIcon} from '../ui/icons';
+import {Chip, SectionHeader} from '../ui/kit';
 import {getFrictionSignals, type FrictionSignal} from '@notention/core/telemetry/journal';
 
 export function MetricsTab() {
@@ -90,20 +91,15 @@ export function MetricsTab() {
     const workflowGroups = groupByWorkflow(frictionSignals);
 
     return (
-        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-8">
-            <div className="flex items-center gap-4">
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Metrics & Analytics</h2>
-                <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        consent ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'
-                    }`}
-                >
-                    {consent ? 'Enabled' : 'Disabled'}
-                </span>
-            </div>
+        <div className="space-y-8">
+            <SectionHeader
+                title="Metrics and analytics"
+                description="Opt-in, anonymous, and stored in this browser."
+                actions={<Chip tone={consent ? 'success' : 'neutral'} size="xs">{consent ? 'On' : 'Off'}</Chip>}
+            />
 
             <div className="border border-[var(--app-line)] rounded-lg p-4 space-y-4">
-                <p className="text-sm text-[var(--app-muted)]">
+                <p className="text-[12px] text-[var(--app-muted)]">
                     Opt-in metrics help improve Notention by tracking anonymous usage patterns.
                     No personal data is collected. Data stays in your browser unless you export it.
                 </p>
@@ -120,7 +116,7 @@ export function MetricsTab() {
 
                 {consent && (
                     <div className="pt-4 border-t border-[var(--app-line)] space-y-2">
-                        <p className="text-sm text-[var(--app-text-secondary)]">
+                        <p className="text-[13px] text-[var(--app-text-secondary)]">
                             <strong>{totalEvents}</strong> events in current session
                         </p>
                         <div className="flex gap-2 flex-wrap">
@@ -140,7 +136,7 @@ export function MetricsTab() {
 
             {consent && totalEvents > 0 && (
                 <div className="border border-[var(--app-line)] rounded-lg p-4">
-                    <h3 className="text-lg font-medium text-[var(--app-text)] mb-3">Event Summary</h3>
+                    <h3 className="text-[13px] font-medium text-[var(--app-text)] mb-3">Event Summary</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
                         {Object.entries(eventCounts)
                             .sort(([, a], [, b]) => b - a)
@@ -157,13 +153,13 @@ export function MetricsTab() {
             {consent && (
                 <div className="border border-[var(--app-line)] rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-lg font-medium text-[var(--app-text)]">Friction Digest</h3>
+                        <h3 className="text-[13px] font-medium text-[var(--app-text)]">Friction Digest</h3>
                         {loadingDigest && <span className="text-xs text-[var(--app-muted)] animate-pulse">Loading…</span>}
                     </div>
                     {loadingDigest ? (
-                        <p className="text-sm text-[var(--app-muted)]">Analyzing friction journal…</p>
+                        <p className="text-[12px] text-[var(--app-muted)]">Analyzing friction journal…</p>
                     ) : frictionSignals.length === 0 ? (
-                        <p className="text-sm text-[var(--app-muted)]">No friction events recorded yet. Use the app to generate signals.</p>
+                        <p className="text-[12px] text-[var(--app-muted)]">No friction events recorded yet. Use the app to generate signals.</p>
                     ) : (
                         <div className="space-y-4">
                             {Array.from(workflowGroups.entries()).map(([workflow, signals]) => (
@@ -176,7 +172,7 @@ export function MetricsTab() {
                                                     {getEvidenceIcon(signal.evidenceClass)}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2 text-sm">
-                                                            <span className="font-mono text-xs text-[var(--app-muted)] bg-neutral-700 px-1.5 py-0.5 rounded">{signal.kind}</span>
+                                                            <span className="font-mono text-xs text-[var(--app-muted)] bg-[var(--app-raised)] px-1.5 py-0.5 rounded">{signal.kind}</span>
                                                             <span className="text-xs text-[var(--app-muted)]">({signal.seam})</span>
                                                         </div>
                                                         <div className="flex items-center gap-3 mt-1 text-xs text-[var(--app-muted)]">
@@ -184,7 +180,7 @@ export function MetricsTab() {
                                                             <span>{signal.ageDays}d ago</span>
                                                             <span>weight: <strong className="text-[var(--app-text-secondary)]">{signal.weight.toFixed(2)}</strong></span>
                                                             {signal.durationBucket && (
-                                                                <span className="font-mono text-xs bg-neutral-700 px-1.5 py-0.5 rounded">{signal.durationBucket}</span>
+                                                                <span className="font-mono text-xs bg-[var(--app-raised)] px-1.5 py-0.5 rounded">{signal.durationBucket}</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -201,7 +197,7 @@ export function MetricsTab() {
 
             {consent && showRaw && queue.length > 0 && (
                 <div className="border border-[var(--app-line)] rounded-lg p-4 max-h-96 overflow-auto">
-                    <h3 className="text-lg font-medium text-[var(--app-text)] mb-3">Raw Events (newest first)</h3>
+                    <h3 className="text-[13px] font-medium text-[var(--app-text)] mb-3">Raw Events (newest first)</h3>
                     <pre className="text-xs text-[var(--app-text-secondary)] font-mono whitespace-pre-wrap break-all">
                         {JSON.stringify([...queue].reverse(), null, 2)}
                     </pre>
@@ -210,10 +206,10 @@ export function MetricsTab() {
 
             {!consent && (
                 <div className="border border-[var(--app-line)] rounded-lg p-4 bg-[var(--app-raised)]">
-                    <p className="text-sm text-[var(--app-muted)]">
+                    <p className="text-[12px] text-[var(--app-muted)]">
                         Metrics are disabled. Enable above to start collecting:
                     </p>
-                    <ul className="mt-2 space-y-1 text-sm text-[var(--app-muted)]">
+                    <ul className="mt-2 space-y-1 text-[12px] text-[var(--app-muted)]">
                         <li>Time to first match</li>
                         <li>Match acceptance/rejection rate</li>
                         <li>Export/import success rate</li>

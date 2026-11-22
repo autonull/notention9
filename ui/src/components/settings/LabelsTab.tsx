@@ -6,6 +6,7 @@ import {TagIcon, PencilIcon, TrashIcon, PlusIcon, CheckIcon, XIcon} from '../ui/
 import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
 import {EmptyState} from '../ui/Primitives';
+import {SectionHeader} from '../ui/kit';
 
 export function LabelsTab() {
     const {notes, updateNote} = useNotes();
@@ -97,16 +98,11 @@ export function LabelsTab() {
     };
 
     return (
-        <div className="space-y-5 animate-fade-in">
-            <div className="flex flex-col gap-2 shrink-0">
-                <h2 className="flex items-center gap-2 text-[18px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">
-                    <TagIcon className="h-4 w-4 text-[var(--app-accent-text)]"/>
-                    Labels
-                </h2>
-                <p className="text-[12px] text-[var(--app-muted)]">
-                    Rename, merge, or delete the tags that connect your notes.
-                </p>
-            </div>
+        <div className="space-y-8">
+            <SectionHeader
+                title="Labels"
+                description="Rename, merge, or delete the tags that connect your notes."
+            />
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
                 <div className="flex flex-col gap-4">
@@ -155,11 +151,11 @@ export function LabelsTab() {
                             description={<>Create one, or add a tag inline with <code className="text-[var(--app-accent-text)]">#tag</code> in a note.</>}
                         />
                     ) : (
-                        <div className="space-y-1.5">
+                        <div className="divide-y divide-[var(--app-line)] overflow-hidden rounded-lg border border-[var(--app-line)]">
                             {sortedTags.map(({tag, count}) => (
-                                <div key={tag} className="flex items-center justify-between rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] px-3 py-2">
+                                <div key={tag} className="flex items-center justify-between gap-3 bg-[var(--app-surface)] px-3 py-2">
                                     {editingTag === tag ? (
-                                        <div className="flex-1 flex items-center gap-2">
+                                        <div className="flex flex-1 items-center gap-2">
                                             <input
                                                 type="text"
                                                 value={editValue}

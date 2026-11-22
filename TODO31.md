@@ -1,8 +1,7 @@
 # TODO.31 — The Note Is the Page
 
-**Status:** in progress. W31.0–W31.7 and W31.9 landed; W31.8 remains.
-Supersedes the previous `TODO31.md` draft
-(“Consolidation, Surface by Surface”).
+**Status:** done. W31.0–W31.9 landed. Supersedes the previous `TODO31.md`
+draft (“Consolidation, Surface by Surface”).
 **Continues:** TODO.30 and the one-workspace pass.
 **Non-goals:** matching semantics, transports, AI models, persistence formats,
 and new capabilities.
@@ -13,9 +12,9 @@ command. Do not add a surface to solve a crowded surface.
 
 ## Progress
 
-Last updated after the Explore/Search/Chat pass. The gallery still has 47
-scenes; `note/compose` replaces `capture/composer` and
-`editor/property-edit` replaces `editor/property-inspector`.
+Last updated after the settings pass. The gallery still has 47 scenes;
+`note/compose` replaces `capture/composer` and `editor/property-edit`
+replaces `editor/property-inspector`.
 
 | Workstream | State | Landed | Still open |
 | :--- | :--- | :--- | :--- |
@@ -27,23 +26,24 @@ scenes; `note/compose` replaces `capture/composer` and
 | W31.5 One context rail | **Done** | Four top-level tabs (`Next`, `Matches`, `Replies`, `Chat`), nested toggle removed, rail closed when empty, auto-open when context exists, percentage share and resizer, `Context` control with count | Mobile uses a bottom pane, not a labelled bottom sheet with a drag handle |
 | W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing | Group section offers status/none; Timeline grouping is not wired |
 | W31.7 Explore, search, chat | **Done** | `IdentityStrip` / `FeedRow` patterns; relay health is a chip with a click-to-open panel; one filter row (domains + input, no label, no tag row); feed rows with one property line and one action row; read-only feed is one line; chat list uses `FeedRow`, conversation carries app typography and one composer; palette scopes come from `PALETTE_SCOPES`; `RelayStatusBanner` and `DiscoveredProperties` deleted | None |
-| W31.8 Settings, overlays, status | **Partial** | Settings tabs use one 15 px heading, token surfaces, no legacy `bg-neutral-800/900` or `text-xl`; duplicate help launcher deleted; one help surface | `SettingsDirectory` / `SettingsPanel` / `SettingsSection` split; `Field` and `Modal` adoption audit; one tone map for toast/banner/chip/status; one-primary-per-tab audit |
+| W31.8 Settings, overlays, status | **Done** | `SettingsDirectory` + `SettingsSection` patterns; `SettingsView` is directory + panel + tab switch; one `SectionHeader` at 15 px (optional 14 px icon) for every tab; tab cards and `animate-fade-in` removed; settings surfaces and copy on tokens with no `neutral-*`; `styles/tone.ts` tone map used by `Chip`, `Toast`, `ConnectivityBanner`, and `DegradedModeBanner`; one primary per tab; dead `EnhancedCommandPalette`, `VirtualizedList`, `PrivacyControl` and their tests deleted | `PropertyPalette`, `UnifiedSelector`, and `SkillApprovalDialog` still hand-roll a backdrop; `Popover` keeps a legacy neutral surface; accent icon colors are not yet tone tokens |
 | W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7 | No further CSS |
 
 ### Next order
 
-1. **W31.8** — split `SettingsView` into `SettingsDirectory` +
-   `SettingsPanel` + `SettingsSection`; audit `Field`, `Modal`, and
-   `ConfirmationModal` adoption; one tone map for toast, banner, chip, and
-   status; one primary per tab.
+No workstream is open. The remaining items are follow-ups, in value order:
+
+1. **Overlay hygiene** — `PropertyPalette`, `UnifiedSelector`, and
+   `SkillApprovalDialog` still draw their own backdrop. Move each to `Modal`
+   once `Popover` drops its legacy neutral surface.
 2. **W31.2/W31.4 follow-ups** — pure `selectIndex` + tests, timeline grouping,
    and the inline-chip DOM fallback.
 3. **W31.0 follow-ups** — extract `ListRow`, `Field`, `ContextPanel`, and
    `SurfaceTabs` only where a second use exists; add a `KitGallery` scene that
    renders every primitive and pattern.
-4. **Overlay hygiene** — the relay chip opens a hand-rolled panel. Move it to
-   `Popover` once that primitive drops its legacy neutral surface, or keep the
-   inline panel if the chip remains the only user.
+4. **Tone coverage** — accent icon colors (`text-blue-400`, `text-purple-400`)
+   in settings bodies are still literal. Route them through `styles/tone.ts`
+   when the icon set gains a tone prop.
 
 ---
 
@@ -873,20 +873,14 @@ palette.
 
 ### W31.8 — Settings, overlays, and status (P2)
 
-**Remaining.** This is the last workstream. Start with the `SettingsView` split,
-because every other item in W31.8 depends on a tab no longer owning the
-directory.
+**Landed.** `patterns/SettingsDirectory.tsx` owns the roving-tabindex list and
+`patterns/SettingsSection.tsx` wraps one `SectionHeader` plus its body.
+`SettingsView` is directory + panel + tab switch, and every tab starts with the
+same 15 px header. Tab-level cards and `animate-fade-in` are gone; the panel
+supplies the surface. `styles/tone.ts` is the one tone map.
 
-Order of work:
-
-1. add `patterns/SettingsDirectory.tsx` and `patterns/SettingsSection.tsx`;
-2. shrink `views/SettingsView.tsx` to directory + panel + the active tab;
-3. convert one tab, screenshot it, then convert the rest;
-4. audit `Field` usage: one label + hint + error row, no second form row;
-5. replace hand-rolled overlays (`HelpDialog`, `KeyboardShortcutsHelp`,
-   `ProfileHeader`'s modal already uses `Modal`) with `Modal` / `ConfirmDialog`;
-6. add one tone map and use it in `Toast`, `*Banner`, `Chip`, and status rows;
-7. audit one primary per tab.
+Left: the three hand-rolled overlays outside settings, and literal accent icon
+colors inside tab bodies.
 
 Files: `views/SettingsView.tsx`, `settings/*Tab.tsx`, `ui/Modal.tsx`,
 `ui/ConfirmationModal.tsx`, `ui/Toast.tsx`, `layout/*Banner.tsx`,

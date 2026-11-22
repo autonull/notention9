@@ -3,7 +3,8 @@ import { useSettings } from '../../hooks/useSettingsContext';
 import { Button } from '../ui/Button';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
-import { ChoiceGrid, SectionHeader } from '../ui/kit';
+import { ChoiceGrid } from '../ui/kit';
+import { SettingsSection } from '../patterns/SettingsSection';
 import { SunIcon, MoonIcon, MonitorIcon, MinimizeIcon, MaximizeIcon } from '../../components/ui/icons';
 import { cn } from '../../utils/ui';
 
@@ -39,11 +40,10 @@ export function AppearanceTab() {
 
     return (
         <div className="space-y-8">
-            <section className="space-y-3">
-                <SectionHeader
-                    title="Theme"
-                    description="System follows your operating system setting."
-                />
+            <SettingsSection
+                title="Theme"
+                description="System follows your operating system setting."
+            >
                 <ChoiceGrid
                     options={THEMES}
                     value={theme}
@@ -58,26 +58,24 @@ export function AppearanceTab() {
                     </span>
                     {theme === 'system' && ' · active'}
                 </p>
-            </section>
+                        </SettingsSection>
 
-            <section className="space-y-3">
-                <SectionHeader
-                    title="Density"
-                    description="Adjust spacing and control size across the workspace."
-                />
+            <SettingsSection
+                title="Density"
+                description="Adjust spacing and control size across the workspace."
+            >
                 <ChoiceGrid
                     options={DENSITIES}
                     value={density}
                     onChange={(value) => set({ density: value })}
                     label="Density"
                 />
-            </section>
+                        </SettingsSection>
 
-            <section className="space-y-3">
-                <SectionHeader
-                    title="Accent"
-                    description="Used for selection, primary actions, and focus."
-                />
+            <SettingsSection
+                title="Accent"
+                description="Used for selection, primary actions, and focus."
+            >
                 <div className="flex flex-wrap items-center gap-2">
                     {ACCENT_COLORS.map(color => {
                         const selected = accentColor.toLowerCase() === color.value.toLowerCase();
@@ -133,10 +131,9 @@ export function AppearanceTab() {
                         aria-label="Custom accent color hex"
                     />
                 </div>
-            </section>
+                        </SettingsSection>
 
-            <section className="space-y-3">
-                <SectionHeader title="Preview" description="Live examples using the current settings." />
+            <SettingsSection title="Preview" description="Live examples using the current settings.">
                 <div className="space-y-4 rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
                     <div className="flex flex-wrap items-center gap-2">
                         <Button size="sm">Primary</Button>
@@ -167,7 +164,7 @@ export function AppearanceTab() {
                         </label>
                     </div>
                 </div>
-            </section>
+            </SettingsSection>
         </div>
     );
 }

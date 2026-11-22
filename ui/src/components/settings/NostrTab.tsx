@@ -11,6 +11,7 @@ import {Input} from '../ui/Input';
 import {Button} from '../ui/Button';
 import {Textarea} from '../ui/Textarea';
 import {ConfirmationModal} from '../ui/Primitives';
+import {SectionHeader} from '../ui/kit';
 import {RelayManagementSection} from './RelayManagementSection';
 
 interface NostrTabProps {
@@ -103,17 +104,18 @@ export function NostrTab({
     }, [settings.nostr.privkey]);
 
     return (
-        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-8">
+        <div className="space-y-8">
 
             {/* Identity Section */}
-            <div>
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
-                    <KeyIcon className="h-6 w-6 text-yellow-400"/>
-                    Nostr Identity
-                </h2>
+            <div className="space-y-3">
+                <SectionHeader
+                    title="Nostr identity"
+                    description="Keys stay on this device."
+                    icon={KeyIcon}
+                />
                 {settings.nostr.privkey && nsec && npub ? (
                     <div className="space-y-4">
-                        <p className="text-sm text-[var(--app-muted)]">
+                        <p className="text-[12px] text-[var(--app-muted)]">
                             Your keys are stored locally on this device. Keep your private key
                             safe and do not share it.
                         </p>
@@ -178,11 +180,12 @@ export function NostrTab({
 
             {/* Profile Section */}
             {settings.nostr.privkey && (
-                <div className="border-t border-[var(--app-line)] pt-6">
-                    <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
-                        <UserPlusIcon className="h-6 w-6 text-blue-400"/>
-                        Public Profile
-                    </h2>
+                <div className="space-y-3">
+                    <SectionHeader
+                        title="Public profile"
+                        description="Published to your relays as a kind 0 event."
+                        icon={UserPlusIcon}
+                    />
                     <div className="space-y-4 max-w-lg">
                         <div>
                             <Input

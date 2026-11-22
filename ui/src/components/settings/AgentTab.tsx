@@ -26,8 +26,8 @@ export function AgentTab() {
     return (
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
-                <h3 className="text-lg font-medium text-[var(--app-text)]">Agent Settings</h3>
-                <p className="text-sm text-[var(--app-muted)]">
+                <h3 className="text-[13px] font-medium text-[var(--app-text)]">Agent Settings</h3>
+                <p className="text-[12px] text-[var(--app-muted)]">
                     Configure your connection to the Agent.
                 </p>
             </div>
@@ -57,7 +57,7 @@ export function AgentTab() {
 
             {enabled && (
                 <>
-                    <h3 className="text-lg font-medium text-[var(--app-text)] pt-4">Agent Status</h3>
+                    <h3 className="text-[13px] font-medium text-[var(--app-text)] pt-4">Agent Status</h3>
                     <AgentStatus/>
                 </>
             )}

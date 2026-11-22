@@ -10,6 +10,7 @@ import {AutoBackupSection} from './AutoBackupSection';
 import {CapabilitiesPanel} from './CapabilitiesPanel';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {SparklesIcon} from '../ui/icons';
+import {SectionHeader} from '../ui/kit';
 import {useMetrics, Metrics} from '../../hooks/useMetrics';
 import {storageRecovery} from '@notention/core';
 import {getJournal, serializeFrictionEvents} from '@notention/core/telemetry/journal';
@@ -79,7 +80,7 @@ export function DataTab() {
     };
 
     return (
-        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-8">
+        <div className="space-y-8">
 
             {/* Backup & Restore */}
             <ImportExportSection
@@ -110,15 +111,12 @@ export function DataTab() {
                 </div>
             </div>
 
-            <div className="border-t border-[var(--app-line)] pt-6">
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
-                    <SparklesIcon className="h-6 w-6 text-purple-400"/>
-                    Sample Workspace
-                </h2>
-                <p className="text-sm text-[var(--app-muted)] mb-4">
-                    Load a small local community of notes with requests, offers, an event, and places.
-                    Existing notes are never overwritten.
-                </p>
+            <div className="space-y-3">
+                <SectionHeader
+                    title="Sample workspace"
+                    description="Load a small local community. Existing notes are never overwritten."
+                    icon={SparklesIcon}
+                />
                 <div className="flex gap-3">
                     <Button variant="primary" icon={SparklesIcon} onClick={demo.load}>
                         {demo.hasSampleData ? 'Reload sample workspace' : 'Load sample workspace'}
@@ -131,14 +129,12 @@ export function DataTab() {
                 </div>
             </div>
 
-            <div className="border-t border-[var(--app-line)] pt-6">
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
-                    <DocumentDuplicateIcon className="h-6 w-6 text-red-400"/>
-                    Deleted Notes
-                </h2>
-                <p className="text-sm text-[var(--app-muted)] mb-4">
-                    Deleted notes can be restored or permanently removed. They are never expired automatically.
-                </p>
+            <div className="space-y-3">
+                <SectionHeader
+                    title="Deleted notes"
+                    description="Restore or remove them permanently. Nothing expires on its own."
+                    icon={DocumentDuplicateIcon}
+                />
                 <Button
                     variant="secondary"
                     icon={DocumentDuplicateIcon}
@@ -175,7 +171,7 @@ export function DataTab() {
             )}
 
             <div className="border-t border-[var(--app-line)] pt-6">
-                <p className="text-sm text-[var(--app-muted)] mb-4">
+                <p className="text-[12px] text-[var(--app-muted)] mb-4">
                     Your notes and settings are stored locally in your browser&apos;s
                     IndexedDB. Clearing data is irreversible.
                 </p>

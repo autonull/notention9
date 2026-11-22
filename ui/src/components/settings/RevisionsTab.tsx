@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '../../hooks/useToast';
 import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
 import { type Revision, type VerdictSummary, type ResolutionReason } from '@notention/core/telemetry/revisionStore';
+import {SectionHeader} from '../ui/kit';
 
 const STATUS_COLORS: Record<string, string> = {
     draft: 'text-[var(--app-muted)] bg-[var(--app-raised)]',
@@ -201,16 +202,11 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
     };
 
     return (
-        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-6">
-            <div className="flex flex-col gap-2">
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] flex items-center gap-3">
-                    <span className="h-6 w-6 text-blue-400">📋</span>
-                    Strategy Revisions
-                </h2>
-                <p className="text-sm text-[var(--app-muted)]">
-                    Manage proposed strategy changes. Revisions require consent before activation.
-                </p>
-            </div>
+        <div className="space-y-8">
+            <SectionHeader
+                title="Strategy revisions"
+                description="Proposed changes need consent before they activate."
+            />
 
             <div className="flex gap-4 mb-4">
                 <select
@@ -250,7 +246,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                                             </code>
                                             {getStatusBadge(revision.status)}
                                         </div>
-                                        <div className="flex items-center gap-3 text-sm text-[var(--app-muted)]">
+                                        <div className="flex items-center gap-3 text-[12px] text-[var(--app-muted)]">
                                             <span>Author: {revision.author}</span>
                                             <span>Created: {formatDate(revision.createdAt)}</span>
                                             {revision.consentedAt && (
@@ -264,7 +260,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
 
                                     {/* Resolution Reason (B4.2) */}
                                     {revision.reason && (
-                                        <div className="flex items-center gap-2 text-sm text-[var(--app-text-secondary)]">
+                                        <div className="flex items-center gap-2 text-[13px] text-[var(--app-text-secondary)]">
                                             <span className="text-[var(--app-muted)]">Reason:</span>
                                             <code className="bg-[var(--app-surface)] px-2 py-1 rounded text-xs">{formatReason(revision.reason)}</code>
                                         </div>
@@ -327,7 +323,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                                                     </button>
                                                     <button
                                                         onClick={() => setConfirmRollbackId(null)}
-                                                        className="px-3 py-1.5 text-sm bg-neutral-700 border border-neutral-500 text-[var(--app-text-secondary)] rounded-lg hover:bg-neutral-600 transition-colors"
+                                                        className="px-3 py-1.5 text-sm bg-[var(--app-raised)] border border-[var(--app-line-strong)] text-[var(--app-text-secondary)] rounded-lg hover:bg-[var(--app-hover)] transition-colors"
                                                     >
                                                         Cancel
                                                     </button>

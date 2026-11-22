@@ -34,8 +34,8 @@ describe('MetricsTab', () => {
         
         render(<MetricsTab />);
         
-        expect(screen.getByText('Metrics & Analytics')).toBeInTheDocument();
-        expect(screen.getByText('Disabled')).toBeInTheDocument();
+        expect(screen.getByText('Metrics and analytics')).toBeInTheDocument();
+        expect(screen.getByText('Off')).toBeInTheDocument();
         expect(screen.getByText('Metrics are disabled. Enable above to start collecting:')).toBeInTheDocument();
         expect(screen.getByRole('checkbox')).not.toBeChecked();
     });
@@ -51,7 +51,7 @@ describe('MetricsTab', () => {
         
         render(<MetricsTab />);
         
-        expect(screen.getByText('Enabled')).toBeInTheDocument();
+        expect(screen.getByText('On')).toBeInTheDocument();
         expect(screen.getByRole('checkbox')).toBeChecked();
         expect(screen.getByText('events in current session')).toBeInTheDocument();
     });

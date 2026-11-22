@@ -2,15 +2,7 @@ import React from 'react';
 import {cn} from '../../utils/ui';
 import type {UiOption} from '../../config/uiSurfaces';
 
-type Tone = 'neutral' | 'accent' | 'success' | 'warning' | 'danger';
-
-const toneClasses: Record<Tone, string> = {
-    neutral: 'border-[var(--app-line)] bg-[var(--app-raised)] text-[var(--app-muted)]',
-    accent: 'border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] text-[var(--app-accent-text)]',
-    success: 'border-emerald-500/25 bg-emerald-500/10 text-emerald-300',
-    warning: 'border-amber-500/25 bg-amber-500/10 text-amber-300',
-    danger: 'border-red-500/25 bg-red-500/10 text-red-300',
-};
+import {toneClass, type Tone} from '../../styles/tone';
 
 export function Chip({
     tone = 'neutral',
@@ -24,7 +16,7 @@ export function Chip({
             className={cn(
                 'inline-flex items-center gap-1 rounded-md border font-medium leading-none',
                 size === 'xs' ? 'px-1.5 py-1 text-[11px]' : 'px-2 py-1 text-[11px]',
-                toneClasses[tone],
+                toneClass(tone),
                 className
             )}
             {...props}
@@ -153,18 +145,23 @@ export function SectionHeader({
     title,
     description,
     actions,
+    icon: Icon,
     className,
 }: {
     title: string;
     description?: string;
     actions?: React.ReactNode;
+    icon?: React.ComponentType<{className?: string}>;
     className?: string;
 }) {
     return (
         <div className={cn('flex items-end justify-between gap-4', className)}>
-            <div className="min-w-0">
-                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">{title}</h2>
-                {description && <p className="mt-0.5 text-[12px] text-[var(--app-muted)]">{description}</p>}
+            <div className="flex min-w-0 items-start gap-2">
+                {Icon && <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[var(--app-faint)]"/>}
+                <div className="min-w-0">
+                    <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">{title}</h2>
+                    {description && <p className="mt-0.5 text-[12px] text-[var(--app-muted)]">{description}</p>}
+                </div>
             </div>
             {actions}
         </div>
