@@ -44,9 +44,11 @@ No workstream is open. The remaining items are follow-ups, in value order:
 4. **Tone coverage** — accent icon colors (`text-blue-400`, `text-purple-400`)
    in settings bodies are still literal. Route them through `styles/tone.ts`
    when the icon set gains a tone prop.
-5. **Audit budget** — `test/audit/task-first.spec.ts` walks 15 cases at two
-   viewports inside one 300 s test and now times out. Split it per viewport
-   before treating it as evidence again; it measures, it does not assert.
+5. **Audit measurement** — `task-first` now runs one test per viewport and
+   waits on real selectors (`data-testid="notes-list-items"`,
+   `notes-grid-items`, `page-surface`). It still scans `main` only, so the
+   top-bar `New note` reads as no primary. Widen the scan to the shell when
+   the metric becomes a gate.
 
 ---
 

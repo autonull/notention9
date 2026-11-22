@@ -128,6 +128,7 @@ export const NoteListItem = React.memo(({
     return (
         <div
             ref={divRef}
+            data-row="true"
             style={swipeStyle as React.CSSProperties}
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}

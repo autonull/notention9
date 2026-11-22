@@ -12,8 +12,8 @@ export interface AuditCase {
 export const auditCases: AuditCase[] = [
     {id: 'inbox-empty', state: 'empty', prepare: {notes: [], settings: defaultSettings(), hash: '#inbox'}},
     {id: 'inbox-populated', state: 'populated', prepare: {notes: demoNotes(), settings: defaultSettings(), hash: '#inbox'}, waitFor: '[data-testid="local-match"]'},
-    {id: 'notes-list', state: 'populated', prepare: {notes: demoNotes(), settings: defaultSettings(), hash: '#notes/demo-request-react'}, waitFor: '.note-list-item'},
-    {id: 'notes-grid', state: 'populated', prepare: {notes: demoNotes(), settings: defaultSettings(), hash: '#notes', sidebarViewMode: 'grid'}, waitFor: '.note-list-item'},
+    {id: 'notes-list', state: 'populated', prepare: {notes: demoNotes(), settings: defaultSettings(), hash: '#notes/demo-request-react'}, waitFor: '[data-testid="page-surface"]'},
+    {id: 'notes-grid', state: 'populated', prepare: {notes: demoNotes(), settings: defaultSettings(), hash: '#notes', sidebarViewMode: 'grid'}, waitFor: '[data-testid="notes-grid-items"]'},
     {id: 'trash', state: 'populated', prepare: {notes: [deletedNote()], settings: defaultSettings(), hash: '#trash'}},
     {id: 'timeline', state: 'populated', prepare: {notes: demoNotes(), settings: defaultSettings(), hash: '#timeline'}, waitFor: '.rbc-calendar'},
     {id: 'actions', state: 'populated', prepare: {notes: [...demoNotes(), ...taskNotes()], settings: defaultSettings(), hash: '#actions'}, waitFor: '[aria-label="Running"]'},

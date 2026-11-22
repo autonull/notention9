@@ -1,22 +1,15 @@
 {
-  "generatedAt": "2026-11-22T12:03:43.004Z",
+  "generatedAt": "2026-11-22T23:50:28.719Z",
   "cases": [
     {
       "view": "inbox",
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Create note",
-            "top": 120,
-            "tabStops": 1,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 6,
-        "firstContentTop": 113,
+        "focusableCount": 7,
+        "firstContentTop": 60,
         "tabStopsToContent": 0
       }
     },
@@ -25,17 +18,10 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Create note",
-            "top": 120,
-            "tabStops": 1,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 15,
-        "firstContentTop": 113,
+        "focusableCount": 26,
+        "firstContentTop": 60,
         "tabStopsToContent": 0
       }
     },
@@ -47,19 +33,14 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 76,
-            "tabStops": 4,
+            "top": 0,
+            "tabStops": 19,
             "visible": true
           }
         ],
-        "duplicateLabels": [
-          {
-            "label": "respond",
-            "count": 2
-          }
-        ],
-        "focusableCount": 36,
-        "firstContentTop": 80,
+        "duplicateLabels": [],
+        "focusableCount": 43,
+        "firstContentTop": 12,
         "tabStopsToContent": 0
       }
     },
@@ -70,9 +51,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 16,
-        "firstContentTop": 153,
-        "tabStopsToContent": 9
+        "focusableCount": 26,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -82,9 +63,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 6,
-        "firstContentTop": 153,
-        "tabStopsToContent": 5
+        "focusableCount": 9,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -95,15 +76,15 @@
         "primaries": [
           {
             "label": "Month",
-            "top": 213,
-            "tabStops": 14,
+            "top": 162,
+            "tabStops": 21,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 53,
-        "firstContentTop": 213,
-        "tabStopsToContent": -1
+        "focusableCount": 60,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -113,9 +94,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 26,
-        "firstContentTop": 153,
-        "tabStopsToContent": -1
+        "focusableCount": 32,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -123,18 +104,11 @@
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Find a match",
-            "top": 346,
-            "tabStops": 4,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 5,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 26,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -145,14 +119,14 @@
         "primaries": [
           {
             "label": "Add",
-            "top": 284,
+            "top": 145,
             "tabStops": 2,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
-        "firstContentTop": 297,
+        "focusableCount": 28,
+        "firstContentTop": 162,
         "tabStopsToContent": 1
       }
     },
@@ -164,14 +138,14 @@
         "primaries": [
           {
             "label": "Update Ontology",
-            "top": 244,
-            "tabStops": 4,
+            "top": 167,
+            "tabStops": 5,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 6,
-        "firstContentTop": 426,
+        "focusableCount": 7,
+        "firstContentTop": 348,
         "tabStopsToContent": -1
       }
     },
@@ -183,15 +157,15 @@
         "primaries": [
           {
             "label": "Drop a pin to capture a location",
-            "top": 836,
-            "tabStops": 20,
+            "top": 105,
+            "tabStops": 27,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 21,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 28,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -211,18 +185,11 @@
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Add identity",
-            "top": 213,
-            "tabStops": 4,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 7,
-        "firstContentTop": 477,
-        "tabStopsToContent": 6
+        "focusableCount": 26,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -233,14 +200,14 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 76,
-            "tabStops": 4,
+            "top": 0,
+            "tabStops": 10,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 29,
-        "firstContentTop": 80,
+        "focusableCount": 25,
+        "firstContentTop": 12,
         "tabStopsToContent": 0
       }
     },
@@ -249,18 +216,11 @@
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Add identity",
-            "top": 191,
-            "tabStops": 4,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 17,
-        "firstContentTop": 429,
-        "tabStopsToContent": 15
+        "focusableCount": 26,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -268,17 +228,10 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Create note",
-            "top": 104,
-            "tabStops": 1,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
         "focusableCount": 6,
-        "firstContentTop": 97,
+        "firstContentTop": 60,
         "tabStopsToContent": 0
       }
     },
@@ -287,17 +240,10 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Create note",
-            "top": 104,
-            "tabStops": 1,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 12,
-        "firstContentTop": 97,
+        "focusableCount": 15,
+        "firstContentTop": 60,
         "tabStopsToContent": 0
       }
     },
@@ -309,39 +255,39 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 176,
-            "tabStops": 5,
+            "top": 0,
+            "tabStops": 2,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 38,
-        "firstContentTop": 130,
-        "tabStopsToContent": 1
-      }
-    },
-    {
-      "view": "notes",
-      "state": "populated",
-      "viewport": "mobile",
-      "metrics": {
-        "primaries": [],
-        "duplicateLabels": [],
-        "focusableCount": 0,
+        "focusableCount": 25,
         "firstContentTop": 0,
         "tabStopsToContent": -1
       }
     },
     {
+      "view": "notes",
+      "state": "populated",
+      "viewport": "mobile",
+      "metrics": {
+        "primaries": [],
+        "duplicateLabels": [],
+        "focusableCount": 15,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
+      }
+    },
+    {
       "view": "trash",
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 6,
-        "firstContentTop": 153,
-        "tabStopsToContent": 5
+        "focusableCount": 7,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -349,18 +295,11 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Month",
-            "top": 370,
-            "tabStops": 14,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 53,
-        "firstContentTop": 318,
-        "tabStopsToContent": -1
+        "focusableCount": 15,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -370,9 +309,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 26,
-        "firstContentTop": 191,
-        "tabStopsToContent": -1
+        "focusableCount": 15,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -380,18 +319,11 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Find a match",
-            "top": 330,
-            "tabStops": 4,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 5,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 15,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -402,14 +334,14 @@
         "primaries": [
           {
             "label": "Add",
-            "top": 359,
+            "top": 229,
             "tabStops": 2,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 12,
-        "firstContentTop": 372,
+        "focusableCount": 16,
+        "firstContentTop": 246,
         "tabStopsToContent": 1
       }
     },
@@ -421,14 +353,14 @@
         "primaries": [
           {
             "label": "Update Ontology",
-            "top": 377,
+            "top": 270,
             "tabStops": 5,
             "visible": true
           }
         ],
         "duplicateLabels": [],
         "focusableCount": 7,
-        "firstContentTop": 559,
+        "firstContentTop": 451,
         "tabStopsToContent": -1
       }
     },
@@ -437,18 +369,11 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Drop a pin to capture a location",
-            "top": 700,
-            "tabStops": 20,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 21,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 15,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -468,18 +393,11 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Add identity",
-            "top": 271,
-            "tabStops": 4,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 7,
-        "firstContentTop": 517,
-        "tabStopsToContent": 6
+        "focusableCount": 15,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -490,15 +408,15 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 176,
-            "tabStops": 5,
+            "top": 0,
+            "tabStops": 2,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 30,
-        "firstContentTop": 130,
-        "tabStopsToContent": 1
+        "focusableCount": 16,
+        "firstContentTop": 0,
+        "tabStopsToContent": -1
       }
     },
     {
@@ -506,18 +424,11 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Add identity",
-            "top": 251,
-            "tabStops": 4,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 17,
-        "firstContentTop": 483,
-        "tabStopsToContent": 15
+        "focusableCount": 15,
+        "firstContentTop": 60,
+        "tabStopsToContent": 0
       }
     }
   ]

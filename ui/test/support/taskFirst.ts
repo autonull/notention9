@@ -37,7 +37,7 @@ export const measureTaskFirst = (page: Page): Promise<TaskFirstMetrics> =>
             );
         };
         const isRow = (element: Element) =>
-            !!element.closest('[role="listitem"],li,article,.note-list-item,.rbc-event');
+            !!element.closest('[data-row],[role="listitem"],li,article,.note-list-item,.rbc-event');
         const focusable = Array.from(
             main.querySelectorAll<HTMLElement>(
                 'button:not([disabled]):not([tabindex="-1"]),a[href],input:not([type="hidden"]):not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
@@ -80,7 +80,20 @@ export const measureTaskFirst = (page: Page): Promise<TaskFirstMetrics> =>
         };
     });
 
-export const writeTaskFirstEvidence = async (cases: Array<TaskFirstCase & {metrics: TaskFirstMetrics}>) => {
+export const writeTaskFirstEvidence = async (
+    cases: Array<TaskFirstCase & {metrics: TaskFirstMetrics}>,
+    viewport?: TaskFirstCase['viewport'],
+) => {
+    let previous: Array<TaskFirstCase & {metrics: TaskFirstMetrics}> = [];
+    if (viewport) {
+        const existing = await fs.readFile(EVIDENCE, 'utf8').catch(() => '{"cases":[]}');
+        previous = (JSON.parse(existing).cases ?? []).filter(
+            (entry: TaskFirstCase) => entry.viewport !== viewport,
+        );
+    }
     await fs.mkdir(path.dirname(EVIDENCE), {recursive: true});
-    await fs.writeFile(EVIDENCE, JSON.stringify({generatedAt: new Date().toISOString(), cases}, null, 2));
+    await fs.writeFile(
+        EVIDENCE,
+        JSON.stringify({generatedAt: new Date().toISOString(), cases: [...previous, ...cases]}, null, 2),
+    );
 };

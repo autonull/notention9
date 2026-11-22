@@ -4,12 +4,12 @@ import {isolateNetwork} from '../fixtures/routes';
 import {auditCases} from '../fixtures/auditCases';
 import {measureTaskFirst, writeTaskFirstEvidence, type TaskFirstCase, type TaskFirstMetrics} from '../support/taskFirst';
 
-test('task-first audit: primary action reach and duplicate verbs', async ({page}) => {
-    test.setTimeout(300_000);
+for (const viewport of ['desktop', 'mobile'] as const) {
+    test(`task-first audit: ${viewport} primary action reach and duplicate verbs`, async ({page}) => {
+        test.setTimeout(300_000);
 
-    const results: Array<TaskFirstCase & {metrics: TaskFirstMetrics}> = [];
+        const results: Array<TaskFirstCase & {metrics: TaskFirstMetrics}> = [];
 
-    for (const viewport of ['desktop', 'mobile'] as const) {
         await page.setViewportSize(
             viewport === 'desktop' ? {width: 1440, height: 900} : {width: 390, height: 844},
         );
@@ -29,7 +29,7 @@ test('task-first audit: primary action reach and duplicate verbs', async ({page}
                 ` dup=${metrics.duplicateLabels.length}`,
             );
         }
-    }
 
-    await writeTaskFirstEvidence(results);
-});
+        await writeTaskFirstEvidence(results, viewport);
+    });
+}

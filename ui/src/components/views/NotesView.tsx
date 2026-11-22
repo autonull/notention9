@@ -157,7 +157,7 @@ export function NotesView({sortedNotes = []}: NotesViewProps) {
                             ) : activeMode === 'timeline' ? (
                                 <TimelineView/>
                             ) : activeMode === 'list' ? (
-                                <div className="space-y-0.5" role="list" aria-label="Notes">
+                                <div className="space-y-0.5" role="list" aria-label="Notes" data-testid="notes-list-items">
                                     {filteredNotes.map(note => (
                                         <NoteListItem
                                             key={note.id}
@@ -176,6 +176,7 @@ export function NotesView({sortedNotes = []}: NotesViewProps) {
                                     className="grid grid-cols-1 gap-[var(--ui-gap)] sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
                                     role="list"
                                     aria-label="Notes"
+                                    data-testid="notes-grid-items"
                                 >
                                     {filteredNotes.map(note => (
                                         <NoteGridItem
