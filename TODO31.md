@@ -44,6 +44,9 @@ No workstream is open. The remaining items are follow-ups, in value order:
 4. **Tone coverage** — accent icon colors (`text-blue-400`, `text-purple-400`)
    in settings bodies are still literal. Route them through `styles/tone.ts`
    when the icon set gains a tone prop.
+5. **Audit budget** — `test/audit/task-first.spec.ts` walks 15 cases at two
+   viewports inside one 300 s test and now times out. Split it per viewport
+   before treating it as evidence again; it measures, it does not assert.
 
 ---
 
