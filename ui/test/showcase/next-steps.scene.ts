@@ -94,6 +94,57 @@ const skillOfferNote = (): Note => ({
     priority: 0.7,
 });
 
+async function seedAppliedState(page: any, noteId: string) {
+    await page.evaluate(async (id: string) => {
+        const now = Date.now();
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            const req = indexedDB.open('notention:next-steps:v1');
+            req.onupgradeneeded = () => {
+                if (!req.result.objectStoreNames.contains('nextSteps')) {
+                    req.result.createObjectStore('nextSteps');
+                }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+        const tx = db.transaction('nextSteps', 'readwrite');
+        tx.objectStore('nextSteps').put({
+            version: 1,
+            noteId: id,
+            contentHash: `seeded-${id}`,
+            generationId: 'seed',
+            active: [],
+            stale: [],
+            suppressed: [],
+            updatedAt: now,
+            applied: [{
+                suggestion: {
+                    id: 'applied-budget',
+                    noteId: id,
+                    kind: 'add-property',
+                    status: 'applied',
+                    title: 'Add budget',
+                    description: 'Job requests should indicate a budget range',
+                    evidence: [{source: 'rules', ruleId: 'rule-add-budget-for-job', confidence: 1}],
+                    proposedChange: {type: 'add', property: {key: 'budget', operator: 'gte', values: ['1000']}, placeholder: ''},
+                    createdAt: now - 1000,
+                    updatedAt: now - 1000,
+                    appliedAt: now,
+                    generationId: 'seed',
+                },
+                appliedAt: now,
+                resultNoteIds: [id],
+                fitCount: 2,
+            }],
+        }, `notention:next-steps:v1:${id}`);
+        await new Promise<void>((resolve, reject) => {
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+        db.close();
+    }, noteId);
+}
+
 test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
 });
@@ -156,41 +207,19 @@ test('next-steps: multiple next steps', async ({page}) => {
 // Applied history
 // ============================================================================
 test('next-steps: applied history shows result links and fit count', async ({page}) => {
-    // Pre-seed applied suggestion state in localStorage
-    await page.addInitScript(() => {
-        const appliedState = {
-            version: 1,
-            notes: {
-                'scene-multi-trigger-note': {
-                    active: [],
-                    stale: [],
-                    applied: [{
-                        suggestionId: 'test-suggestion-1',
-                        suggestionHash: 'test-hash',
-                        appliedAt: Date.now(),
-                        resultNoteIds: ['scene-multi-trigger-note'],
-                        fitCount: 2,
-                        inverse: {op: 'remove-property', property: 'budget'}
-                    }],
-                    suppressed: [],
-                    contentHash: 'test-hash'
-                }
-            }
-        };
-        localStorage.setItem('suggestion-state', JSON.stringify(appliedState));
-    });
-    
     await seed(page, {
         notes: [multiTriggerNote()],
         settings: defaultSettings({aiEnabled: false, developerMode: true}),
         hash: '#notes/scene-multi-trigger-note'
     });
+    await seedAppliedState(page, 'scene-multi-trigger-note');
+    await page.reload();
     await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
-    
+
     // Open drawer to see applied history (multiTriggerNote has multiple steps)
     await page.locator('button:has-text("next steps")').first().click();
     await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
-    
+
     await snap(page, {
         area: 'next-steps',
         state: 'applied',
@@ -230,8 +259,6 @@ test('next-steps: stale state after edit', async ({page}) => {
 // Zero match (has suggestions but no matching offers)
 // ============================================================================
 test('next-steps: zero match state', async ({page}) => {
-    // Use multiTriggerNote which has multiple suggestions
-    // but no matching offers in the seed data
     await seed(page, {
         notes: [multiTriggerNote()],
         settings: defaultSettings({aiEnabled: false, developerMode: true}),

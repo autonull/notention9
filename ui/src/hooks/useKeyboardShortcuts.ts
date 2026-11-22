@@ -49,7 +49,7 @@ export function useKeyboardShortcuts({
 			}
 
 			// Help shortcut: ? (Shift+/)
-			if (!isMeta && !isAlt && !isShift && e.key === '?') {
+			if (!isMeta && !isAlt && e.key === '?') {
 				const target = e.target as HTMLElement;
 				if (!(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true')) {
 					e.preventDefault();
@@ -82,7 +82,7 @@ export function useKeyboardShortcuts({
 					(isMeta && isShift && e.key.toLowerCase() === 'p')) {
 				} else if (isMeta && e.key.toLowerCase() === 'k') {
 					// Allow command palette in inputs too
-				} else if (!isMeta && !isAlt && !isShift && e.key === '?') {
+				} else if (!isMeta && !isAlt && e.key === '?') {
 					// Allow help in inputs
 				} else if (isMeta && isAlt && e.key.toLowerCase() === 's') {
 					// Allow accessibility skip link

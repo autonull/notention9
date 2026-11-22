@@ -19,6 +19,7 @@ import {ShortcutsTab} from '../settings/ShortcutsTab';
 import {SyncTab} from '../settings/SyncTab';
 import {RelayDiscoverySection} from '../settings/RelayDiscoverySection';
 import {AppearanceTab} from '../settings/AppearanceTab';
+import {OntologyView} from './OntologyView';
 import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon, PaletteIcon, CogIcon, BookOpenIcon} from '../../components/ui/icons';
 
 interface SettingsGroup {
@@ -143,7 +144,7 @@ export function SettingsView() {
             case 'skills':
                 return <div className="p-4"><h3 className="text-lg font-medium mb-4">Skills</h3><p className="text-gray-400">Skills management coming soon.</p></div>;
             case 'ontology':
-                return <div className="p-4"><h3 className="text-lg font-medium mb-4">Ontology</h3><p className="text-gray-400">Ontology management coming soon.</p></div>;
+                return <OntologyView/>;
             default:
                 return null;
         }

@@ -1,5 +1,61 @@
 [
   {
+    "area": "actions",
+    "state": "board",
+    "file": "actions/board.png",
+    "viewport": "desktop",
+    "description": "Task board grouped by status, with a new-task action."
+  },
+  {
+    "area": "chat",
+    "state": "thread",
+    "file": "chat/thread.png",
+    "viewport": "desktop",
+    "description": "An encrypted conversation over the local relay, with the encryption notice."
+  },
+  {
+    "area": "editor",
+    "state": "add-detail",
+    "file": "editor/add-detail.png",
+    "viewport": "desktop",
+    "description": "Type-aware popup for adding a structured detail."
+  },
+  {
+    "area": "editor",
+    "state": "extraction-review",
+    "file": "editor/extraction-review.png",
+    "viewport": "desktop",
+    "description": "Deterministic suggestions with accept/reject and a source label."
+  },
+  {
+    "area": "editor",
+    "state": "property-chips",
+    "file": "editor/property-chips.png",
+    "viewport": "desktop",
+    "description": "Prose with structured detail chips and no visible bracket syntax."
+  },
+  {
+    "area": "editor",
+    "state": "property-inspector",
+    "file": "editor/property-inspector.png",
+    "viewport": "desktop",
+    "description": "Inspector with typed widgets, ontology hints, and validation."
+  },
+  {
+    "area": "editor",
+    "state": "publish-panel",
+    "file": "editor/publish-panel.png",
+    "viewport": "desktop",
+    "description": "Publish disclosure with a human summary and a collapsed raw event."
+  },
+  {
+    "area": "editor",
+    "state": "template-selector",
+    "file": "editor/template-selector.png",
+    "viewport": "desktop",
+    "description": "Save a note as a reusable template with a name."
+  },
+  {
     "area": "inbox",
     "state": "empty",
     "file": "inbox/empty.png",
@@ -12,6 +68,41 @@
     "file": "inbox/populated.png",
     "viewport": "desktop",
     "description": "Stats, an offline match preview, recent activity, and tools."
+  },
+  {
+    "area": "map",
+    "state": "pins",
+    "file": "map/pins.png",
+    "viewport": "desktop",
+    "description": "Notes with locations grouped in the map view."
+  },
+  {
+    "area": "matching",
+    "state": "results",
+    "file": "matching/results.png",
+    "viewport": "desktop",
+    "description": "Requests matched against local offers in the Connections view."
+  },
+  {
+    "area": "mobile",
+    "state": "notes",
+    "file": "mobile/notes.png",
+    "viewport": "mobile",
+    "description": "Mobile list and bottom navigation."
+  },
+  {
+    "area": "modals",
+    "state": "command-palette",
+    "file": "modals/command-palette.png",
+    "viewport": "desktop",
+    "description": "Command palette with a query matching notes and commands."
+  },
+  {
+    "area": "modals",
+    "state": "help",
+    "file": "modals/help.png",
+    "viewport": "desktop",
+    "description": "Keyboard shortcut reference with the concept groups."
   },
   {
     "area": "network",
@@ -105,10 +196,66 @@
     "description": "Trash with restore and permanent-delete affordances."
   },
   {
+    "area": "ontology",
+    "state": "graph",
+    "file": "ontology/graph.png",
+    "viewport": "desktop",
+    "description": "Ontology tree with domains, attributes, and usage counts."
+  },
+  {
     "area": "settings",
     "state": "networks",
     "file": "settings/networks.png",
     "viewport": "desktop",
     "description": "Provider status and relay management."
+  },
+  {
+    "area": "suggestions",
+    "state": "empty-state",
+    "file": "suggestions/empty-state.png",
+    "viewport": "desktop",
+    "description": "Simple note with no matching rules shows the empty next-steps state with refresh."
+  },
+  {
+    "area": "suggestions",
+    "state": "job-request-missing-budget",
+    "file": "suggestions/job-request-missing-budget.png",
+    "viewport": "desktop",
+    "description": "Job request note triggers \"Add budget\" next step via deterministic rules."
+  },
+  {
+    "area": "suggestions",
+    "state": "multiple-suggestions",
+    "file": "suggestions/multiple-suggestions.png",
+    "viewport": "desktop",
+    "description": "Note with multiple triggers shows multiple next step cards."
+  },
+  {
+    "area": "suggestions",
+    "state": "offer-missing-contact",
+    "file": "suggestions/offer-missing-contact.png",
+    "viewport": "desktop",
+    "description": "Offer note triggers \"Add contact\" next step via deterministic rules."
+  },
+  {
+    "area": "suggestions",
+    "state": "recurring-request-missing-schedule",
+    "file": "suggestions/recurring-request-missing-schedule.png",
+    "viewport": "desktop",
+    "description": "Recurring request note triggers \"Add schedule\" next step via deterministic rules."
+  },
+  {
+    "area": "suggestions",
+    "state": "urgent-request-missing-deadline",
+    "file": "suggestions/urgent-request-missing-deadline.png",
+    "viewport": "desktop",
+    "description": "Urgent request note triggers \"Add deadline\" next step via deterministic rules."
+  },
+  {
+    "area": "timeline",
+    "state": "month",
+    "file": "timeline/month.png",
+    "viewport": "desktop",
+    "description": "Notes ordered by time in the timeline view."
   }
 ]
