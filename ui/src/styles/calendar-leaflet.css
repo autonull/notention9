@@ -1,0 +1,147 @@
+/* React Big Calendar follows the same surface tokens as the rest of the UI. */
+.rbc-calendar {
+    color: var(--app-text-secondary);
+    font-family: inherit;
+    font-size: 12px;
+}
+
+.rbc-calendar .rbc-toolbar {
+    margin-bottom: 0.5rem;
+    gap: 0.25rem;
+}
+
+.rbc-calendar .rbc-toolbar button {
+    padding: 4px 8px;
+    border: 1px solid var(--app-line);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--app-muted);
+    font-size: 11px;
+}
+
+.rbc-calendar .rbc-toolbar button:hover {
+    border-color: var(--app-line-strong);
+    background: var(--app-hover);
+    color: var(--app-text);
+}
+
+.rbc-calendar .rbc-toolbar button:active,
+.rbc-calendar .rbc-toolbar button.rbc-active,
+.rbc-calendar .rbc-toolbar button.rbc-active:hover {
+    border-color: var(--app-accent-line);
+    background: var(--app-accent-soft);
+    color: var(--app-accent-text);
+    box-shadow: none;
+}
+
+.rbc-calendar .rbc-toolbar .rbc-toolbar-label {
+    color: var(--app-text);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.rbc-calendar .rbc-off-range-bg {
+    background: var(--app-bg);
+}
+
+.rbc-calendar .rbc-today {
+    background: var(--app-accent-soft);
+}
+
+.rbc-calendar .rbc-date-cell {
+    padding: 2px 4px;
+    color: var(--app-muted);
+    font-size: 11px;
+}
+
+.rbc-calendar .rbc-button-link {
+    color: var(--app-text-secondary);
+}
+
+.rbc-calendar .rbc-button-link:hover {
+    color: var(--app-text);
+}
+
+.rbc-calendar .rbc-off-range {
+    color: var(--app-faint);
+}
+
+.rbc-calendar .rbc-event {
+    border-radius: 4px;
+    background-color: var(--app-accent);
+    font-size: 11px;
+}
+
+.rbc-calendar .rbc-time-view,
+.rbc-calendar .rbc-month-view {
+    border-color: var(--app-line);
+    background: var(--app-surface);
+}
+
+.rbc-calendar .rbc-day-bg + .rbc-day-bg,
+.rbc-calendar .rbc-time-header-content,
+.rbc-calendar .rbc-time-content > * + * > *,
+.rbc-calendar .rbc-day-bg {
+    border-left-color: var(--app-line);
+}
+
+.rbc-calendar .rbc-time-content {
+    border-top-color: var(--app-line);
+}
+
+.rbc-calendar .rbc-timeslot-group,
+.rbc-calendar .rbc-header,
+.rbc-calendar .rbc-month-row + .rbc-month-row {
+    border-color: var(--app-line);
+}
+
+/* Leaflet chrome should recede behind the map content */
+.leaflet-control-attribution {
+    background: rgba(17, 24, 39, 0.75) !important;
+    color: #737373 !important;
+    font-size: 10px;
+}
+
+.leaflet-control-attribution a {
+    color: #a3a3a3 !important;
+}
+
+.leaflet-bar a {
+    background: #171717;
+    color: #d4d4d4;
+    border-bottom-color: #404040;
+}
+
+.leaflet-bar a:hover {
+    background: #262626;
+    color: #fafafa;
+}
+
+/* Leaflet map container height */
+.leaflet-container {
+    height: 100%;
+    width: 100%;
+    border-radius: 0.5rem;
+    /* rounded-lg */
+    z-index: 1;
+    /* Ensure map is behind controls */
+}
+
+/* Fix for Leaflet popups in dark mode */
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+    background: #262626 !important;
+    /* neutral-800 */
+    color: #d4d4d4 !important;
+    /* neutral-300 */
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.4) !important;
+}
+
+.leaflet-popup-content-wrapper a {
+    color: #60a5fa !important;
+    /* blue-400 */
+}
+
+.leaflet-container a.leaflet-popup-close-button {
+    color: #d4d4d4 !important;
+}

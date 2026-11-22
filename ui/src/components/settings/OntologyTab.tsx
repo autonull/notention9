@@ -21,32 +21,32 @@ export function OntologyTab() {
 
     return (
         <div className="space-y-6">
-            <div className="bg-neutral-900/50 p-4 rounded-lg">
+            <div className="bg-[var(--app-surface)]/50 p-4 rounded-lg">
                 <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-lg font-bold text-white">Ontology Graph</h3>
+                    <h3 className="text-lg font-bold text-[var(--app-text)]">Ontology Graph</h3>
                     <button
                         onClick={handleAddNode}
-                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-sm"
+                        className="bg-blue-600 hover:bg-blue-700 text-[var(--app-text)] px-3 py-1 rounded text-sm"
                     >
                         Add Node
                     </button>
                 </div>
-                <p className="text-neutral-400 mb-4">
+                <p className="text-[var(--app-muted)] mb-4">
                     Define the schema for your semantic network. The Gardener evolves this based on usage.
                 </p>
 
                 <div className="grid grid-cols-1 gap-6">
                     <div>
-                        <h4 className="font-medium text-white mb-2">Current Ontology</h4>
-                        <div className="bg-neutral-800 p-4 rounded">
-                            <p className="text-neutral-400 text-sm">
+                        <h4 className="font-medium text-[var(--app-text)] mb-2">Current Ontology</h4>
+                        <div className="bg-[var(--app-raised)] p-4 rounded">
+                            <p className="text-[var(--app-muted)] text-sm">
                                 {ontology.length} nodes in your ontology
                             </p>
                             <div className="mt-2 max-h-60 overflow-y-auto">
                                 {ontology.map((node, index) => (
-                                    <div key={node.id} className="py-2 border-b border-neutral-700 last:border-0">
+                                    <div key={node.id} className="py-2 border-b border-[var(--app-line)] last:border-0">
                                         <div className="font-medium text-blue-300">{node.label}</div>
-                                        <div className="text-xs text-neutral-400">{node.description}</div>
+                                        <div className="text-xs text-[var(--app-muted)]">{node.description}</div>
                                     </div>
                                 ))}
                             </div>

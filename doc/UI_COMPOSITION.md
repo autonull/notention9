@@ -10,7 +10,9 @@ the small system that keeps that rule true as capabilities change.
 semantic tokens       src/styles/theme.css        colour, spacing, density
 component tokens      src/styles/tokens.ts       button, input, card, modal
 primitives            src/components/ui/kit.tsx   Chip, Segmented, Tabs, SectionHeader, ChoiceGrid
-configuration         src/config/uiSurfaces.ts    modes, filters, settings groups, palette scopes
+primitives            src/components/ui/ResizablePane.tsx  percentage pane separator
+patterns              src/components/patterns     PageSurface, PageTitle, ArrangeMenu, DetailChips
+configuration         src/config/uiSurfaces.ts    modes, orders, rail tabs, arrange groups, settings groups
 surfaces              views, editor, settings, overlays
 ```
 
@@ -52,6 +54,8 @@ before adding a one-off control.
 - `SectionHeader`: title, one-line description, optional actions.
 - `ChoiceGrid`: card-shaped single choice for theme, density, and other settings.
 - `Kbd`, `Hint`: keyboard and helper text.
+- `ResizablePane`: vertical separator with `aria-valuenow`, arrow-key steps,
+  Home/End clamps, and double-click reset. Panes store percentages.
 
 `Button` and `IconButton` share the same variants but have separate size tokens.
 `IconButton` is square and never inherits button padding; this is what keeps icon
@@ -61,8 +65,11 @@ toolbars legible at 12–16 px.
 
 `src/config/uiSurfaces.ts` owns:
 
-- `NOTE_MODES`: canvas, list, board, map, timeline.
+- `NOTE_BROWSE_MODES`: list, canvas, board, map, timeline; List first.
+- `NOTE_SORT_ORDERS`: the ten core orders with labels and direction.
+- `NOTE_RAIL_TABS`: next, matches, replies, chat.
 - `NOTE_SECTIONS`: all, tasks, tags, trash.
+- `ARRANGE_GROUPS`: layout, order, group; one popover, three sections.
 - `PALETTE_SCOPES`: search, explore, chat.
 - `SETTINGS_GROUPS`: the complete settings directory and its tab ids.
 
@@ -75,32 +82,41 @@ implemented with ad-hoc opacity classes.
 
 - **One bar per view.** There is no second page header. The bar owns identity,
   navigation, and the current view's controls.
-- **Notes bar.** Brand mark, filter tabs, mode switcher, search, new note, and
-  settings. The capture omnibox is the first content row, not another header.
-- **Note bar.** Back, editable title, privacy, details, publish, and overflow.
-  The formatting toolbar is the only second row; the document starts below it.
+- **Notes bar.** Brand mark, `Notes`, count, search, new note, and settings.
+  Subsets and arrangement live in the history rail, not in three bar rows.
+- **History bar.** Search, one `Arrange` control (`List · Updated`), and the
+  All/Tasks/Tags/Trash tabs. The page keeps its subset, arrangement, and order.
+- **Note bar.** Back, saved state, `Context` with a count, publish, and overflow.
+  It is one `3rem` bar. The formatting row appears only while the editor has
+  focus; selection bubbles and slash carry the rest.
 - **Settings bar.** Brand mark, `Settings` heading, search, new note, and the
   active settings control. The directory starts immediately below.
 - **One search.** The bar's search control and `Cmd/Ctrl+K` open the same overlay.
-- **Capture is a command bar.** The inline omnibox stays at the top of Notes;
-  the composer is the full-detail path for `Cmd/Ctrl+N`.
-- **The note is the document.** The title is edited in the note bar; prose, tags,
-  and status sit in one column with a `40rem` measure.
-- **Context is a rail.** Next steps, matches, replies, and chat live beside the
-  document on desktop and below it on mobile. Do not add another destination.
+- **New note is a page.** `New note` and `Cmd/Ctrl+N` create an untitled page and
+  put the cursor in its title. There is no capture modal and no hero omnibox.
+- **The note is the document.** The title is edited in the page, not the bar.
+  Prose is 17 px/1.7 inside an 88ch left-aligned measure; the sheet fills the
+  pane. Saved state and word count sit at the page end.
+- **Details are chips.** Inline property chips open the shared `PropertyEditor`;
+  the page shows a `+ Add detail` chip and any imported detail that has no inline
+  node. There is no floating inspector and no bar `Details` control.
+- **Context is a rail.** Next, Matches, Replies, and Chat are four top-level
+  tabs beside the document on desktop and a bottom pane on mobile. The rail is
+  closed unless the note has context; the bar control advertises the count.
 - **Settings is a directory.** Groups are visible at once, with one active pane.
   No accordion hides the only route to a setting.
 
 ## Responsive rules
 
-- Desktop: full toolbar, labelled view modes, context rail on the right.
-- Mobile: the Notes bar swaps filter tabs and view modes for compact selects;
-  the note bar wraps its title onto a second line inside the same header.
-- The editor toolbar hides secondary formatting behind one "More" menu below
-  `sm`. Primary actions remain: add detail, describe, text, bold, italic, more,
-  source.
-- The note context rail becomes a static bottom pane on mobile, not an overlay,
-  so the status bar and tags remain reachable.
+- Desktop: history rail, page, and optional context rail share the width. History
+  is a percentage (`22%`, range `16%–30%`); context is a percentage (`20%`, range
+  `15%–26%`). The page keeps at least half. Drag handles and arrow keys resize.
+- Mobile: history and page swap. Selecting a note replaces the list; back returns
+  to the same scroll position. Title and body keep the desktop scale.
+- The editor toolbar hides until the editor has focus. Primary insert paths
+  remain the page `+ Add detail`, slash, and selection bubble.
+- The note context rail becomes a bottom pane on mobile, not an overlay, so the
+  status bar and tags remain reachable.
 - Touch targets grow only on coarse pointers. Do not force 44 px control boxes on
   desktop.
 

@@ -30,7 +30,7 @@ export function ActivityFeed({recentNotes, onSelectNote}: ActivityFeedProps) {
                     <button
                         onClick={() => onSelectNote(note.id)}
                         className="w-full text-left flex items-start gap-3 p-3 rounded-lg hover:bg-neutral-800/50 cursor-pointer transition-colors border border-transparent hover:border-neutral-700/50 focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                        aria-label={`Open note: ${note.title || 'Untitled Note'}`}
+                        aria-label={`Open note: ${note.title || 'Untitled note'}`}
                     >
                         <div
                             className="p-2 bg-neutral-800 rounded-full text-neutral-400 group-hover:text-blue-400 transition-colors">
@@ -39,7 +39,7 @@ export function ActivityFeed({recentNotes, onSelectNote}: ActivityFeedProps) {
                         <div className="flex-1 min-w-0">
                             <div className="flex justify-between items-start">
                                 <h4 className="font-medium text-sm text-neutral-200 truncate pr-2">
-                                    {note.title || 'Untitled Note'}
+                                    {note.title || 'Untitled note'}
                                 </h4>
                                 <span className="text-xs text-neutral-400 flex-shrink-0 flex items-center gap-1">
                   <ClockIcon className="w-3 h-3" aria-hidden="true"/>

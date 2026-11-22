@@ -8,6 +8,10 @@ export const STORAGE_KEYS = {
     envelope: 'notention-envelope',
     notesSection: 'notention-notes-section',
     notesMode: 'notention-notes-mode',
+    notesGroup: 'notention-notes-group',
+    historyShare: 'notention-history-share',
+    contextShare: 'notention-context-share',
+    contextOpen: 'notention-context-open',
 } as const;
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS];

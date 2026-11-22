@@ -1,28 +1,25 @@
-import React, {useMemo, useEffect, useRef, useState} from 'react';
-import type {Note} from '@notention/core';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
+import type {Note, NotesSection} from '@notention/core';
 
-import {useNotesView} from '../../hooks/useNotesView';
 import {useView} from '../../hooks/useViewContext';
+import {useNotesView} from '../../hooks/useNotesView';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
 import {EditorManager} from '../editor/EditorManager';
 import {NoteListItem} from '../sidebar/NoteListItem';
 import {NoteGridItem} from '../sidebar/NoteGridItem';
+import {NoteHistoryRail} from '../sidebar/NoteHistoryRail';
 import {MapView} from './MapView';
 import {TimelineView} from './TimelineView';
 import {EmptyState, NotesEmptyIllustration, ConfirmationModal} from '../ui/Primitives';
-import {Button} from '../ui/Button';
-import {CaptureOmnibox} from '../capture/CaptureOmnibox';
-import {type NoteMode, type NoteSection} from '../../config/uiSurfaces';
-import {isTaskNote} from '../../utils/noteFilters';
+import {browseModeLabel, sortOrderLabel} from '../../config/uiSurfaces';
+import {getNoteCounts, isTaskNote} from '../../utils/noteFilters';
 
-type Section = NoteSection;
-type Mode = NoteMode;
+type Section = NotesSection;
 
 const UNGROUPED = 'unscheduled';
 const STATUS_ORDER = ['todo', 'queued', 'planned', 'open', 'running', 'in-progress', 'blocked', 'review', 'completed', 'done', 'cancelled'];
 const SCROLL_KEY = 'notention-notes-scroll';
-
 
 interface NotesViewProps {
     sortedNotes?: Note[];
@@ -30,28 +27,21 @@ interface NotesViewProps {
 
 export function NotesView({sortedNotes = []}: NotesViewProps) {
     const {selectedNote, updateNote} = useNotesView();
-
-    if (selectedNote) {
-        return (
-            <EditorManager
-                key={selectedNote.id}
-                note={selectedNote}
-                onSave={updateNote}
-                sortedNotes={sortedNotes}
-            />
-        );
-    }
-
-    return <NotesWorkspace notes={sortedNotes}/>;
-}
-
-function NotesWorkspace({notes}: {notes: Note[]}) {
     const {
         selectedNoteId,
         setSelectedNoteId,
         notesSection,
+        setNotesSection,
         notesMode,
+        setNotesMode,
+        sortOrder,
+        setSortOrder,
+        notesGroup,
+        setNotesGroup,
         searchTerm,
+        setSearchTerm,
+        historyShare,
+        setHistoryShare,
     } = useView();
     const {notes: allNotes, restoreNote, permanentlyDeleteNote} = useNotes();
     const {addToast} = useToast();
@@ -59,7 +49,7 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
     const section: Section = notesSection;
-    const mode: Mode = notesMode;
+    const counts = getNoteCounts(allNotes);
 
     useEffect(() => {
         const saved = Number(sessionStorage.getItem(SCROLL_KEY) ?? '0');
@@ -69,7 +59,7 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
         };
     }, []);
 
-    const sourceNotes = section === 'trash' ? allNotes : notes;
+    const sourceNotes = section === 'trash' ? allNotes.filter(note => !!note.deletedAt) : sortedNotes;
     const filteredNotes = sourceNotes.filter(note => {
         const isDeleted = !!note.deletedAt;
         if (section === 'trash') return isDeleted;
@@ -78,14 +68,10 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
         return !isDeleted;
     });
 
-    const activeMode: Mode = section === 'trash' ? 'list' : mode;
-
-    const openCapture = () => {
-        sessionStorage.removeItem(SCROLL_KEY);
-        window.dispatchEvent(new CustomEvent('focus-capture'));
-    };
+    const activeMode = section === 'trash' ? 'list' : notesMode;
 
     const selectNote = (id: string) => {
+        if (section === 'trash') return;
         setSelectedNoteId(id);
     };
 
@@ -94,24 +80,7 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
         addToast('Note restored', 'success');
     };
 
-    const confirmDelete = () => {
-        if (!noteToDelete) return;
-        permanentlyDeleteNote(noteToDelete.id);
-        addToast('Note permanently deleted', 'success');
-        setNoteToDelete(null);
-    };
-
-    const renderNote = (note: Note) => section === 'trash' ? (
-        <NoteListItem
-            key={note.id}
-            note={note}
-            isSelected={selectedNoteId === note.id}
-            onSelect={() => selectNote(note.id)}
-            isTrash
-            onRestore={() => restore(note)}
-            onDelete={() => setNoteToDelete(note)}
-        />
-    ) : (
+    const renderNote = (note: Note) => (
         <NoteGridItem
             key={note.id}
             note={note}
@@ -120,62 +89,107 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
         />
     );
 
-    const empty = filteredNotes.length === 0;
+    const confirmDelete = () => {
+        if (!noteToDelete) return;
+        permanentlyDeleteNote(noteToDelete.id);
+        addToast('Note permanently deleted', 'success');
+        setNoteToDelete(null);
+        if (selectedNoteId === noteToDelete.id) setSelectedNoteId(null);
+    };
 
     return (
-        <div ref={scrollRef} className="h-full overflow-y-auto custom-scrollbar">
-            <div className="mx-auto w-full max-w-[1440px] px-4 pb-28 pt-4 md:px-6 md:pt-5">
-                <CaptureOmnibox showSample/>
+        <div className="flex h-full min-h-0">
+            <NoteHistoryRail
+                notes={filteredNotes}
+                counts={counts}
+                section={section}
+                onSectionChange={setNotesSection}
+                mode={notesMode}
+                onModeChange={setNotesMode}
+                sortOrder={sortOrder}
+                onSortOrderChange={setSortOrder}
+                group={notesGroup}
+                onGroupChange={setNotesGroup}
+                selectedNoteId={selectedNoteId}
+                onSelect={selectNote}
+                searchTerm={searchTerm}
+                onSearchChange={setSearchTerm}
+                share={historyShare}
+                onShareChange={setHistoryShare}
+                onRestore={restore}
+                onDelete={setNoteToDelete}
+                className={selectedNote ? 'hidden lg:flex' : 'flex'}
+            />
 
-                <div className="mt-6">
-                    {empty ? (
-                        <div className="flex min-h-[36vh] items-center justify-center">
-                            <EmptyState
-                                variant="illustrated"
-                                illustration={<NotesEmptyIllustration/>}
-                                title={searchTerm ? 'No notes match your search' : section === 'trash' ? 'Trash is empty' : section === 'tasks' ? 'No tasks yet' : 'Your first note starts above'}
-                                description={searchTerm
-                                    ? 'Try a different word, or clear the search to see every note.'
-                                    : section === 'trash'
-                                    ? 'Deleted notes appear here.'
-                                    : section === 'tasks'
-                                    ? 'Add a "task" tag or status property to create tasks.'
-                                    : 'Type what you need or offer. Press Enter to keep it. Matching happens on this device.'}
-                                action={!searchTerm && section === 'all' ? (
-                                    <Button variant="primary" onClick={openCapture}>Write a note</Button>
-                                ) : undefined}
-                            />
+            <div className={selectedNote ? 'flex min-w-0 flex-1' : 'hidden min-w-0 flex-1 lg:flex'}>
+                {selectedNote ? (
+                    <EditorManager
+                        key={selectedNote.id}
+                        note={selectedNote}
+                        onSave={updateNote}
+                        sortedNotes={filteredNotes}
+                    />
+                ) : (
+                    <div ref={scrollRef} className="flex h-full min-h-0 w-full flex-col overflow-y-auto custom-scrollbar">
+                        <IndexHeader
+                            count={filteredNotes.length}
+                            mode={activeMode}
+                            sortOrder={sortOrder}
+                        />
+                        <div className="min-h-0 flex-1 px-4 pb-24 pt-1 md:px-6">
+                            {filteredNotes.length === 0 ? (
+                                <div className="flex min-h-[40vh] items-center justify-center">
+                                    <EmptyState
+                                        variant="illustrated"
+                                        illustration={<NotesEmptyIllustration/>}
+                                        title={searchTerm ? 'No notes match your search' : section === 'trash' ? 'Trash is empty' : 'No notes yet'}
+                                        description={searchTerm
+                                            ? 'Try a different word, or clear the search to see every note.'
+                                            : section === 'trash'
+                                            ? 'Deleted notes appear here.'
+                                            : 'Start a page. A title, a sentence, one detail is enough.'}
+                                    />
+                                </div>
+                            ) : activeMode === 'board' ? (
+                                <Board notes={filteredNotes} group={notesGroup} renderNote={renderNote}/>
+                            ) : activeMode === 'map' ? (
+                                <MapView/>
+                            ) : activeMode === 'timeline' ? (
+                                <TimelineView/>
+                            ) : activeMode === 'list' ? (
+                                <div className="space-y-0.5" role="list" aria-label="Notes">
+                                    {filteredNotes.map(note => (
+                                        <NoteListItem
+                                            key={note.id}
+                                            note={note}
+                                            isSelected={selectedNoteId === note.id}
+                                            onSelect={() => selectNote(note.id)}
+                                            searchTerm={searchTerm}
+                                            isTrash={section === 'trash'}
+                                            onRestore={section === 'trash' ? () => restore(note) : undefined}
+                                            onDelete={section === 'trash' ? () => setNoteToDelete(note) : undefined}
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div
+                                    className="grid grid-cols-1 gap-[var(--ui-gap)] sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
+                                    role="list"
+                                    aria-label="Notes"
+                                >
+                                    {filteredNotes.map(note => (
+                                        <NoteGridItem
+                                            key={note.id}
+                                            note={note}
+                                            isSelected={selectedNoteId === note.id}
+                                            onSelect={() => selectNote(note.id)}
+                                        />
+                                    ))}
+                                </div>
+                            )}
                         </div>
-                    ) : activeMode === 'board' ? (
-                        <Board notes={filteredNotes} renderNote={renderNote}/>
-                    ) : activeMode === 'map' ? (
-                        <MapView/>
-                    ) : activeMode === 'timeline' ? (
-                        <TimelineView/>
-                    ) : activeMode === 'list' ? (
-                        <div className="space-y-1 rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-1" role="list">
-                            {filteredNotes.map(note => (
-                                <NoteListItem
-                                    key={note.id}
-                                    note={note}
-                                    isSelected={selectedNoteId === note.id}
-                                    onSelect={() => selectNote(note.id)}
-                                    isTrash={section === 'trash'}
-                                    onRestore={section === 'trash' ? () => restore(note) : undefined}
-                                    onDelete={section === 'trash' ? () => setNoteToDelete(note) : undefined}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div
-                            className="grid grid-cols-1 gap-[var(--ui-gap)] sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
-                            role="list"
-                            aria-label="Notes"
-                        >
-                            {filteredNotes.map(renderNote)}
-                        </div>
-                    )}
-                </div>
+                    </div>
+                )}
             </div>
 
             <ConfirmationModal
@@ -183,7 +197,7 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
                 onClose={() => setNoteToDelete(null)}
                 onConfirm={confirmDelete}
                 title="Delete note permanently?"
-                message={`"${noteToDelete?.title || 'Untitled Note'}" will be removed forever. This cannot be undone.`}
+                message={`"${noteToDelete?.title || 'Untitled note'}" will be removed forever. This cannot be undone.`}
                 confirmLabel="Delete forever"
                 isDestructive
             />
@@ -191,12 +205,33 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
     );
 }
 
-function Board({notes, renderNote}: {notes: Note[]; renderNote: (note: Note) => React.ReactNode}) {
+function IndexHeader({count, mode, sortOrder}: {
+    count: number;
+    mode: NonNullable<ReturnType<typeof useView>['notesMode']>;
+    sortOrder: NonNullable<ReturnType<typeof useView>['sortOrder']>;
+}) {
+    return (
+        <div className="sticky top-0 z-10 flex h-10 items-center gap-3 bg-[var(--app-bg)] px-4 md:px-6">
+            <span className="text-[13px] font-medium text-[var(--app-text-secondary)]">
+                {browseModeLabel(mode)}
+                <span className="text-[var(--app-faint)]"> · {sortOrderLabel(sortOrder)}</span>
+            </span>
+            <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{count} notes</span>
+        </div>
+    );
+}
+
+function Board({notes, group, renderNote}: {
+    notes: Note[];
+    group: string;
+    renderNote: (note: Note) => React.ReactNode;
+}) {
     const columns = useMemo(() => {
+        if (group === 'none') return [['all', notes]] as Array<[string, Note[]]>;
         const groups = new Map<string, Note[]>();
         for (const note of notes) {
-            const status = note.properties.find(p => p.key === 'status')?.values[0] ?? UNGROUPED;
-            const key = status.toLowerCase();
+            const value = note.properties.find(p => p.key === 'status')?.values[0] ?? UNGROUPED;
+            const key = value.toLowerCase();
             const bucket = groups.get(key) ?? [];
             bucket.push(note);
             groups.set(key, bucket);
@@ -209,19 +244,19 @@ function Board({notes, renderNote}: {notes: Note[]; renderNote: (note: Note) => 
         };
 
         return [...groups.entries()].sort((a, b) => rank(a[0]) - rank(b[0]) || a[0].localeCompare(b[0]));
-    }, [notes]);
+    }, [notes, group]);
 
     return (
         <div className="flex items-start gap-3 overflow-x-auto pb-4" role="list" aria-label="Board">
             {columns.map(([status, columnNotes]) => (
-                <section key={status} role="listitem" className="w-[280px] shrink-0 rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)]">
-                    <h3 className="flex items-center justify-between gap-2 border-b border-[var(--app-line)] px-3 py-2.5 text-[12px] font-semibold text-[var(--app-text-secondary)]">
+                <section key={status} role="listitem" className="w-[280px] shrink-0">
+                    <h3 className="mb-1 flex items-center justify-between gap-2 px-1 text-[12px] font-medium text-[var(--app-text-secondary)]">
                         <span className="truncate capitalize" title={status === UNGROUPED ? 'No status' : status}>
-                            {status === UNGROUPED ? 'No status' : status}
+                            {status === UNGROUPED ? 'No status' : status === 'all' ? 'All notes' : status}
                         </span>
                         <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{columnNotes.length}</span>
                     </h3>
-                    <div className="space-y-2 p-2" role="list" aria-label={`${status === UNGROUPED ? 'No status' : status} notes`}>
+                    <div className="space-y-2" role="list" aria-label={`${status === UNGROUPED ? 'No status' : status} notes`}>
                         {columnNotes.map(renderNote)}
                     </div>
                 </section>

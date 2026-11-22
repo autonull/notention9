@@ -114,15 +114,15 @@ export function NetworkManagementSection() {
     return (
         <div className="space-y-6">
             {/* Privacy Mode Toggle */}
-            <div className="p-4 rounded-lg border bg-neutral-800/50 border-neutral-700">
+            <div className="p-4 rounded-lg border bg-[var(--app-raised)] border-[var(--app-line)]">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${isPrivateMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'}`}>
                             <LockIcon className="h-5 w-5" />
                         </div>
                         <div>
-                            <h4 className="font-medium text-neutral-100">Local-Only Mode</h4>
-                            <p className="text-sm text-neutral-400">
+                            <h4 className="font-medium text-[var(--app-text)]">Local-Only Mode</h4>
+                            <p className="text-sm text-[var(--app-muted)]">
                                 {isPrivateMode 
                                     ? 'All network providers disabled. No data leaves this device. Notes sync when re-enabled.' 
                                     : 'Network providers can connect and sync data. Nostr and Meshtastic are available.'}
@@ -137,7 +137,7 @@ export function NetworkManagementSection() {
                             onChange={(e) => setPrivacyMode(e.target.checked ? 'local-only' : 'shared')}
                         />
                         <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
-                        <span className={`ml-3 text-sm font-medium ${isPrivateMode ? 'text-yellow-400' : 'text-neutral-400'}`}>
+                        <span className={`ml-3 text-sm font-medium ${isPrivateMode ? 'text-yellow-400' : 'text-[var(--app-muted)]'}`}>
                             {isPrivateMode ? 'Enabled' : 'Disabled'}
                         </span>
                     </label>
@@ -146,11 +146,11 @@ export function NetworkManagementSection() {
 
             <div className="flex items-center justify-between">
                 <div>
-                    <h3 className="text-lg font-medium text-white flex items-center gap-2">
+                    <h3 className="text-lg font-medium text-[var(--app-text)] flex items-center gap-2">
                         <GlobeIcon className="h-5 w-5 text-blue-400" />
                         Network Providers
                     </h3>
-                    <p className="text-sm text-neutral-400">Enable or disable external network protocols.</p>
+                    <p className="text-sm text-[var(--app-muted)]">Enable or disable external network protocols.</p>
                 </div>
             </div>
 
@@ -164,13 +164,13 @@ export function NetworkManagementSection() {
                     const providerId = provider.id === 'nostr' ? 'nostr' : 'meshtastic';
                     return (
                         <div key={provider.id}>
-                            <div className="flex items-center gap-3 bg-neutral-900/40 px-4 py-3">
-                                <div className={`rounded-lg p-2 ${provider.enabled ? 'bg-neutral-800 text-neutral-200' : 'bg-neutral-900 text-neutral-500'}`}>
+                            <div className="flex items-center gap-3 bg-[var(--app-surface)]/40 px-4 py-3">
+                                <div className={`rounded-lg p-2 ${provider.enabled ? 'bg-[var(--app-raised)] text-[var(--app-text-secondary)]' : 'bg-[var(--app-surface)] text-[var(--app-faint)]'}`}>
                                     {provider.id === 'nostr' ? <GlobeIcon className="h-5 w-5"/> : <SignalIcon className="h-5 w-5"/>}
                                 </div>
                                 <div className="min-w-0 flex-1">
-                                    <h4 className="truncate text-sm font-medium text-neutral-100">{provider.name}</h4>
-                                    <p className="mt-0.5 flex items-center gap-1.5 truncate text-meta text-neutral-400">
+                                    <h4 className="truncate text-sm font-medium text-[var(--app-text)]">{provider.name}</h4>
+                                    <p className="mt-0.5 flex items-center gap-1.5 truncate text-meta text-[var(--app-muted)]">
                                         <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-blue-400' : 'bg-neutral-600'}`}/>
                                         <span>{statusLabel}</span>
                                         <span className="text-neutral-600">·</span>
@@ -183,7 +183,7 @@ export function NetworkManagementSection() {
                                     onClick={() => updateProviderSettings(providerId, {publishEnabled: !publishEnabled})}
                                     className={cn(
                                         'hidden h-8 shrink-0 rounded-lg px-2 text-meta transition-colors sm:block',
-                                        publishEnabled ? 'text-neutral-300 hover:bg-neutral-800' : 'text-neutral-500 hover:bg-neutral-800'
+                                        publishEnabled ? 'text-[var(--app-text-secondary)] hover:bg-[var(--app-raised)]' : 'text-[var(--app-faint)] hover:bg-[var(--app-raised)]'
                                     )}
                                 >
                                     Publish target
@@ -203,14 +203,14 @@ export function NetworkManagementSection() {
                                 </label>
                             </div>
                             {provider.enabled && provider.id === 'meshtastic' && (
-                                <details className="border-t border-neutral-800 bg-neutral-900/20" open>
-                                    <summary className="cursor-pointer px-4 py-2 text-meta text-neutral-400">Connection settings</summary>
+                                <details className="border-t border-neutral-800 bg-[var(--app-surface)]/20" open>
+                                    <summary className="cursor-pointer px-4 py-2 text-meta text-[var(--app-muted)]">Connection settings</summary>
                                     <div className="space-y-4 px-4 pb-4">
                                         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                             <div>
-                                                <label className="mb-1 block text-xs font-medium text-neutral-400">Connection Type</label>
+                                                <label className="mb-1 block text-xs font-medium text-[var(--app-muted)]">Connection Type</label>
                                                 <select
-                                                    className="w-full rounded border border-neutral-700 bg-neutral-900 p-2 text-sm text-neutral-200"
+                                                    className="w-full rounded border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-sm text-[var(--app-text-secondary)]"
                                                     value={connectionType}
                                                     onChange={(event) => setConnectionType(event.target.value as 'webserial' | 'server-proxy')}
                                                 >
@@ -231,7 +231,7 @@ export function NetworkManagementSection() {
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center gap-2">
                                                 <div className={`h-2 w-2 rounded-full ${meshStatus.connected ? 'animate-pulse bg-green-500' : 'bg-red-500'}`}></div>
-                                                <span className="text-xs text-neutral-400">
+                                                <span className="text-xs text-[var(--app-muted)]">
                                                     {meshStatus.connected ? 'Connected to Mesh' : 'Disconnected'}
                                                 </span>
                                             </div>
@@ -240,7 +240,7 @@ export function NetworkManagementSection() {
                                                     <input
                                                         type="checkbox"
                                                         id="auto-save"
-                                                        className="rounded border-neutral-700 bg-neutral-900 text-blue-600 focus:ring-blue-500"
+                                                        className="rounded border-[var(--app-line)] bg-[var(--app-surface)] text-blue-600 focus:ring-blue-500"
                                                         checked={meshtasticSettings.saveReceivedNotes}
                                                         onChange={(event) => {
                                                             const saveReceivedNotes = event.target.checked;
@@ -250,7 +250,7 @@ export function NetworkManagementSection() {
                                                             }
                                                         }}
                                                     />
-                                                    <label htmlFor="auto-save" className="cursor-pointer text-xs text-neutral-300">Auto-save received notes</label>
+                                                    <label htmlFor="auto-save" className="cursor-pointer text-xs text-[var(--app-text-secondary)]">Auto-save received notes</label>
                                                 </div>
                                                 <Button
                                                     size="sm"

@@ -4,6 +4,7 @@ import {snap} from '../support/capture';
 import {isolateNetwork} from '../fixtures/routes';
 import {demoNotes, defaultSettings, property} from '../fixtures/workspace';
 import {generateSecretKey, getPublicKey} from 'nostr-tools';
+import {STORAGE_KEYS} from '../../src/config/storageKeys';
 
 test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
@@ -11,12 +12,13 @@ test.beforeEach(async ({page}) => {
 
 const gallery = async (
     page: import('@playwright/test').Page,
-    options: {name: string; hash: string; description: string; notes?: boolean; viewport?: 'desktop' | 'mobile'}
+    options: {name: string; hash: string; description: string; notes?: boolean; viewport?: 'desktop' | 'mobile'; contextOpen?: boolean}
 ) => {
     await seed(page, {
         notes: options.notes === false ? [] : demoNotes(),
         settings: defaultSettings(),
         hash: options.hash,
+        storage: options.contextOpen ? {[STORAGE_KEYS.contextOpen]: true} : undefined,
     });
     await snap(page, {
         area: options.name.split('/')[0],
@@ -31,14 +33,14 @@ test('notes-empty', async ({page}) => {
         name: 'notes/empty',
         hash: '#/notes',
         notes: false,
-        description: 'First run: one omnibox and one line.',
+        description: 'First run: an empty history and a blank page entry point.',
     });
 });
 
 test('notes-grid', async ({page}) => {
     await gallery(page, {
         name: 'notes/grid',
-        hash: '#/notes',
+        hash: '#/notes?mode=canvas',
         description: 'Full-bleed canvas of notes at 1440px.',
     });
 });
@@ -55,18 +57,22 @@ test('note-context', async ({page}) => {
     await gallery(page, {
         name: 'note/context',
         hash: '#/notes/demo-request-react?tab=matches',
+        contextOpen: true,
         description: 'Matches live in the note context rail.',
     });
 });
 
-test('capture', async ({page}) => {
+test('note-compose', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes'});
-    await page.getByRole('button', {name: 'New note'}).click();
-    await page.getByTestId('capture-composer-input').fill('Garden help on Saturdays, tools included.');
+    await page.getByRole('button', {name: 'New note'}).first().click();
+    await page.locator('#note-title-input').fill('Garden help on Saturdays');
+    await page.locator('.ProseMirror').click();
+    await page.keyboard.type('Tools included. Two hours, one afternoon.');
+    await page.getByTestId('note-history-rail').locator('[aria-current="true"]').getByText('Garden help on Saturdays').waitFor({timeout: 5_000});
     await snap(page, {
-        area: 'capture',
-        state: 'composer',
-        description: 'The full-screen composer, with the same field and one primary action.',
+        area: 'note',
+        state: 'compose',
+        description: 'A blank page is the writing surface: one title, one body, one primary action.',
     });
 });
 
@@ -82,6 +88,7 @@ test('note-replies', async ({page}) => {
     await gallery(page, {
         name: 'note/replies',
         hash: '#/notes/demo-request-react?tab=replies',
+        contextOpen: true,
         description: 'Replies are part of the note, with one composer.',
     });
 });
@@ -95,7 +102,8 @@ test('note-chat', async ({page}) => {
     await seed(page, {
         notes,
         settings: defaultSettings({nostr: {privkey, relays: ['ws://localhost:7000']}}),
-        hash: '#/notes/demo-request-react?tab=replies',
+        hash: '#/notes/demo-request-react?tab=chat',
+        storage: {[STORAGE_KEYS.contextOpen]: true},
     });
     await expect(page.getByText('No messages yet.')).toBeVisible({timeout: 15_000});
     await snap(page, {

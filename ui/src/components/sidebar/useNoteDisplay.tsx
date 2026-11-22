@@ -159,7 +159,7 @@ export function getNoteItemClasses(
     return `
         group relative flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors
         ${isSelected
-            ? "border-[var(--app-line)] bg-[var(--app-raised)]"
+            ? "border-[var(--app-line)] bg-[var(--app-raised)] before:absolute before:inset-y-1.5 before:left-0 before:w-0.5 before:rounded-full before:bg-[var(--app-accent)]"
             : "border-transparent hover:bg-[var(--app-hover)]"
         }
         focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent)]/40

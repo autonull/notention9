@@ -73,7 +73,7 @@ export function MetricsTab() {
             case 'measured': return <ExclamationTriangleIcon className="w-4 h-4 text-red-400" title="Measured — direct user action, sufficient count" />;
             case 'observed': return <ClockIcon className="w-4 h-4 text-yellow-400" title="Observed — indirect signal" />;
             case 'hypothesized': return <InformationCircleIcon className="w-4 h-4 text-green-400" title="Hypothesized — start without completion" />;
-            default: return <CheckCircleIcon className="w-4 h-4 text-neutral-400" title="Asserted" />;
+            default: return <CheckCircleIcon className="w-4 h-4 text-[var(--app-muted)]" title="Asserted" />;
         }
     };
 
@@ -90,9 +90,9 @@ export function MetricsTab() {
     const workflowGroups = groupByWorkflow(frictionSignals);
 
     return (
-        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-8">
+        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-8">
             <div className="flex items-center gap-4">
-                <h2 className="text-xl font-semibold text-neutral-100">Metrics & Analytics</h2>
+                <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Metrics & Analytics</h2>
                 <span
                     className={`px-3 py-1 rounded-full text-xs font-medium ${
                         consent ? 'bg-green-900/50 text-green-300' : 'bg-red-900/50 text-red-300'
@@ -102,8 +102,8 @@ export function MetricsTab() {
                 </span>
             </div>
 
-            <div className="border border-neutral-700 rounded-lg p-4 space-y-4">
-                <p className="text-sm text-neutral-400">
+            <div className="border border-[var(--app-line)] rounded-lg p-4 space-y-4">
+                <p className="text-sm text-[var(--app-muted)]">
                     Opt-in metrics help improve Notention by tracking anonymous usage patterns.
                     No personal data is collected. Data stays in your browser unless you export it.
                 </p>
@@ -113,14 +113,14 @@ export function MetricsTab() {
                         type="checkbox"
                         checked={consent}
                         onChange={(e) => handleConsentChange(e.target.checked)}
-                        className="h-4 w-4 rounded border-neutral-600 text-purple-500 focus:ring-purple-500"
+                        className="h-4 w-4 rounded border-[var(--app-line-strong)] text-purple-500 focus:ring-purple-500"
                     />
-                    <span className="text-neutral-100">Enable anonymous metrics collection</span>
+                    <span className="text-[var(--app-text)]">Enable anonymous metrics collection</span>
                 </label>
 
                 {consent && (
-                    <div className="pt-4 border-t border-neutral-700 space-y-2">
-                        <p className="text-sm text-neutral-300">
+                    <div className="pt-4 border-t border-[var(--app-line)] space-y-2">
+                        <p className="text-sm text-[var(--app-text-secondary)]">
                             <strong>{totalEvents}</strong> events in current session
                         </p>
                         <div className="flex gap-2 flex-wrap">
@@ -139,13 +139,13 @@ export function MetricsTab() {
             </div>
 
             {consent && totalEvents > 0 && (
-                <div className="border border-neutral-700 rounded-lg p-4">
-                    <h3 className="text-lg font-medium text-neutral-100 mb-3">Event Summary</h3>
+                <div className="border border-[var(--app-line)] rounded-lg p-4">
+                    <h3 className="text-lg font-medium text-[var(--app-text)] mb-3">Event Summary</h3>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm">
                         {Object.entries(eventCounts)
                             .sort(([, a], [, b]) => b - a)
                             .map(([name, count]) => (
-                                <div key={name} className="flex justify-between text-neutral-300">
+                                <div key={name} className="flex justify-between text-[var(--app-text-secondary)]">
                                     <span className="font-mono text-xs">{name}</span>
                                     <span className="font-semibold">{count}</span>
                                 </div>
@@ -155,34 +155,34 @@ export function MetricsTab() {
             )}
 
             {consent && (
-                <div className="border border-neutral-700 rounded-lg p-4">
+                <div className="border border-[var(--app-line)] rounded-lg p-4">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-lg font-medium text-neutral-100">Friction Digest</h3>
-                        {loadingDigest && <span className="text-xs text-neutral-400 animate-pulse">Loading…</span>}
+                        <h3 className="text-lg font-medium text-[var(--app-text)]">Friction Digest</h3>
+                        {loadingDigest && <span className="text-xs text-[var(--app-muted)] animate-pulse">Loading…</span>}
                     </div>
                     {loadingDigest ? (
-                        <p className="text-sm text-neutral-400">Analyzing friction journal…</p>
+                        <p className="text-sm text-[var(--app-muted)]">Analyzing friction journal…</p>
                     ) : frictionSignals.length === 0 ? (
-                        <p className="text-sm text-neutral-400">No friction events recorded yet. Use the app to generate signals.</p>
+                        <p className="text-sm text-[var(--app-muted)]">No friction events recorded yet. Use the app to generate signals.</p>
                     ) : (
                         <div className="space-y-4">
                             {Array.from(workflowGroups.entries()).map(([workflow, signals]) => (
                                 <div key={workflow} className="space-y-2">
- <h4 className="text-sm font-medium text-neutral-300 tracking-wider">{workflow}</h4>
+ <h4 className="text-sm font-medium text-[var(--app-text-secondary)] tracking-wider">{workflow}</h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         {signals.slice(0, 5).map((signal, idx) => (
-                                            <div key={`${signal.workflow}-${signal.seam}-${signal.kind}-${idx}`} className="bg-neutral-800/50 rounded-lg p-3 border border-neutral-700">
+                                            <div key={`${signal.workflow}-${signal.seam}-${signal.kind}-${idx}`} className="bg-[var(--app-raised)] rounded-lg p-3 border border-[var(--app-line)]">
                                                 <div className="flex items-start gap-2">
                                                     {getEvidenceIcon(signal.evidenceClass)}
                                                     <div className="flex-1 min-w-0">
                                                         <div className="flex items-center gap-2 text-sm">
-                                                            <span className="font-mono text-xs text-neutral-400 bg-neutral-700 px-1.5 py-0.5 rounded">{signal.kind}</span>
-                                                            <span className="text-xs text-neutral-400">({signal.seam})</span>
+                                                            <span className="font-mono text-xs text-[var(--app-muted)] bg-neutral-700 px-1.5 py-0.5 rounded">{signal.kind}</span>
+                                                            <span className="text-xs text-[var(--app-muted)]">({signal.seam})</span>
                                                         </div>
-                                                        <div className="flex items-center gap-3 mt-1 text-xs text-neutral-400">
+                                                        <div className="flex items-center gap-3 mt-1 text-xs text-[var(--app-muted)]">
                                                             <span><strong>{signal.count}×</strong></span>
                                                             <span>{signal.ageDays}d ago</span>
-                                                            <span>weight: <strong className="text-neutral-200">{signal.weight.toFixed(2)}</strong></span>
+                                                            <span>weight: <strong className="text-[var(--app-text-secondary)]">{signal.weight.toFixed(2)}</strong></span>
                                                             {signal.durationBucket && (
                                                                 <span className="font-mono text-xs bg-neutral-700 px-1.5 py-0.5 rounded">{signal.durationBucket}</span>
                                                             )}
@@ -200,20 +200,20 @@ export function MetricsTab() {
             )}
 
             {consent && showRaw && queue.length > 0 && (
-                <div className="border border-neutral-700 rounded-lg p-4 max-h-96 overflow-auto">
-                    <h3 className="text-lg font-medium text-neutral-100 mb-3">Raw Events (newest first)</h3>
-                    <pre className="text-xs text-neutral-300 font-mono whitespace-pre-wrap break-all">
+                <div className="border border-[var(--app-line)] rounded-lg p-4 max-h-96 overflow-auto">
+                    <h3 className="text-lg font-medium text-[var(--app-text)] mb-3">Raw Events (newest first)</h3>
+                    <pre className="text-xs text-[var(--app-text-secondary)] font-mono whitespace-pre-wrap break-all">
                         {JSON.stringify([...queue].reverse(), null, 2)}
                     </pre>
                 </div>
             )}
 
             {!consent && (
-                <div className="border border-neutral-700 rounded-lg p-4 bg-neutral-800/50">
-                    <p className="text-sm text-neutral-400">
+                <div className="border border-[var(--app-line)] rounded-lg p-4 bg-[var(--app-raised)]">
+                    <p className="text-sm text-[var(--app-muted)]">
                         Metrics are disabled. Enable above to start collecting:
                     </p>
-                    <ul className="mt-2 space-y-1 text-sm text-neutral-400">
+                    <ul className="mt-2 space-y-1 text-sm text-[var(--app-muted)]">
                         <li>Time to first match</li>
                         <li>Match acceptance/rejection rate</li>
                         <li>Export/import success rate</li>

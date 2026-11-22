@@ -16,7 +16,7 @@ export interface Route {
 export const DEFAULT_ROUTE: Route = {
     view: 'notes',
     noteId: null,
-    mode: 'canvas',
+    mode: 'list',
     section: 'all',
     tab: 'next',
     settingsTab: 'general',
@@ -26,9 +26,9 @@ export const DEFAULT_ROUTE: Route = {
     chat: false,
 };
 
-export const NOTE_MODES: NoteMode[] = ['canvas', 'list', 'board', 'map', 'timeline'];
+export const NOTE_MODES: NoteMode[] = ['list', 'canvas', 'board', 'map', 'timeline'];
 export const NOTES_SECTIONS: NotesSection[] = ['all', 'tasks', 'tags', 'trash'];
-export const NOTE_TABS: NoteTab[] = ['next', 'matches', 'replies'];
+export const NOTE_TABS: NoteTab[] = ['next', 'matches', 'replies', 'chat'];
 export const SETTINGS_TABS: SettingsTab[] = [
     'general', 'appearance', 'language', 'shortcuts', 'accessibility',
     'network', 'nostr', 'sync', 'relayDiscovery',
@@ -51,7 +51,7 @@ export const LEGACY_REDIRECTS: Record<string, Partial<Route>> = {
     trash: {view: 'notes', section: 'trash'},
     network: {view: 'notes', explore: true},
     connections: {view: 'notes', explore: true},
-    chat: {view: 'notes', tab: 'replies', chat: true},
+    chat: {view: 'notes', tab: 'chat', chat: true},
     responses: {view: 'notes', tab: 'replies'},
     labels: {view: 'settings', settingsTab: 'labels'},
     ontology: {view: 'settings', settingsTab: 'ontology'},
@@ -73,7 +73,7 @@ export function parseRoute(hash: string): Route {
             ...DEFAULT_ROUTE,
             view: 'notes',
             noteId: segments[1] ?? null,
-            mode: includes(NOTE_MODES, params.get('mode')) ? params.get('mode') as NoteMode : 'canvas',
+            mode: includes(NOTE_MODES, params.get('mode')) ? params.get('mode') as NoteMode : 'list',
             section: includes(NOTES_SECTIONS, params.get('filter')) ? params.get('filter') as NotesSection : 'all',
             tab: includes(NOTE_TABS, params.get('tab')) ? params.get('tab') as NoteTab : 'next',
             capture: params.get('capture') === '1',
@@ -116,7 +116,7 @@ export function routeToHash(route: Route): string {
     }
 
     const params = new URLSearchParams();
-    if (route.mode !== 'canvas') params.set('mode', route.mode);
+    if (route.mode !== 'list') params.set('mode', route.mode);
     if (route.section !== 'all') params.set('filter', route.section);
     if (route.capture) params.set('capture', '1');
     if (route.explore) params.set('explore', '1');

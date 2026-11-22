@@ -3,13 +3,14 @@ import {seed} from '../support/seed';
 import {snap} from '../support/capture';
 import {isolateNetwork} from '../fixtures/routes';
 import {demoNotes, defaultSettings} from '../fixtures/workspace';
+import {STORAGE_KEYS} from '../../src/config/storageKeys';
 
 test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
 });
 
 test('matching results', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes/demo-request-react?tab=matches'});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes/demo-request-react?tab=matches', storage: {[STORAGE_KEYS.contextOpen]: true}});
     await page.getByTestId('note-matches').waitFor({timeout: 15_000});
     await snap(page, {
         area: 'matching',

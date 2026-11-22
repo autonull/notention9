@@ -21,7 +21,7 @@ test('editor property chips', async ({page}) => {
 test('editor add detail', async ({page}) => {
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await page.getByTestId('editor-content').waitFor({timeout: 15_000});
-    await page.getByTestId('add-detail').click();
+    await page.getByTestId('page-add-detail').click();
     await page.waitForSelector('text=Add detail');
     await snap(page, {
         area: 'editor',
@@ -30,14 +30,16 @@ test('editor add detail', async ({page}) => {
     });
 });
 
-test('editor property inspector', async ({page}) => {
-    await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
-    await page.getByRole('button', {name: /Structured details/}).click();
-    await page.getByText(/\d+ Properties/).waitFor({timeout: 15_000});
+test('editor property edit', async ({page}) => {
+    const note = noteWithDetails();
+    const content = note.content.replace(/<p><span data-type="property"[^>]*><\/span><\/p>/g, '');
+    await seed(page, {notes: [{...note, content}], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
+    await page.getByRole('button', {name: 'Edit status'}).click();
+    await page.getByRole('dialog', {name: 'Edit detail'}).waitFor({timeout: 5_000});
     await snap(page, {
         area: 'editor',
-        state: 'property-inspector',
-        description: 'The details drawer with typed widgets, ontology hints, and validation.',
+        state: 'property-edit',
+        description: 'One shared detail editor opens from the chip in the page.',
     });
 });
 
@@ -45,7 +47,7 @@ test('editor template selector', async ({page}) => {
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
     await page.getByTestId('editor-content').waitFor({timeout: 15_000});
     await page.getByRole('button', {name: 'More actions'}).click();
-    await page.getByText('Save as Template').click();
+    await page.getByText('Save as template').click();
     await page.getByRole('dialog', {name: 'Save as Template'}).waitFor({timeout: 5_000});
     await snap(page, {
         area: 'editor',

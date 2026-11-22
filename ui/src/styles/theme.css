@@ -23,6 +23,15 @@
         --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.5);
 
         --note-accent: var(--accent-neutral);
+        --chrome-height: 3rem;
+        --page-pad: clamp(1.5rem, 5vw, 4rem);
+        --page-measure: 88ch;
+        --text-page: 1.0625rem;
+        --text-page-title: 1.875rem;
+        --text-page-h2: 1.375rem;
+        --history-share: 22%;
+        --context-share: 20%;
+        --pane-handle: 6px;
         --ui-pad: 14px;
         --ui-gap: 12px;
         --ui-row: 40px;
@@ -65,6 +74,7 @@
     }
 
     html.density-compact {
+        --chrome-height: 2.75rem;
         --ui-pad: 10px;
         --ui-gap: 8px;
         --ui-row: 34px;

@@ -31,6 +31,14 @@ export function useView() {
         setNotesSection: navigation.setNotesSection,
         notesMode: navigation.notesMode,
         setNotesMode: navigation.setNotesMode,
+        notesGroup: navigation.notesGroup,
+        setNotesGroup: navigation.setNotesGroup,
+        historyShare: navigation.historyShare,
+        setHistoryShare: navigation.setHistoryShare,
+        contextShare: navigation.contextShare,
+        setContextShare: navigation.setContextShare,
+        isContextOpen: navigation.isContextOpen,
+        setIsContextOpen: navigation.setIsContextOpen,
         noteTab: navigation.noteTab,
         setNoteTab: navigation.setNoteTab,
         settingsTab: navigation.settingsTab,
@@ -58,8 +66,6 @@ export function useView() {
         setIsPaletteOpen: uiState.setIsPaletteOpen,
         isHelpOpen: uiState.isHelpOpen,
         setIsHelpOpen: uiState.setIsHelpOpen,
-        isCaptureComposerOpen: uiState.isCaptureComposerOpen,
-        setIsCaptureComposerOpen: uiState.setIsCaptureComposerOpen,
 
         // Location
         userLocation: location.userLocation,

@@ -1,6 +1,6 @@
 import React, { createContext, ReactNode, useState } from 'react';
 import { useLocalForage } from '../../hooks/useLocalForage';
-import type { NoteMode, NoteTab, NotesSection, SettingsTab, SidebarViewMode, SortOrder, View } from '@notention/core';
+import type { NoteMode, NoteTab, NotesGroup, NotesSection, SettingsTab, SidebarViewMode, SortOrder, View } from '@notention/core';
 import { STORAGE_KEYS } from '../../config/storageKeys';
 
 export type { NoteMode, NoteTab, NotesSection, SettingsTab };
@@ -20,6 +20,14 @@ export interface ViewNavigationContextType {
     setNotesSection: (section: NotesSection) => void;
     notesMode: NoteMode;
     setNotesMode: (mode: NoteMode) => void;
+    notesGroup: NotesGroup;
+    setNotesGroup: (group: NotesGroup) => void;
+    historyShare: number;
+    setHistoryShare: (share: number) => void;
+    contextShare: number;
+    setContextShare: (share: number) => void;
+    isContextOpen: boolean;
+    setIsContextOpen: (isOpen: boolean) => void;
     noteTab: NoteTab;
     setNoteTab: (tab: NoteTab) => void;
     settingsTab: SettingsTab;
@@ -30,9 +38,13 @@ const ViewNavigationContext = createContext<ViewNavigationContextType | undefine
 
 export function ViewNavigationProvider({ children }: { children: ReactNode }) {
     const [sortOrder, setSortOrder] = useLocalForage<SortOrder>(STORAGE_KEYS.sortOrder, 'updatedAt_desc');
-    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>(STORAGE_KEYS.sidebarViewMode, 'grid');
+    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>(STORAGE_KEYS.sidebarViewMode, 'list');
     const [notesSection, setNotesSection] = useLocalForage<NotesSection>(STORAGE_KEYS.notesSection, 'all');
-    const [notesMode, setNotesMode] = useLocalForage<NoteMode>(STORAGE_KEYS.notesMode, 'canvas');
+    const [notesMode, setNotesMode] = useLocalForage<NoteMode>(STORAGE_KEYS.notesMode, 'list');
+    const [notesGroup, setNotesGroup] = useLocalForage<NotesGroup>(STORAGE_KEYS.notesGroup, 'status');
+    const [historyShare, setHistoryShare] = useLocalForage<number>(STORAGE_KEYS.historyShare, 22);
+    const [contextShare, setContextShare] = useLocalForage<number>(STORAGE_KEYS.contextShare, 20);
+    const [isContextOpen, setIsContextOpen] = useLocalForage<boolean>(STORAGE_KEYS.contextOpen, false);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const [activeView, setActiveView] = useState<View>('notes');
@@ -57,6 +69,14 @@ export function ViewNavigationProvider({ children }: { children: ReactNode }) {
                 setNotesSection,
                 notesMode,
                 setNotesMode,
+                notesGroup,
+                setNotesGroup,
+                historyShare,
+                setHistoryShare,
+                contextShare,
+                setContextShare,
+                isContextOpen,
+                setIsContextOpen,
                 noteTab,
                 setNoteTab,
                 settingsTab,

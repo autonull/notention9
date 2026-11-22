@@ -1,123 +1,98 @@
 import React from 'react';
-import {ArrowLeftIcon, LockIcon} from '../ui/icons';
+import {ArrowLeftIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {EditorControls} from './EditorControls';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
-import {PrivacyControl} from '../publish/PrivacyControl';
-import type {Note} from '@notention/core';
+import {SaveState} from './SaveState';
 
 interface EditorHeaderProps {
-    note: Note;
     id?: string;
-    title: string;
-    onTitleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onPublish: () => void;
     onBack?: () => void;
     isPublishing: boolean;
     isPublished: boolean;
-    tags: string[];
-    onTagsChange: (tags: string[]) => void;
-    onAutoTag?: () => void;
-    isAutoTagging: boolean;
-    isApiKeyAvailable: boolean;
+    actionLabel?: string;
+    saveStatus?: 'saved' | 'saving' | 'error';
     onSaveTemplate?: () => void;
     onExport?: () => void;
     onCopyContent?: () => void;
-    readOnly?: boolean;
-    actionLabel?: string;
-    missingProperties?: string[];
-    onAddProperty?: (key: string) => void;
-    onUpdateNote: (note: Note) => void;
     canUndo?: boolean;
     canRedo?: boolean;
     onUndo?: () => void;
     onRedo?: () => void;
-    isInspectorOpen?: boolean;
-    onToggleInspector?: () => void;
-    propertyCount?: number;
+    isContextOpen?: boolean;
+    onToggleContext?: () => void;
+    contextCount?: number;
 }
 
+/** One quiet bar above the page. Publish is its only primary. */
 export function EditorHeader({
-    note,
     id,
-    title,
-    onTitleChange,
     onPublish,
+    onBack,
     isPublishing,
     isPublished,
-    onBack,
+    actionLabel = 'Publish',
+    saveStatus,
     onSaveTemplate,
     onExport,
     onCopyContent,
-    readOnly = false,
-    actionLabel = 'Publish',
-    missingProperties = [],
-    onAddProperty,
-    onUpdateNote,
     canUndo = false,
     canRedo = false,
     onUndo,
     onRedo,
-    isInspectorOpen = false,
-    onToggleInspector,
-    propertyCount = 0,
+    isContextOpen = false,
+    onToggleContext,
+    contextCount = 0,
 }: EditorHeaderProps) {
     return (
-        <header className="shrink-0 border-b border-[var(--app-line)] bg-[var(--app-bg)]">
-            <div className="flex flex-wrap items-center gap-2 px-2 py-1.5 md:h-14 md:flex-nowrap md:px-4 md:py-0">
-                {onBack && (
-                    <IconButton
-                        onClick={onBack}
-                        tooltip="Back to notes"
-                        tooltipPosition="bottom"
-                        icon={ArrowLeftIcon}
-                        variant="ghost"
-                        size="sm"
-                        aria-label="Back to notes"
-                        className="order-1"
-                    />
+        <header className="flex h-12 shrink-0 items-center gap-2 border-b border-[var(--app-line)] bg-[var(--app-bg)] px-2 md:px-4">
+            {onBack && (
+                <IconButton
+                    onClick={onBack}
+                    tooltip="Back to notes"
+                    tooltipPosition="bottom"
+                    icon={ArrowLeftIcon}
+                    variant="ghost"
+                    size="sm"
+                    aria-label="Back to notes"
+                />
+            )}
+
+            {id && <SkillExecutionIndicator noteId={id}/>}
+
+            <SaveState status={saveStatus} className="hidden sm:flex"/>
+
+            <div className="ml-auto flex min-w-0 shrink-0 items-center gap-1">
+                {onToggleContext && (
+                    <button
+                        type="button"
+                        onClick={onToggleContext}
+                        aria-pressed={isContextOpen}
+                        aria-label={contextCount > 0 ? `Context (${contextCount})` : 'Context'}
+                        className="relative inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[12px] font-medium text-[var(--app-muted)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]"
+                    >
+                        Context
+                        {contextCount > 0 && (
+                            <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{contextCount}</span>
+                        )}
+                        {!isContextOpen && contextCount > 0 && (
+                            <span className="absolute right-1 top-1 h-1.5 w-1.5 rounded-full bg-[var(--app-accent)]" aria-hidden="true"/>
+                        )}
+                    </button>
                 )}
-
-                <div className="order-2 ml-auto flex min-w-0 items-center gap-1.5 md:order-3">
-                    {readOnly && <LockIcon className="hidden h-3.5 w-3.5 text-[var(--app-faint)] sm:block"/>}
-                    {id && <SkillExecutionIndicator noteId={id}/>}
-                    <PrivacyControl note={note} onUpdate={onUpdateNote}/>
-                    <EditorControls
-                        onPublish={onPublish}
-                        isPublishing={isPublishing}
-                        isPublished={isPublished}
-                        actionLabel={actionLabel}
-                        onSaveTemplate={onSaveTemplate}
-                        onExport={onExport}
-                        onCopyContent={onCopyContent}
-                        canUndo={canUndo}
-                        canRedo={canRedo}
-                        onUndo={onUndo}
-                        onRedo={onRedo}
-                        missingProperties={missingProperties}
-                        onAddProperty={onAddProperty}
-                        isInspectorOpen={isInspectorOpen}
-                        onToggleInspector={onToggleInspector}
-                        propertyCount={propertyCount}
-                    />
-                </div>
-
-                <input
-                    id="note-title-input"
-                    type="text"
-                    value={title || ''}
-                    onChange={onTitleChange}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                            e.preventDefault();
-                            document.querySelector<HTMLElement>('.ProseMirror')?.focus();
-                        }
-                    }}
-                    placeholder="Untitled note"
-                    autoFocus={!title && !readOnly}
-                    readOnly={readOnly}
-                    disabled={readOnly}
-                    className="order-3 w-full min-w-0 basis-full rounded-md border-0 bg-transparent px-5 py-0.5 text-[20px] font-semibold leading-[1.2] tracking-[-0.025em] text-[var(--app-text)] placeholder:text-[var(--app-faint)] focus:outline-none md:order-2 md:w-auto md:flex-1 md:basis-auto md:px-0 md:text-[20px]"
+                <EditorControls
+                    onPublish={onPublish}
+                    isPublishing={isPublishing}
+                    isPublished={isPublished}
+                    actionLabel={actionLabel}
+                    onSaveTemplate={onSaveTemplate}
+                    onExport={onExport}
+                    onCopyContent={onCopyContent}
+                    canUndo={canUndo}
+                    canRedo={canRedo}
+                    onUndo={onUndo}
+                    onRedo={onRedo}
                 />
             </div>
         </header>

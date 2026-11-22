@@ -27,7 +27,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test && pnpm --filter @notention/simulator test",
     "test:ui": "tsx scripts/test-ui-batched.ts",
-    "check:ui": "pnpm lint:type && pnpm --filter @notention/ui typecheck && pnpm --filter @notention/ui exec playwright test --config test/playwright.config.ts --project=journeys journeys/golden-path.spec.ts journeys/axe-audit.spec.ts",
+    "check:ui": "pnpm lint:type && pnpm lint:ui-layers && pnpm --filter @notention/ui typecheck && pnpm --filter @notention/ui exec playwright test --config test/playwright.config.ts --project=journeys journeys/golden-path.spec.ts journeys/axe-audit.spec.ts",
     "lint:type": "node scripts/check-type-scale.mjs",
     "test:ui:one": "pnpm --filter @notention/ui exec vitest run",
     "verify": "tsx scripts/verify.ts",
@@ -66,7 +66,8 @@
     "stranger-test": "tsx scripts/stranger-test.ts",
     "match-relevance": "tsx scripts/match-relevance-test.ts",
     "preference-exp": "tsx scripts/run-preference-experiment.ts",
-    "bench:plugins": "tsx scripts/bench-plugins.ts"
+    "bench:plugins": "tsx scripts/bench-plugins.ts",
+    "lint:ui-layers": "node scripts/check-ui-layers.mjs"
   },
   "dependencies": {
     "@meshtastic/core": "^2.6.7",

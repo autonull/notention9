@@ -56,7 +56,7 @@ export function PrivacyConfirmModal({
                 <div>
  <div className="text-xs font-bold tracking-widest text-neutral-400 mb-2">What will be shared</div>
                     <div className="rounded-xl border border-neutral-700 bg-neutral-900/70 p-4 space-y-3">
-                        <div className="font-semibold text-white">{noteTitle || 'Untitled Note'}</div>
+                        <div className="font-semibold text-white">{noteTitle || 'Untitled note'}</div>
                         <p className="text-sm text-neutral-300 whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">{preview?.body || 'No content'}</p>
                         <div className="flex flex-wrap gap-1.5">
                             {note?.tags.map(tag => (

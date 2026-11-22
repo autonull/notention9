@@ -12,7 +12,6 @@ import {
     Heading3Icon,
     HorizontalRuleIcon,
     ItalicIcon,
-    KeyIcon,
     LightBulbIcon,
     ListOlIcon,
     ListUlIcon,
@@ -29,7 +28,6 @@ interface TiptapToolbarProps {
     toggleViewMode: () => void;
     onMagic?: () => void;
     onTemplates?: () => void;
-    onInsertProperty?: () => void;
     onDescribe?: () => void;
 }
 
@@ -54,7 +52,6 @@ function TiptapToolbarContent({
                                   toggleViewMode,
                                   onMagic,
                                   onTemplates,
-                                  onInsertProperty,
                                   onDescribe,
                               }: TiptapToolbarProps & { editor: Editor }) {
     const actions = useMemo<ToolbarItem[]>(() => [
@@ -168,28 +165,16 @@ function TiptapToolbarContent({
 
     return (
         <div
-            className="flex h-11 shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--app-line)] bg-[var(--app-bg)] px-2 md:px-4"
+            className="flex h-9 shrink-0 items-center gap-1 overflow-x-auto border-b border-[var(--app-line)] bg-[var(--app-bg)] px-2 md:px-4"
+            onMouseDown={(event) => event.preventDefault()}
             role="toolbar"
             aria-label="Editor formatting"
         >
             <div className="flex shrink-0 items-center gap-0.5" role="group" aria-label="Semantic actions">
-                {onInsertProperty && (
-                    <button
-                        onClick={onInsertProperty}
-                        data-testid="add-detail"
-                        title="Add detail (Ctrl+Shift+P)"
-                        aria-label="Add detail"
-                        className="flex h-7 items-center gap-1.5 rounded-md border border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] px-2 text-[12px] font-medium text-[var(--app-accent-text)] transition-colors hover:bg-[color-mix(in_srgb,var(--app-accent)_18%,transparent)]"
-                    >
-                        <KeyIcon className={iconClass}/>
-                        <span className="hidden sm:inline">Add detail</span>
-                    </button>
-                )}
                 {onDescribe && (
                     <button
                         type="button"
                         onClick={onDescribe}
-                        data-testid="describe-it"
                         title="Describe it — suggest details from your words"
                         aria-label="Describe it"
                         className="grid h-7 w-7 place-items-center rounded-md text-[var(--app-muted)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]"

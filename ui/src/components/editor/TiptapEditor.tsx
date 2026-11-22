@@ -9,6 +9,7 @@ import {useView} from '../../hooks/useViewContext';
 import {useToast} from '../../hooks/useToast';
 import {useEditorClick} from './useEditorClick';
 import {EditorStatusBar} from './EditorStatusBar';
+import {PageMeta} from '../patterns/PageSurface';
 import {EditorBubbleMenu} from './EditorBubbleMenu';
 import {PropertyEditor} from './PropertyEditor';
 import {DescribeItComposer} from './DescribeItComposer';
@@ -62,6 +63,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     const [viewMode, setViewMode] = useState<'rich' | 'code'>('rich');
     const [isDescribeOpen, setIsDescribeOpen] = useState(false);
     const [editorReady, setEditorReady] = useState(false);
+    const [isEditorFocused, setIsEditorFocused] = useState(false);
 
     const {setSearchTerm, setActiveView, setSelectedNoteId} = useView();
     const {addToast} = useToast();
@@ -141,6 +143,33 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     }, [editor]);
 
     useEffect(() => {
+        const openDescribe = () => setIsDescribeOpen(true);
+        window.addEventListener('open-describe-it', openDescribe);
+        return () => window.removeEventListener('open-describe-it', openDescribe);
+    }, []);
+
+    useEffect(() => {
+        const editProperty = (event: Event) => {
+            const detail = (event as CustomEvent<{propertyId?: string; key: string; operator: string; value: string}>).detail;
+            handleOpenPropertyModal(detail.key, detail.propertyId, {operator: detail.operator, value: detail.value});
+        };
+        window.addEventListener('edit-property', editProperty);
+        return () => window.removeEventListener('edit-property', editProperty);
+    }, [handleOpenPropertyModal]);
+
+    useEffect(() => {
+        if (!editor || editor.isDestroyed) return;
+        const onFocus = () => setIsEditorFocused(true);
+        const onBlur = () => setIsEditorFocused(false);
+        editor.on('focus', onFocus);
+        editor.on('blur', onBlur);
+        return () => {
+            editor.off('focus', onFocus);
+            editor.off('blur', onBlur);
+        };
+    }, [editor]);
+
+    useEffect(() => {
         const handleSaveEvent = () => {
             if (editor && !editor.isDestroyed) {
                 onSave(editor.getHTML());
@@ -199,14 +228,13 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     return (
         <div className="flex flex-1 min-h-0 flex-col">
-            {!minimal && showToolbar && (
+            {!minimal && showToolbar && isEditorFocused && (
                 <TiptapToolbar
                     editor={editor}
                     viewMode={viewMode}
                     toggleViewMode={toggleViewMode}
                     onMagic={onMagic}
                     onTemplates={onTemplates}
-                    onInsertProperty={handlePrepareNewProperty}
                     onDescribe={() => setIsDescribeOpen(true)}
                 />
             )}
@@ -252,9 +280,10 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 </div>
             </div>
             {!minimal && (
-                <div className="flex shrink-0 items-center gap-3 border-t border-[var(--app-line)] bg-[var(--app-bg)] px-3 py-1.5">
-                    <div className="min-w-0 flex-1">{children}</div>
-                    <EditorStatusBar editor={editor} saveStatus={saveStatus}/>
+                <div className="shrink-0 border-t border-[var(--app-line)] px-[var(--page-pad)] py-2">
+                    <PageMeta>
+                        <EditorStatusBar editor={editor} saveStatus={saveStatus}/>
+                    </PageMeta>
                 </div>
             )}
         </div>

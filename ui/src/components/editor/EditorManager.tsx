@@ -8,18 +8,20 @@ import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
 import {useNextSteps} from '../../hooks/useNextSteps';
 
-import type {Note, OntologyNode, ScoredMatch} from '@notention/core';
+import type {Note, OntologyNode, Property, ScoredMatch} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
 import {EditorContent} from './EditorContent';
-import {InspectorSidebar} from './InspectorPanel';
 import {EditorModals} from './EditorModals';
 import {PublishErrorBanner} from './PublishErrorBanner';
-import {MobileBackdrop} from './MobileBackdrop';
+import {PropertyEditor} from './PropertyEditor';
+import {PaneResizer} from '../ui/ResizablePane';
 import {NextStepsDrawer} from '../next-steps';
 import {NoteContextRail} from '../note/NoteContextRail';
 import {SkillApprovalDialog} from '../skills/SkillApprovalDialog';
+import {useMatches} from '../../hooks/useMatches';
+import {cn} from '../../utils/ui';
 
 interface EditorManagerProps {
     note: Note;
@@ -50,7 +52,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         isPublished,
         saveImmediately,
         actionLabel,
-        missingProperties,
         saveStatus,
         publishError,
         privacyConfirmation,
@@ -63,7 +64,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     } = useEditorLogic({note, onSave});
 
     const {
-        isInspectorOpen, setIsInspectorOpen,
         isTemplateSelectorOpen, setIsTemplateSelectorOpen,
         isSaveTemplateModalOpen, setIsSaveTemplateModalOpen,
         isMapPickerOpen, setIsMapPickerOpen,
@@ -75,10 +75,10 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         handleRequestLocationPick
     } = useEditorModals(handleUpdateProperty, handleUpdateLocation);
 
-    const {setSelectedNoteId} = useView();
+    const {setSelectedNoteId, isContextOpen, setIsContextOpen, contextShare, setContextShare} = useView();
     const {addToast} = useToast();
     const editorRef = useRef<TiptapEditorRef>(null);
-    const [isToolbarVisible, setIsToolbarVisible] = useState(true);
+    const [detailDraft, setDetailDraft] = useState<Property | null>(null);
 
     const safeSortedNotes = sortedNotes ?? [];
     const currentIndex = safeSortedNotes.findIndex((n) => n.id === note.id);
@@ -153,10 +153,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         setIsTemplateSelectorOpen(false);
     };
 
-    const handleAddPropertyHint = (key: string) => {
-        editorRef.current?.openPropertyModal(key);
-    };
-
     const handleRespondMatch = useCallback((match: ScoredMatch) => {
         const response = addNote({
             title: `Re: ${match.note.title || 'Untitled note'}`,
@@ -212,6 +208,9 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         return { success: false, error: 'Skill execution not yet implemented' };
     }, []);
 
+    const matches = useMatches(dirtyNote);
+    const replyCount = notes.filter(candidate => candidate.properties.some(p => p.key === 'inResponseTo' && p.values.includes(note.id))).length;
+    const contact = dirtyNote.properties.find(p => ['pubkey', 'contact', 'nostr'].includes(p.key))?.values[0];
     const nextStepsModel = useNextSteps({
         note: dirtyNote,
         onOpenPropertyEditor: handleOpenPropertyEditor,
@@ -221,53 +220,55 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         onExecuteSkill: handleExecuteSkill,
     });
 
-    return (
-        <div className="relative flex h-full flex-col bg-[var(--app-bg)]">
-            <div className="relative flex min-h-0 flex-1 flex-col lg:flex-row">
-                <div className="flex min-w-0 flex-1 flex-col">
+    const contextCount = (nextStepsModel.topNextStep ? 1 : 0) + matches.length + replyCount + (contact ? 1 : 0);
+    const autoOpenedFor = useRef<string | null>(null);
 
+    useEffect(() => {
+        if (contextCount > 0 && autoOpenedFor.current !== note.id) {
+            autoOpenedFor.current = note.id;
+            setIsContextOpen(true);
+        }
+    }, [contextCount, note.id, setIsContextOpen]);
+
+    return (
+        <div className="relative flex h-full min-h-0 w-full min-w-0 flex-1 flex-col bg-[var(--app-bg)]">
             <EditorHeader
                 key={note.id}
-                note={dirtyNote}
-                onUpdateNote={handleNoteUpdate}
                 id={note.id}
-                title={dirtyNote.title}
-                onTitleChange={handleTitleChange}
                 onPublish={handlePublish}
                 onBack={() => setSelectedNoteId(null)}
                 isPublishing={isPublishing}
                 isPublished={isPublished}
-                tags={dirtyNote.tags}
-                onTagsChange={handleTagsChange}
-                onAutoTag={handleAutoTag}
-                isAutoTagging={isAutoTagging}
-                isApiKeyAvailable={isApiKeyAvailable}
+                actionLabel={actionLabel}
+                saveStatus={saveStatus}
                 onSaveTemplate={() => setIsSaveTemplateModalOpen(true)}
                 onExport={handleExport}
                 onCopyContent={handleCopyContent}
-                actionLabel={actionLabel}
-                missingProperties={missingProperties}
-                onAddProperty={handleAddPropertyHint}
                 canUndo={canUndo}
                 canRedo={canRedo}
                 onUndo={handleUndo}
                 onRedo={handleRedo}
-                isInspectorOpen={isInspectorOpen}
-                onToggleInspector={() => setIsInspectorOpen(!isInspectorOpen)}
-                propertyCount={dirtyNote.properties.length}
+                isContextOpen={isContextOpen}
+                onToggleContext={() => setIsContextOpen(!isContextOpen)}
+                contextCount={contextCount}
             />
+
             {publishError && (
-                <PublishErrorBanner error={publishError} onRetry={handlePublish} />
+                <PublishErrorBanner error={publishError} onRetry={handlePublish}/>
             )}
 
+            <div className="relative flex min-h-0 flex-1 flex-col lg:flex-row">
+                <div className="flex min-h-0 min-w-0 flex-1 flex-col">
                     <EditorContent
                         editorRef={editorRef}
                         dirtyNote={dirtyNote}
+                        title={dirtyNote.title}
+                        onTitleChange={handleTitleChange}
                         onSave={handleContentSave}
                         onNoteUpdate={handleNoteUpdate}
                         ontology={settings.ontology ?? []}
                         templates={settings.customTemplates ?? []}
-                        showToolbar={isToolbarVisible}
+                        showToolbar
                         onMagic={() => {
                             if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
                                 addToast('Loading local model... this may take a while.', 'info');
@@ -285,38 +286,63 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         onAutoTag={handleAutoTag}
                         isAutoTagging={isAutoTagging}
                         isApiKeyAvailable={isApiKeyAvailable}
+                        onAddDetail={() => editorRef.current?.openPropertyModal()}
+                        onEditDetail={setDetailDraft}
+                        onDescribe={() => window.dispatchEvent(new CustomEvent('open-describe-it'))}
                     />
-                    <MobileBackdrop
-                        isVisible={isInspectorOpen}
-                        onClick={() => setIsInspectorOpen(false)}
-                    />
-                    {isInspectorOpen && (
-                        <InspectorSidebar
-                            isOpen={isInspectorOpen}
-                            onClose={() => setIsInspectorOpen(false)}
-                            note={dirtyNote}
-                            onNoteUpdate={handleContentSave}
-                            properties={dirtyNote.properties}
-                            onUpdateProperty={handleUpdateTextFromInspector}
-                            onPickLocation={handleRequestLocationPick}
-                            onPickTime={handlePickTime}
-                            ontology={settings.ontology ?? []}
-                        />
-                    )}
                 </div>
 
-                <NoteContextRail
-                    note={dirtyNote}
-                    model={nextStepsModel}
-                    onOpenDrawer={handleOpenNextStepsDrawer}
-                    onPublish={handlePublish}
-                    isPublished={isPublished}
-                    isPublishing={isPublishing}
-                    onNavigateToNote={setSelectedNoteId}
-                    onRespond={handleRespondMatch}
-                />
+                {isContextOpen && (
+                    <div
+                        className="flex max-h-[42dvh] min-h-0 shrink-0 flex-col border-t border-[var(--app-line)] bg-[var(--app-panel)] lg:max-h-none lg:w-[var(--context-share)] lg:flex-row lg:border-l lg:border-t-0"
+                        style={{'--context-share': `${contextShare}%`} as React.CSSProperties}
+                        data-testid="note-context-pane"
+                    >
+                        <PaneResizer
+                            edge="left"
+                            label="Resize context"
+                            value={contextShare}
+                            min={15}
+                            max={26}
+                            defaultValue={20}
+                            onChange={setContextShare}
+                            className="order-first border-t-0 lg:border-t"
+                        />
+                        <NoteContextRail
+                            note={dirtyNote}
+                            model={nextStepsModel}
+                            onOpenDrawer={handleOpenNextStepsDrawer}
+                            onPublish={handlePublish}
+                            isPublished={isPublished}
+                            isPublishing={isPublishing}
+                            onNavigateToNote={setSelectedNoteId}
+                            onRespond={handleRespondMatch}
+                            className="min-h-0 flex-1"
+                        />
+                    </div>
+                )}
             </div>
 
+            {detailDraft && (
+                <PropertyEditor
+                    isModal
+                    isOpen
+                    isAdding={false}
+                    initialKey={detailDraft.key}
+                    initialOperator={detailDraft.operator}
+                    initialValue={detailDraft.values.join(', ')}
+                    onCancel={() => setDetailDraft(null)}
+                    onSave={(key, operator, value) => {
+                        const next: Property = {key, operator, values: value.split(',').map(part => part.trim()).filter(Boolean)};
+                        handleUpdateTextFromInspector(detailDraft, next);
+                        setDetailDraft(null);
+                    }}
+                    onPickLocation={handleRequestLocationPick}
+                    onPickTime={handlePickTime}
+                    ontology={settings.ontology ?? []}
+                    title="Edit detail"
+                />
+            )}
             <NextStepsDrawer
                 isOpen={isNextStepsDrawerOpen}
                 onClose={handleCloseNextStepsDrawer}

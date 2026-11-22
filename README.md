@@ -12,7 +12,7 @@ Everything is a note: memory, queries, and an interface to automation.
 
 [![Notes canvas](doc/screenshot/notes/grid.png)](doc/screenshot/README.md)
 [![Note detail and context rail](doc/screenshot/note/detail.png)](doc/screenshot/README.md)
-[![One capture field](doc/screenshot/capture/composer.png)](doc/screenshot/README.md)
+[![A blank page, one title](doc/screenshot/note/compose.png)](doc/screenshot/README.md)
 [![Matches in the note rail](doc/screenshot/note/context.png)](doc/screenshot/README.md)
 
 Browse the full generated gallery in [`doc/screenshot/README.md`](doc/screenshot/README.md).
@@ -91,7 +91,7 @@ The practical distinction is between the **real** and the **imaginary**: definit
 
 ### 🗂️ User interface
 
-- Notes workspace with the one omnibox, capture composer, and Canvas / List / Board / Map / Timeline modes; matches, replies, chat, and publishing live in the open note's rail; search and public notes live in one overlay; settings.
+- Notes workspace with a resizable history rail and a full-bleed note page; one `Arrange` control exposes List / Canvas / Board / Map / Timeline and ten orders; next steps, matches, replies, chat, and publishing live in the optional context rail; search and public notes live in one overlay; settings.
 - One semantic token layer and a small primitive kit; modes, filters, palette scopes, and settings groups are configuration data, so surfaces stay reconfigurable without forking their layout.
 - Search and sort across text, tags, properties, dates, distance, relevance, and recency.
 - Geographic notes appear on a map; temporal notes appear on a calendar with location-radius filtering.

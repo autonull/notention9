@@ -64,6 +64,21 @@ export function PropertyChip({node}: PropertyViewProps) {
             as="span"
             className={`${baseClasses} ${!validation.isValid && !customValue ? invalidClasses : customValue ? customClasses : validClasses}`}
             data-property-id={propertyId ?? undefined}
+            onPointerDown={(event: React.PointerEvent) => {
+                event.preventDefault();
+                event.stopPropagation();
+                window.dispatchEvent(new CustomEvent('edit-property', {
+                    detail: {propertyId, key: name, operator, value, icon},
+                }));
+            }}
+            onClick={(event: React.MouseEvent) => {
+                if (event.detail !== 0) return;
+                event.preventDefault();
+                event.stopPropagation();
+                window.dispatchEvent(new CustomEvent('edit-property', {
+                    detail: {propertyId, key: name, operator, value, icon},
+                }));
+            }}
             title={
                 !validation.isValid && !customValue
                     ? validation.message

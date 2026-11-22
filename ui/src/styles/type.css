@@ -43,3 +43,19 @@
         letter-spacing: 0.005em;
     }
 }
+
+@layer utilities {
+    .page-title {
+        font-size: var(--text-page-title);
+        line-height: 1.2;
+        font-weight: 650;
+        letter-spacing: -0.03em;
+    }
+
+    .page-meta {
+        font-size: 0.6875rem;
+        line-height: 1.4;
+        font-weight: 500;
+        color: var(--app-faint);
+    }
+}

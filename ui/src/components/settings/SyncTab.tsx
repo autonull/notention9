@@ -112,24 +112,24 @@ export function SyncTab() {
     const isEnabled = !!nostrSettings?.privkey && !isPrivateMode;
 
     return (
-        <div className="bg-neutral-900/70 p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
+        <div className="bg-[var(--app-surface)] p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
             <div className="flex flex-col gap-2 shrink-0">
                 <div className="flex items-center gap-3">
                     <div className="p-2 bg-blue-600/20 rounded-lg text-blue-400">
                         <NetworkIcon className="h-6 w-6" />
                     </div>
-                    <h2 className="text-xl font-semibold text-neutral-100">Multi-Device Sync</h2>
+                    <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Multi-Device Sync</h2>
                 </div>
-                <p className="text-sm text-neutral-400">
+                <p className="text-sm text-[var(--app-muted)]">
                     Synchronize notes across devices using Nostr. Uses revision log with last-write-wins and conflict detection.
                 </p>
             </div>
 
             <div className="mt-4 lg:overflow-y-auto custom-scrollbar lg:flex-1 lg:min-h-0 space-y-6">
                 {!isEnabled ? (
-                    <div className="bg-neutral-800 rounded-lg border border-neutral-700 p-6">
-                        <h3 className="text-lg font-medium text-neutral-100 mb-4">Enable Sync</h3>
-                        <p className="text-neutral-400 mb-4">
+                    <div className="bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-6">
+                        <h3 className="text-lg font-medium text-[var(--app-text)] mb-4">Enable Sync</h3>
+                        <p className="text-[var(--app-muted)] mb-4">
                             Enter your Nostr private key (nsec or hex) to enable multi-device sync.
                             Your notes will be synced as a revision log across all linked devices.
                         </p>
@@ -145,7 +145,7 @@ export function SyncTab() {
                                 onClick={() => setShowPrivkey(!showPrivkey)}
                                 variant="ghost"
                                 size="md"
-                                className="text-neutral-400 hover:text-white"
+                                className="text-[var(--app-muted)] hover:text-[var(--app-text)]"
                                 aria-label={showPrivkey ? 'Hide key' : 'Show key'}
                                 icon={QuestionMarkCircleIcon}
                             />
@@ -153,22 +153,22 @@ export function SyncTab() {
                                 Enable Sync
                             </Button>
                         </div>
-                        <p className="text-xs text-neutral-400 mt-2">
+                        <p className="text-xs text-[var(--app-muted)] mt-2">
                             Your private key never leaves this device. It is used locally to sign revision events.
                         </p>
                     </div>
                 ) : (
                     <>
-                        <div className="bg-neutral-800 rounded-lg border border-neutral-700 p-4">
+                        <div className="bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-4">
                             <div className="flex items-center justify-between flex-wrap gap-4">
                                 <div className="flex items-center gap-4">
                                     <div className="flex items-center gap-2">
                                         <span className={`w-3 h-3 rounded-full ${isSyncing ? 'bg-yellow-500 animate-pulse' : 'bg-green-500'}`} />
-                                        <span className="font-medium text-neutral-100">
+                                        <span className="font-medium text-[var(--app-text)]">
                                             {isSyncing ? 'Syncing...' : 'Sync Enabled'}
                                         </span>
                                     </div>
-                                    <span className="text-xs text-neutral-400 px-2 py-1 bg-neutral-700 rounded">
+                                    <span className="text-xs text-[var(--app-muted)] px-2 py-1 bg-neutral-700 rounded">
                                         Last sync: {formatTime(lastSyncAt)}
                                     </span>
                                 </div>
@@ -203,10 +203,10 @@ export function SyncTab() {
 
                         {/* Sync Budget Status */}
                         {budgetStatus && (
-                            <div className={`bg-neutral-800 rounded-lg border border-neutral-700 p-4 ${budgetStatus.status === 'exceeded' ? 'border-red-500/50' : budgetStatus.status === 'warning' ? 'border-yellow-500/50' : ''}`}>
+                            <div className={`bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-4 ${budgetStatus.status === 'exceeded' ? 'border-red-500/50' : budgetStatus.status === 'warning' ? 'border-yellow-500/50' : ''}`}>
                                 <div className="flex items-center gap-2 mb-3">
                                     <DatabaseIcon className={`w-5 h-5 ${budgetStatus.status === 'exceeded' ? 'text-red-400' : budgetStatus.status === 'warning' ? 'text-yellow-400' : 'text-green-400'}`} />
-                                    <h3 className="text-lg font-medium text-neutral-100">Sync Budget</h3>
+                                    <h3 className="text-lg font-medium text-[var(--app-text)]">Sync Budget</h3>
                                     <span className={`text-xs px-2 py-1 rounded ${
                                         budgetStatus.status === 'exceeded' ? 'bg-red-500/20 text-red-300' :
                                         budgetStatus.status === 'warning' ? 'bg-yellow-500/20 text-yellow-300' :
@@ -215,36 +215,36 @@ export function SyncTab() {
                                         {budgetStatus.status.toUpperCase()}
                                     </span>
                                 </div>
-                                <p className="text-sm text-neutral-400 mb-4">{budgetStatus.message}</p>
+                                <p className="text-sm text-[var(--app-muted)] mb-4">{budgetStatus.message}</p>
                                 <div className="grid grid-cols-2 gap-4 text-sm">
                                     <div>
-                                        <span className="text-neutral-400">Last Payload:</span>
-                                        <span className="ml-2 font-mono text-neutral-100">{formatBytes(budgetStatus.payloadBytes)}</span>
+                                        <span className="text-[var(--app-muted)]">Last Payload:</span>
+                                        <span className="ml-2 font-mono text-[var(--app-text)]">{formatBytes(budgetStatus.payloadBytes)}</span>
                                     </div>
                                     <div>
-                                        <span className="text-neutral-400">Budget:</span>
-                                        <span className="ml-2 font-mono text-neutral-100">{formatBytes(budgetStatus.maxPayloadBytes)}</span>
+                                        <span className="text-[var(--app-muted)]">Budget:</span>
+                                        <span className="ml-2 font-mono text-[var(--app-text)]">{formatBytes(budgetStatus.maxPayloadBytes)}</span>
                                     </div>
                                     <div>
-                                        <span className="text-neutral-400">Utilization:</span>
-                                        <span className="ml-2 font-mono text-neutral-100">{(budgetStatus.utilization * 100).toFixed(1)}%</span>
+                                        <span className="text-[var(--app-muted)]">Utilization:</span>
+                                        <span className="ml-2 font-mono text-[var(--app-text)]">{(budgetStatus.utilization * 100).toFixed(1)}%</span>
                                     </div>
                                     <div>
-                                        <span className="text-neutral-400">Avg/Note:</span>
-                                        <span className="ml-2 font-mono text-neutral-100">{metrics?.bytesPerNote ? formatBytes(metrics.bytesPerNote) : 'N/A'}</span>
+                                        <span className="text-[var(--app-muted)]">Avg/Note:</span>
+                                        <span className="ml-2 font-mono text-[var(--app-text)]">{metrics?.bytesPerNote ? formatBytes(metrics.bytesPerNote) : 'N/A'}</span>
                                     </div>
                                 </div>
                             </div>
                         )}
 
                         {/* Sync Settings */}
-                        <div className="bg-neutral-800 rounded-lg border border-neutral-700 p-4">
-                            <h3 className="text-lg font-medium text-neutral-100 mb-4">Bandwidth & Battery Budget</h3>
+                        <div className="bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-4">
+                            <h3 className="text-lg font-medium text-[var(--app-text)] mb-4">Bandwidth & Battery Budget</h3>
                             <div className="space-y-4">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="font-medium text-neutral-100">WiFi-Only Mode</span>
-                                        <p className="text-xs text-neutral-400">Only sync when connected to WiFi (saves cellular data)</p>
+                                        <span className="font-medium text-[var(--app-text)]">WiFi-Only Mode</span>
+                                        <p className="text-xs text-[var(--app-muted)]">Only sync when connected to WiFi (saves cellular data)</p>
                                     </div>
                                     <Toggle
                                         checked={syncSettings?.wifiOnly ?? false}
@@ -254,8 +254,8 @@ export function SyncTab() {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="font-medium text-neutral-100">Batch Events</span>
-                                        <p className="text-xs text-neutral-400">Combine multiple events into single publish (reduces overhead)</p>
+                                        <span className="font-medium text-[var(--app-text)]">Batch Events</span>
+                                        <p className="text-xs text-[var(--app-muted)]">Combine multiple events into single publish (reduces overhead)</p>
                                     </div>
                                     <Toggle
                                         checked={syncSettings?.batchEnabled ?? true}
@@ -265,8 +265,8 @@ export function SyncTab() {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="font-medium text-neutral-100">Compress Payloads</span>
-                                        <p className="text-xs text-neutral-400">Use CBOR encoding for smaller payloads</p>
+                                        <span className="font-medium text-[var(--app-text)]">Compress Payloads</span>
+                                        <p className="text-xs text-[var(--app-muted)]">Use CBOR encoding for smaller payloads</p>
                                     </div>
                                     <Toggle
                                         checked={syncSettings?.compress ?? true}
@@ -276,8 +276,8 @@ export function SyncTab() {
                                 </div>
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <span className="font-medium text-neutral-100">Track Metrics</span>
-                                        <p className="text-xs text-neutral-400">Collect payload size statistics for reporting</p>
+                                        <span className="font-medium text-[var(--app-text)]">Track Metrics</span>
+                                        <p className="text-xs text-[var(--app-muted)]">Collect payload size statistics for reporting</p>
                                     </div>
                                     <Toggle
                                         checked={syncSettings?.trackMetrics ?? true}
@@ -286,7 +286,7 @@ export function SyncTab() {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-300 mb-1">Max Payload per Sync (bytes)</label>
+                                    <label className="block text-sm font-medium text-[var(--app-text-secondary)] mb-1">Max Payload per Sync (bytes)</label>
                                     <Input
                                         type="number"
                                         value={syncSettings?.maxPayloadBytes ?? 1048576}
@@ -295,10 +295,10 @@ export function SyncTab() {
                                         min={1024}
                                         max={10485760}
                                     />
-                                    <p className="text-xs text-neutral-400 mt-1">Maximum bytes to send in a single sync session</p>
+                                    <p className="text-xs text-[var(--app-muted)] mt-1">Maximum bytes to send in a single sync session</p>
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-neutral-300 mb-1">Auto-Sync Interval (minutes, 0 = manual)</label>
+                                    <label className="block text-sm font-medium text-[var(--app-text-secondary)] mb-1">Auto-Sync Interval (minutes, 0 = manual)</label>
                                     <Input
                                         type="number"
                                         value={syncSettings?.intervalMinutes ?? 0}
@@ -307,7 +307,7 @@ export function SyncTab() {
                                         min={0}
                                         max={1440}
                                     />
-                                    <p className="text-xs text-neutral-400 mt-1">Automatically sync at this interval (requires app to be open)</p>
+                                    <p className="text-xs text-[var(--app-muted)] mt-1">Automatically sync at this interval (requires app to be open)</p>
                                 </div>
                             </div>
                         </div>
@@ -320,7 +320,7 @@ export function SyncTab() {
                                         {pendingConflicts.length} Conflict{pendingConflicts.length !== 1 ? 's' : ''} Detected
                                     </h3>
                                 </div>
-                                <p className="text-sm text-neutral-400 mb-4">
+                                <p className="text-sm text-[var(--app-muted)] mb-4">
                                     Concurrent edits were detected on the same notes. Choose how to resolve each conflict.
                                 </p>
                                 <div className="space-y-3">
@@ -328,13 +328,13 @@ export function SyncTab() {
                                         const isExpanded = expandedConflictId === conflict.noteId;
 
                                         return (
-                                            <div key={conflict.noteId} className="bg-neutral-800 rounded-lg border border-yellow-500/20 p-4">
+                                            <div key={conflict.noteId} className="bg-[var(--app-raised)] rounded-lg border border-yellow-500/20 p-4">
                                                 <div className="flex items-center justify-between">
                                                     <div className="flex items-center gap-3 flex-1 min-w-0">
                                                         <span className="font-mono text-sm text-yellow-300 truncate">
                                                             {conflict.noteId.slice(0, 8)}...
                                                         </span>
-                                                        <span className="text-xs text-neutral-400">
+                                                        <span className="text-xs text-[var(--app-muted)]">
                                                             Local rev: {conflict.localRevision.revision} → Remote rev: {conflict.remoteRevision.revision}
                                                         </span>
                                                     </div>
@@ -342,16 +342,16 @@ export function SyncTab() {
                                                         onClick={() => setExpandedConflictId(isExpanded ? null : conflict.noteId)}
                                                         variant="ghost"
                                                         size="sm"
-                                                        className="text-neutral-400 hover:text-white"
+                                                        className="text-[var(--app-muted)] hover:text-[var(--app-text)]"
                                                         icon={isExpanded ? XIcon : QuestionMarkCircleIcon}
                                                     />
                                                 </div>
 
                                                 {isExpanded && (
                                                     <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                        <div className="bg-neutral-900/50 rounded p-3">
-                                                            <h4 className="text-xs font-medium text-neutral-400 mb-2">Local Version</h4>
-                                                            <pre className="text-xs text-neutral-300 overflow-auto max-h-40">
+                                                        <div className="bg-[var(--app-surface)]/50 rounded p-3">
+                                                            <h4 className="text-xs font-medium text-[var(--app-muted)] mb-2">Local Version</h4>
+                                                            <pre className="text-xs text-[var(--app-text-secondary)] overflow-auto max-h-40">
                                                                 {JSON.stringify({
                                                                     title: conflict.localRevision.title,
                                                                     content: conflict.localRevision.content.slice(0, 200),
@@ -360,9 +360,9 @@ export function SyncTab() {
                                                                 }, null, 2)}
                                                             </pre>
                                                         </div>
-                                                        <div className="bg-neutral-900/50 rounded p-3">
-                                                            <h4 className="text-xs font-medium text-neutral-400 mb-2">Remote Version</h4>
-                                                            <pre className="text-xs text-neutral-300 overflow-auto max-h-40">
+                                                        <div className="bg-[var(--app-surface)]/50 rounded p-3">
+                                                            <h4 className="text-xs font-medium text-[var(--app-muted)] mb-2">Remote Version</h4>
+                                                            <pre className="text-xs text-[var(--app-text-secondary)] overflow-auto max-h-40">
                                                                 {JSON.stringify({
                                                                     title: conflict.remoteRevision.title,
                                                                     content: conflict.remoteRevision.content.slice(0, 200),
@@ -371,8 +371,8 @@ export function SyncTab() {
                                                                 }, null, 2)}
                                                             </pre>
                                                         </div>
-                                                        <div className="bg-neutral-900/50 rounded p-3 flex flex-col justify-between">
-                                                            <h4 className="text-xs font-medium text-neutral-400 mb-2">Resolution</h4>
+                                                        <div className="bg-[var(--app-surface)]/50 rounded p-3 flex flex-col justify-between">
+                                                            <h4 className="text-xs font-medium text-[var(--app-muted)] mb-2">Resolution</h4>
                                                             <div className="space-y-2">
                                                                 <Button
                                                                     size="sm"
@@ -407,9 +407,9 @@ export function SyncTab() {
                             </div>
                         )}
 
-                        <div className="bg-neutral-800 rounded-lg border border-neutral-700 p-4">
-                            <h3 className="text-lg font-medium text-neutral-100 mb-3">How Sync Works</h3>
-                            <ul className="text-sm text-neutral-400 space-y-2">
+                        <div className="bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] p-4">
+                            <h3 className="text-lg font-medium text-[var(--app-text)] mb-3">How Sync Works</h3>
+                            <ul className="text-sm text-[var(--app-muted)] space-y-2">
                                 <li>• <strong>Revision log:</strong> Every note change creates a signed revision event</li>
                                 <li>• <strong>Last-write-wins:</strong> Sequential edits automatically merge</li>
                                 <li>• <strong>Conflict detection:</strong> Concurrent edits on different devices are flagged</li>

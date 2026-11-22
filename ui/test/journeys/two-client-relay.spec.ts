@@ -6,7 +6,7 @@ import {isolateNetwork} from '../fixtures/routes';
 import {defaultSettings} from '../fixtures/workspace';
 
 const addDetail = async (page: Page, key: string, value: string) => {
-    await page.getByTestId('add-detail').click();
+    await page.getByTestId('page-add-detail').click();
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('combobox', {name: /Key/}).fill(key);
     await settleFrame(page);
@@ -29,11 +29,8 @@ const createNote = async (page: Page, title: string) => {
         window.location.hash = '#inbox';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
-    const capture = page.getByTestId('quick-capture-input');
-    await expect(capture).toBeVisible();
-    await capture.fill(title);
-    await capture.press('Enter');
-    const titleInput = page.getByPlaceholder('Untitled Note');
+    await page.getByRole('button', {name: 'New note'}).first().click();
+    const titleInput = page.locator('#note-title-input');
     await expect(titleInput).toBeVisible();
     await titleInput.fill(title);
 };
@@ -73,7 +70,7 @@ test.describe('Local matching journey (two-note matching)', () => {
             window.dispatchEvent(new PopStateEvent('popstate'));
         });
 
-        await page.getByRole('button', {name: /Looking for a React developer/}).click();
+        await page.getByTestId('note-history-rail').getByRole('button', {name: /Looking for a React developer/}).click();
         const rail = page.getByRole('complementary', {name: 'Note context'});
         await rail.getByRole('tab', {name: 'Matches'}).click();
         const match = page.getByTestId('note-matches').getByTestId('match-item').first();
@@ -106,7 +103,7 @@ test.describe('Local matching journey (two-note matching)', () => {
             window.dispatchEvent(new PopStateEvent('popstate'));
         });
 
-        await page.getByRole('button', {name: /Looking for a React developer/}).click();
+        await page.getByTestId('note-history-rail').getByRole('button', {name: /Looking for a React developer/}).click();
         const rail = page.getByRole('complementary', {name: 'Note context'});
         await rail.getByRole('tab', {name: 'Matches'}).click();
         const match = page.getByTestId('note-matches').getByTestId('match-item').first();

@@ -19,23 +19,28 @@ test('capture one sentence and land in the note with one next step', async ({pag
     await seed(page, {notes: [], settings: defaultSettings()});
     await open(page, '#/notes');
 
-    const capture = page.getByTestId('quick-capture-input');
-    await expect(capture).toBeVisible();
-    await capture.fill('Looking for a React developer #request');
-    await capture.press('Enter');
+    await page.getByRole('button', {name: 'New note'}).first().click();
+
+    const title = page.locator('#note-title-input');
+    await expect(title).toBeVisible();
+    await title.fill('Looking for a React developer #request');
 
     const editor = page.locator('[contenteditable="true"]');
     await expect(editor).toBeVisible();
-    await expect(editor).toContainText('Looking for a React developer');
+    await editor.click();
+    await page.keyboard.type('Looking for a React developer #request');
+
     const rail = page.getByRole('complementary', {name: 'Note context'});
+    if (!(await rail.isVisible())) await page.getByRole('button', {name: /Context/}).click();
     await expect(rail).toBeVisible();
-    await expect(rail.getByRole('tab', {name: 'Next steps'})).toHaveAttribute('aria-selected', 'true');
+    await expect(rail.getByRole('tab', {name: 'Next'})).toHaveAttribute('aria-selected', 'true');
 });
 
 test('respond to a match from the note context rail', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/notes/demo-request-react?tab=matches'});
 
     const rail = page.getByRole('complementary', {name: 'Note context'});
+    if (!(await rail.isVisible())) await page.getByRole('button', {name: /Context/}).click();
     await expect(rail).toBeVisible();
     await expect(page.getByTestId('note-matches')).toBeVisible();
     await rail.getByRole('button', {name: /Respond/}).first().click();
@@ -83,8 +88,8 @@ test('the top bar has one entry and no Inbox or Connections tabs', async ({page}
 
     const header = page.locator('header').first();
     await expect(header.getByRole('button', {name: /Inbox|Connections|Network/})).toHaveCount(0);
-    await expect(page.getByTestId('quick-capture-input')).toHaveCount(1);
     await expect(page.getByRole('button', {name: 'New note'})).toHaveCount(1);
+    await expect(page.getByRole('button', {name: 'Search notes, details, tags, and commands'})).toHaveCount(1);
     await expect(page.getByRole('button', {name: 'Settings'})).toHaveCount(1);
 });
 
@@ -136,6 +141,7 @@ test('reply to a note from the context rail', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/notes/demo-request-react?tab=replies'});
 
     const rail = page.getByRole('complementary', {name: 'Note context'});
+    if (!(await rail.isVisible())) await page.getByRole('button', {name: /Context/}).click();
     await expect(rail.getByTestId('note-replies')).toBeVisible();
     const input = rail.getByLabel('Write a reply');
     await input.fill('I can help this week.');

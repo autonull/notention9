@@ -47,7 +47,7 @@ export const NoteListItem = React.memo(({
         isVeryLowPriority
     } = useNoteDisplay(note);
 
-    const highlightedTitle = useHighlightedText(note.title || 'Untitled Note', searchTerm);
+    const highlightedTitle = useHighlightedText(note.title || 'Untitled note', searchTerm);
     const highlightedPreview = useHighlightedPreview(contentPreview, searchTerm);
 
     const metaChips = displayProperties.length > 0
@@ -134,6 +134,7 @@ export const NoteListItem = React.memo(({
             onTouchEnd={onTouchEnd}
             role="button"
             tabIndex={0}
+            aria-current={isSelected ? 'true' : undefined}
             onClick={onSelect}
             onKeyDown={handleKeyDown}
             className={cn(itemClasses, noteAccentClass(note))}
@@ -144,7 +145,7 @@ export const NoteListItem = React.memo(({
             />
 
             <div className="min-w-0 flex-1">
-                <div className="flex min-w-0 items-center gap-2">
+                <div className="flex min-w-0 items-center gap-1.5">
                     <h3 className={cn(
                         'truncate text-[13px] font-medium leading-5 transition-colors',
                         isSelected ? 'text-[var(--app-text)]' : 'text-[var(--app-text-secondary)]'
@@ -152,22 +153,20 @@ export const NoteListItem = React.memo(({
                         {highlightedTitle}
                     </h3>
                     {isPinned && <PinIcon className="h-3 w-3 shrink-0 text-[var(--app-accent-text)]"/>}
-                    {metaChips.length > 0 && (
-                        <span className="hidden shrink-0 items-center gap-1 md:flex">
-                            {metaChips.map((label, i) => (
-                                <span key={`${label}-${i}`} className={getPropertyBadgeClasses(isSelected)}>
-                                    {label}
-                                </span>
-                            ))}
+                </div>
+                <p className="truncate text-[12px] leading-5 text-[var(--app-muted)]">
+                    {highlightedPreview}
+                </p>
+                <div className="mt-0.5 flex min-w-0 items-center gap-1.5">
+                    {metaChips.slice(0, 1).map((label, i) => (
+                        <span key={`${label}-${i}`} className={getPropertyBadgeClasses(isSelected)}>
+                            {label}
                         </span>
-                    )}
+                    ))}
                     <span className={cn('ml-auto shrink-0', getRelativeTimeClasses(isSelected))}>
                         {relativeTime}
                     </span>
                 </div>
-                <p className="mt-0.5 truncate text-[12px] leading-5 text-[var(--app-muted)]">
-                    {highlightedPreview}
-                </p>
             </div>
 
             {!isMobile && (

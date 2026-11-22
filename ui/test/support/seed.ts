@@ -9,6 +9,7 @@ export interface SeedOptions {
     sortOrder?: SortOrder;
     sidebarViewMode?: SidebarViewMode;
     hash?: string;
+    storage?: Record<string, unknown>;
 }
 
 const put = async (page: Page, entries: Record<string, unknown>) => {
@@ -48,6 +49,7 @@ export async function seed(page: Page, options: SeedOptions) {
     if (options.settings) entries[STORAGE_KEYS.settings] = options.settings;
     if (options.sortOrder) entries[STORAGE_KEYS.sortOrder] = options.sortOrder;
     if (options.sidebarViewMode) entries[STORAGE_KEYS.sidebarViewMode] = options.sidebarViewMode;
+    if (options.storage) Object.assign(entries, options.storage);
 
     await put(page, entries);
     await page.reload();

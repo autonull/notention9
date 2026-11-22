@@ -27,7 +27,7 @@ test('command palette', async ({page}) => {
 test('help', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
     await page.evaluate(() => window.dispatchEvent(new CustomEvent('open-shortcuts-help')));
-    await page.getByRole('dialog', {name: 'Keyboard Shortcuts'}).waitFor({timeout: 10_000});
+    await page.getByRole('dialog', {name: 'Help & Shortcuts'}).waitFor({timeout: 10_000});
     await snap(page, {
         area: 'modals',
         state: 'help',

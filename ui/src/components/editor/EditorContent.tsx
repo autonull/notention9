@@ -1,19 +1,22 @@
 /**
- * EditorContent - Main editing area content
- * Extracted from EditorManager for separation of concerns
+ * EditorContent - the note page: title, details, tags, and prose.
  */
 import React from 'react';
 import {HybridEditor} from './HybridEditor';
 import {TemplateSelector} from './TemplateSelector';
 import {TagInput} from './TagInput';
 import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
-import type {Note, OntologyNode, Template} from '@notention/core';
-import type {TiptapEditorRef} from './TiptapEditor';
+import type {Note, OntologyNode, Property, Template} from '@notention/core';
 import {metaphorMapper} from '@notention/core';
+import type {TiptapEditorRef} from './TiptapEditor';
+import {DetailChips, PageHeader, PageSurface} from '../patterns/PageSurface';
+import {LightBulbIcon} from '../ui/icons';
 
 interface EditorContentProps {
     editorRef: React.RefObject<TiptapEditorRef | null>;
     dirtyNote: Note;
+    title: string;
+    onTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
     onSave: (content: string) => void;
     onNoteUpdate: (note: Partial<Note>) => void;
     ontology: OntologyNode[];
@@ -31,11 +34,17 @@ interface EditorContentProps {
     onAutoTag?: () => void;
     isAutoTagging?: boolean;
     isApiKeyAvailable?: boolean;
+    onAddDetail: () => void;
+    onEditDetail: (property: Property) => void;
+    onDescribe: () => void;
+    readOnly?: boolean;
 }
 
 export function EditorContent({
     editorRef,
     dirtyNote,
+    title,
+    onTitleChange,
     onSave,
     onNoteUpdate,
     ontology,
@@ -52,50 +61,81 @@ export function EditorContent({
     onTagsChange,
     onAutoTag,
     isAutoTagging = false,
-    isApiKeyAvailable = false
+    isApiKeyAvailable = false,
+    onAddDetail,
+    onEditDetail,
+    onDescribe,
+    readOnly = false,
 }: EditorContentProps) {
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
 
     return (
-        <div className="flex-1 flex flex-col relative transition-all duration-300" data-testid="editor-content">
-            <HybridEditor
-                ref={editorRef}
-                key={dirtyNote.id}
-                note={dirtyNote}
-                onSave={onSave}
-                onNoteUpdate={onNoteUpdate}
-                ontology={ontology}
-                templates={templates}
-                showToolbar={showToolbar}
-                onMagic={onMagic}
-                onTemplates={onTemplates}
-                notes={notes}
-                onPickLocation={onPickLocation}
-                saveStatus={saveStatus}
-                topContent={
-                    <>
-                        {activeMetaphor && (
-                            <MetaphorRenderer note={dirtyNote} metaphor={activeMetaphor}/>
-                        )}
-                    </>
-                }
-            >
-                <TagInput
-                    tags={dirtyNote.tags}
-                    onChange={onTagsChange}
-                    onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
-                    isAutoTagging={isAutoTagging}
-                    autoFocus={false}
-                />
-            </HybridEditor>
-
-            {isTemplateSelectorOpen && (
-                <TemplateSelector
+        <PageSurface>
+            <div className="relative flex min-h-0 flex-1 flex-col" data-testid="editor-content">
+                <HybridEditor
+                    ref={editorRef}
+                    key={dirtyNote.id}
+                    note={dirtyNote}
+                    onSave={onSave}
+                    onNoteUpdate={onNoteUpdate}
                     ontology={ontology}
-                    onSelect={onInsertTemplate}
-                    onClose={onCloseTemplateSelector}
+                    templates={templates}
+                    showToolbar={showToolbar}
+                    onMagic={onMagic}
+                    onTemplates={onTemplates}
+                    notes={notes}
+                    onPickLocation={onPickLocation}
+                    saveStatus={saveStatus}
+                    topContent={
+                        <>
+                            <PageHeader
+                                title={title}
+                                onTitleChange={onTitleChange}
+                                autoFocus={!title && !readOnly}
+                                readOnly={readOnly}
+                            >
+                                <DetailChips
+                                    note={dirtyNote}
+                                    onEdit={onEditDetail}
+                                    onAdd={onAddDetail}
+                                    readOnly={readOnly}
+                                />
+                                <div className="mt-3 flex flex-wrap items-center gap-2">
+                                    {!readOnly && (
+                                        <button
+                                            type="button"
+                                            data-testid="describe-it"
+                                            onClick={onDescribe}
+                                            className="inline-flex h-7 items-center gap-1.5 rounded-md px-1.5 text-[12px] font-medium text-[var(--app-muted)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]"
+                                        >
+                                            <LightBulbIcon className="h-3.5 w-3.5"/>
+                                            Describe it
+                                        </button>
+                                    )}
+                                    <TagInput
+                                        tags={dirtyNote.tags}
+                                        onChange={onTagsChange}
+                                        onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
+                                        isAutoTagging={isAutoTagging}
+                                        autoFocus={false}
+                                    />
+                                </div>
+                            </PageHeader>
+                            {activeMetaphor && (
+                                <MetaphorRenderer note={dirtyNote} metaphor={activeMetaphor}/>
+                            )}
+                        </>
+                    }
                 />
-            )}
-        </div>
+
+                {isTemplateSelectorOpen && (
+                    <TemplateSelector
+                        ontology={ontology}
+                        onSelect={onInsertTemplate}
+                        onClose={onCloseTemplateSelector}
+                    />
+                )}
+            </div>
+        </PageSurface>
     );
 }

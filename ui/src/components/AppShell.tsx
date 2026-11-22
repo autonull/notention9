@@ -1,13 +1,11 @@
-import React, {useEffect, useState, Suspense} from 'react';
+import React, {useEffect, Suspense} from 'react';
 import localforage from 'localforage';
 import {decryptBackup, isEncryptedBackup, readExportEnvelope, type EncryptedBackup, type ExportEnvelope} from '@notention/core';
 
 import {Header} from './layout/Header';
-import {CaptureComposer} from './capture/CaptureComposer';
 import {CommandPalette} from './command/CommandPalette';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
-import {KeyboardShortcutsHelp} from './ui/Primitives';
 import {STORAGE_KEYS} from '../config/storageKeys';
 
 import {useNotes} from '../hooks/useNotes';
@@ -28,7 +26,7 @@ const DevBridge = import.meta.env.VITE_DEV_HOOKS === 'true'
     : () => null;
 
 export function AppShell() {
-    const {getSortedFilteredNotes, loading: notesLoading} = useNotes();
+    const {getSortedFilteredNotes, loading: notesLoading, addNote} = useNotes();
 
     useSuggestionsCompositionRoot();
     const {
@@ -43,8 +41,6 @@ export function AppShell() {
         setIsPaletteOpen,
         isHelpOpen,
         setIsHelpOpen,
-        isCaptureComposerOpen,
-        setIsCaptureComposerOpen,
     } = useView();
 
     const sortedNotes = getSortedFilteredNotes(searchTerm, sortOrder, false, userLocation);
@@ -53,7 +49,6 @@ export function AppShell() {
 
     const {addToast} = useToast();
     const {addDegradedMode, removeDegradedMode} = useDegradedMode();
-    const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
 
     useEffect(() => {
         const handleStorageError = (event: Event) => {
@@ -163,7 +158,7 @@ export function AppShell() {
             }
         };
 
-        const handleOpenShortcutsHelp = () => setIsShortcutsHelpOpen(true);
+        const handleOpenShortcutsHelp = () => setIsHelpOpen(true);
 
         window.addEventListener('storage-error', handleStorageError);
         window.addEventListener('storage-corrupt', handleStorageCorrupt);
@@ -181,7 +176,11 @@ export function AppShell() {
     }, [addToast, addDegradedMode, removeDegradedMode]);
 
     useKeyboardShortcuts({
-        onNewNote: () => setIsCaptureComposerOpen(true),
+        onNewNote: () => {
+            const note = addNote({title: '', content: ''});
+            setActiveView('notes');
+            setSelectedNoteId(note.id);
+        },
         onSearch: () => {
             window.dispatchEvent(new CustomEvent('open-search'));
             setIsPaletteOpen(true);
@@ -193,7 +192,14 @@ export function AppShell() {
         onPropertyPalette: () => window.dispatchEvent(new CustomEvent('open-property-palette')),
         onSave: () => window.dispatchEvent(new CustomEvent('save-note')),
         onPasteToCapture: (clipboardText: string) => {
-            window.dispatchEvent(new CustomEvent('paste-to-capture', {detail: {text: clipboardText}}));
+            const escaped = clipboardText
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+            const note = addNote({title: '', content: `<p>${escaped}</p>`});
+            setActiveView('notes');
+            setSelectedNoteId(note.id);
         },
         onUndo: () => window.dispatchEvent(new CustomEvent('editor-undo')),
         onRedo: () => window.dispatchEvent(new CustomEvent('editor-redo')),
@@ -213,10 +219,8 @@ export function AppShell() {
         onEscape: () => {
             if (isPaletteOpen) return;
             setIsHelpOpen(false);
-            setIsShortcutsHelpOpen(false);
-            setIsCaptureComposerOpen(false);
         },
-        onShortcutsHelp: () => setIsShortcutsHelpOpen(true),
+        onShortcutsHelp: () => setIsHelpOpen(true),
         onNavigateView: (view) => {
             setActiveView(view);
             setIsPaletteOpen(false);
@@ -235,7 +239,6 @@ export function AppShell() {
                             <MainView sortedNotes={sortedNotes} loading={notesLoading}/>
                         </Suspense>
                     </main>
-                    <CaptureComposer isOpen={isCaptureComposerOpen} onClose={() => setIsCaptureComposerOpen(false)}/>
                     <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)}/>
                     <HelpDialog
                         isOpen={isHelpOpen}
@@ -245,7 +248,6 @@ export function AppShell() {
                             window.dispatchEvent(new CustomEvent('open-property-palette'));
                         }}
                     />
-                    <KeyboardShortcutsHelp isOpen={isShortcutsHelpOpen} onClose={() => setIsShortcutsHelpOpen(false)}/>
                     {import.meta.env.VITE_DEV_HOOKS === 'true' && (
                         <Suspense fallback={null}><DevBridge/></Suspense>
                     )}

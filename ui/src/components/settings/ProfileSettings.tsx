@@ -94,17 +94,17 @@ export function ProfileSettings() {
                 </div>
 
                 {showOverrides && (
-                    <div className="space-y-3 pl-4 border-l-2 border-neutral-700">
+                    <div className="space-y-3 pl-4 border-l-2 border-[var(--app-line)]">
                         {/* Existing overrides */}
                         {Object.entries(overrides).length === 0 ? (
-                            <p className="text-sm text-neutral-400">No overrides set. Using profile defaults.</p>
+                            <p className="text-sm text-[var(--app-muted)]">No overrides set. Using profile defaults.</p>
                         ) : (
                             Object.entries(overrides).map(([seamId, strategyId]) => {
                                 // Find the role for this seam ID
                                 const seamRole = Object.entries(SEAM_ROLES).find(([, id]) => seamId.startsWith(id))?.[0] as SeamRole | undefined;
                                 return (
                                     <div key={seamId} className="flex items-center gap-3">
-                                        <span className="text-sm font-mono text-neutral-400 min-w-[150px]">{seamRole ?? seamId}</span>
+                                        <span className="text-sm font-mono text-[var(--app-muted)] min-w-[150px]">{seamRole ?? seamId}</span>
                                         <Select
                                             value={strategyId}
                                             onChange={(e) => handleOverrideChange(seamRole!, e.target.value)}
@@ -119,9 +119,9 @@ export function ProfileSettings() {
                         )}
 
                         {/* Add new override */}
-                        <div className="pt-2 border-t border-neutral-700">
+                        <div className="pt-2 border-t border-[var(--app-line)]">
                             <div className="flex items-center gap-2 mb-2">
-                                <p className="text-sm text-neutral-400">Add new override:</p>
+                                <p className="text-sm text-[var(--app-muted)]">Add new override:</p>
                                 {addingOverrideSeam && (
                                     <Button variant="ghost" size="sm" onClick={() => setAddingOverrideSeam(null)}>
                                         Cancel
@@ -133,7 +133,7 @@ export function ProfileSettings() {
                                 <Select options={seamOptions} onChange={handleAddOverrideSeamChange} />
                             ) : (
                                 <div className="flex gap-2">
-                                    <span className="text-sm font-mono text-neutral-400 min-w-[150px] flex items-center">
+                                    <span className="text-sm font-mono text-[var(--app-muted)] min-w-[150px] flex items-center">
                                         {seamOptions.find(o => o.value === addingOverrideSeam)?.label} ({addingOverrideSeam})
                                     </span>
                                     <Select
@@ -152,7 +152,7 @@ export function ProfileSettings() {
 
             {/* Profile Info */}
             <details className="group">
-                <summary className="cursor-pointer flex items-center gap-2 text-sm text-neutral-400">
+                <summary className="cursor-pointer flex items-center gap-2 text-sm text-[var(--app-muted)]">
                     <UserGroupIcon className="w-4 h-4" />
                     Available Profiles
                 </summary>
@@ -163,13 +163,13 @@ export function ProfileSettings() {
                             className={`p-3 rounded-lg border ${
                                 profile.id === activeProfileId
                                     ? 'border-blue-500 bg-blue-500/10'
-                                    : 'border-neutral-700'
+                                    : 'border-[var(--app-line)]'
                             }`}
                         >
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium">{profile.name}</p>
-                                    <p className="text-sm text-neutral-400">{profile.description}</p>
+                                    <p className="text-sm text-[var(--app-muted)]">{profile.description}</p>
                                 </div>
                                 {profile.id === activeProfileId && (
                                     <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
@@ -177,7 +177,7 @@ export function ProfileSettings() {
                                     </span>
                                 )}
                             </div>
-                            <div className="mt-2 text-xs text-neutral-400 space-y-1">
+                            <div className="mt-2 text-xs text-[var(--app-muted)] space-y-1">
                                 {Object.entries(profile.strategySelections).map(([seam, strategy]) => {
                                     const seamRole = Object.entries(SEAM_ROLES).find(([, id]) => seam.startsWith(id))?.[0] as SeamRole | undefined;
                                     return (

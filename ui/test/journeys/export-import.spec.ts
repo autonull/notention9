@@ -36,7 +36,7 @@ test('export, clear, and restore a backup', async ({page}) => {
     expect(raw).not.toMatch(/"privkey"\s*:\s*"[0-9a-f]{16,}"/i);
 
     await clearStorage(page);
-    await expect(page.getByTestId('quick-capture-input')).toBeVisible();
+    await expect(page.getByRole('button', {name: 'New note'}).first()).toBeVisible();
 
     await openDataTab(page);
     await page.setInputFiles('input[type="file"]', {

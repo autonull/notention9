@@ -229,7 +229,7 @@ export function ImportExportSection({
 
     return (
         <div>
-            <h2 className="text-xl font-semibold text-neutral-100 mb-4 flex items-center gap-3">
+            <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
                 <DocumentDuplicateIcon className="h-6 w-6 text-blue-400"/>
                 Backup & Restore
             </h2>
@@ -281,7 +281,7 @@ export function ImportExportSection({
                     onChange={handleImportFile}
                 />
             </div>
-            <p className="text-sm text-neutral-400 mt-2">
+            <p className="text-sm text-[var(--app-muted)] mt-2">
                 Backups include notes and settings, never your private key. Encrypted backups require a passphrase. Single notes can be exported from the editor menu.
             </p>
 

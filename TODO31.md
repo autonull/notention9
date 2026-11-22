@@ -1,12 +1,46 @@
 # TODO.31 — The Note Is the Page
 
-**Status:** planned. Supersedes the previous `TODO31.md` draft
+**Status:** in progress. W31.0–W31.6 and W31.9 landed; W31.7 and
+part of W31.8 remain. Supersedes the previous `TODO31.md` draft
 (“Consolidation, Surface by Surface”).
 **Continues:** TODO.30 and the one-workspace pass.
 **Non-goals:** matching semantics, transports, AI models, persistence formats,
 and new capabilities.
 **Core rule:** one note, one page. Everything else is history, margin, or a
 command. Do not add a surface to solve a crowded surface.
+
+---
+
+## Progress
+
+Last updated after the page/history/details pass. The gallery was regenerated
+at 47 scenes; `note/compose` replaces `capture/composer` and
+`editor/property-edit` replaces `editor/property-inspector`.
+
+| Workstream | State | Landed | Still open |
+| :--- | :--- | :--- | :--- |
+| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel`, `SurfaceTabs` extraction; `KitGallery`; layer check has no per-file baseline |
+| W31.1 The page | **Done** | Full-bleed page, editable 30 px title in the page, one 3 rem bar, focus-only formatting row, saved + word count at page end, 17 px body, 88ch left-aligned measure, `PageSurface` / `PageHeader` / `PageTitle` / `PageMeta` | `PageSurface` is not yet exercised by a kit gallery |
+| W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, mobile list/page swap, subset/arrangement/order persist | Pure `selectIndex` selector and its unit test; group axis only affects Board, not Timeline |
+| W31.3 New note is a page | **Done** | `New note` creates and focuses a blank page; capture modal and hero omnibox deleted; `Cmd/Ctrl+N` creates a page; paste-to-capture writes into a page | Extraction preview is the existing `Describe it` composer, not a line under the title |
+| W31.4 Details in the page | **Done** | Floating inspector and bar `Details` removed; inline chips edit through `PropertyEditor`; page `+ Add detail` uses the same form; imported details with no inline node show in the page and edit in one popup; pointer-down opening keeps the popup stable after the first edit | None |
+| W31.5 One context rail | **Done** | Four top-level tabs (`Next`, `Matches`, `Replies`, `Chat`), nested toggle removed, rail closed when empty, auto-open when context exists, percentage share and resizer, `Context` control with count | Mobile uses a bottom pane, not a labelled bottom sheet with a drag handle |
+| W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing | Group section offers status/none; Timeline grouping is not wired |
+| W31.7 Explore, search, chat | **Not started** | None | Identity strip, one scope row, compact feed rows, chat contact rows and shared typography, read-only public-feed state |
+| W31.8 Settings, overlays, status | **Partial** | Settings tabs use one 15 px heading, token surfaces, no legacy `bg-neutral-800/900` or `text-xl`; duplicate help launcher deleted; one help surface | `SettingsDirectory` / `SettingsPanel` / `SettingsSection` split; `Field` and `Modal` adoption audit; one tone map for toast/banner/chip/status; one-primary-per-tab audit |
+| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page | No further CSS; watch legacy neutral classes in W31.7 surfaces |
+
+### Next order
+
+1. **W31.7** — the last second app. Search, Explore, and Chat still speak the
+   old neutral language. One identity strip, one scope row, compact feed rows,
+   and chat contact rows built from the history row pattern.
+2. **W31.8** — split the settings directory from its panel; replace remaining
+   hand-rolled overlays; audit tone and primary actions.
+3. **W31.2/W31.4 follow-ups** — pure `selectIndex` + tests, timeline grouping,
+   and the inline-chip DOM fallback.
+4. **W31.0 follow-ups** — extract `ListRow`, `Field`, `ContextPanel`, and
+   `SurfaceTabs` only where a second use exists; add `KitGallery`.
 
 ---
 
@@ -338,9 +372,9 @@ home and one behavioural path.
 
 | Gallery area | Scenes | New home | Must still work |
 | :--- | :--- | :--- | :--- |
-| `capture` | `composer` | Blank page from `New note`; rename to `note/compose` | Full-page writing, extraction preview, one primary |
+| `note` | `compose` | Blank page from `New note`; renamed from `capture/composer` | Full-page writing, extraction preview, one primary |
 | `chat` | `thread` | Chat rail tab / full chat surface | Encrypted conversation, composer, encryption notice |
-| `editor` | `add-detail`, `extraction-review`, `property-chips`, `property-inspector`, `publish-panel`, `template-selector` | Inline chips; `PropertyEditor` popup; extraction review; publish disclosure; template selector | Typed detail controls, ontology hints, validation, accept/reject, publish summary, save-as-template |
+| `editor` | `add-detail`, `extraction-review`, `property-chips`, `property-edit`, `publish-panel`, `template-selector` | Inline chips; `PropertyEditor` popup; extraction review; publish disclosure; template selector | Typed detail controls, ontology hints, validation, accept/reject, publish summary, save-as-template |
 | `matching` | `results` | Context `Matches` tab | Request ↔ offer score, reasons, respond |
 | `mobile` | `notes` | History home; page after selection | Single-column list, open/back, touch targets |
 | `modals` | `command-palette`, `help` | One `Cmd/Ctrl+K` palette; one help surface | Note/command search, shortcuts reference |
@@ -1188,8 +1222,8 @@ Read, in order:
 10. `ui/src/config/uiSurfaces.ts`
 11. `core/src/types/domain.ts` (`SortOrder`) and
     `ui/src/hooks/data/useNotesData.ts`
-12. `doc/screenshot/note/detail.png`, `notes/grid.png`,
-    `editor/property-inspector.png`
+12. `doc/screenshot/note/detail.png`, `note/compose.png`, `notes/grid.png`,
+    `editor/property-edit.png`
 
 Before editing, read §4b and name the reusable unit this workstream will leave
 behind. Do the §8a spike before the full workstream order. Run `pnpm dev`, open

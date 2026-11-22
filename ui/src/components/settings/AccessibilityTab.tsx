@@ -67,19 +67,19 @@ export function AccessibilityTab() {
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Motion</h3>
-                <p className="text-neutral-400 text-sm mb-4">
+                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">Motion</h3>
+                <p className="text-[var(--app-muted)] text-sm mb-4">
                     Reduce animations and transitions for users sensitive to motion.
                     When enabled, all animations and transitions are disabled or significantly reduced.
                 </p>
-                <div className="flex items-center justify-between p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50">
+                <div className="flex items-center justify-between p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-neutral-700/50 rounded-lg text-blue-400">
                             <SparklesIcon className="w-5 h-5" />
                         </div>
                         <div>
-                            <p className="text-white font-medium">Reduce motion</p>
-                            <p className="text-neutral-400 text-sm">
+                            <p className="text-[var(--app-text)] font-medium">Reduce motion</p>
+                            <p className="text-[var(--app-muted)] text-sm">
                                 Disable animations, transitions, and scroll animations
                             </p>
                         </div>
@@ -92,11 +92,11 @@ export function AccessibilityTab() {
                 </div>
                 
                 {/* System preference indicator */}
-                <div className="mt-3 p-3 bg-neutral-800/30 rounded-lg border border-neutral-700/30">
-                    <div className="flex items-center gap-2 text-xs text-neutral-400">
+                <div className="mt-3 p-3 bg-[var(--app-raised)]/30 rounded-lg border border-[var(--app-line)]/30">
+                    <div className="flex items-center gap-2 text-xs text-[var(--app-muted)]">
                         <InfoIcon className="w-4 h-4 flex-shrink-0" />
                         <span>
-                            System preference: <strong className="text-white">
+                            System preference: <strong className="text-[var(--app-text)]">
                                 {window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'Reduced motion' : 'Normal motion'}
                             </strong>
                             {settings.accessibility?.reducedMotion === undefined && ' (auto-detected)'}
@@ -106,19 +106,19 @@ export function AccessibilityTab() {
             </div>
             
             <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Contrast</h3>
-                <p className="text-neutral-400 text-sm mb-4">
+                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">Contrast</h3>
+                <p className="text-[var(--app-muted)] text-sm mb-4">
                     Increase contrast for better readability. When enabled, borders are stronger,
                     text is more legible, and focus indicators are more prominent.
                 </p>
-                <div className="flex items-center justify-between p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50">
+                <div className="flex items-center justify-between p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-neutral-700/50 rounded-lg text-yellow-400">
                             <ShieldIcon className="w-5 h-5" />
                         </div>
                         <div>
-                            <p className="text-white font-medium">High contrast</p>
-                            <p className="text-neutral-400 text-sm">
+                            <p className="text-[var(--app-text)] font-medium">High contrast</p>
+                            <p className="text-[var(--app-muted)] text-sm">
                                 Stronger borders, higher text contrast, prominent focus rings
                             </p>
                         </div>
@@ -131,11 +131,11 @@ export function AccessibilityTab() {
                 </div>
                 
                 {/* System preference indicator */}
-                <div className="mt-3 p-3 bg-neutral-800/30 rounded-lg border border-neutral-700/30">
-                    <div className="flex items-center gap-2 text-xs text-neutral-400">
+                <div className="mt-3 p-3 bg-[var(--app-raised)]/30 rounded-lg border border-[var(--app-line)]/30">
+                    <div className="flex items-center gap-2 text-xs text-[var(--app-muted)]">
                         <InfoIcon className="w-4 h-4 flex-shrink-0" />
                         <span>
-                            System preference: <strong className="text-white">
+                            System preference: <strong className="text-[var(--app-text)]">
                                 {window.matchMedia('(prefers-contrast: high)').matches ? 'High contrast' : 'Normal contrast'}
                             </strong>
                             {settings.accessibility?.highContrast === undefined && ' (auto-detected)'}
@@ -145,8 +145,8 @@ export function AccessibilityTab() {
             </div>
             
             <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Color-blind friendly</h3>
-                <p className="text-neutral-400 text-sm mb-4">
+                <h3 className="text-lg font-semibold text-[var(--app-text)] mb-2">Color-blind friendly</h3>
+                <p className="text-[var(--app-muted)] text-sm mb-4">
                     All status indicators use both color and text/icons. No essential information
                     is conveyed by color alone.
                 </p>
@@ -159,7 +159,7 @@ export function AccessibilityTab() {
                     ].map((item, i) => (
                         <div key={i} className={`px-3 py-2 rounded-lg border ${item.bg} ${item.border} flex items-center gap-2`}>
                             <span className={item.color}>{item.icon}</span>
-                            <span className="text-sm text-white">{item.label}</span>
+                            <span className="text-sm text-[var(--app-text)]">{item.label}</span>
                         </div>
                     ))}
                 </div>

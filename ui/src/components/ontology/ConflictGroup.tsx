@@ -22,7 +22,7 @@ export function ConflictGroup({noteId, conflicts, onSelectNote}: ConflictGroupPr
             <div className="bg-neutral-900/50 p-3 border-b border-neutral-700 flex justify-between items-center">
                 <h4 className="font-bold text-white flex items-center gap-2">
                     <span className="text-neutral-400">Note:</span>
-                    {conflicts[0].noteTitle || 'Untitled Note'}
+                    {conflicts[0].noteTitle || 'Untitled note'}
                 </h4>
                 <button
                     onClick={() => onSelectNote(noteId)}

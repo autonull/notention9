@@ -1,6 +1,6 @@
 import React, {useCallback} from 'react';
 import {Editor} from '@tiptap/react';
-import {findPropertyNode} from './PropertyNode';
+import {findPropertyNode, PROPERTY_NODE_NAME, type PropertyNodeHandle} from './PropertyNode';
 
 interface InitialModalData {
     key: string;
@@ -44,16 +44,24 @@ export const useEditorClick = ({
             e.stopPropagation();
 
             const propertyId = chip.getAttribute('data-property-id');
-            const property = propertyId ? findPropertyNode(editor, propertyId) : null;
+            let property: PropertyNodeHandle | null = propertyId ? findPropertyNode(editor, propertyId) : null;
+            if (!property && editor.view) {
+                const pos = editor.view.posAtDOM(chip, 0);
+                const node = editor.state.doc.nodeAt(pos);
+                if (node?.type.name === PROPERTY_NODE_NAME) {
+                    property = {attrs: node.attrs as PropertyNodeHandle['attrs'], nodeSize: node.nodeSize, pos};
+                }
+            }
             if (property) {
                 const attrs = property.attrs;
-                setEditingPropertyId(attrs.propertyId);
+                const id = attrs.propertyId ?? chip.getAttribute('data-property-id') ?? undefined;
+                setEditingPropertyId(id ?? null);
                 setInitialModalData({
                     key: attrs.name,
                     operator: attrs.operator,
                     value: attrs.value,
                     icon: attrs.icon,
-                    propertyId: attrs.propertyId,
+                    propertyId: id,
                 });
                 setIsPropertyModalOpen(true);
                 return;

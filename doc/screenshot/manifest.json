@@ -1,12 +1,5 @@
 [
   {
-    "area": "capture",
-    "state": "composer",
-    "file": "capture/composer.png",
-    "viewport": "desktop",
-    "description": "The full-screen composer, with the same field and one primary action."
-  },
-  {
     "area": "chat",
     "state": "thread",
     "file": "chat/thread.png",
@@ -36,10 +29,10 @@
   },
   {
     "area": "editor",
-    "state": "property-inspector",
-    "file": "editor/property-inspector.png",
+    "state": "property-edit",
+    "file": "editor/property-edit.png",
     "viewport": "desktop",
-    "description": "The details drawer with typed widgets, ontology hints, and validation."
+    "description": "One shared detail editor opens from the chip in the page."
   },
   {
     "area": "editor",
@@ -162,6 +155,13 @@
   },
   {
     "area": "note",
+    "state": "compose",
+    "file": "note/compose.png",
+    "viewport": "desktop",
+    "description": "A blank page is the writing surface: one title, one body, one primary action."
+  },
+  {
+    "area": "note",
     "state": "context",
     "file": "note/context.png",
     "viewport": "desktop",
@@ -193,7 +193,7 @@
     "state": "empty",
     "file": "notes/empty.png",
     "viewport": "desktop",
-    "description": "First run: one omnibox and one line."
+    "description": "First run: an empty history and a blank page entry point."
   },
   {
     "area": "notes",

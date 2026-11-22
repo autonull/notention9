@@ -6,7 +6,8 @@ export type NoteMode = 'canvas' | 'list' | 'board' | 'map' | 'timeline';
 
 export type NotesSection = 'all' | 'tasks' | 'tags' | 'trash';
 
-export type NoteTab = 'next' | 'matches' | 'replies';
+export type NoteTab = 'next' | 'matches' | 'replies' | 'chat';
+export type NotesGroup = 'status' | 'date' | 'none';
 
 export type SettingsTab =
   | 'general'

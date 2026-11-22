@@ -67,11 +67,11 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
 
     if (grants.length === 0) {
         return (
-            <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in">
-                <div className="flex items-center gap-3 text-neutral-400">
+            <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in">
+                <div className="flex items-center gap-3 text-[var(--app-muted)]">
                     <ShieldIcon className="h-6 w-6"/>
                     <div>
-                        <h3 className="font-medium text-neutral-300">No capability grants</h3>
+                        <h3 className="font-medium text-[var(--app-text-secondary)]">No capability grants</h3>
                         <p className="text-sm">Add <code className="text-blue-400">[@allow:browser:navigate:example.com]</code> to a note to grant capabilities.</p>
                     </div>
                 </div>
@@ -80,18 +80,18 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
     }
 
     return (
-        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-6">
+        <div className="bg-[var(--app-surface)] p-6 rounded-lg animate-fade-in space-y-6">
             <div className="flex items-center gap-3">
                 <ShieldIcon className="h-6 w-6 text-green-400"/>
                 <div>
-                    <h2 className="text-xl font-semibold text-neutral-100">Capability Grants</h2>
-                    <p className="text-sm text-neutral-400">Active permissions granted by notes. Revoke to remove access immediately.</p>
+                    <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Capability Grants</h2>
+                    <p className="text-sm text-[var(--app-muted)]">Active permissions granted by notes. Revoke to remove access immediately.</p>
                 </div>
             </div>
 
             <div className="space-y-4">
                 {Object.entries(groupedByNote).map(([noteId, noteGrants]) => (
-                    <div key={noteId} className="border border-neutral-700/50 rounded-lg overflow-hidden">
+                    <div key={noteId} className="border border-[var(--app-line)]/50 rounded-lg overflow-hidden">
                         <button
                             type="button"
                             onClick={() => {
@@ -103,31 +103,31 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
                                     });
                                 }
                             }}
-                            className="w-full p-4 flex items-center justify-between hover:bg-neutral-800/50 transition-colors text-left"
+                            className="w-full p-4 flex items-center justify-between hover:bg-[var(--app-raised)] transition-colors text-left"
                         >
                             <div className="flex items-center gap-3">
-                                <InformationCircleIcon className="h-5 w-5 text-neutral-400"/>
-                                <span className="font-medium text-neutral-100 truncate">{noteGrants[0].noteTitle}</span>
+                                <InformationCircleIcon className="h-5 w-5 text-[var(--app-muted)]"/>
+                                <span className="font-medium text-[var(--app-text)] truncate">{noteGrants[0].noteTitle}</span>
                                 <Badge variant="secondary" className="text-xs">{noteGrants.length} grant{noteGrants.length > 1 ? 's' : ''}</Badge>
                             </div>
                             <InformationCircleIcon
-                                className={`h-5 w-5 text-neutral-400 transition-transform ${expandedNoteId === noteId ? 'rotate-180' : ''}`}
+                                className={`h-5 w-5 text-[var(--app-muted)] transition-transform ${expandedNoteId === noteId ? 'rotate-180' : ''}`}
                             />
                         </button>
 
                         {expandedNoteId === noteId && (
-                            <div className="border-t border-neutral-700/50 p-4 space-y-3 bg-neutral-900/50">
+                            <div className="border-t border-[var(--app-line)]/50 p-4 space-y-3 bg-[var(--app-surface)]/50">
                                 {noteGrants.map((grant, idx) => (
-                                    <div key={`${noteId}-${idx}`} className="flex items-center justify-between gap-4 p-3 bg-neutral-800/50 rounded-lg">
+                                    <div key={`${noteId}-${idx}`} className="flex items-center justify-between gap-4 p-3 bg-[var(--app-raised)] rounded-lg">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
                                             <ShieldIcon className="h-5 w-5 text-green-400 flex-shrink-0"/>
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2 text-sm">
-                                                    <code className="text-blue-300 font-mono text-xs bg-neutral-900 px-1.5 py-0.5 rounded">{formatCapability(grant.permission.type)}</code>
-                                                    <span className="text-neutral-400">→</span>
-                                                    <code className="text-purple-300 font-mono text-xs bg-neutral-900 px-1.5 py-0.5 rounded">{grant.permission.scope}</code>
+                                                    <code className="text-blue-300 font-mono text-xs bg-[var(--app-surface)] px-1.5 py-0.5 rounded">{formatCapability(grant.permission.type)}</code>
+                                                    <span className="text-[var(--app-muted)]">→</span>
+                                                    <code className="text-purple-300 font-mono text-xs bg-[var(--app-surface)] px-1.5 py-0.5 rounded">{grant.permission.scope}</code>
                                                 </div>
-                                                <div className="text-xs text-neutral-400 mt-1">
+                                                <div className="text-xs text-[var(--app-muted)] mt-1">
                                                     Granted: {new Date(grant.permission.grantedAt).toLocaleString()}
                                                 </div>
                                             </div>
