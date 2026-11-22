@@ -27,12 +27,12 @@ export function AgentTab() {
         <div className="space-y-6">
             <div className="flex flex-col gap-2">
                 <h3 className="text-lg font-medium text-white">Agent Settings</h3>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-neutral-400">
                     Configure your connection to the Agent.
                 </p>
             </div>
 
-            <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 space-y-4">
+            <div className="bg-neutral-800 p-4 rounded-lg border border-neutral-700 space-y-4">
                 <Toggle
                     label="Enable Agent Connection"
                     checked={enabled}
@@ -62,9 +62,9 @@ export function AgentTab() {
                 </>
             )}
 
-            <div className="bg-gray-900/30 p-4 rounded-lg border border-gray-700/30">
-                <h4 className="text-sm font-semibold text-gray-300 mb-2">About Agent</h4>
-                <p className="text-xs text-gray-500 leading-relaxed">
+            <div className="bg-neutral-900/30 p-4 rounded-lg border border-neutral-700/30">
+                <h4 className="text-sm font-semibold text-neutral-300 mb-2">About Agent</h4>
+                <p className="text-xs text-neutral-400 leading-relaxed">
                     Agent is the intelligent backend for Notention. It handles semantic processing,
                     skill execution, and memory management. The agent runs locally or on a private server,
                     ensuring your data remains under your control.

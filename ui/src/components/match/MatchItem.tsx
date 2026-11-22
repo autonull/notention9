@@ -47,8 +47,8 @@ export function MatchItem({
         <div
             onClick={onClick}
             className={`
-                group relative flex flex-col gap-2 p-3 rounded-lg border border-gray-800 bg-gray-900/50
-                hover:border-gray-700 hover:bg-gray-800/50 transition-all duration-200
+                group relative flex flex-col gap-2 p-3 rounded-lg border border-neutral-800 bg-neutral-900/50
+                hover:border-neutral-700 hover:bg-neutral-800/50 transition-all duration-200
                 ${isLocal ? 'cursor-pointer' : ''}
             `}
             data-testid="match-item"
@@ -61,7 +61,7 @@ export function MatchItem({
                             {score}% Match
                         </span>
                         {direction && (
-                            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide ${
+                            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide ${
                                 direction === 'outgoing'
                                     ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50'
                                     : 'bg-purple-900/30 text-purple-300 border border-purple-800/50'
@@ -73,20 +73,20 @@ export function MatchItem({
                 </div>
 
                 {note.author && !isLocal && (
-                    <div className="flex items-center gap-1.5 text-[10px] text-gray-500 font-mono bg-gray-950 px-1.5 py-0.5 rounded border border-gray-800">
-                        <NetworkIcon className="w-3 h-3 text-gray-600" />
+                    <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-mono bg-neutral-950 px-1.5 py-0.5 rounded border border-neutral-800">
+                        <NetworkIcon className="w-3 h-3 text-neutral-400" />
                         {note.author.slice(0, 8)}...
                     </div>
                 )}
             </div>
 
             {/* Content Preview */}
-            <div className="pl-2 border-l-2 border-gray-800 group-hover:border-gray-600 transition-colors">
-                <p className="text-xs text-gray-300 line-clamp-2 font-medium">
+            <div className="pl-2 border-l-2 border-neutral-800 group-hover:border-neutral-600 transition-colors">
+                <p className="text-xs text-neutral-300 line-clamp-2 font-medium">
                     {note.title || note.content}
                 </p>
                 {!note.title && note.content.length > 100 && (
-                     <span className="text-[10px] text-gray-500 italic">...more</span>
+                     <span className="text-xs text-neutral-400 italic">...more</span>
                 )}
             </div>
 
@@ -100,7 +100,7 @@ export function MatchItem({
                 {result.conflicts?.map((m, i) => (
                     <span
                         key={`conflict-${i}`}
-                        className="text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1 bg-red-900/20 text-red-300 border-red-900/30"
+                        className="text-xs px-1.5 py-0.5 rounded border flex items-center gap-1 bg-red-900/20 text-red-300 border-red-900/30"
                         title={m.reason}
                     >
                         <XMarkIcon className="w-3 h-3" />
@@ -112,7 +112,7 @@ export function MatchItem({
                 {result.missing?.map((p, i) => (
                     <span
                         key={`missing-${i}`}
-                        className="text-[10px] px-1.5 py-0.5 rounded border border-dashed flex items-center gap-1 bg-gray-800/30 text-gray-500 border-gray-700"
+                        className="text-xs px-1.5 py-0.5 rounded border border-dashed flex items-center gap-1 bg-neutral-800/30 text-neutral-400 border-neutral-700"
                         title={`Missing property: ${p.key}`}
                     >
                         <QuestionMarkCircleIcon className="w-3 h-3" />
@@ -122,7 +122,7 @@ export function MatchItem({
             </div>
 
             {/* Actions */}
-            <div className="mt-2 pt-2 border-t border-gray-800 flex gap-2">
+            <div className="mt-2 pt-2 border-t border-neutral-800 flex gap-2">
                 {isLocal ? (
                     <Button
                         size="xs"
@@ -161,7 +161,7 @@ const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
     const type = match.details?.type || 'unknown';
     const details = match.details;
 
-    let badgeClass = 'bg-gray-800 text-gray-400 border-gray-700';
+    let badgeClass = 'bg-neutral-800 text-neutral-400 border-neutral-700';
     let icon = null;
     let text = match.reason;
 
@@ -206,7 +206,7 @@ const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
     return (
         <span
             className={`
-                text-[10px] px-1.5 py-0.5 rounded border flex items-center gap-1
+                text-xs px-1.5 py-0.5 rounded border flex items-center gap-1
                 ${badgeClass}
             `}
             title={match.reason}

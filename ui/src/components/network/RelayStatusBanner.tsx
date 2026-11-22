@@ -23,7 +23,7 @@ function RelayStatusItem({status}: {status: RelayStatus}) {
             <div className={`w-2 h-2 rounded-full ${isUp ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`} />
             <span className="font-mono text-xs truncate max-w-[160px]">{status.url}</span>
             {isUp && status.latency && (
-                <span className="text-xs text-gray-400">{status.latency}ms</span>
+                <span className="text-xs text-neutral-400">{status.latency}ms</span>
             )}
             {status.healthScore !== undefined && (
                 <span className={`text-xs font-mono ${healthColor} ${healthBg} px-1.5 py-0.5 rounded`}>
@@ -31,7 +31,7 @@ function RelayStatusItem({status}: {status: RelayStatus}) {
                 </span>
             )}
             {!isUp && status.error && (
-                <span className="text-xs text-gray-500">{status.error}</span>
+                <span className="text-xs text-neutral-400">{status.error}</span>
             )}
         </div>
     );
@@ -66,7 +66,7 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
     return (
         <div
             data-testid="relay-status-detailed"
-            className="mx-4 md:mx-6 mt-4 rounded-lg border border-gray-700 bg-gray-900/50"
+            className="mx-4 md:mx-6 mt-4 rounded-lg border border-neutral-700 bg-neutral-900/50"
         >
             <div className="flex items-center justify-between gap-2 px-3 py-2">
                 <button
@@ -74,10 +74,10 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
                     onClick={() => setExpanded(value => !value)}
                     aria-expanded={expanded}
                     aria-label={expanded ? 'Hide relay details' : 'Show relay details'}
-                    className="flex items-center gap-2 text-xs text-gray-400 hover:text-gray-200 transition-colors"
+                    className="flex items-center gap-2 text-xs text-neutral-400 hover:text-neutral-200 transition-colors"
                 >
                     <span className={`w-2 h-2 rounded-full ${isDegraded ? 'bg-red-500' : 'bg-green-500'}`}/>
-                    <span className="text-sm text-gray-200">Relay</span>
+                    <span className="text-sm text-neutral-200">Relay</span>
                     <span>{up.length}/{statuses.length} connected</span>
                     <ChevronDownIcon className={`w-3.5 h-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`}/>
                 </button>
@@ -92,7 +92,7 @@ export function RelayStatusBanner({relays, detailed = false}: RelayStatusBannerP
                             <RelayStatusItem key={status.url} status={status}/>
                         ))}
                     </div>
-                    <div className="mt-3 flex items-center gap-4 text-xs text-gray-400 flex-wrap">
+                    <div className="mt-3 flex items-center gap-4 text-xs text-neutral-400 flex-wrap">
                         <span className="flex items-center gap-1">
                             <span className="w-2 h-2 rounded-full bg-green-500"/>
                             {up.length} connected

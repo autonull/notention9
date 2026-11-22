@@ -6,7 +6,7 @@ import {getPublicKey} from 'nostr-tools';
 
 export function useChatNotifications() {
     const {settings} = useSettings();
-    const {incrementChatNotification, activeView} = useView();
+    const {incrementChatNotification} = useView();
     const seenEvents = useRef(new Set<string>());
 
     useEffect(() => {
@@ -43,9 +43,7 @@ export function useChatNotifications() {
                     // This logic is complex to implement perfectly without checking selectedChatPubkey.
                     // For now, let's simple increment. ChatView clears on mount/selection.
 
-                    if (activeView !== 'chat') {
-                        incrementChatNotification();
-                    }
+                    incrementChatNotification();
                 }
             }
         );
@@ -54,5 +52,5 @@ export function useChatNotifications() {
             sub.close();
         };
 
-    }, [settings.nostr.privkey, settings.nostr.relays, incrementChatNotification, activeView]);
+    }, [settings.nostr.privkey, settings.nostr.relays, incrementChatNotification]);
 };

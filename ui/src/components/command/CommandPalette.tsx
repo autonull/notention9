@@ -200,7 +200,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
             className="fixed inset-0 z-50 flex items-start justify-center pt-16 px-4"
             role="dialog"
             aria-modal="true"
-            aria-label="Command Palette"
+            aria-label="Search"
         >
             {/* Backdrop */}
             <div
@@ -210,22 +210,22 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
             />
 
             {/* Palette */}
-            <div className="relative w-full max-w-2xl bg-gray-900/95 border border-gray-700/50 rounded-3xl shadow-2xl overflow-hidden animate-slide-down">
+            <div className="relative w-full max-w-2xl bg-neutral-900/95 border border-neutral-700/50 rounded-3xl shadow-2xl overflow-hidden animate-slide-down">
                 {/* Input */}
-                <div className="p-4 border-b border-gray-700/50">
+                <div className="p-4 border-b border-neutral-700/50">
                     <div className="relative">
-                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" aria-hidden="true" />
+                        <SearchIcon className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" aria-hidden="true" />
                         <Input
                             ref={inputRef}
                             type="text"
                             value={query}
                             onChange={handleInputChange}
-                            placeholder="Type a command or search notes…"
-                            className="w-full pl-12 pr-4 py-3 bg-gray-800/50 border border-gray-700/50 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/20"
+                            placeholder="Search notes, details, tags, and commands…"
+                            className="w-full pl-12 pr-4 py-3 bg-neutral-800/50 border border-neutral-700/50 rounded-xl text-white placeholder-neutral-400 focus:outline-none focus:border-green-500/50 focus:ring-1 focus:ring-green-500/20"
                             autoComplete="off"
                             spellCheck={false}
                         />
-                        <kbd className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-gray-500 bg-gray-800/50 rounded">
+                        <kbd className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-neutral-400 bg-neutral-800/50 rounded">
                             {modShortcut('K')}
                         </kbd>
                     </div>
@@ -236,10 +236,10 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                     ref={listRef}
                     className="max-h-[60vh] overflow-y-auto p-2"
                     role="listbox"
-                    aria-label="Commands"
+                    aria-label="Search results"
                 >
                     {results.length === 0 ? (
-                        <div className="px-4 py-8 text-center text-gray-500">
+                        <div className="px-4 py-8 text-center text-neutral-400">
                             {query ? 'No matching commands or notes' : 'Type to search commands and notes'}
                         </div>
                     ) : (
@@ -259,31 +259,31 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-colors ${
                                             isSelected
                                                 ? 'bg-green-500/15 text-white'
-                                                : 'text-gray-300 hover:bg-gray-800/50'
+                                                : 'text-neutral-300 hover:bg-neutral-800/50'
                                         }`}
                                         role="option"
                                         aria-selected={isSelected}
                                     >
-                                        <categoryInfo.icon className={`w-5 h-5 flex-shrink-0 ${isSelected ? 'text-green-400' : 'text-gray-500'}`} aria-hidden="true" />
+                                        <categoryInfo.icon className={`w-5 h-5 flex-shrink-0 ${isSelected ? 'text-green-400' : 'text-neutral-400'}`} aria-hidden="true" />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 truncate">
                                                 <span className="font-medium truncate">
                                                     {highlightMatch(action.label, query)}
                                                 </span>
                                                 {action.shortcutDisplay && (
-                                                    <kbd className="ml-auto px-2 py-0.5 text-[10px] font-mono text-gray-500 bg-gray-800/50 rounded border border-gray-700/50">
+                                                    <kbd className="ml-auto px-2 py-0.5 text-xs font-mono text-neutral-400 bg-neutral-800/50 rounded border border-neutral-700/50">
                                                         {action.shortcutDisplay}
                                                     </kbd>
                                                 )}
                                             </div>
                                             {action.description && (
-                                                <div className="text-[11px] text-gray-500 truncate">
+                                                <div className="text-[11px] text-neutral-400 truncate">
                                                     {highlightMatch(action.description, query)}
                                                 </div>
                                             )}
                                         </div>
                                         {isNote && results.some(result => !result.action.id.startsWith('note:')) && (
-                                            <span className="px-2 py-0.5 text-[10px] text-gray-500 bg-gray-800/50 rounded border border-gray-700/50">
+                                            <span className="px-2 py-0.5 text-xs text-neutral-400 bg-neutral-800/50 rounded border border-neutral-700/50">
                                                 Note
                                             </span>
                                         )}
@@ -295,7 +295,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                 </div>
 
                 {/* Footer hint */}
-                <div className="px-4 py-3 border-t border-gray-700/50 flex items-center justify-between text-xs text-gray-500">
+                <div className="px-4 py-3 border-t border-neutral-700/50 flex items-center justify-between text-xs text-neutral-400">
                     <span>↑↓ navigate • Enter select • Esc close</span>
                     <span className="tabular-nums">
                         {results.length} {results.length === 1 ? 'result' : 'results'}

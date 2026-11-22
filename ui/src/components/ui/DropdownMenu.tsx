@@ -50,7 +50,7 @@ export function DropdownMenu({trigger, items, align = 'right', className = ''}: 
                 <div
                     ref={dropdownRef}
                     className={`
-                        absolute z-[100] mt-2 w-48 rounded-md bg-gray-800 border border-gray-700 shadow-xl py-1
+                        absolute z-[100] mt-2 w-48 rounded-md bg-neutral-800 border border-neutral-700 shadow-xl py-1
                         ${align === 'right' ? 'right-0' : 'left-0'}
                         animate-in fade-in zoom-in-95 duration-100
                     `}
@@ -62,8 +62,8 @@ export function DropdownMenu({trigger, items, align = 'right', className = ''}: 
                             disabled={item.disabled}
                             className={`
                                 w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors
-                                ${item.disabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-gray-700'}
-                                ${item.variant === 'danger' ? 'text-red-400 hover:bg-red-900/20' : 'text-gray-200'}
+                                ${item.disabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-neutral-700'}
+                                ${item.variant === 'danger' ? 'text-red-400 hover:bg-red-900/20' : 'text-neutral-200'}
                             `}
                         >
                             {item.icon && <item.icon className="h-4 w-4"/>}

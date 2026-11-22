@@ -28,7 +28,7 @@ export function useMapView() {
                 setSelectedNoteId(id);
             } else {
                 setMatchingNoteId(id);
-                setActiveView('network');
+                setActiveView('notes');
                 addToast('Match selected', 'info');
             }
         },
@@ -137,7 +137,7 @@ export function useMapView() {
                     popupDiv.appendChild(link);
                 } else {
                     const span = document.createElement('span');
-                    span.className = 'text-xs text-gray-400';
+                    span.className = 'text-xs text-neutral-400';
                     span.textContent = 'Remote Match';
                     popupDiv.appendChild(span);
                 }

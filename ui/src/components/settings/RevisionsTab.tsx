@@ -4,7 +4,7 @@ import { getRevisionStore } from '@notention/core/telemetry/revisionStore';
 import { type Revision, type VerdictSummary, type ResolutionReason } from '@notention/core/telemetry/revisionStore';
 
 const STATUS_COLORS: Record<string, string> = {
-    draft: 'text-gray-400 bg-gray-800',
+    draft: 'text-neutral-400 bg-neutral-800',
     evaluating: 'text-yellow-400 bg-yellow-900/30',
     evaluated: 'text-blue-400 bg-blue-900/30',
     'awaiting-consent': 'text-orange-400 bg-orange-900/30',
@@ -31,7 +31,7 @@ const EVIDENCE_CLASS_COLORS: Record<string, string> = {
     measured: 'text-red-400 bg-red-900/30',
     observed: 'text-yellow-400 bg-yellow-900/30',
     hypothesized: 'text-green-400 bg-green-900/30',
-    asserted: 'text-gray-400 bg-gray-800',
+    asserted: 'text-neutral-400 bg-neutral-800',
 };
 
 interface RevisionsTabProps {
@@ -72,15 +72,15 @@ function formatReason(reason: ResolutionReason | undefined): string {
 function renderVerdictSummary(verdict?: VerdictSummary) {
     if (!verdict) return null;
     
-    const evidenceColor = EVIDENCE_CLASS_COLORS[verdict.evidenceClass] ?? 'text-gray-400 bg-gray-800';
+    const evidenceColor = EVIDENCE_CLASS_COLORS[verdict.evidenceClass] ?? 'text-neutral-400 bg-neutral-800';
     
     return (
         <details className="group">
             <summary className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
                 <span>Verdict Summary</span>
-                <span className="text-gray-500">▼</span>
+                <span className="text-neutral-400">▼</span>
             </summary>
-            <div className="mt-2 p-3 bg-gray-900 rounded text-xs text-gray-300 space-y-1">
+            <div className="mt-2 p-3 bg-neutral-900 rounded text-xs text-neutral-300 space-y-1">
                 <div className="flex justify-between">
                     <span>Evidence Class:</span>
                     <span className={`px-1.5 py-0.5 rounded text-xs ${evidenceColor}`}>{verdict.evidenceClass}</span>
@@ -191,7 +191,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
     };
 
     const getStatusBadge = (status: string) => {
-        const color = STATUS_COLORS[status] ?? 'text-gray-400 bg-gray-800';
+        const color = STATUS_COLORS[status] ?? 'text-neutral-400 bg-neutral-800';
         const label = STATUS_LABELS[status] ?? status;
         return (
             <span className={`px-2 py-1 text-xs rounded-full ${color}`}>
@@ -201,13 +201,13 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
     };
 
     return (
-        <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-6">
+        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-6">
             <div className="flex flex-col gap-2">
-                <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-neutral-100 flex items-center gap-3">
                     <span className="h-6 w-6 text-blue-400">📋</span>
                     Strategy Revisions
                 </h2>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-neutral-400">
                     Manage proposed strategy changes. Revisions require consent before activation.
                 </p>
             </div>
@@ -216,7 +216,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                 <select
                     value={selectedSeam}
                     onChange={e => setSelectedSeam(e.target.value)}
-                    className="flex-1 max-w-xs px-3 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                    className="flex-1 max-w-xs px-3 py-2 bg-neutral-800 border border-neutral-700 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
                 >
                     {seamRoles.map(role => (
                         <option key={role} value={role}>&{role.charAt(0).toUpperCase() + role.slice(1)}</option>
@@ -225,9 +225,9 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
             </div>
 
             {loading ? (
-                <div className="flex justify-center py-8 text-gray-500">Loading revisions...</div>
+                <div className="flex justify-center py-8 text-neutral-400">Loading revisions...</div>
             ) : revisions.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-neutral-400">
                     No revisions for {selectedSeam}. Create one with <code>pnpm eval revision:create --seam {selectedSeam}</code>
                 </div>
             ) : (
@@ -238,19 +238,19 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                             className={`p-4 rounded-lg border ${
                                 revision.status === 'active'
                                     ? 'border-green-500/50 bg-green-500/10'
-                                    : 'border-gray-700 bg-gray-800/50'
+                                    : 'border-neutral-700 bg-neutral-800/50'
                             }`}
                         >
                             <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                                 <div className="flex items-center gap-4 flex-wrap">
                                     <div>
                                         <div className="flex items-center gap-2 mb-1">
-                                            <code className="text-xs bg-gray-900 px-2 py-1 rounded font-mono">
+                                            <code className="text-xs bg-neutral-900 px-2 py-1 rounded font-mono">
                                                 {revision.id}
                                             </code>
                                             {getStatusBadge(revision.status)}
                                         </div>
-                                        <div className="flex items-center gap-3 text-sm text-gray-400">
+                                        <div className="flex items-center gap-3 text-sm text-neutral-400">
                                             <span>Author: {revision.author}</span>
                                             <span>Created: {formatDate(revision.createdAt)}</span>
                                             {revision.consentedAt && (
@@ -264,9 +264,9 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
 
                                     {/* Resolution Reason (B4.2) */}
                                     {revision.reason && (
-                                        <div className="flex items-center gap-2 text-sm text-gray-300">
-                                            <span className="text-gray-500">Reason:</span>
-                                            <code className="bg-gray-900 px-2 py-1 rounded text-xs">{formatReason(revision.reason)}</code>
+                                        <div className="flex items-center gap-2 text-sm text-neutral-300">
+                                            <span className="text-neutral-400">Reason:</span>
+                                            <code className="bg-neutral-900 px-2 py-1 rounded text-xs">{formatReason(revision.reason)}</code>
                                         </div>
                                     )}
 
@@ -282,9 +282,9 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                                     <details className="group">
                                         <summary className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
                                             <span>Params</span>
-                                            <span className="text-gray-500">▼</span>
+                                            <span className="text-neutral-400">▼</span>
                                         </summary>
-                                        <div className="mt-2 p-3 bg-gray-900 rounded text-xs text-gray-300 font-mono max-h-40 overflow-auto">
+                                        <div className="mt-2 p-3 bg-neutral-900 rounded text-xs text-neutral-300 font-mono max-h-40 overflow-auto">
                                             {JSON.stringify(revision.strategy.params ?? {}, null, 2)}
                                         </div>
                                     </details>
@@ -327,7 +327,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                                                     </button>
                                                     <button
                                                         onClick={() => setConfirmRollbackId(null)}
-                                                        className="px-3 py-1.5 text-sm bg-gray-700 border border-gray-500 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                                                        className="px-3 py-1.5 text-sm bg-neutral-700 border border-neutral-500 text-neutral-300 rounded-lg hover:bg-neutral-600 transition-colors"
                                                     >
                                                         Cancel
                                                     </button>

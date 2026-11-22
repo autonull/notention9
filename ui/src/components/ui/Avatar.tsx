@@ -59,8 +59,8 @@ export function Avatar({
         <div className={cn('relative inline-flex shrink-0', className)} {...props}>
             <div
                 className={cn(
-                    'overflow-hidden bg-gray-800 flex items-center justify-center text-white font-medium',
-                    'border-2 border-gray-700',
+                    'overflow-hidden bg-neutral-800 flex items-center justify-center text-white font-medium',
+                    'border-2 border-neutral-700',
                     tokens.sizes[size],
                     shape === 'circle' ? 'rounded-full' : 'rounded-xl'
                 )}
@@ -76,7 +76,7 @@ export function Avatar({
                 ) : initials ? (
                     <span>{initials}</span>
                 ) : (
-                    <svg className="w-1/2 h-1/2 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className="w-1/2 h-1/2 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
                 )}
@@ -84,7 +84,7 @@ export function Avatar({
             {status && (
                 <span
                     className={cn(
-                        'absolute rounded-full border-2 border-gray-950',
+                        'absolute rounded-full border-2 border-neutral-950',
                         tokens.statusSizes[size],
                         statusColors[status],
                         positionStyles[statusPosition]

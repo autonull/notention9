@@ -24,7 +24,7 @@ export function CopyableField({
 
     return (
         <div>
-            <label className="block text-sm font-medium text-gray-400 mb-1">
+            <label className="block text-sm font-medium text-neutral-400 mb-1">
                 {label}
             </label>
             <div className="flex items-center gap-2">
@@ -37,14 +37,14 @@ export function CopyableField({
                 {isSecret && (
                     <button
                         onClick={() => setVisible(!visible)}
-                        className="p-2 text-gray-400 hover:text-white rounded-md text-xs bg-gray-700 hover:bg-gray-600 self-start mt-0.5"
+                        className="p-2 text-neutral-400 hover:text-white rounded-md text-xs bg-neutral-700 hover:bg-neutral-600 self-start mt-0.5"
                     >
                         {visible ? 'Hide' : 'Show'}
                     </button>
                 )}
                 <button
                     onClick={handleCopy}
-                    className="p-2 bg-gray-600 rounded-md hover:bg-gray-500 self-start mt-0.5"
+                    className="p-2 bg-neutral-600 rounded-md hover:bg-neutral-500 self-start mt-0.5"
                     title="Copy to clipboard"
                     type="button"
                 >

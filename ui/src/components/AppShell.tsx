@@ -1,35 +1,28 @@
-import React, {useEffect, useState, useMemo, useCallback, useRef, Suspense} from 'react';
+import React, {useEffect, useState, Suspense} from 'react';
+import localforage from 'localforage';
+import {decryptBackup, isEncryptedBackup, readExportEnvelope, type EncryptedBackup, type ExportEnvelope} from '@notention/core';
+
 import {Header} from './layout/Header';
-import {MobileNavigation} from './layout/MobileNavigation';
+import {CaptureComposer} from './capture/CaptureComposer';
 import {CommandPalette} from './command/CommandPalette';
-import {Sidebar} from './sidebar';
 import {MainView} from './MainView';
 import {SelectorRegistryProvider} from './properties/SelectorRegistry';
 import {KeyboardShortcutsHelp} from './ui/Primitives';
-import {NoteIcon} from './ui/icons';
-import {getTextFromHtml, readExportEnvelope, isEncryptedBackup, decryptBackup, type ExportEnvelope, type EncryptedBackup} from '@notention/core';
-import localforage from 'localforage';
 import {STORAGE_KEYS} from '../config/storageKeys';
 
 import {useNotes} from '../hooks/useNotes';
 import {useView} from '../hooks/useViewContext';
 import {useUrlRouting} from '../hooks/useUrlRouting';
 import {useKeyboardShortcuts} from '../hooks/useKeyboardShortcuts';
-import {useCommands} from '../hooks/useCommands';
 import {useSuggestionsCompositionRoot} from '../services/suggestions';
 import {HelpDialog} from './modals/HelpDialog';
 import {ConnectivityBanner} from './layout/ConnectivityBanner';
 import {DegradedModeBanner} from './layout/DegradedModeBanner';
 import {useToast} from '../hooks/useToast';
-import {useIsMobile} from '../hooks/useMediaQuery';
-import {useSidebarState} from '../hooks/useSidebarState';
-import {usesNoteSidebar} from '../utils/navigation';
-import {cn} from '../utils/ui';
 import {PendingConfirmationsProvider} from '../hooks/usePendingConfirmations';
 import {PendingConfirmationsModal} from './ui/PendingConfirmationsModal';
 import {useDegradedMode} from '../hooks/useDegradedMode';
 
-// Dynamic import for DevBridge - only loaded when VITE_DEV_HOOKS=true
 const DevBridge = import.meta.env.VITE_DEV_HOOKS === 'true'
     ? React.lazy(() => import('../dev/DevBridge').then(m => ({ default: m.DevBridge })))
     : () => null;
@@ -37,7 +30,6 @@ const DevBridge = import.meta.env.VITE_DEV_HOOKS === 'true'
 export function AppShell() {
     const {getSortedFilteredNotes, loading: notesLoading} = useNotes();
 
-    // Initialize suggestions composition root (configures orchestrator with environment snapshot)
     useSuggestionsCompositionRoot();
     const {
         activeView,
@@ -50,42 +42,17 @@ export function AppShell() {
         isPaletteOpen,
         setIsPaletteOpen,
         isHelpOpen,
-        setIsHelpOpen
+        setIsHelpOpen,
+        isCaptureComposerOpen,
+        setIsCaptureComposerOpen,
     } = useView();
 
-    const sortedNotes = getSortedFilteredNotes(searchTerm, sortOrder, activeView === 'trash', userLocation);
+    const sortedNotes = getSortedFilteredNotes(searchTerm, sortOrder, false, userLocation);
 
-    useUrlRouting({
-        activeView,
-        setActiveView,
-        selectedNoteId,
-        setSelectedNoteId
-    });
+    useUrlRouting();
 
-    const {commands} = useCommands({setIsHelpOpen});
     const {addToast} = useToast();
-    const isMobile = useIsMobile();
     const {addDegradedMode, removeDegradedMode} = useDegradedMode();
-
-    const {
-        isOpen: isSidebarOpen,
-        isCollapsed,
-        effectiveWidth,
-        sidebarClasses,
-        style,
-        handleResizeStart,
-        handleResizeKeyDown,
-        toggleSidebar,
-    } = useSidebarState({
-        isMobile,
-        onToggle: () => {
-            if (isMobile) {
-                setSelectedNoteId(null);
-                setActiveView('notes');
-            }
-        }
-    });
-
     const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
 
     useEffect(() => {
@@ -99,10 +66,7 @@ export function AppShell() {
                 dismissible: true,
                 action: {
                     label: 'Clear Space',
-                    onClick: () => {
-                        // Could open storage settings
-                        removeDegradedMode('storage-full');
-                    }
+                    onClick: () => removeDegradedMode('storage-full'),
                 }
             });
         };
@@ -126,7 +90,6 @@ export function AppShell() {
                                 try {
                                     const text = await file.text();
                                     const backup = JSON.parse(text);
-                                    // Dispatch event for the backup restore handler
                                     window.dispatchEvent(new CustomEvent('restore-from-backup', {detail: backup}));
                                     removeDegradedMode('storage-corrupt');
                                 } catch (err) {
@@ -180,11 +143,9 @@ export function AppShell() {
                     envelope = readExportEnvelope(backup);
                 }
 
-                // Save to localforage using envelope format (will create new checksum)
                 await localforage.setItem(STORAGE_KEYS.notes, envelope.notes);
                 await localforage.setItem(STORAGE_KEYS.settings, envelope.settings);
-                
-                // Clear legacy keys to force envelope format on next load
+
                 await Promise.all([
                     localforage.removeItem(STORAGE_KEYS.envelope),
                     localforage.removeItem(STORAGE_KEYS.schemaVersion),
@@ -217,33 +178,13 @@ export function AppShell() {
             window.removeEventListener('restore-from-backup', handleRestoreFromBackup);
             window.removeEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
         };
-    }, [addToast, addDegradedMode, removeDegradedMode, setIsShortcutsHelpOpen]);
+    }, [addToast, addDegradedMode, removeDegradedMode]);
 
     useKeyboardShortcuts({
-        onNewNote: () => {
-            setSelectedNoteId(null);
-            setActiveView('inbox');
-            requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('focus-capture')));
-        },
-        onSearch: () => {
-            const focusSearch = () => document.getElementById('sidebar-search-input')?.focus();
-            if (isMobile && selectedNoteId) {
-                setSelectedNoteId(null);
-                setActiveView('notes');
-                requestAnimationFrame(focusSearch);
-                return;
-            }
-            if (activeView !== 'notes') {
-                setActiveView('notes');
-                requestAnimationFrame(focusSearch);
-                return;
-            }
-            focusSearch();
-        },
+        onNewNote: () => setIsCaptureComposerOpen(true),
+        onSearch: () => setIsPaletteOpen(true),
         onCommandPalette: () => setIsPaletteOpen(true),
-        onPropertyPalette: () => {
-            window.dispatchEvent(new CustomEvent('open-property-palette'));
-        },
+        onPropertyPalette: () => window.dispatchEvent(new CustomEvent('open-property-palette')),
         onSave: () => window.dispatchEvent(new CustomEvent('save-note')),
         onPasteToCapture: (clipboardText: string) => {
             window.dispatchEvent(new CustomEvent('paste-to-capture', {detail: {text: clipboardText}}));
@@ -253,30 +194,21 @@ export function AppShell() {
         onPreviousNote: () => {
             if (sortedNotes.length > 0 && selectedNoteId) {
                 const currentIndex = sortedNotes.findIndex(note => note.id === selectedNoteId);
-                if (currentIndex > 0) {
-                    setSelectedNoteId(sortedNotes[currentIndex - 1].id);
-                }
+                if (currentIndex > 0) setSelectedNoteId(sortedNotes[currentIndex - 1].id);
             }
         },
         onNextNote: () => {
             if (sortedNotes.length > 0 && selectedNoteId) {
                 const currentIndex = sortedNotes.findIndex(note => note.id === selectedNoteId);
-                if (currentIndex < sortedNotes.length - 1) {
-                    setSelectedNoteId(sortedNotes[currentIndex + 1].id);
-                }
+                if (currentIndex < sortedNotes.length - 1) setSelectedNoteId(sortedNotes[currentIndex + 1].id);
             }
         },
-        onBackToList: () => {
-            setSelectedNoteId(null);
-            if (activeView !== 'notes') {
-                setActiveView('notes');
-            }
-        },
-        onToggleSidebar: toggleSidebar,
+        onBackToList: () => setSelectedNoteId(null),
         onEscape: () => {
             setIsPaletteOpen(false);
             setIsHelpOpen(false);
             setIsShortcutsHelpOpen(false);
+            setIsCaptureComposerOpen(false);
         },
         onShortcutsHelp: () => setIsShortcutsHelpOpen(true),
         onNavigateView: (view) => {
@@ -285,61 +217,20 @@ export function AppShell() {
         },
     });
 
-    const isMobileNoteList = isMobile && activeView === 'notes' && !selectedNoteId;
-    const noteSidebarAvailable = usesNoteSidebar(activeView);
-    // Connections and Settings are not note browsers; give them the full canvas.
-    const desktopSidebarOpen = isSidebarOpen && noteSidebarAvailable;
-    const hideSidebar = isMobile ? !isMobileNoteList : !desktopSidebarOpen;
-
-    const mainClasses = cn(
-        'flex-1 overflow-hidden pb-20 md:pb-0',
-        isMobileNoteList ? 'hidden' : 'block'
-    );
-
-    // Palette items are now handled by CommandPalette using actionRegistry
-
     return (
         <PendingConfirmationsProvider>
             <SelectorRegistryProvider>
-                <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
-                    <Header onToggleSidebar={toggleSidebar} showSidebarToggle={noteSidebarAvailable}/>
+                <div className="flex h-dvh flex-col bg-neutral-950 text-neutral-200" data-ready>
+                    <Header/>
                     <ConnectivityBanner/>
                     <DegradedModeBanner/>
-                    <div className="flex flex-1 overflow-hidden relative">
-                        <div className={hideSidebar ? 'hidden' : cn(sidebarClasses, isMobile && 'pb-20')} style={style}>
-                            <Sidebar
-                                sortedNotes={sortedNotes}
-                                onToggleSidebar={toggleSidebar}
-                                isSidebarOpen={!hideSidebar}
-                                isLoading={notesLoading}
-                                sidebarWidth={isMobile ? 320 : effectiveWidth}
-                                isCollapsed={!isMobile && isCollapsed}
-                            />
-                        </div>
-
-                        {!isMobile && desktopSidebarOpen && effectiveWidth > 48 && (
-                            <div
-                                className="absolute top-16 bottom-0 w-1 cursor-col-resize z-10 hover:bg-blue-500/30 transition-colors"
-                                style={{left: `${effectiveWidth}px`}}
-                                onMouseDown={handleResizeStart}
-                                aria-label="Resize sidebar"
-                                role="separator"
-                                tabIndex={0}
-                                onKeyDown={(e) => handleResizeKeyDown(e, effectiveWidth)}
-                            />
-                        )}
-
-                        <main id="main-content" className={mainClasses} tabIndex={-1}>
-                            <Suspense fallback={<div className="flex-1 flex items-center justify-center bg-gray-950"><div className="text-gray-500">Loading view…</div></div>}>
-                                <MainView sortedNotes={sortedNotes}/>
-                            </Suspense>
-                        </main>
-                    </div>
-                    <MobileNavigation/>
-                    <CommandPalette
-                        isOpen={isPaletteOpen}
-                        onClose={() => setIsPaletteOpen(false)}
-                    />
+                    <main id="main-content" className="relative flex-1 overflow-hidden" tabIndex={-1}>
+                        <Suspense fallback={<div className="flex h-full items-center justify-center text-neutral-400">Loading…</div>}>
+                            <MainView sortedNotes={sortedNotes} loading={notesLoading}/>
+                        </Suspense>
+                    </main>
+                    <CaptureComposer isOpen={isCaptureComposerOpen} onClose={() => setIsCaptureComposerOpen(false)}/>
+                    <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)}/>
                     <HelpDialog
                         isOpen={isHelpOpen}
                         onClose={() => setIsHelpOpen(false)}
@@ -348,14 +239,9 @@ export function AppShell() {
                             window.dispatchEvent(new CustomEvent('open-property-palette'));
                         }}
                     />
-                    <KeyboardShortcutsHelp
-                        isOpen={isShortcutsHelpOpen}
-                        onClose={() => setIsShortcutsHelpOpen(false)}
-                    />
+                    <KeyboardShortcutsHelp isOpen={isShortcutsHelpOpen} onClose={() => setIsShortcutsHelpOpen(false)}/>
                     {import.meta.env.VITE_DEV_HOOKS === 'true' && (
-                        <Suspense fallback={null}>
-                            <DevBridge/>
-                        </Suspense>
+                        <Suspense fallback={null}><DevBridge/></Suspense>
                     )}
                     <PendingConfirmationsModal/>
                 </div>

@@ -78,11 +78,11 @@ export function PropertyPalette({
     return (
         <div className="fixed inset-0 z-[110] flex items-start justify-center pt-[20vh] bg-transparent" onClick={onClose}>
             <div
-                className="bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-80 overflow-hidden flex flex-col transform transition-all animate-fade-in-up"
+                className="bg-neutral-800 rounded-xl shadow-2xl border border-neutral-700 w-80 overflow-hidden flex flex-col transform transition-all animate-fade-in-up"
                 onClick={e => e.stopPropagation()}
                 style={{maxHeight: '400px'}}
             >
-                <div className="p-3 border-b border-gray-700 bg-gray-800/95 backdrop-blur">
+                <div className="p-3 border-b border-neutral-700 bg-neutral-800/95 backdrop-blur">
                     <Input
                         ref={inputRef}
                         type="text"
@@ -103,24 +103,24 @@ export function PropertyPalette({
                     {filtered.map((prop, i) => (
                         <button
                             key={prop.key}
-                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${i === selectedIndex ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-gray-300 hover:bg-gray-700/50 border border-transparent'}`}
+                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${i === selectedIndex ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'}`}
                             onClick={() => handleSelect(prop.key)}
                             onMouseEnter={() => setSelectedIndex(i)}
                         >
                             <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
-                                {prop.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : prop.icon || <TagIcon className="w-4 h-4 text-gray-500" />}
+                                {prop.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : prop.icon || <TagIcon className="w-4 h-4 text-neutral-400" />}
                             </span>
                             <div className="flex-1 min-w-0">
                                 <div className="flex items-center justify-between">
                                     <span className="font-medium truncate text-sm">{prop.key}</span>
                                     {prop.isLearned && prop.frequency && (
-                                        <span className="text-[10px] bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
+                                        <span className="text-xs bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
                                             {prop.frequency}
                                         </span>
                                     )}
                                 </div>
                                 {prop.description && (
-                                    <div className="text-xs text-gray-500 truncate">{prop.description}</div>
+                                    <div className="text-xs text-neutral-400 truncate">{prop.description}</div>
                                 )}
                             </div>
                         </button>
@@ -128,7 +128,7 @@ export function PropertyPalette({
 
                     {filter && (
                         <button
-                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${selectedIndex === filtered.length ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-gray-300 hover:bg-gray-700/50 border border-transparent'}`}
+                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${selectedIndex === filtered.length ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'}`}
                             onClick={() => handleSelect(filter)}
                             onMouseEnter={() => setSelectedIndex(filtered.length)}
                         >
@@ -137,13 +137,13 @@ export function PropertyPalette({
                             </span>
                             <div className="flex-1 min-w-0">
                                 <div className="font-medium truncate text-sm text-green-400">Create "{filter}"</div>
-                                <div className="text-xs text-gray-500 truncate">Add as new custom property</div>
+                                <div className="text-xs text-neutral-400 truncate">Add as new custom property</div>
                             </div>
                         </button>
                     )}
 
                     {filtered.length === 0 && !filter && (
-                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 gap-2">
+                        <div className="flex flex-col items-center justify-center py-8 text-neutral-400 gap-2">
                             <SearchIcon className="w-6 h-6 opacity-30" />
                             <span className="text-xs">Type to search...</span>
                         </div>

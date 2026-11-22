@@ -20,7 +20,7 @@ export function PropertyValueInput({
     if (attributeDef?.type === 'enum' && attributeDef.options) {
         return (
             <select
-                className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+                className="w-full bg-neutral-900/50 border border-neutral-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}
@@ -72,7 +72,7 @@ export function PropertyValueInput({
     if (attributeDef?.type === 'boolean') {
         return (
             <select
-                className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+                className="w-full bg-neutral-900/50 border border-neutral-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}

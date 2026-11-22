@@ -5,14 +5,11 @@
 import React from 'react';
 import {HybridEditor} from './HybridEditor';
 import {TemplateSelector} from './TemplateSelector';
+import {TagInput} from './TagInput';
 import {MetaphorRenderer} from '../metaphor/MetaphorRenderer';
-import {MatchReplies} from '../match/MatchReplies';
-import type {Note, OntologyNode, Template, ScoredMatch} from '@notention/core';
+import type {Note, OntologyNode, Template} from '@notention/core';
 import type {TiptapEditorRef} from './TiptapEditor';
 import {metaphorMapper} from '@notention/core';
-import {useMatches} from '../../hooks/useMatches';
-import {useNotes} from '../../hooks/useNotes';
-import {useView} from '../../hooks/useViewContext';
 
 interface EditorContentProps {
     editorRef: React.RefObject<TiptapEditorRef | null>;
@@ -29,8 +26,11 @@ interface EditorContentProps {
     isTemplateSelectorOpen: boolean;
     onCloseTemplateSelector: () => void;
     onInsertTemplate: (template: OntologyNode) => void;
-    onMatchClick: (match: ScoredMatch) => void;
     onPickLocation?: () => Promise<string>;
+    onTagsChange: (tags: string[]) => void;
+    onAutoTag?: () => void;
+    isAutoTagging?: boolean;
+    isApiKeyAvailable?: boolean;
 }
 
 export function EditorContent({
@@ -48,27 +48,13 @@ export function EditorContent({
     isTemplateSelectorOpen,
     onCloseTemplateSelector,
     onInsertTemplate,
-    onMatchClick,
-    onPickLocation
+    onPickLocation,
+    onTagsChange,
+    onAutoTag,
+    isAutoTagging = false,
+    isApiKeyAvailable = false
 }: EditorContentProps) {
     const activeMetaphor = metaphorMapper.mapToMetaphor(dirtyNote);
-    const matches = useMatches(dirtyNote);
-    const {addNote} = useNotes();
-    const {setSelectedNoteId} = useView();
-
-    const handleMatchRespond = (match: ScoredMatch) => {
-        // Create a response note
-        const responseNote = addNote({
-            title: `Re: ${match.note.title}`,
-            content: '',
-            properties: [
-                {key: 'intent', operator: 'is', values: ['response']},
-                {key: 'inResponseTo', operator: 'is', values: [match.note.id]},
-            ],
-            tags: ['response'],
-        });
-        setSelectedNoteId(responseNote.id);
-    };
 
     return (
         <div className="flex-1 flex flex-col relative transition-all duration-300" data-testid="editor-content">
@@ -94,11 +80,13 @@ export function EditorContent({
                     </>
                 }
             >
-                <div className="px-6 pb-10">
-                    <MatchReplies
-                        matches={matches}
-                        onMatchClick={onMatchClick}
-                        onMatchRespond={handleMatchRespond}
+                <div className="sticky bottom-0 z-10 border-t border-neutral-800/70 bg-neutral-900/95 px-4 py-2 backdrop-blur">
+                    <TagInput
+                        tags={dirtyNote.tags}
+                        onChange={onTagsChange}
+                        onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
+                        isAutoTagging={isAutoTagging}
+                        autoFocus={false}
                     />
                 </div>
             </HybridEditor>

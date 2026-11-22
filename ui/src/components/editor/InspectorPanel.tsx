@@ -115,9 +115,9 @@ export function InspectorPanel({
     };
 
     return (
-        <div className={cn('flex flex-col h-full bg-gray-900 border-l border-gray-800', className)}>
+        <div className={cn('flex flex-col h-full bg-neutral-900 border-l border-neutral-800', className)}>
             {hasContext && (
-                <div className="flex flex-wrap gap-2 px-8 py-3 bg-gray-900/50 border-b border-gray-700/30">
+                <div className="flex flex-wrap gap-2 px-8 py-3 bg-neutral-900/50 border-b border-neutral-700/30">
                     {context.location && (
                         <div
                             className="group flex items-center gap-2 px-2.5 py-1.5 bg-blue-900/10 border border-blue-500/20 rounded-full hover:bg-blue-900/20 transition-all cursor-pointer"
@@ -148,7 +148,7 @@ export function InspectorPanel({
                             <span className="text-[11px] font-medium text-purple-200">
                                 {context.date.toLocaleDateString()}
                             </span>
-                            <span className="text-[10px] text-purple-400/80 uppercase font-bold">
+                            <span className="text-xs text-purple-400/80 uppercase font-bold">
                                 {(() => {
                                     const diff = context.date!.getTime() - Date.now();
                                     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
@@ -169,7 +169,7 @@ export function InspectorPanel({
                     <div className="space-y-3">
                         {!isAddingProperty && (
                             <div className="flex justify-between items-center px-1">
-                                <span className="text-xs text-gray-500 font-medium">
+                                <span className="text-xs text-neutral-400 font-medium">
                                     {properties.length} Properties
                                 </span>
                                 <Button
@@ -211,7 +211,7 @@ export function InspectorPanel({
                         </div>
 
                         {properties.length === 0 && !isAddingProperty && (
-                            <div className="text-center py-4 text-gray-500 text-xs italic bg-gray-900/30 rounded border border-gray-800 border-dashed">
+                            <div className="text-center py-4 text-neutral-400 text-xs italic bg-neutral-900/30 rounded border border-neutral-800 border-dashed">
                                 No properties yet.
                             </div>
                         )}
@@ -266,7 +266,7 @@ export function InspectorSidebar({
     ontology,
 }: InspectorSidebarProps) {
     const sidebarClass = cn(
-        'flex flex-col h-full bg-gray-900 border-l border-gray-700/50',
+        'flex flex-col h-full bg-neutral-900 border-l border-neutral-700/50',
         'transition-all duration-300 ease-in-out transform',
         'fixed inset-y-0 right-0 z-30 shadow-2xl lg:shadow-none lg:z-0 lg:relative',
         'w-80 max-w-[85vw]',
@@ -277,13 +277,13 @@ export function InspectorSidebar({
 
     return (
         <div className={sidebarClass}>
-            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 flex-shrink-0">
-                <h2 className="text-sm font-semibold text-gray-200">Details</h2>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-800 flex-shrink-0">
+                <h2 className="text-sm font-semibold text-neutral-200">Details</h2>
                 <button
                     type="button"
                     onClick={onClose}
                     aria-label="Close details"
-                    className="p-1.5 rounded-md text-gray-500 hover:text-white hover:bg-gray-800"
+                    className="p-1.5 rounded-md text-neutral-400 hover:text-white hover:bg-neutral-800"
                 >
                     <XIcon className="w-4 h-4"/>
                 </button>

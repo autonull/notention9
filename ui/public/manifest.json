@@ -4,8 +4,8 @@
   "description": "Decentralized note-taking and semantic matching network",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#3b82f6",
+  "background_color": "#050505",
+  "theme_color": "#050505",
   "icons": [
     {
       "src": "/icon-192.png",

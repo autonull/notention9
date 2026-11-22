@@ -144,7 +144,7 @@ export function MapPickerModal({
                             placeholder="Search for a place (e.g. London, Times Square)..."
                             className="w-full pl-9"
                         />
-                        <SearchIcon className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2"/>
+                        <SearchIcon className="w-4 h-4 text-neutral-400 absolute left-3 top-1/2 -translate-y-1/2"/>
                     </div>
                     <Button type="submit" variant="secondary" disabled={isSearching} className="min-w-[80px]">
                         {isSearching ? <LoadingSpinner className="w-4 h-4"/> : 'Search'}
@@ -153,16 +153,16 @@ export function MapPickerModal({
 
                 {searchError && <p className="text-red-400 text-xs px-1">{searchError}</p>}
 
-                <p className="text-sm text-gray-400 px-1">
+                <p className="text-sm text-neutral-400 px-1">
                     Click on the map to refine the position.
                 </p>
 
                 <div ref={mapContainerRef}
-                     className="flex-grow w-full rounded-md bg-gray-900 border border-gray-700 overflow-hidden relative"/>
+                     className="flex-grow w-full rounded-md bg-neutral-900 border border-neutral-700 overflow-hidden relative"/>
 
-                <div className="flex justify-end items-center gap-4 mt-2 pt-2 border-t border-gray-800">
+                <div className="flex justify-end items-center gap-4 mt-2 pt-2 border-t border-neutral-800">
                     {selectedCoords && (
-                        <p className="text-sm text-gray-300 font-mono bg-gray-700 px-3 py-1.5 rounded-md">
+                        <p className="text-sm text-neutral-300 font-mono bg-neutral-700 px-3 py-1.5 rounded-md">
                             {selectedCoords.lat.toFixed(4)}, {selectedCoords.lng.toFixed(4)}
                         </p>
                     )}

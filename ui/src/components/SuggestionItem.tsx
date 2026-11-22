@@ -44,8 +44,8 @@ export function SuggestionItem({ suggestion, isActive, onApply, onMouseEnter }: 
             className={`
                 w-full relative group flex items-start gap-3 p-3 rounded-lg transition-all duration-200 border cursor-pointer select-none
                 ${isActive
-                    ? 'bg-gray-800 border-gray-600 shadow-md transform scale-[1.01]'
-                    : 'bg-transparent border-transparent hover:bg-gray-800/50 hover:border-gray-700 hover:shadow-sm'
+                    ? 'bg-neutral-800 border-neutral-600 shadow-md transform scale-[1.01]'
+                    : 'bg-transparent border-transparent hover:bg-neutral-800/50 hover:border-neutral-700 hover:shadow-sm'
                 }
             `}
             onClick={onApply}
@@ -59,19 +59,19 @@ export function SuggestionItem({ suggestion, isActive, onApply, onMouseEnter }: 
             </div>
 
             <div className="flex-1 min-w-0 pr-8">
-                <p className={`text-sm font-medium truncate transition-colors ${isActive ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
+                <p className={`text-sm font-medium truncate transition-colors ${isActive ? 'text-white' : 'text-neutral-300 group-hover:text-white'}`}>
                     {suggestion.text ?? suggestion.label ?? 'Untitled suggestion'}
                 </p>
 
                 {suggestion.confidence && (
                     <div className="flex items-center gap-2 mt-1.5 opacity-70 group-hover:opacity-100 transition-opacity">
-                        <div className="h-1.5 w-16 bg-gray-700 rounded-full overflow-hidden">
+                        <div className="h-1.5 w-16 bg-neutral-700 rounded-full overflow-hidden">
                             <div
                                 className={`h-full rounded-full ${suggestion.confidence > 0.8 ? 'bg-green-500' : suggestion.confidence > 0.5 ? 'bg-yellow-500' : 'bg-red-500'}`}
                                 style={{ width: `${suggestion.confidence * 100}%` }}
                             />
                         </div>
-                        <span className="text-[10px] font-mono text-gray-500">
+                        <span className="text-xs font-mono text-neutral-400">
                             {Math.round(suggestion.confidence * 100)}%
                         </span>
                     </div>
@@ -83,7 +83,7 @@ export function SuggestionItem({ suggestion, isActive, onApply, onMouseEnter }: 
                 absolute right-3 top-3 transition-all duration-200
                 ${isActive
                     ? 'opacity-100 text-green-400 translate-x-0'
-                    : 'opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 group-hover:text-gray-400'
+                    : 'opacity-0 -translate-x-2 group-hover:opacity-50 group-hover:translate-x-0 group-hover:text-neutral-400'
                 }
             `}>
                  <CheckCircleIcon className="w-5 h-5 hover:text-green-400 hover:scale-110 transition-transform" />
@@ -98,7 +98,7 @@ export function SuggestionItem({ suggestion, isActive, onApply, onMouseEnter }: 
                     entityId={suggestion.id}
                     entityType="suggestion"
                     onFeedback={handleFeedback}
-                    className="bg-gray-900/80 backdrop-blur rounded-full shadow-sm scale-90 border border-gray-700"
+                    className="bg-neutral-900/80 backdrop-blur rounded-full shadow-sm scale-90 border border-neutral-700"
                 />
             </div>
         </div>

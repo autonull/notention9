@@ -28,8 +28,8 @@ export function AgentStatusIndicator() {
         if (agentStatus.status === 'offline') {
             if (!agentService.isEnabled()) {
                 return {
-                    bg: 'bg-gray-700', text: 'text-white', opacity: 'opacity-75 hover:opacity-100',
-                    dot: 'bg-gray-400', label: 'Local Mode (Agent Disabled)'
+                    bg: 'bg-neutral-700', text: 'text-white', opacity: 'opacity-75 hover:opacity-100',
+                    dot: 'bg-neutral-400', label: 'Local Mode (Agent Disabled)'
                 };
             }
             return {
@@ -51,8 +51,8 @@ export function AgentStatusIndicator() {
             };
         }
         return {
-            bg: 'bg-gray-500', text: 'text-white', opacity: 'opacity-50',
-            dot: 'bg-gray-300', label: agentStatus.status.charAt(0).toUpperCase() + agentStatus.status.slice(1)
+            bg: 'bg-neutral-500', text: 'text-white', opacity: 'opacity-50',
+            dot: 'bg-neutral-300', label: agentStatus.status.charAt(0).toUpperCase() + agentStatus.status.slice(1)
         };
     };
 

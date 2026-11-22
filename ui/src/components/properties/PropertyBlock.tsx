@@ -122,7 +122,7 @@ export function PropertyBlock({
         'ai': 'text-purple-400 bg-purple-900/30 border-purple-700/50',
         'fuzzy': 'text-orange-400 bg-orange-900/30 border-orange-700/50',
         'ontology-key': 'text-blue-400 bg-blue-900/30 border-blue-700/50',
-        'user': 'text-gray-400 bg-gray-900/30 border-gray-700/50',
+        'user': 'text-neutral-400 bg-neutral-900/30 border-neutral-700/50',
         'inferred': 'text-yellow-400 bg-yellow-900/30 border-yellow-700/50',
     };
     const provenanceColor = provenanceColors[provenance] || provenanceColors['user'];
@@ -151,8 +151,8 @@ export function PropertyBlock({
             className={`
                 property-block relative group transition-all duration-200 border rounded-md mb-1.5 overflow-hidden
                 ${isEditing
-                    ? 'bg-gray-800 border-blue-500/50 shadow-lg z-10 p-3'
-                    : 'bg-gray-800/30 border-transparent hover:bg-gray-800 hover:border-gray-700 cursor-pointer p-2'
+                    ? 'bg-neutral-800 border-blue-500/50 shadow-lg z-10 p-3'
+                    : 'bg-neutral-800/30 border-transparent hover:bg-neutral-800 hover:border-neutral-700 cursor-pointer p-2'
                 }
             `}
             onClick={(e) => {
@@ -167,15 +167,15 @@ export function PropertyBlock({
                     className="flex items-center gap-3"
                     aria-label={`${property.key} ${property.operator} ${formatValue(property)}. Source ${provenance}. Confidence ${confidenceBucketLabel}.`}
                 >
-                    <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-700/50 text-gray-400">
+                    <div className="flex items-center justify-center w-6 h-6 rounded bg-neutral-700/50 text-neutral-400">
                         <IconComponent className="w-3.5 h-3.5" />
                     </div>
 
                     <div className="flex items-baseline gap-2 min-w-0 flex-1">
-                        <span className="text-sm font-semibold text-gray-300 truncate" title={property.key}>
+                        <span className="text-sm font-semibold text-neutral-300 truncate" title={property.key}>
                             {property.key}
                         </span>
-                        <span className="text-xs text-gray-500 font-mono">
+                        <span className="text-xs text-neutral-400 font-mono">
                             {property.operator}
                         </span>
                         <span className={`text-sm truncate ${property.key.match(/rate|price|cost|budget/) ? 'text-green-400 font-mono' : 'text-blue-300'}`}>
@@ -186,20 +186,20 @@ export function PropertyBlock({
                     <div className="hidden group-hover:flex items-center gap-1.5 flex-shrink-0">
                         {/* Provenance badge */}
                         {property.provenance && (
-                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
+                            <span className={`px-1.5 py-0.5 text-xs font-medium rounded border ${provenanceColor}`}>
                                 {provenance}
                             </span>
                         )}
                         {/* Confidence bucket badge (calibrated) */}
                         {property.confidence !== undefined && (
-                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
+                            <span className={`px-1.5 py-0.5 text-xs font-medium rounded border ${confidenceBucketColor}`}>
                                 {confidenceBucketLabel}
                             </span>
                         )}
                         {/* Focus source button */}
                         {hasSourceSpan && (
                             <button
-                                className="p-1 text-gray-500 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"
+                                className="p-1 text-neutral-400 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"
                                 onClick={handleFocusSource}
                                 title="Focus source text"
                             >
@@ -207,9 +207,9 @@ export function PropertyBlock({
                             </button>
                         )}
                         {/* Feedback controls */}
-                        <div className="flex items-center gap-0.5 ml-1 border-l border-gray-700/50 pl-1.5">
+                        <div className="flex items-center gap-0.5 ml-1 border-l border-neutral-700/50 pl-1.5">
                             <button
-                                className="p-1 text-gray-500 hover:text-green-400 hover:bg-green-900/20 rounded transition-colors"
+                                className="p-1 text-neutral-400 hover:text-green-400 hover:bg-green-900/20 rounded transition-colors"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     recordFriction({ workflow: 'match', seam: 'property', kind: 'match_accepted', count: 1, noteId: property.sourceSpan ? undefined : undefined });
@@ -219,7 +219,7 @@ export function PropertyBlock({
                                 <CheckIcon className="w-3.5 h-3.5" />
                             </button>
                             <button
-                                className="p-1 text-gray-500 hover:text-yellow-400 hover:bg-yellow-900/20 rounded transition-colors"
+                                className="p-1 text-neutral-400 hover:text-yellow-400 hover:bg-yellow-900/20 rounded transition-colors"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     setIsEditing(true);
@@ -230,7 +230,7 @@ export function PropertyBlock({
                                 <EditIcon className="w-3.5 h-3.5" />
                             </button>
                             <button
-                                className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                                className="p-1 text-neutral-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
                                 onClick={(e) => {
                                     e.stopPropagation();
                                     recordFriction({ workflow: 'match', seam: 'property', kind: 'match_rejected', count: 1 });
@@ -243,7 +243,7 @@ export function PropertyBlock({
                         </div>
                         {isValid(property) && <div className="w-1.5 h-1.5 rounded-full bg-green-500/50 shadow-[0_0_4px_rgba(34,197,94,0.5)]"></div>}
                         <button
-                            className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                            className="p-1 text-neutral-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 onDelete();
@@ -256,26 +256,26 @@ export function PropertyBlock({
                 </div>
             ) : (
                 <div className="space-y-3">
-                    <div className="flex items-center justify-between border-b border-gray-700/50 pb-2">
+                    <div className="flex items-center justify-between border-b border-neutral-700/50 pb-2">
                         <div className="flex items-center gap-2">
                             <IconComponent className="w-4 h-4 text-blue-400" />
-                            <span className="font-bold text-sm text-gray-200 tracking-wide">{property.key}</span>
+                            <span className="font-bold text-sm text-neutral-200 tracking-wide">{property.key}</span>
                             {/* Provenance badge in editing mode */}
                             {property.provenance && (
-                                <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
+                                <span className={`px-1.5 py-0.5 text-xs font-medium rounded border ${provenanceColor}`}>
                                     {provenance}
                                 </span>
                             )}
                             {/* Confidence bucket badge in editing mode */}
                             {property.confidence !== undefined && (
-                                <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
+                                <span className={`px-1.5 py-0.5 text-xs font-medium rounded border ${confidenceBucketColor}`}>
                                     {confidenceBucketLabel}
                                 </span>
                             )}
                             {/* Focus source button in editing mode */}
                             {hasSourceSpan && (
                                 <button
-                                    className="p-1 text-gray-500 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"
+                                    className="p-1 text-neutral-400 hover:text-blue-400 hover:bg-blue-900/20 rounded transition-colors"
                                     onClick={handleFocusSource}
                                     title="Focus source text"
                                 >
@@ -283,9 +283,9 @@ export function PropertyBlock({
                                 </button>
                             )}
                             {/* Feedback controls in editing mode */}
-                            <div className="flex items-center gap-0.5 ml-1 border-l border-gray-700/50 pl-1.5">
+                            <div className="flex items-center gap-0.5 ml-1 border-l border-neutral-700/50 pl-1.5">
                                 <button
-                                    className="p-1 text-gray-500 hover:text-green-400 hover:bg-green-900/20 rounded transition-colors"
+                                    className="p-1 text-neutral-400 hover:text-green-400 hover:bg-green-900/20 rounded transition-colors"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         recordFriction({ workflow: 'match', seam: 'property', kind: 'match_accepted', count: 1 });
@@ -296,7 +296,7 @@ export function PropertyBlock({
                                     <CheckIcon className="w-3.5 h-3.5" />
                                 </button>
                                 <button
-                                    className="p-1 text-gray-500 hover:text-yellow-400 hover:bg-yellow-900/20 rounded transition-colors"
+                                    className="p-1 text-neutral-400 hover:text-yellow-400 hover:bg-yellow-900/20 rounded transition-colors"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         recordFriction({ workflow: 'match', seam: 'property', kind: 'correction', count: 1 });
@@ -306,7 +306,7 @@ export function PropertyBlock({
                                     <EditIcon className="w-3.5 h-3.5" />
                                 </button>
                                 <button
-                                    className="p-1 text-gray-500 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
+                                    className="p-1 text-neutral-400 hover:text-red-400 hover:bg-red-900/20 rounded transition-colors"
                                     onClick={(e) => {
                                         e.stopPropagation();
                                         recordFriction({ workflow: 'match', seam: 'property', kind: 'match_rejected', count: 1 });
@@ -344,7 +344,7 @@ export function PropertyBlock({
 
                     {/* Correction Suggestions */}
                     {correctionSuggestions.length > 0 && (
-                        <div className="space-y-2 pt-2 border-t border-gray-700/50">
+                        <div className="space-y-2 pt-2 border-t border-neutral-700/50">
                             <div className="flex items-center gap-2 text-xs text-yellow-400">
                                 <LightBulbIcon className="w-3.5 h-3.5 flex-shrink-0" />
                                 <span className="font-medium">Suggested fixes:</span>
@@ -361,7 +361,7 @@ export function PropertyBlock({
                                             setLocalValue(correctedProperty.values[0] || '');
                                             setHasChanges(true);
                                         }}
-                                        className="px-2.5 py-1 text-xs text-gray-100 bg-yellow-900/40 border border-yellow-700/50 rounded hover:bg-yellow-900/60 transition-colors"
+                                        className="px-2.5 py-1 text-xs text-neutral-100 bg-yellow-900/40 border border-yellow-700/50 rounded hover:bg-yellow-900/60 transition-colors"
                                         title={`Confidence: ${Math.round(suggestion.confidence * 100)}%`}
                                     >
                                         {suggestion.message}
@@ -373,7 +373,7 @@ export function PropertyBlock({
 
                     <div className="flex justify-end gap-2 pt-1">
                         <button
-                            className="px-3 py-1.5 text-xs font-medium text-gray-400 hover:text-white hover:bg-gray-700 rounded transition-colors"
+                            className="px-3 py-1.5 text-xs font-medium text-neutral-400 hover:text-white hover:bg-neutral-700 rounded transition-colors"
                             onClick={(e) => {
                                 e.stopPropagation();
                                 handleCancel();

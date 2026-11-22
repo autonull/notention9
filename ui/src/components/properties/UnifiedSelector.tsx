@@ -163,7 +163,7 @@ export function UnifiedSelector({
             'boolean': 'Boolean',
         };
         return (
-            <span className="text-[10px] uppercase bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded border border-gray-600">
+            <span className="text-xs uppercase bg-neutral-700 text-neutral-400 px-1.5 py-0.5 rounded border border-neutral-600">
                 {typeLabels[type] || type}
             </span>
         );
@@ -174,11 +174,11 @@ export function UnifiedSelector({
     return (
         <div className="fixed inset-0 z-[110] flex items-start justify-center pt-[15vh] bg-transparent" onClick={onClose}>
             <div
-                className="bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-96 overflow-hidden flex flex-col transform transition-all animate-fade-in-up"
+                className="bg-neutral-800 rounded-xl shadow-2xl border border-neutral-700 w-96 overflow-hidden flex flex-col transform transition-all animate-fade-in-up"
                 onClick={e => e.stopPropagation()}
                 style={{maxHeight: '500px'}}
             >
-                <div className="p-3 border-b border-gray-700 bg-gray-800/95 backdrop-blur sticky top-0 z-10">
+                <div className="p-3 border-b border-neutral-700 bg-neutral-800/95 backdrop-blur sticky top-0 z-10">
                     <Input
                         ref={inputRef}
                         type="text"
@@ -208,17 +208,17 @@ export function UnifiedSelector({
                 <div className="overflow-y-auto flex-1 p-1 custom-scrollbar">
                     {recentKeys.length > 0 && !filter && (
                         <div className="mb-2">
-                            <div className="px-2 py-1 text-xs font-bold text-gray-400 uppercase tracking-wider">Recent</div>
+                            <div className="px-2 py-1 text-xs font-bold text-neutral-400 uppercase tracking-wider">Recent</div>
                             {recentKeys.map((key, i) => (
                                 <button
                                     key={key}
-                                    className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-3 transition-colors text-gray-300 hover:bg-gray-700/50 border border-transparent"
+                                    className="w-full text-left px-3 py-2 rounded-lg flex items-center gap-3 transition-colors text-neutral-300 hover:bg-neutral-700/50 border border-transparent"
                                     onClick={() => handleSelect(key)}
                                     onMouseEnter={() => setSelectedIndex(i)}
                                 >
-                                    <TagIcon className="w-4 h-4 text-gray-500" />
+                                    <TagIcon className="w-4 h-4 text-neutral-400" />
                                     <span className="font-medium truncate text-sm">{key}</span>
-                                    <span className="text-[10px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded-full">Recent</span>
+                                    <span className="text-xs bg-neutral-700 text-neutral-400 px-1.5 py-0.5 rounded-full">Recent</span>
                                 </button>
                             ))}
                         </div>
@@ -233,23 +233,23 @@ export function UnifiedSelector({
                                 <div key={prop.key}>
                                     <button
                                         className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-3 transition-colors ${
-                                            isExpanded ? 'bg-gray-700/50' : 'hover:bg-gray-700/50'
+                                            isExpanded ? 'bg-neutral-700/50' : 'hover:bg-neutral-700/50'
                                         } border border-transparent`}
                                         onClick={() => handleNodeToggle(prop.nodeLabel || '')}
                                         onMouseEnter={() => setSelectedIndex(i)}
                                     >
                                         <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
-                                            {isExpanded ? <ChevronDownIcon className="w-4 h-4 text-gray-400" /> : <ChevronRightIcon className="w-4 h-4 text-gray-500" />}
+                                            {isExpanded ? <ChevronDownIcon className="w-4 h-4 text-neutral-400" /> : <ChevronRightIcon className="w-4 h-4 text-neutral-400" />}
                                         </span>
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center justify-between">
-                                                <span className="font-bold text-sm text-gray-200">{prop.nodeLabel}</span>
-                                                {prop.description && <span className="text-xs text-gray-500">{prop.description}</span>}
+                                                <span className="font-bold text-sm text-neutral-200">{prop.nodeLabel}</span>
+                                                {prop.description && <span className="text-xs text-neutral-400">{prop.description}</span>}
                                             </div>
                                         </div>
                                     </button>
                                     {isExpanded && (
-                                        <div className="pl-8 space-y-1 border-l border-gray-700/30 ml-2">
+                                        <div className="pl-8 space-y-1 border-l border-neutral-700/30 ml-2">
                                             {allOptions
                                                 .filter(o => o.nodePath && o.nodePath[0] === prop.nodeLabel)
                                                 .map((child, childIdx) => (
@@ -258,7 +258,7 @@ export function UnifiedSelector({
                                                         className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-3 transition-colors ${
                                                             i === selectedIndex && child.key === filtered[selectedIndex]?.key
                                                                 ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30'
-                                                                : 'text-gray-300 hover:bg-gray-700/50 border border-transparent'
+                                                                : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'
                                                         }`}
                                                         onClick={() => handleSelect(child.key)}
                                                         onMouseEnter={() => {
@@ -267,19 +267,19 @@ export function UnifiedSelector({
                                                         }}
                                                     >
                                                         <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
-                                                            {child.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : child.icon || <TagIcon className="w-4 h-4 text-gray-500" />}
+                                                            {child.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : child.icon || <TagIcon className="w-4 h-4 text-neutral-400" />}
                                                         </span>
                                                         <div className="flex-1 min-w-0">
                                                             <div className="flex items-center justify-between">
                                                                 <span className="font-medium truncate text-sm">{child.key}</span>
                                                                 {child.isLearned && child.frequency && (
-                                                                    <span className="text-[10px] bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
+                                                                    <span className="text-xs bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
                                                                         {child.frequency}
                                                                     </span>
                                                                 )}
                                                             </div>
                                                             {child.description && (
-                                                                <div className="text-xs text-gray-500 truncate">{child.description}</div>
+                                                                <div className="text-xs text-neutral-400 truncate">{child.description}</div>
                                                             )}
                                                             {renderTypeBadge(child.attributeDef)}
                                                         </div>
@@ -297,25 +297,25 @@ export function UnifiedSelector({
                                 className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${
                                     i === selectedIndex
                                         ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30'
-                                        : 'text-gray-300 hover:bg-gray-700/50 border border-transparent'
+                                        : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'
                                 }`}
                                 onClick={() => handleSelect(prop.key)}
                                 onMouseEnter={() => setSelectedIndex(i)}
                             >
                                 <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
-                                    {prop.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : prop.icon || <TagIcon className="w-4 h-4 text-gray-500" />}
+                                    {prop.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : prop.icon || <TagIcon className="w-4 h-4 text-neutral-400" />}
                                 </span>
                                 <div className="flex-1 min-w-0">
                                     <div className="flex items-center justify-between">
                                         <span className="font-medium truncate text-sm">{prop.key}</span>
                                         {prop.isLearned && prop.frequency && (
-                                            <span className="text-[10px] bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
+                                            <span className="text-xs bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
                                                 {prop.frequency}
                                             </span>
                                         )}
                                     </div>
                                     {prop.description && (
-                                        <div className="text-xs text-gray-500 truncate">{prop.description}</div>
+                                        <div className="text-xs text-neutral-400 truncate">{prop.description}</div>
                                     )}
                                     {renderTypeBadge(prop.attributeDef)}
                                 </div>
@@ -326,7 +326,7 @@ export function UnifiedSelector({
                     {filter && (
                         <button
                             className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${
-                                selectedIndex === filtered.length ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-gray-300 hover:bg-gray-700/50 border border-transparent'
+                                selectedIndex === filtered.length ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'
                             }`}
                             onClick={() => handleSelect(filter)}
                             onMouseEnter={() => setSelectedIndex(filtered.length)}
@@ -336,13 +336,13 @@ export function UnifiedSelector({
                             </span>
                             <div className="flex-1 min-w-0">
                                 <div className="font-medium truncate text-sm text-green-400">Create "{filter}"</div>
-                                <div className="text-xs text-gray-500 truncate">Add as new custom property</div>
+                                <div className="text-xs text-neutral-400 truncate">Add as new custom property</div>
                             </div>
                         </button>
                     )}
 
                     {filtered.length === 0 && !filter && (
-                        <div className="flex flex-col items-center justify-center py-8 text-gray-500 gap-2">
+                        <div className="flex flex-col items-center justify-center py-8 text-neutral-400 gap-2">
                             <SearchIcon className="w-6 h-6 opacity-30" />
                             <span className="text-xs">Type to search properties...</span>
                         </div>

@@ -18,14 +18,14 @@ export function MetaphorRenderer({note, metaphor}: MetaphorRendererProps) {
     }), [note.properties, metaphor.properties]);
 
     return (
-        <div className="bg-gray-800 border border-gray-700 rounded-lg p-3 my-2 shadow-sm">
+        <div className="bg-neutral-800 border border-neutral-700 rounded-lg p-3 my-2 shadow-sm">
             <div className="flex items-center gap-2 mb-2">
         <span className="text-xl" role="img" aria-label={metaphor.name}>
           {metaphor.icon}
         </span>
                 <h3 className="font-semibold text-blue-300">{metaphor.name}</h3>
             </div>
-            <div className="text-sm text-gray-400 mb-2">{metaphor.description}</div>
+            <div className="text-sm text-neutral-400 mb-2">{metaphor.description}</div>
             <div className="grid grid-cols-1 gap-2">
                 {matchedProperties.map(({prop, match}) => (
                     <MetaphorProperty key={prop.name} label={prop.label} match={match}/>
@@ -36,9 +36,9 @@ export function MetaphorRenderer({note, metaphor}: MetaphorRendererProps) {
 }
 
 const MetaphorProperty: React.FC<{ label: string; match?: Property }> = ({label, match}) => (
-    <div className="flex flex-col bg-gray-750 p-2 rounded">
-        <span className="text-xs text-gray-500 uppercase font-medium">{label}</span>
-        <span className={`text-sm ${match ? 'text-white' : 'text-gray-600 italic'}`}>
+    <div className="flex flex-col bg-neutral-750 p-2 rounded">
+        <span className="text-xs text-neutral-400 uppercase font-medium">{label}</span>
+        <span className={`text-sm ${match ? 'text-white' : 'text-neutral-400 italic'}`}>
       {match ? match.values.join(', ') : '(Not set)'}
     </span>
     </div>

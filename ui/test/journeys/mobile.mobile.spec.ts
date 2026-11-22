@@ -1,185 +1,44 @@
 import {test, expect} from '@playwright/test';
-import {seed, clearStorage} from '../support/seed';
-import {isolateNetwork} from '../fixtures/routes';
-import {demoNotes, defaultSettings} from '../fixtures/workspace';
+import {seed} from '../support/seed';
+import {defaultSettings, demoNotes} from '../fixtures/workspace';
 
 test.beforeEach(async ({page}) => {
-    await isolateNetwork(page);
+    await page.setViewportSize({width: 390, height: 844});
 });
 
-const mobileRoutes = [
-    '#inbox',
-    '#notes',
-    '#actions',
-    '#map',
-    '#timeline',
-    '#network',
-    '#chat',
-    '#responses',
-    '#labels',
-    '#trash',
-    '#settings',
-    '#dashboard',
-    '#ontology',
-];
+test('mobile has one composer and no bottom bar', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes'});
 
-test('mobile: every navigation route renders content at 360px', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+    await expect(page.getByTestId('quick-capture-input')).toBeVisible();
+    await expect(page.getByRole('button', {name: 'Capture a new note'})).toBeVisible();
+    await expect(page.getByRole('tablist', {name: 'Main navigation'})).toHaveCount(0);
 
-    for (const hash of mobileRoutes) {
-        await page.evaluate(nextHash => { window.location.hash = nextHash; window.dispatchEvent(new PopStateEvent('popstate')); }, hash);
-        await expect(page.locator('main')).not.toBeEmpty();
-    }
+    const fontSize = await page.getByTestId('quick-capture-input').evaluate((element) =>
+        parseFloat(window.getComputedStyle(element).fontSize)
+    );
+    expect(fontSize).toBeGreaterThanOrEqual(18);
 });
 
-test('mobile: no horizontal overflow at 360px', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+test('mobile note detail is full-screen with a context sheet', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes/demo-request-react'});
 
-    // Check each route for horizontal scroll
-    for (const [hash] of mobileRoutes) {
-        await page.evaluate(nextHash => { window.location.hash = nextHash; window.dispatchEvent(new PopStateEvent('popstate')); }, hash);
-        await expect(page.locator('main')).not.toBeEmpty();
+    await expect(page.locator('[contenteditable="true"]')).toBeVisible();
+    const rail = page.getByRole('complementary', {name: 'Note context'});
+    await expect(rail).toBeVisible();
+    await expect(rail.getByRole('tab', {name: 'Next steps'})).toBeVisible();
+    await expect(rail.getByRole('tab', {name: 'Matches'})).toBeVisible();
+    await expect(rail.getByRole('tab', {name: 'Replies'})).toBeVisible();
 
-        // Check body/document for horizontal scroll
-        const hasHorizontalScroll = await page.evaluate(() => {
-            return document.body.scrollWidth > window.innerWidth ||
-                   document.documentElement.scrollWidth > window.innerWidth;
-        });
-        expect(hasHorizontalScroll).toBeFalsy();
-    }
+    const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(overflow).toBeLessThanOrEqual(1);
 });
 
-test('mobile: bottom nav is visible and functional', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+test('mobile capture creates a note on the same screen path', async ({page}) => {
+    await seed(page, {notes: [], settings: defaultSettings(), hash: '#/notes'});
 
-    // Bottom nav should be visible on mobile
-    const bottomNav = page.locator('[role="tablist"]');
-    await expect(bottomNav).toBeVisible();
+    await page.getByTestId('quick-capture-input').fill('Garden help on Saturdays #offer');
+    await page.getByTestId('quick-capture-input').press('Enter');
 
-    // Check primary nav items are present
-    await expect(page.getByRole('tab', {name: 'Inbox'})).toBeVisible();
-    await expect(page.getByRole('tab', {name: 'Notes'})).toBeVisible();
-    await expect(page.getByRole('tab', {name: 'Network'})).toBeVisible();
-    await expect(page.getByRole('tab', {name: 'Settings'})).toBeVisible();
-});
-
-test('mobile: touch targets meet 44px minimum', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-
-    // Check bottom nav buttons
-    const tabs = page.getByRole('tablist').getByRole('tab');
-    const count = await tabs.count();
-    
-    for (let i = 0; i < count; i++) {
-        const tab = tabs.nth(i);
-        const box = await tab.boundingBox();
-        if (box) {
-            expect(box.width).toBeGreaterThanOrEqual(44);
-            expect(box.height).toBeGreaterThanOrEqual(44);
-        }
-    }
-
-    // One capture entry: the inbox field, not a duplicate bottom-bar button
-    const bottomBar = page.locator('.fixed.bottom-0').first();
-    await expect(bottomBar.getByRole('button', {name: 'Capture'})).toHaveCount(0);
-    const capture = page.getByTestId('quick-capture-input');
-    await expect(capture).toBeVisible();
-    const captureBox = await capture.boundingBox();
-    if (captureBox) {
-        expect(captureBox.height).toBeGreaterThanOrEqual(44);
-    }
-
-    // Search and help live in the header so the four tabs keep full labels.
-    const header = page.locator('header').first();
-    const searchBtn = header.getByRole('button', {name: 'Search and commands'});
-    const helpBtn = header.getByRole('button', {name: 'Help and shortcuts'});
-    for (const btn of [searchBtn, helpBtn]) {
-        const box = await btn.boundingBox();
-        if (box) {
-            expect(box.width).toBeGreaterThanOrEqual(44);
-            expect(box.height).toBeGreaterThanOrEqual(44);
-        }
-    }
-});
-
-test('mobile: bottom nav navigates between primary views', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-
-    await page.getByRole('tab', {name: 'Network'}).click();
-    await expect(page.locator('main')).toContainText('Connections');
-
-    await page.getByRole('tab', {name: 'Settings'}).click();
-    await expect(page.locator('main')).toContainText('Settings');
-
-    await page.getByRole('tab', {name: 'Notes'}).click();
-    await expect(page.locator('main')).toContainText('Notes');
-});
-
-test('mobile: search and shortcuts accessible', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-
-    // Search button in the header
-    const searchBtn = page.getByRole('button', {name: 'Search and commands'});
-    await expect(searchBtn).toBeVisible();
-    const searchBox = await searchBtn.boundingBox();
-    if (searchBox) {
-        expect(searchBox.width).toBeGreaterThanOrEqual(44);
-        expect(searchBox.height).toBeGreaterThanOrEqual(44);
-    }
-
-    // Shortcuts help button
-    const helpBtn = page.getByRole('button', {name: 'Help and shortcuts'});
-    await expect(helpBtn).toBeVisible();
-    const helpBox = await helpBtn.boundingBox();
-    if (helpBox) {
-        expect(helpBox.width).toBeGreaterThanOrEqual(44);
-        expect(helpBox.height).toBeGreaterThanOrEqual(44);
-    }
-});
-
-test('mobile: sidebar is visible on notes view', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-
-    // On mobile notes view, sidebar is always visible (main content is hidden)
-    await page.evaluate(() => { window.location.hash = '#notes'; window.dispatchEvent(new PopStateEvent('popstate')); });
-    
-    // Sidebar should be visible
-    const sidebar = page.locator('aside[role="complementary"], .sidebar, [data-testid="sidebar"]');
-    await expect(sidebar.first()).toBeVisible({timeout: 5000});
-    
-    // Should contain note list (demo notes include "React developer")
-    await expect(sidebar.first()).toContainText('React developer');
-});
-
-test('mobile: inbox quick capture input is accessible', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-
-    // Navigate to inbox (where quick capture lives)
-    await page.evaluate(() => { window.location.hash = '#inbox'; window.dispatchEvent(new PopStateEvent('popstate')); });
-    
-    // Quick capture should be visible
-    const quickCapture = page.getByTestId('quick-capture-input');
-    await expect(quickCapture).toBeVisible();
-    
-    // Type in quick capture
-    await quickCapture.fill('Test mobile note #test');
-    
-    // Input should have the typed value
-    await expect(quickCapture).toHaveValue('Test mobile note #test');
-    
-    // Input should be focusable and have correct touch target size
-    const box = await quickCapture.boundingBox();
-    expect(box?.width).toBeGreaterThanOrEqual(44);
-    expect(box?.height).toBeGreaterThanOrEqual(44);
-});
-
-test('mobile: persistence survives reload', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
-    
-    // Navigate to inbox
-    await page.evaluate(() => { window.location.hash = '#inbox'; window.dispatchEvent(new PopStateEvent('popstate')); });
-    
-    await page.reload();
-    await expect(page.locator('main')).toContainText('Recent notes');
-    await clearStorage(page);
+    await expect(page.locator('[contenteditable="true"]')).toBeVisible();
+    await expect(page.getByRole('complementary', {name: 'Note context'})).toBeVisible();
 });

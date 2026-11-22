@@ -85,8 +85,8 @@ export function AutomationsView() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                     </svg>
                 </div>
-                <h3 className="text-lg font-medium text-gray-100 mb-2">No Automations Yet</h3>
-                <p className="text-gray-500 mb-6 max-w-sm">
+                <h3 className="text-lg font-medium text-neutral-100 mb-2">No Automations Yet</h3>
+                <p className="text-neutral-400 mb-6 max-w-sm">
                     Create your first automation rule using <code className="text-blue-400">[@if:condition]</code> and <code className="text-green-400">[@then:action]</code> properties.
                 </p>
                 <button
@@ -103,8 +103,8 @@ export function AutomationsView() {
         <div className="flex flex-col h-full overflow-hidden">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-100">Automations</h2>
-                    <p className="text-gray-500 text-sm mt-1">{automationNotes.length} rule{automationNotes.length !== 1 ? 's' : ''} configured</p>
+                    <h2 className="text-2xl font-bold text-neutral-100">Automations</h2>
+                    <p className="text-neutral-400 text-sm mt-1">{automationNotes.length} rule{automationNotes.length !== 1 ? 's' : ''} configured</p>
                 </div>
                 <button
                     onClick={handleCreateAutomation}

@@ -43,13 +43,13 @@ Stack: ${this.state.error.stack}
     render() {
         if (this.state.hasError) {
             return this.props.fallback || (
-                <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 text-gray-200 p-4">
-                    <div className="max-w-md w-full bg-gray-800 rounded-lg shadow-xl p-6 border border-gray-700">
+                <div className="flex flex-col items-center justify-center min-h-screen bg-neutral-900 text-neutral-200 p-4">
+                    <div className="max-w-md w-full bg-neutral-800 rounded-lg shadow-xl p-6 border border-neutral-700">
                         <h2 className="text-xl font-semibold text-red-400 mb-2">Something went wrong</h2>
-                        <p className="text-gray-400 mb-4">
+                        <p className="text-neutral-400 mb-4">
                             The application encountered an unexpected error.
                         </p>
-                        <div className="bg-gray-900 p-3 rounded mb-4 overflow-x-auto">
+                        <div className="bg-neutral-900 p-3 rounded mb-4 overflow-x-auto">
                             <code className="text-sm text-red-300 font-mono">
                                 {this.state.error?.message}
                             </code>
@@ -63,7 +63,7 @@ Stack: ${this.state.error.stack}
                             </button>
                             <button
                                 onClick={this.copyErrorInfo}
-                                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium rounded transition-colors"
+                                className="px-4 py-2 bg-neutral-700 hover:bg-neutral-600 text-neutral-200 font-medium rounded transition-colors"
                                 title="Copy error info for debugging"
                             >
                                 Copy Error

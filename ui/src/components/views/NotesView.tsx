@@ -1,40 +1,43 @@
-import React, {useMemo, useState} from 'react';
+import React, {useMemo, useEffect, useRef, useState} from 'react';
 import type {Note} from '@notention/core';
-import {PlusIcon, ListIcon, ColumnsIcon, MapIcon, ClockIcon} from '../ui/icons';
+import {ColumnsIcon, ClockIcon, GridIcon, ListIcon, MapIcon, PlusIcon} from '../ui/icons';
 
 import {useNotesView} from '../../hooks/useNotesView';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import {useToast} from '../../hooks/useToast';
+import {useIsMobile} from '../../hooks/useMediaQuery';
 import {EditorManager} from '../editor/EditorManager';
 import {NoteListItem} from '../sidebar/NoteListItem';
+import {NoteGridItem} from '../sidebar/NoteGridItem';
 import {MapView} from './MapView';
 import {TimelineView} from './TimelineView';
 import {EmptyState, NotesEmptyIllustration, ConfirmationModal} from '../ui/Primitives';
 import {Button} from '../ui/Button';
+import {CaptureOmnibox} from '../capture/CaptureOmnibox';
 import {cn} from '../../utils/ui';
 
 type Section = 'all' | 'tasks' | 'tags' | 'trash';
-type Mode = 'list' | 'board' | 'map' | 'timeline';
-
-interface NotesViewProps {
-    sortedNotes?: Note[];
-}
+type Mode = 'canvas' | 'list' | 'board' | 'map' | 'timeline';
 
 const UNGROUPED = 'unscheduled';
-/** Board columns read as workflow stages before alphabetical leftovers. */
 const STATUS_ORDER = ['todo', 'queued', 'planned', 'open', 'running', 'in-progress', 'blocked', 'review', 'completed', 'done', 'cancelled'];
+const SCROLL_KEY = 'notention-notes-scroll';
 
 const MODES: {id: Mode; label: string; icon: typeof ListIcon}[] = [
+    {id: 'canvas', label: 'Canvas', icon: GridIcon},
     {id: 'list', label: 'List', icon: ListIcon},
     {id: 'board', label: 'Board', icon: ColumnsIcon},
     {id: 'map', label: 'Map', icon: MapIcon},
     {id: 'timeline', label: 'Timeline', icon: ClockIcon},
 ];
 
+interface NotesViewProps {
+    sortedNotes?: Note[];
+}
+
 export function NotesView({sortedNotes = []}: NotesViewProps) {
     const {selectedNote, updateNote} = useNotesView();
-    const {notesSection, notesMode, activeView} = useView();
 
     if (selectedNote) {
         return (
@@ -47,60 +50,38 @@ export function NotesView({sortedNotes = []}: NotesViewProps) {
         );
     }
 
-    return <NotesList notes={sortedNotes} section={notesSection} mode={notesMode} activeView={activeView}/>;
+    return <NotesWorkspace notes={sortedNotes}/>;
 }
 
-function NotesList({notes, section: storedSection, mode: storedMode, activeView}: {
-    notes: Note[];
-    section: Section;
-    mode: Mode;
-    activeView: string;
-}) {
-    const {selectedNoteId, setSelectedNoteId, setActiveView, searchTerm, setNotesSection, setNotesMode} = useView();
+function NotesWorkspace({notes}: {notes: Note[]}) {
+    const {
+        selectedNoteId,
+        setSelectedNoteId,
+        notesSection,
+        setNotesSection,
+        notesMode,
+        setNotesMode,
+        searchTerm,
+    } = useView();
     const {notes: allNotes, restoreNote, permanentlyDeleteNote} = useNotes();
     const {addToast} = useToast();
+    const isMobile = useIsMobile();
+    const scrollRef = useRef<HTMLDivElement>(null);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
-    // Deep links (#trash, #map, #timeline, #actions) drive the notebook surface.
-    const section: Section = activeView === 'trash' ? 'trash' : storedSection === 'trash' ? 'all' : storedSection;
-    const mode: Mode = activeView === 'map' ? 'map'
-        : activeView === 'timeline' ? 'timeline'
-        : activeView === 'actions' ? 'board'
-        : storedMode;
+    const section: Section = notesSection;
+    const mode: Mode = notesMode;
 
-    const chooseSection = (next: Section) => {
-        if (next !== 'trash') setNotesSection(next);
-        setActiveView(next === 'trash' ? 'trash' : 'notes');
-    };
+    useEffect(() => {
+        const saved = Number(sessionStorage.getItem(SCROLL_KEY) ?? '0');
+        if (saved > 0) requestAnimationFrame(() => scrollRef.current?.scrollTo({top: saved}));
+        return () => {
+            sessionStorage.setItem(SCROLL_KEY, String(scrollRef.current?.scrollTop ?? 0));
+        };
+    }, []);
 
-    const chooseMode = (next: Mode) => {
-        setNotesMode(next);
-        if (activeView !== 'notes') setActiveView('notes');
-    };
-
-    const openCapture = () => {
-        setActiveView('capture');
-        requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('focus-capture')));
-    };
-
-    const selectNote = (id: string) => {
-        setSelectedNoteId(id);
-        setActiveView('notes');
-    };
-
-    const restore = (note: Note) => {
-        restoreNote(note.id);
-        addToast('Note restored', 'success');
-    };
-
-    const confirmDelete = () => {
-        if (!noteToDelete) return;
-        permanentlyDeleteNote(noteToDelete.id);
-        addToast('Note permanently deleted', 'success');
-        setNoteToDelete(null);
-    };
-
-    const isTask = (note: Note) => note.tags.includes('task') || note.properties.some(p => p.key === 'status' && p.values.includes('todo'));
+    const isTask = (note: Note) =>
+        note.tags.includes('task') || note.properties.some(p => p.key === 'status' && p.values.includes('todo'));
 
     const filteredNotes = notes.filter(note => {
         const isDeleted = !!note.deletedAt;
@@ -118,107 +99,128 @@ function NotesList({notes, section: storedSection, mode: storedMode, activeView}
     ];
 
     const activeMode: Mode = section === 'trash' ? 'list' : mode;
-    const isDocumentMode = activeMode === 'list' || activeMode === 'board';
 
-    const renderNote = (note: Note) => (
+    const openCapture = () => {
+        sessionStorage.removeItem(SCROLL_KEY);
+        window.dispatchEvent(new CustomEvent('focus-capture'));
+    };
+
+    const selectNote = (id: string) => {
+        setSelectedNoteId(id);
+    };
+
+    const restore = (note: Note) => {
+        restoreNote(note.id);
+        addToast('Note restored', 'success');
+    };
+
+    const confirmDelete = () => {
+        if (!noteToDelete) return;
+        permanentlyDeleteNote(noteToDelete.id);
+        addToast('Note permanently deleted', 'success');
+        setNoteToDelete(null);
+    };
+
+    const renderNote = (note: Note) => section === 'trash' ? (
         <NoteListItem
             key={note.id}
             note={note}
             isSelected={selectedNoteId === note.id}
             onSelect={() => selectNote(note.id)}
-            isTrash={section === 'trash'}
-            onRestore={section === 'trash' ? () => restore(note) : undefined}
-            onDelete={section === 'trash' ? () => setNoteToDelete(note) : undefined}
+            isTrash
+            onRestore={() => restore(note)}
+            onDelete={() => setNoteToDelete(note)}
+        />
+    ) : (
+        <NoteGridItem
+            key={note.id}
+            note={note}
+            isSelected={selectedNoteId === note.id}
+            onSelect={() => selectNote(note.id)}
         />
     );
 
+    const empty = filteredNotes.length === 0;
+
     return (
-        <div className="h-full flex flex-col bg-gray-950 text-white">
-            <header className="flex-none flex flex-wrap items-center gap-x-3 gap-y-2 px-4 md:px-6 py-3 border-b border-gray-800/70">
-                <h1 className="text-xl font-semibold mr-1">Notes</h1>
-
-                <div className="flex items-center gap-0.5 bg-gray-900/50 rounded-lg p-0.5 border border-gray-700/50"
-                     role="tablist" aria-label="Notes sections">
-                    {sections.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => chooseSection(tab.id)}
-                            role="tab"
-                            aria-selected={section === tab.id}
-                            className={cn(
-                                'px-2.5 py-1 text-xs font-medium rounded-md transition-colors',
-                                section === tab.id
-                                    ? 'bg-indigo-600/20 text-indigo-300'
-                                    : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                            )}
-                        >
-                            {tab.label}
-                            {tab.count > 0 && (
-                                <span className={cn(
-                                    'ml-1.5 text-[10px] tabular-nums',
-                                    section === tab.id ? 'text-indigo-400/80' : 'text-gray-600'
-                                )}>{tab.count}</span>
-                            )}
-                        </button>
-                    ))}
+        <div ref={scrollRef} className="h-full overflow-y-auto custom-scrollbar">
+            <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-5 md:px-6 md:pt-6">
+                <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+                    <div>
+                        <h2 className="text-2xl font-semibold tracking-tight text-neutral-100">Notes</h2>
+                        <p className="text-sm text-neutral-400">Your only work surface. Capture, browse, connect.</p>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5" role="tablist" aria-label="Note filters">
+                        {sections.map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => {
+                                    setNotesSection(tab.id);
+                                    if (tab.id === 'trash') setNotesMode('list');
+                                }}
+                                role="tab"
+                                aria-selected={section === tab.id}
+                                className={cn(
+                                    'h-9 rounded-full border px-3 text-sm font-medium transition-colors',
+                                    section === tab.id
+                                        ? 'border-neutral-600 bg-neutral-800 text-neutral-100'
+                                        : 'border-transparent text-neutral-400 hover:border-neutral-800 hover:text-neutral-300'
+                                )}
+                            >
+                                {tab.label}
+                                {tab.count > 0 && <span className="ml-1.5 text-xs tabular-nums text-neutral-400">{tab.count}</span>}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
-                <div className="ml-auto flex items-center gap-1">
-                    {section !== 'trash' && (
-                        <div className="flex items-center gap-0.5 bg-gray-900/50 rounded-lg p-0.5 border border-gray-700/50"
-                             role="tablist" aria-label="View mode">
-                            {MODES.map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => chooseMode(tab.id)}
-                                    role="tab"
-                                    aria-selected={mode === tab.id}
-                                    aria-label={tab.label}
-                                    title={tab.label}
-                                    className={cn(
-                                        'p-1.5 rounded-md transition-colors',
-                                        mode === tab.id
-                                            ? 'bg-indigo-600/20 text-indigo-300'
-                                            : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
-                                    )}
-                                >
-                                    <tab.icon className="w-4 h-4"/>
-                                </button>
-                            ))}
-                        </div>
-                    )}
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={openCapture}
-                        aria-label="Capture a new note"
-                        title="Capture a new note"
-                        className="touch-target-48"
-                    >
-                        <PlusIcon className="w-4 h-4"/>
-                    </Button>
+                <div className="mb-6">
+                    <CaptureOmnibox autoFocus={section === 'all' && allNotes.length === 0 && !searchTerm} showSample/>
                 </div>
-            </header>
 
-            <div className={cn('flex-1 min-h-0', isDocumentMode ? 'overflow-y-auto' : 'overflow-hidden')}>
-                {filteredNotes.length === 0 ? (
-                    <div className="h-full flex items-center justify-center">
+                <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-1 rounded-xl border border-neutral-800 bg-neutral-900/60 p-1" role="tablist" aria-label="View mode">
+                        {MODES.map(item => (
+                            <button
+                                key={item.id}
+                                onClick={() => setNotesMode(item.id)}
+                                role="tab"
+                                aria-selected={activeMode === item.id}
+                                disabled={section === 'trash' && item.id !== 'list'}
+                                className={cn(
+                                    'flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-sm font-medium transition-colors',
+                                    activeMode === item.id
+                                        ? 'bg-neutral-800 text-neutral-100'
+                                        : 'text-neutral-400 hover:text-neutral-300',
+                                    section === 'trash' && item.id !== 'list' && 'opacity-30'
+                                )}
+                            >
+                                <item.icon className="h-4 w-4"/>
+                                <span className="hidden sm:inline">{item.label}</span>
+                            </button>
+                        ))}
+                    </div>
+                    <span className="text-sm text-neutral-400">
+                        {filteredNotes.length} {filteredNotes.length === 1 ? 'note' : 'notes'}
+                    </span>
+                </div>
+
+                {empty ? (
+                    <div className="flex min-h-[40vh] items-center justify-center">
                         <EmptyState
                             variant="illustrated"
                             illustration={<NotesEmptyIllustration/>}
-                            title={searchTerm ? 'No notes match your search' : section === 'trash' ? 'Trash is empty' : section === 'tasks' ? 'No tasks yet' : 'No notes yet'}
+                            title={searchTerm ? 'No notes match your search' : section === 'trash' ? 'Trash is empty' : section === 'tasks' ? 'No tasks yet' : 'Your first note starts above'}
                             description={searchTerm
                                 ? 'Try a different word, or clear the search to see every note.'
                                 : section === 'trash'
                                 ? 'Deleted notes appear here.'
                                 : section === 'tasks'
                                 ? 'Add a "task" tag or status property to create tasks.'
-                                : 'Capture your first thought in the inbox. It stays on this device.'}
-                            action={!searchTerm && section === 'all' && (
-                                <Button variant="primary" onClick={openCapture}>
-                                    Go to capture
-                                </Button>
-                            )}
+                                : 'Type what you need or offer. Press Enter to keep it. Matching happens on this device.'}
+                            action={!searchTerm && section === 'all' ? (
+                                <Button variant="primary" onClick={openCapture}>Write a note</Button>
+                            ) : undefined}
                         />
                     </div>
                 ) : activeMode === 'board' ? (
@@ -227,12 +229,42 @@ function NotesList({notes, section: storedSection, mode: storedMode, activeView}
                     <MapView/>
                 ) : activeMode === 'timeline' ? (
                     <TimelineView/>
+                ) : activeMode === 'list' ? (
+                    <div className="space-y-2" role="list">
+                        {filteredNotes.map(note => (
+                            <NoteListItem
+                                key={note.id}
+                                note={note}
+                                isSelected={selectedNoteId === note.id}
+                                onSelect={() => selectNote(note.id)}
+                                isTrash={section === 'trash'}
+                                onRestore={section === 'trash' ? () => restore(note) : undefined}
+                                onDelete={section === 'trash' ? () => setNoteToDelete(note) : undefined}
+                            />
+                        ))}
+                    </div>
                 ) : (
-                    <div className="max-w-3xl mx-auto px-4 md:px-6 py-4" role="list">
+                    <div
+                        className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-[repeat(auto-fill,minmax(320px,1fr))]"
+                        role="list"
+                        aria-label="Notes"
+                    >
                         {filteredNotes.map(renderNote)}
                     </div>
                 )}
             </div>
+
+            {isMobile && (
+                <button
+                    type="button"
+                    onClick={openCapture}
+                    aria-label="Capture a new note"
+                    className="fixed bottom-5 right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-neutral-100 text-neutral-950 shadow-xl"
+                >
+                    <PlusIcon className="h-6 w-6"/>
+                </button>
+            )}
+
             <ConfirmationModal
                 isOpen={!!noteToDelete}
                 onClose={() => setNoteToDelete(null)}
@@ -267,19 +299,15 @@ function Board({notes, renderNote}: {notes: Note[]; renderNote: (note: Note) => 
     }, [notes]);
 
     return (
-        <div className="flex items-start gap-4 px-4 md:px-6 py-4 overflow-x-auto" role="list" aria-label="Board">
+        <div className="flex items-start gap-4 overflow-x-auto pb-4" role="list" aria-label="Board">
             {columns.map(([status, columnNotes]) => (
-                <section
-                    key={status}
-                    role="listitem"
-                    className="w-64 shrink-0 rounded-xl border border-gray-800 bg-gray-900/40 animate-fade-in"
-                >
-                    <h2 className="flex items-center justify-between px-3 py-2 text-[11px] font-semibold uppercase tracking-wider text-gray-400">
+                <section key={status} role="listitem" className="w-72 shrink-0 rounded-xl border border-neutral-800 bg-neutral-900/40">
+                    <h3 className="flex items-center justify-between px-3 py-2 text-sm font-semibold text-neutral-400">
                         <span className="truncate" title={status === UNGROUPED ? 'No status' : status}>
                             {status === UNGROUPED ? 'No status' : status}
                         </span>
-                        <span className="text-gray-600 tabular-nums">{columnNotes.length}</span>
-                    </h2>
+                        <span className="text-neutral-400 tabular-nums">{columnNotes.length}</span>
+                    </h3>
                     <div className="space-y-2 p-2" role="list" aria-label={`${status === UNGROUPED ? 'No status' : status} notes`}>
                         {columnNotes.map(renderNote)}
                     </div>

@@ -18,7 +18,7 @@ import {useToast} from '../../hooks/useToast';
 export function DataTab() {
     const {notes} = useNotes();
     const {settings} = useSettings();
-    const {setActiveView} = useView();
+    const {setActiveView, setNotesSection} = useView();
     const demo = useDemoWorkspace();
     const {addToast} = useToast();
     const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -79,7 +79,7 @@ export function DataTab() {
     };
 
     return (
-        <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-8">
+        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-8">
 
             {/* Backup & Restore */}
             <ImportExportSection
@@ -91,11 +91,11 @@ export function DataTab() {
                 onImportFailed={handleImportFailed}
             />
 
-            <div className="border-t border-gray-700 pt-4 mt-4">
-                <h3 className="text-sm font-medium text-gray-300 mb-2">Friction Journal</h3>
-                <p className="text-xs text-gray-500 mb-3">
+            <div className="border-t border-neutral-700 pt-4 mt-4">
+                <h3 className="text-sm font-medium text-neutral-300 mb-2">Friction Journal</h3>
+                <p className="text-xs text-neutral-400 mb-3">
                     Export the local friction journal as JSONL. Then run{' '}
-                    <code className="px-1.5 py-0.5 bg-gray-800 rounded text-green-300 font-mono text-xs">
+                    <code className="px-1.5 py-0.5 bg-neutral-800 rounded text-green-300 font-mono text-xs">
                         pnpm loop import-journal {'<downloaded-file>'}
                     </code>{' '}
                     to merge it into the local journal used by the optimization loop.
@@ -104,18 +104,18 @@ export function DataTab() {
                     <Button variant="secondary" icon={DownloadIcon} onClick={handleExportFriction}>
                         Export Friction Journal (JSONL)
                     </Button>
-                    <span className="text-xs text-gray-500 self-center px-2">
+                    <span className="text-xs text-neutral-400 self-center px-2">
                         → <code className="font-mono">pnpm loop prioritize --source friction</code>
                     </span>
                 </div>
             </div>
 
-            <div className="border-t border-gray-700 pt-6">
-                <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">
+            <div className="border-t border-neutral-700 pt-6">
+                <h2 className="text-xl font-semibold text-neutral-100 mb-4 flex items-center gap-3">
                     <SparklesIcon className="h-6 w-6 text-purple-400"/>
                     Sample Workspace
                 </h2>
-                <p className="text-sm text-gray-400 mb-4">
+                <p className="text-sm text-neutral-400 mb-4">
                     Load a small local community of notes with requests, offers, an event, and places.
                     Existing notes are never overwritten.
                 </p>
@@ -131,18 +131,21 @@ export function DataTab() {
                 </div>
             </div>
 
-            <div className="border-t border-gray-700 pt-6">
-                <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">
+            <div className="border-t border-neutral-700 pt-6">
+                <h2 className="text-xl font-semibold text-neutral-100 mb-4 flex items-center gap-3">
                     <DocumentDuplicateIcon className="h-6 w-6 text-red-400"/>
                     Deleted Notes
                 </h2>
-                <p className="text-sm text-gray-400 mb-4">
+                <p className="text-sm text-neutral-400 mb-4">
                     Deleted notes can be restored or permanently removed. They are never expired automatically.
                 </p>
                 <Button
                     variant="secondary"
                     icon={DocumentDuplicateIcon}
-                    onClick={() => setActiveView('trash')}
+                    onClick={() => {
+                        setNotesSection('trash');
+                        setActiveView('notes');
+                    }}
                 >
                     Recently deleted
                 </Button>
@@ -156,7 +159,7 @@ export function DataTab() {
             <AutoBackupSection onBackupDue={() => {}}/>
 
             {quotaInfo && quotaInfo.percentUsed >= 80 && (
-                <div className="border-t border-gray-700 pt-6">
+                <div className="border-t border-neutral-700 pt-6">
                     <div className="flex items-center gap-3 p-4 bg-amber-900/30 border border-amber-700 rounded-lg">
                         <ExclamationTriangleIcon className="h-6 w-6 text-amber-400 flex-shrink-0"/>
                         <div className="flex-1 min-w-0">
@@ -171,8 +174,8 @@ export function DataTab() {
                 </div>
             )}
 
-            <div className="border-t border-gray-700 pt-6">
-                <p className="text-sm text-gray-400 mb-4">
+            <div className="border-t border-neutral-700 pt-6">
+                <p className="text-sm text-neutral-400 mb-4">
                     Your notes and settings are stored locally in your browser&apos;s
                     IndexedDB. Clearing data is irreversible.
                 </p>

@@ -25,8 +25,8 @@ export function LmConsentModal({isOpen, onClose, onAllow, onDecline, providerNam
                 </div>
 
                 <div>
-                    <div className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">What will be sent</div>
-                    <p className="rounded-xl border border-gray-700 bg-gray-900/70 p-3 text-sm text-gray-300 whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">
+                    <div className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">What will be sent</div>
+                    <p className="rounded-xl border border-neutral-700 bg-neutral-900/70 p-3 text-sm text-neutral-300 whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">
                         {text.trim()}
                     </p>
                 </div>

@@ -83,7 +83,7 @@ export function useEditorLogic({ note, onSave }: UseEditorLogicProps) {
 
     const handleFindMatches = useCallback(() => {
         setMatchingNoteId(dirtyNote.id);
-        setActiveView('network');
+        setActiveView('notes');
     }, [dirtyNote.id, setMatchingNoteId, setActiveView]);
 
     const handleNoteUpdate = useCallback((updates: Partial<Note>) => {

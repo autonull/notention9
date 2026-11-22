@@ -35,7 +35,7 @@ export function RelatedNotesPanel({
 
     if (displayRelated.length === 0 && displayBacklinks.length === 0) {
         return (
-            <div className="p-4 text-center text-xs text-gray-500 italic border-t border-gray-800">
+            <div className="p-4 text-center text-xs text-neutral-400 italic border-t border-neutral-800">
                 No related notes found.
             </div>
         );
@@ -46,20 +46,20 @@ export function RelatedNotesPanel({
     };
 
     return (
-        <div className="border-t border-gray-800">
-            <div className="px-4 py-3 bg-gray-900/50 border-b border-gray-700/30">
-                <h3 className="flex items-center gap-2 text-sm font-semibold text-gray-200">
+        <div className="border-t border-neutral-800">
+            <div className="px-4 py-3 bg-neutral-900/50 border-b border-neutral-700/30">
+                <h3 className="flex items-center gap-2 text-sm font-semibold text-neutral-200">
                     <SparklesIcon className="w-4 h-4 text-purple-400" />
                     See also
                 </h3>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-neutral-400 mt-1">
                     {displayRelated.length} related note{displayRelated.length !== 1 ? 's' : ''}{displayBacklinks.length > 0 ? ` · ${displayBacklinks.length} backlink${displayBacklinks.length !== 1 ? 's' : ''}` : ''}
                 </p>
             </div>
 
             {displayRelated.length > 0 && (
                 <div className="p-4 space-y-3">
-                    <div className="flex items-center gap-2 text-xs text-gray-500 uppercase tracking-wide">
+                    <div className="flex items-center gap-2 text-xs text-neutral-400 uppercase tracking-wide">
                         <span>Related by properties & tags</span>
                     </div>
                     {displayRelated.map((related, index) => (
@@ -74,8 +74,8 @@ export function RelatedNotesPanel({
             )}
 
             {displayBacklinks.length > 0 && (
-                <div className="p-4 space-y-3 border-t border-gray-800">
-                    <div className="flex items-center gap-2 text-xs text-gray-500 uppercase tracking-wide">
+                <div className="p-4 space-y-3 border-t border-neutral-800">
+                    <div className="flex items-center gap-2 text-xs text-neutral-400 uppercase tracking-wide">
                         <LinkIcon className="w-3 h-3" />
                         <span>Backlinks</span>
                     </div>
@@ -108,7 +108,7 @@ function RelatedNoteItem({ relatedNote, index, onClick }: RelatedNoteItemProps) 
             onClick={() => onClick(note)}
             className={cn(
                 'w-full text-left p-3 rounded-lg transition-all',
-                'hover:bg-gray-800/50 border border-gray-700/50',
+                'hover:bg-neutral-800/50 border border-neutral-700/50',
                 'focus:outline-none focus:ring-2 focus:ring-purple-500/50'
             )}
             aria-label={`Open related note: ${title}`}
@@ -128,7 +128,7 @@ function RelatedNoteItem({ relatedNote, index, onClick }: RelatedNoteItemProps) 
                         {reasons.slice(0, 3).map((reason, i) => (
                             <span
                                 key={i}
-                                className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-gray-800 rounded text-gray-400"
+                                className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-neutral-800 rounded text-neutral-400"
                             >
                                 {reason.type === 'property' && <SparklesIcon className="w-2.5 h-2.5" />}
                                 {reason.type === 'tag' && <TagIcon className="w-2.5 h-2.5" />}
@@ -137,7 +137,7 @@ function RelatedNoteItem({ relatedNote, index, onClick }: RelatedNoteItemProps) 
                             </span>
                         ))}
                         {reasons.length > 3 && (
-                            <span className="text-[10px] text-gray-500">+{reasons.length - 3} more</span>
+                            <span className="text-xs text-neutral-400">+{reasons.length - 3} more</span>
                         )}
                     </div>
                 </div>
@@ -160,7 +160,7 @@ function BacklinkItem({ note, index, onClick }: BacklinkItemProps) {
             onClick={() => onClick(note)}
             className={cn(
                 'w-full text-left p-3 rounded-lg transition-all',
-                'hover:bg-gray-800/50 border border-gray-700/50',
+                'hover:bg-neutral-800/50 border border-neutral-700/50',
                 'focus:outline-none focus:ring-2 focus:ring-blue-500/50'
             )}
             aria-label={`Open backlink: ${title}`}
@@ -177,7 +177,7 @@ function BacklinkItem({ note, index, onClick }: BacklinkItemProps) {
                             .map((prop, i) => (
                                 <span
                                     key={i}
-                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] bg-blue-900/30 border border-blue-500/20 rounded text-blue-300"
+                                    className="inline-flex items-center gap-1 px-1.5 py-0.5 text-xs bg-blue-900/30 border border-blue-500/20 rounded text-blue-300"
                                 >
                                     <LinkIcon className="w-2.5 h-2.5" />
                                     <span className="truncate max-w-[120px]">{prop.key}: {prop.values.join(', ')}</span>

@@ -59,18 +59,18 @@ export const SuggestionList = forwardRef((props: SuggestionListProps, ref) => {
     }
 
     return (
-        <div className="bg-gray-800 border border-gray-700 rounded-lg shadow-xl overflow-hidden min-w-[200px] z-50">
+        <div className="bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl overflow-hidden min-w-[200px] z-50">
             {props.items.map((item, index) => (
                 <button
                     key={index}
                     className={`block w-full text-left px-4 py-2 text-sm ${
-                        index === selectedIndex ? 'bg-blue-600 text-white' : 'text-gray-300 hover:bg-gray-700'
+                        index === selectedIndex ? 'bg-blue-600 text-white' : 'text-neutral-300 hover:bg-neutral-700'
                     }`}
                     onClick={() => selectItem(index)}
                 >
                     <div className="font-medium">{item.label}</div>
                     {item.description && (
-                        <div className={`text-xs ${index === selectedIndex ? 'text-blue-200' : 'text-gray-500'}`}>
+                        <div className={`text-xs ${index === selectedIndex ? 'text-blue-200' : 'text-neutral-400'}`}>
                             {item.description}
                         </div>
                     )}

@@ -9,7 +9,7 @@ export const getLogStyle = (type: string) => {
         case 'reuse':
             return 'border-blue-400 text-blue-300 bg-blue-900/10';
         default:
-            return 'border-gray-500 text-gray-400 bg-gray-800/20';
+            return 'border-neutral-500 text-neutral-400 bg-neutral-800/20';
     }
 };
 

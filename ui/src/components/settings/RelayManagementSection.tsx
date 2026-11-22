@@ -136,24 +136,24 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
     };
 
     return (
-        <div className="border-t border-gray-700 pt-6">
-            <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">
+        <div className="border-t border-neutral-700 pt-6">
+            <h2 className="text-xl font-semibold text-neutral-100 mb-4 flex items-center gap-3">
                 <NetworkIcon className="h-6 w-6 text-purple-400"/>
                 Network Relays
             </h2>
             <div className="space-y-4 max-w-lg">
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-neutral-400">
                     Manage the relays you connect to. These servers store and broadcast your notes.
                     Relays are automatically sorted by health (latency + success rate) for publishing.
                 </p>
 
-                <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
+                <div className="bg-neutral-800 rounded-lg overflow-hidden border border-neutral-700">
                     {currentRelays.map((relay, idx) => {
                         const health = relayHealth[relay];
                         const score = health?.score ?? 0.5;
                         return (
                             <div key={idx}
-                                 className="flex justify-between items-center px-4 py-3 border-b border-gray-700 last:border-0 hover:bg-gray-750">
+                                 className="flex justify-between items-center px-4 py-3 border-b border-neutral-700 last:border-0 hover:bg-neutral-750">
                                 <div className="flex items-center gap-3 flex-1 min-w-0">
                                     <span className={`font-mono text-sm truncate ${getHealthColor(score)}`}>{relay}</span>
                                     {health && (
@@ -165,7 +165,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                                 <div className="flex items-center gap-2">
                                     {health && (
                                         <>
-                                            <span className="text-[10px] text-gray-500 font-mono">
+                                            <span className="text-xs text-neutral-400 font-mono">
                                                 {health.latency}ms / {health.successRate}% ok
                                             </span>
                                             <IconButton
@@ -173,7 +173,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                                                 disabled={testingRelay === relay}
                                                 variant="ghost"
                                                 size="sm"
-                                                className="text-gray-500 hover:text-blue-400"
+                                                className="text-neutral-400 hover:text-blue-400"
                                                 title="Test Relay"
                                                 icon={ArrowPathIcon}
                                             />
@@ -183,7 +183,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                                         onClick={() => setRelayToRemove(relay)}
                                         variant="ghost"
                                         size="sm"
-                                        className="text-gray-500 hover:text-red-400"
+                                        className="text-neutral-400 hover:text-red-400"
                                         title="Remove Relay"
                                         icon={TrashIcon}
                                     />
@@ -192,7 +192,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                         );
                     })}
                     {currentRelays.length === 0 && (
-                        <div className="px-4 py-3 text-gray-500 text-sm italic">
+                        <div className="px-4 py-3 text-neutral-400 text-sm italic">
                             No relays configured. Using defaults internally if not set.
                         </div>
                     )}

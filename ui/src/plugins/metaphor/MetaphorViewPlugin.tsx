@@ -71,20 +71,20 @@ class MetaphorViewPlugin extends BasePlugin {
             const currentMetaphor = metaphorProp ? metaphorRegistry.getMetaphor(metaphorProp.values[0]) : metaphor;
 
             return (
-                <div className="p-4 border border-gray-700 rounded-lg bg-gray-900/50">
+                <div className="p-4 border border-neutral-700 rounded-lg bg-neutral-900/50">
                     <div className="flex items-center gap-3 mb-3">
                         <span className="text-2xl">{currentMetaphor?.icon || '📄'}</span>
                         <div>
-                            <h4 className="font-medium text-gray-100">{currentMetaphor?.name || 'Unknown Metaphor'}</h4>
-                            <p className="text-sm text-gray-400">{currentMetaphor?.description}</p>
+                            <h4 className="font-medium text-neutral-100">{currentMetaphor?.name || 'Unknown Metaphor'}</h4>
+                            <p className="text-sm text-neutral-400">{currentMetaphor?.description}</p>
                         </div>
                     </div>
                     <div className="space-y-2 text-sm">
                         {note.properties
                             .filter((p: any) => p.key !== 'metaphor')
                             .map((prop: any) => (
-                                <div key={`${prop.key}-${prop.operator}-${prop.values.join(',')}`} className="flex gap-2 text-gray-300">
-                                    <span className="text-gray-500 font-mono text-xs">{prop.key}:</span>
+                                <div key={`${prop.key}-${prop.operator}-${prop.values.join(',')}`} className="flex gap-2 text-neutral-300">
+                                    <span className="text-neutral-400 font-mono text-xs">{prop.key}:</span>
                                     <span>{prop.values.join(', ')}</span>
                                 </div>
                             ))}

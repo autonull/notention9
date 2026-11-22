@@ -14,17 +14,17 @@ export function LanguageTab() {
         <div className="space-y-6">
             <div>
                 <h3 className="text-lg font-semibold text-white mb-2">{t('settings.languageRegion')}</h3>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-neutral-400 text-sm mb-4">
                     {t('settings.language')}: Choose your preferred language. The interface will update immediately.
                 </p>
-                <div className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+                <div className="flex items-center justify-between p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-gray-700/50 rounded-lg text-blue-400">
+                        <div className="p-2 bg-neutral-700/50 rounded-lg text-blue-400">
                             <GlobeIcon className="w-5 h-5" />
                         </div>
                         <div>
                             <p className="text-white font-medium">{t('common.language')}</p>
-                            <p className="text-gray-500 text-sm">
+                            <p className="text-neutral-400 text-sm">
                                 {supportedLanguages.find(l => l.code === language)?.nativeName || language}
                             </p>
                         </div>
@@ -35,26 +35,26 @@ export function LanguageTab() {
 
             <div>
                 <h3 className="text-lg font-semibold text-white mb-2">{t('settings.textDirection')}</h3>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-neutral-400 text-sm mb-4">
                     {t('settings.currentDirection')}: <strong className="text-white">{directionLabel}</strong>.
                     {t('settings.autoDetermined')}
                 </p>
-                <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50">
+                <div className="p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
-                        <div className="p-3 bg-gray-700/50 rounded-lg">
-                            <p className="text-gray-400">{t('common.language')}</p>
+                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                            <p className="text-neutral-400">{t('common.language')}</p>
                             <p className="text-white font-medium">{language}</p>
                         </div>
-                        <div className="p-3 bg-gray-700/50 rounded-lg">
-                            <p className="text-gray-400">{t('settings.textDirection')}</p>
+                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                            <p className="text-neutral-400">{t('settings.textDirection')}</p>
                             <p className="text-white font-medium">{direction.toUpperCase()}</p>
                         </div>
-                        <div className="p-3 bg-gray-700/50 rounded-lg">
-                            <p className="text-gray-400">RTL</p>
+                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                            <p className="text-neutral-400">RTL</p>
                             <p className="text-white font-medium">{direction === 'rtl' ? t('common.yes') : t('common.no')}</p>
                         </div>
-                        <div className="p-3 bg-gray-700/50 rounded-lg">
-                            <p className="text-gray-400">Native Name</p>
+                        <div className="p-3 bg-neutral-700/50 rounded-lg">
+                            <p className="text-neutral-400">Native Name</p>
                             <p className="text-white font-medium">
                                 {supportedLanguages.find(l => l.code === language)?.nativeName || language}
                             </p>
@@ -65,7 +65,7 @@ export function LanguageTab() {
 
             <div>
                 <h3 className="text-lg font-semibold text-white mb-2">{t('settings.availableLanguages')}</h3>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-neutral-400 text-sm mb-4">
                     {t('settings.supportedLanguagesCount', {count: supportedLanguages.length})}
                 </p>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
@@ -75,7 +75,7 @@ export function LanguageTab() {
                             className={`p-3 rounded-lg border transition-all ${
                                 language === lang.code
                                     ? 'bg-blue-900/30 border-blue-500/50'
-                                    : 'bg-gray-800/50 border-gray-700/50 hover:border-gray-600'
+                                    : 'bg-neutral-800/50 border-neutral-700/50 hover:border-neutral-600'
                             }`}
                         >
                             <div className="flex items-center justify-between">
@@ -87,9 +87,9 @@ export function LanguageTab() {
                                 )}
                             </div>
                             {lang.name !== lang.nativeName && (
-                                <span className="text-xs text-gray-500">{lang.name}</span>
+                                <span className="text-xs text-neutral-400">{lang.name}</span>
                             )}
-                            <span className="text-xs text-gray-400">({lang.code})</span>
+                            <span className="text-xs text-neutral-400">({lang.code})</span>
                         </div>
                     ))}
                 </div>

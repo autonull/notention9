@@ -60,27 +60,27 @@ export function DiscoveredProperties({
     }
 
     return (
-        <div className="mb-4 bg-gray-800/30 rounded-lg p-3 border border-gray-700/50">
+        <div className="mb-4 bg-neutral-800/30 rounded-lg p-3 border border-neutral-700/50">
             <div className="flex items-center gap-2 mb-3">
                 <LightBulbIcon className="w-4 h-4 text-yellow-400" />
-                <span className="text-xs font-bold text-gray-300 uppercase tracking-wide">Discovered Properties</span>
+                <span className="text-xs font-bold text-neutral-300 uppercase tracking-wide">Discovered Properties</span>
             </div>
             <div className="grid grid-cols-1 gap-2">
                 {unknownProperties.map(({ key, count, inferredType }) => (
                     <div
                         key={key}
-                        className="flex items-center justify-between bg-gray-800 rounded border border-gray-700 p-2 hover:border-gray-600 transition-colors"
+                        className="flex items-center justify-between bg-neutral-800 rounded border border-neutral-700 p-2 hover:border-neutral-600 transition-colors"
                     >
                         <div className="flex flex-col min-w-0">
                             <div className="flex items-center gap-2">
-                                <span className="text-sm font-mono text-gray-200 truncate" title={key}>{key}</span>
+                                <span className="text-sm font-mono text-neutral-200 truncate" title={key}>{key}</span>
                                 {count > 1 && (
-                                    <span className="text-[10px] bg-gray-700 text-gray-400 px-1.5 py-0.5 rounded-full">
+                                    <span className="text-xs bg-neutral-700 text-neutral-400 px-1.5 py-0.5 rounded-full">
                                         {count}
                                     </span>
                                 )}
                             </div>
-                            <span className="text-[10px] text-gray-500 italic">
+                            <span className="text-xs text-neutral-400 italic">
                                 inferred: {inferredType}
                             </span>
                         </div>

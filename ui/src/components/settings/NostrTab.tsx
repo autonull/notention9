@@ -103,17 +103,17 @@ export function NostrTab({
     }, [settings.nostr.privkey]);
 
     return (
-        <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-8">
+        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-8">
 
             {/* Identity Section */}
             <div>
-                <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-neutral-100 mb-4 flex items-center gap-3">
                     <KeyIcon className="h-6 w-6 text-yellow-400"/>
                     Nostr Identity
                 </h2>
                 {settings.nostr.privkey && nsec && npub ? (
                     <div className="space-y-4">
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-neutral-400">
                             Your keys are stored locally on this device. Keep your private key
                             safe and do not share it.
                         </p>
@@ -131,7 +131,7 @@ export function NostrTab({
                 ) : (
                     <div className="text-center py-6 space-y-6">
                         <div className="space-y-2">
-                            <p className="text-gray-400">
+                            <p className="text-neutral-400">
                                 New to Nostr? Generate a fresh identity.
                             </p>
                             <Button
@@ -144,10 +144,10 @@ export function NostrTab({
                             </Button>
                         </div>
 
-                        <div className="border-t border-gray-700/50 w-1/2 mx-auto"></div>
+                        <div className="border-t border-neutral-700/50 w-1/2 mx-auto"></div>
 
                         <div className="max-w-md mx-auto space-y-2">
-                            <p className="text-gray-400 text-sm">
+                            <p className="text-neutral-400 text-sm">
                                 Already have an account? Import your private key.
                             </p>
                             <div className="flex gap-2">
@@ -178,8 +178,8 @@ export function NostrTab({
 
             {/* Profile Section */}
             {settings.nostr.privkey && (
-                <div className="border-t border-gray-700 pt-6">
-                    <h2 className="text-xl font-semibold text-gray-100 mb-4 flex items-center gap-3">
+                <div className="border-t border-neutral-700 pt-6">
+                    <h2 className="text-xl font-semibold text-neutral-100 mb-4 flex items-center gap-3">
                         <UserPlusIcon className="h-6 w-6 text-blue-400"/>
                         Public Profile
                     </h2>

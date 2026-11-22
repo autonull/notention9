@@ -180,7 +180,7 @@ export function SkillManagementView() {
     };
 
     return (
-        <div className="h-full bg-gray-900 p-4 flex flex-col overflow-y-auto text-gray-200">
+        <div className="h-full bg-neutral-900 p-4 flex flex-col overflow-y-auto text-neutral-200">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-2xl font-bold flex items-center gap-2">
                     <ShieldIcon className="h-6 w-6 text-blue-400" />
@@ -188,12 +188,12 @@ export function SkillManagementView() {
                 </h1>
             </div>
 
-            <div className="mb-6 p-4 bg-gray-800 rounded-lg border border-gray-700">
-                <h3 className="font-medium text-gray-300 mb-3">Approval Settings</h3>
+            <div className="mb-6 p-4 bg-neutral-800 rounded-lg border border-neutral-700">
+                <h3 className="font-medium text-neutral-300 mb-3">Approval Settings</h3>
                 <div className="flex items-center justify-between">
                     <div>
-                        <label className="font-medium text-gray-300">Require approval for skill execution</label>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <label className="font-medium text-neutral-300">Require approval for skill execution</label>
+                        <p className="text-sm text-neutral-400 mt-1">
                             When enabled, skills will request approval before executing external actions.
                         </p>
                     </div>
@@ -217,9 +217,9 @@ export function SkillManagementView() {
                                     </Badge>
                                     <Badge variant="outline" size="sm">v{skill.version}</Badge>
                                 </div>
-                                <p className="text-sm text-gray-400 mb-3">{skill.description}</p>
+                                <p className="text-sm text-neutral-400 mb-3">{skill.description}</p>
                                 
-                                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                                <div className="flex flex-wrap gap-4 text-sm text-neutral-400">
                                     <div className="flex items-center gap-1">
                                         <ClockIcon className="w-4 h-4" />
                                         <span>Last run: {formatTime(skill.lastExecuted)}</span>
@@ -254,22 +254,22 @@ export function SkillManagementView() {
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t border-gray-700 grid gap-3 sm:grid-cols-3">
-                            <div className="p-3 bg-gray-800 rounded-lg">
-                                <div className="text-xs text-gray-500 mb-1">External Domains</div>
-                                <div className="text-sm text-gray-300">
+                        <div className="mt-4 pt-4 border-t border-neutral-700 grid gap-3 sm:grid-cols-3">
+                            <div className="p-3 bg-neutral-800 rounded-lg">
+                                <div className="text-xs text-neutral-400 mb-1">External Domains</div>
+                                <div className="text-sm text-neutral-300">
                                     {skill.domains.length > 0 ? (
                                         skill.domains.map(d => (
                                             <span key={d} className="inline-block px-2 py-0.5 mr-1 mb-1 text-xs bg-purple-900/30 text-purple-300 rounded">{d}</span>
                                         ))
                                     ) : (
-                                        <span className="text-gray-500">None (local only)</span>
+                                        <span className="text-neutral-400">None (local only)</span>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-gray-800 rounded-lg">
-                                <div className="text-xs text-gray-500 mb-1">Authentication</div>
+                            <div className="p-3 bg-neutral-800 rounded-lg">
+                                <div className="text-xs text-neutral-400 mb-1">Authentication</div>
                                 <div className="text-sm">
                                     {skill.requiresAuth ? (
                                         <span className="text-yellow-400">Required</span>
@@ -279,8 +279,8 @@ export function SkillManagementView() {
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-gray-800 rounded-lg">
-                                <div className="text-xs text-gray-500 mb-1">Status</div>
+                            <div className="p-3 bg-neutral-800 rounded-lg">
+                                <div className="text-xs text-neutral-400 mb-1">Status</div>
                                 <div className="text-sm">
                                     {skill.approved ? (
                                         <span className="text-green-400 flex items-center gap-1">
@@ -299,20 +299,20 @@ export function SkillManagementView() {
 
                 {skills.length === 0 && (
                     <Card className="p-8 text-center">
-                        <ShieldIcon className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-300 mb-2">No skills registered</h3>
-                        <p className="text-gray-500">Skills will appear here when registered.</p>
+                        <ShieldIcon className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-neutral-300 mb-2">No skills registered</h3>
+                        <p className="text-neutral-400">Skills will appear here when registered.</p>
                     </Card>
                 )}
             </div>
 
             <div className="mt-6">
-                <h3 className="font-medium text-gray-300 mb-3">Execution History</h3>
+                <h3 className="font-medium text-neutral-300 mb-3">Execution History</h3>
                 <div className="max-h-64 overflow-y-auto">
                     {history.length === 0 ? (
                         <Card className="p-8 text-center">
-                            <ClockIcon className="w-12 h-12 text-gray-600 mx-auto mb-4" />
-                            <p className="text-gray-500">No execution history yet</p>
+                            <ClockIcon className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
+                            <p className="text-neutral-400">No execution history yet</p>
                         </Card>
                     ) : (
                         <div className="space-y-2">
@@ -326,10 +326,10 @@ export function SkillManagementView() {
                                             >
                                                 {record.success ? 'Success' : 'Failed'}
                                             </Badge>
-                                            <span className="font-mono text-sm text-gray-300">{record.skillId}</span>
-                                            <span className="text-xs text-gray-500">Note: {record.noteId.slice(0, 8)}...</span>
+                                            <span className="font-mono text-sm text-neutral-300">{record.skillId}</span>
+                                            <span className="text-xs text-neutral-400">Note: {record.noteId.slice(0, 8)}...</span>
                                         </div>
-                                        <span className="text-xs text-gray-500">
+                                        <span className="text-xs text-neutral-400">
                                             {formatTime(record.timestamp)}
                                         </span>
                                     </div>

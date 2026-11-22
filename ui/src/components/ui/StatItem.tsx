@@ -21,7 +21,7 @@ export function StatItem({
     className,
 }: StatItemProps) {
     const variantColors = {
-        default: 'text-gray-300',
+        default: 'text-neutral-300',
         primary: 'text-blue-400',
         success: 'text-green-400',
         warning: 'text-yellow-400',
@@ -37,14 +37,14 @@ export function StatItem({
     const trendColors = {
         up: 'text-green-400',
         down: 'text-red-400',
-        neutral: 'text-gray-500',
+        neutral: 'text-neutral-400',
     };
 
     return (
-        <div className={cn('bg-gray-800/50 rounded-xl p-4 border border-gray-700', className)}>
+        <div className={cn('bg-neutral-800/50 rounded-xl p-4 border border-neutral-700', className)}>
             <div className="flex items-start justify-between">
                 <div>
-                    <p className="text-xs text-gray-400 font-medium uppercase tracking-wide">{label}</p>
+                    <p className="text-xs text-neutral-400 font-medium uppercase tracking-wide">{label}</p>
                     <p className={cn('text-2xl font-bold mt-1', variantColors[variant])}>
                         {value}
                     </p>
@@ -55,7 +55,7 @@ export function StatItem({
                         </p>
                     )}
                 </div>
-                {icon && <div className="text-gray-500">{icon}</div>}
+                {icon && <div className="text-neutral-400">{icon}</div>}
             </div>
         </div>
     );

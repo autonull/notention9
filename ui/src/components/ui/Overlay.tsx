@@ -124,7 +124,7 @@ export function Drawer({
                 ref={contentRef}
                 tabIndex={-1}
                 className={cn(
-                    'relative flex flex-col bg-gray-900 border border-gray-700/50 shadow-2xl',
+                    'relative flex flex-col bg-neutral-900 border border-neutral-700/50 shadow-2xl',
                     'overflow-hidden flex-shrink-0',
                     sizeStyles[size],
                     positionStyles[position],
@@ -133,15 +133,15 @@ export function Drawer({
                 )}
             >
                 {(title || showCloseButton) && (
-                    <div className="flex items-start justify-between p-4 md:p-6 border-b border-gray-700/50 flex-shrink-0">
+                    <div className="flex items-start justify-between p-4 md:p-6 border-b border-neutral-700/50 flex-shrink-0">
                         <div>
                             {title && <h2 id="drawer-title" className="text-lg font-semibold text-white">{title}</h2>}
-                            {description && <p id="drawer-description" className="mt-1 text-sm text-gray-400">{description}</p>}
+                            {description && <p id="drawer-description" className="mt-1 text-sm text-neutral-400">{description}</p>}
                         </div>
                         {showCloseButton && (
                             <button
                                 onClick={onClose}
-                                className="p-1 text-gray-500 hover:text-gray-200 hover:bg-gray-800 rounded-lg transition-colors flex-shrink-0"
+                                className="p-1 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800 rounded-lg transition-colors flex-shrink-0"
                                 aria-label="Close"
                             >
                                 <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -252,7 +252,7 @@ export function Popover({
             <div
                 ref={contentRef}
                 className={cn(
-                    'fixed z-[600] bg-gray-900 border border-gray-700 rounded-xl shadow-2xl',
+                    'fixed z-[600] bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl',
                     'animate-scale-in',
                     'max-w-xs w-auto p-2',
                     className
@@ -306,10 +306,10 @@ export function Tooltip({content, children, position = 'top', delay = 200, class
     };
 
     const arrowStyles = {
-        top: 'top-full left-1/2 -translate-x-1/2 border-t-gray-800',
-        bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-gray-800',
-        left: 'left-full top-1/2 -translate-y-1/2 border-l-gray-800',
-        right: 'right-full top-1/2 -translate-y-1/2 border-r-gray-800',
+        top: 'top-full left-1/2 -translate-x-1/2 border-t-neutral-800',
+        bottom: 'bottom-full left-1/2 -translate-x-1/2 border-b-neutral-800',
+        left: 'left-full top-1/2 -translate-y-1/2 border-l-neutral-800',
+        right: 'right-full top-1/2 -translate-y-1/2 border-r-neutral-800',
     };
 
     return (
@@ -318,7 +318,7 @@ export function Tooltip({content, children, position = 'top', delay = 200, class
             {isVisible && (
                 <div
                     className={cn(
-                        'fixed z-[700] px-3 py-1.5 bg-gray-800 text-gray-100 text-xs',
+                        'fixed z-[700] px-3 py-1.5 bg-neutral-800 text-neutral-100 text-xs',
                         'rounded-lg shadow-xl whitespace-nowrap animate-fade-in',
                         'pointer-events-none',
                         positionStyles[position],
@@ -400,7 +400,7 @@ export function Dropdown({trigger, items, align = 'start', className = ''}: Drop
                 <div
                     ref={dropdownRef}
                     className={cn(
-                        'fixed z-[600] bg-gray-900 border border-gray-700 rounded-xl shadow-2xl',
+                        'fixed z-[600] bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl',
                         'animate-scale-in min-w-[180px] py-1',
                         align === 'end' ? 'right-0' : 'left-0',
                         'top-full mt-1.5',
@@ -410,7 +410,7 @@ export function Dropdown({trigger, items, align = 'start', className = ''}: Drop
                 >
                     {items.map((item, index) =>
                         item.divider ? (
-                            <hr key={`divider-${index}`} className="my-1 border-gray-700/50" role="separator" />
+                            <hr key={`divider-${index}`} className="my-1 border-neutral-700/50" role="separator" />
                         ) : (
                             <button
                                 key={item.label}
@@ -421,7 +421,7 @@ export function Dropdown({trigger, items, align = 'start', className = ''}: Drop
                                 disabled={item.disabled}
                                 className={cn(
                                     'w-full px-3 py-2 text-left text-sm flex items-center gap-2',
-                                    'text-gray-300 hover:bg-gray-800 hover:text-white',
+                                    'text-neutral-300 hover:bg-neutral-800 hover:text-white',
                                     'disabled:opacity-40 disabled:cursor-not-allowed',
                                     item.danger && 'text-red-400 hover:bg-red-900/30'
                                 )}
@@ -430,7 +430,7 @@ export function Dropdown({trigger, items, align = 'start', className = ''}: Drop
                             >
                                 {item.icon && <span className="w-4 h-4 flex-shrink-0" aria-hidden="true">{item.icon}</span>}
                                 <span className="flex-1">{item.label}</span>
-                                {item.shortcut && <span className="text-xs text-gray-500 font-mono">{item.shortcut}</span>}
+                                {item.shortcut && <span className="text-xs text-neutral-400 font-mono">{item.shortcut}</span>}
                             </button>
                         )
                     )}
@@ -534,41 +534,41 @@ export function CommandPalette({
 
     return (
         <div className="fixed inset-0 z-[600] flex items-start justify-center pt-[15vh] bg-black/70 backdrop-blur-sm animate-fade-in" onClick={onClose}>
-            <div className={cn('bg-gray-800 rounded-xl shadow-2xl border border-gray-700 w-full max-w-2xl overflow-hidden flex flex-col max-h-[60vh] animate-slide-in-up', className)} onClick={(e) => e.stopPropagation()}>
+            <div className={cn('bg-neutral-800 rounded-xl shadow-2xl border border-neutral-700 w-full max-w-2xl overflow-hidden flex flex-col max-h-[60vh] animate-slide-in-up', className)} onClick={(e) => e.stopPropagation()}>
                 {(title || placeholder) && (
-                    <div className="flex items-center p-4 border-b border-gray-700/50">
+                    <div className="flex items-center p-4 border-b border-neutral-700/50">
                         {title && <h3 className="font-semibold text-white">{title}</h3>}
                         <div className="relative flex-1 mx-4">
-                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
                             </svg>
                             <input
                                 ref={inputRef}
                                 type="text"
-                                className="w-full bg-transparent pl-10 pr-4 py-2 text-lg text-white placeholder-gray-500 focus:outline-none"
+                                className="w-full bg-transparent pl-10 pr-4 py-2 text-lg text-white placeholder-neutral-400 focus:outline-none"
                                 placeholder={placeholder}
                                 value={query}
                                 onChange={(e) => setQuery(e.target.value)}
                                 onKeyDown={handleKeyDown}
                             />
-                            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 bg-gray-700 px-1.5 rounded">Esc</kbd>
+                            <kbd className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 bg-neutral-700 px-1.5 rounded">Esc</kbd>
                         </div>
                     </div>
                 )}
                 <div className="overflow-y-auto flex-1 p-2 space-y-1 custom-scrollbar">
                     {filteredItems.length === 0 && query && (
-                        <div className="p-8 text-center text-gray-500">No results found for "{query}"</div>
+                        <div className="p-8 text-center text-neutral-400">No results found for "{query}"</div>
                     )}
                     {filteredItems.length === 0 && !query && (
                         <div className="p-4 space-y-4">
-                            <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                            <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
                                 Keyboard Shortcuts
                             </div>
                             <div className="space-y-2 px-3">
                                 {DEFAULT_SHORTCUTS.map((shortcut) => (
-                                    <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-700/50 transition-colors">
-                                        <span className="text-sm text-gray-300">{shortcut.label}</span>
-                                        <kbd className="text-[10px] font-mono px-1.5 py-0.5 bg-gray-700 text-gray-400 rounded uppercase tracking-wider">
+                                    <div key={shortcut.keys.join('+')} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-neutral-700/50 transition-colors">
+                                        <span className="text-sm text-neutral-300">{shortcut.label}</span>
+                                        <kbd className="text-xs font-mono px-1.5 py-0.5 bg-neutral-700 text-neutral-400 rounded uppercase tracking-wider">
                                             {shortcut.keys.join(' + ')}
                                         </kbd>
                                     </div>
@@ -581,7 +581,7 @@ export function CommandPalette({
                         return (
                             <React.Fragment key={item.id}>
                                 {showCategory && (
-                                    <div className="px-3 pt-3 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">
+                                    <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
                                         {item.category}
                                     </div>
                                 )}
@@ -593,24 +593,24 @@ export function CommandPalette({
                                     onMouseEnter={() => setSelectedIndex(index)}
                                     className={cn(
                                         'w-full flex items-center p-3 rounded-lg transition-colors',
-                                        index === selectedIndex ? 'bg-blue-600/20 border border-blue-500/50' : 'hover:bg-gray-700/50'
+                                        index === selectedIndex ? 'bg-blue-600/20 border border-blue-500/50' : 'hover:bg-neutral-700/50'
                                     )}
                                 >
-                                    <div className={cn('mr-4 flex-shrink-0 w-5 h-5', index === selectedIndex ? 'text-blue-400' : 'text-gray-400')}>
+                                    <div className={cn('mr-4 flex-shrink-0 w-5 h-5', index === selectedIndex ? 'text-blue-400' : 'text-neutral-400')}>
                                         {item.icon}
                                     </div>
                                     <div className="flex-1 min-w-0 text-left">
-                                        <div className={cn('font-medium truncate', index === selectedIndex ? 'text-white' : 'text-gray-200')}>
+                                        <div className={cn('font-medium truncate', index === selectedIndex ? 'text-white' : 'text-neutral-200')}>
                                             {item.label}
                                         </div>
                                         {item.description && (
-                                            <div className={cn('text-sm truncate', index === selectedIndex ? 'text-blue-200' : 'text-gray-500')}>
+                                            <div className={cn('text-sm truncate', index === selectedIndex ? 'text-blue-200' : 'text-neutral-400')}>
                                                 {item.description}
                                             </div>
                                         )}
                                     </div>
                                     {item.shortcut && (
-                                        <kbd className={cn('ml-2 text-[10px] font-mono px-1.5 py-0.5 rounded uppercase tracking-wider', index === selectedIndex ? 'bg-blue-500/30 text-blue-200' : 'bg-gray-700 text-gray-500')}>
+                                        <kbd className={cn('ml-2 text-xs font-mono px-1.5 py-0.5 rounded uppercase tracking-wider', index === selectedIndex ? 'bg-blue-500/30 text-blue-200' : 'bg-neutral-700 text-neutral-400')}>
                                             {item.shortcut}
                                         </kbd>
                                     )}
@@ -619,7 +619,7 @@ export function CommandPalette({
                         );
                     })}
                 </div>
-                <div className="p-2 border-t border-gray-700/50 text-xs text-gray-500 flex justify-between px-4 py-2 bg-gray-900/30">
+                <div className="p-2 border-t border-neutral-700/50 text-xs text-neutral-400 flex justify-between px-4 py-2 bg-neutral-900/30">
                     <span>↑↓ navigate · ↵ select · Esc close</span>
                 </div>
             </div>
@@ -665,12 +665,12 @@ export function ConfirmationDialog({
             showCloseButton={false}
         >
             <div className="space-y-4">
-                <p className="text-gray-300">{message}</p>
+                <p className="text-neutral-300">{message}</p>
                 <div className="flex justify-end gap-3 pt-4">
                     <button
                         onClick={onClose}
                         disabled={loading}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-gray-300 hover:text-white hover:bg-gray-800 transition-colors"
+                        className="px-4 py-2 rounded-lg text-sm font-medium text-neutral-300 hover:text-white hover:bg-neutral-800 transition-colors"
                     >
                         {cancelLabel}
                     </button>

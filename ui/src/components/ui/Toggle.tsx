@@ -33,12 +33,12 @@ export function Toggle({
                 aria-checked={checked}
                 role="switch"
                 type="button"
-                className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 focus:ring-blue-500 ${
+                className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-neutral-900 focus:ring-blue-500 ${
                     disabled
-                        ? 'bg-gray-700 cursor-not-allowed'
+                        ? 'bg-neutral-700 cursor-not-allowed'
                         : checked
                             ? 'bg-blue-600'
-                            : 'bg-gray-600'
+                            : 'bg-neutral-600'
                 }`}
             >
         <span
@@ -50,7 +50,7 @@ export function Toggle({
             </button>
             {label && (
                 <span
-                    className={`text-sm font-medium ${disabled ? 'text-gray-500' : 'text-gray-300'} cursor-pointer`}
+                    className={`text-sm font-medium ${disabled ? 'text-neutral-400' : 'text-neutral-300'} cursor-pointer`}
                     onClick={!disabled ? () => onChange(!checked) : undefined}
                 >
             {label}

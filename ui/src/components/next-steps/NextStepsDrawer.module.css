@@ -111,7 +111,7 @@
   background: transparent;
   border: none;
   border-radius: 6px;
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted, #a3a3a3);
   cursor: pointer;
 }
 
@@ -182,7 +182,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted, #a3a3a3);
 }
 
 .stepsList {
@@ -205,7 +205,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted, #a3a3a3);
   cursor: pointer;
   list-style: none;
 }
@@ -235,7 +235,7 @@ details[open] .chevron {
   gap: 8px;
   padding: 48px 16px;
   text-align: center;
-  color: var(--color-text-muted, #9ca3af);
+  color: var(--color-text-muted, #a3a3a3);
   font-size: 14px;
 }
 
@@ -273,7 +273,7 @@ details[open] .chevron {
 
   .refreshButton,
   .closeButton {
-    color: var(--color-text-muted, #6b7280);
+    color: var(--color-text-muted, #737373);
   }
 
   .refreshButton:hover,
@@ -289,6 +289,6 @@ details[open] .chevron {
   .sectionTitle,
   .appliedSummary,
   .empty {
-    color: var(--color-text-muted, #6b7280);
+    color: var(--color-text-muted, #737373);
   }
 }

@@ -110,22 +110,22 @@ export function MatchDigestTab() {
     };
 
     return (
-        <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-6">
+        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-6">
             <div className="flex flex-col gap-2">
-                <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-neutral-100 flex items-center gap-3">
                     <InboxIcon className="h-6 w-6 text-green-400"/>
                     Match Digest & Notifications
                 </h2>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-neutral-400">
                     Opt-in daily or on-demand digest of new matches and pending actions. Respects quiet hours.
                 </p>
             </div>
 
-            <div className="p-4 bg-gray-800 rounded-lg border border-gray-700 space-y-4">
+            <div className="p-4 bg-neutral-800 rounded-lg border border-neutral-700 space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex-grow">
-                        <label className="font-medium text-gray-300">Enable Match Digest</label>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <label className="font-medium text-neutral-300">Enable Match Digest</label>
+                        <p className="text-sm text-neutral-400 mt-1">
                             Receive digests of new matches, accepted matches, pending actions, and completed actions.
                         </p>
                     </div>
@@ -137,10 +137,10 @@ export function MatchDigestTab() {
                 </div>
 
                 {matchDigestSettings.enabled && (
-                    <div className="space-y-4 pt-4 border-t border-gray-700">
+                    <div className="space-y-4 pt-4 border-t border-neutral-700">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Frequency</label>
+                                <label className="block text-sm font-medium text-neutral-300 mb-1">Frequency</label>
                                 <Select
                                     value={matchDigestSettings.frequency}
                                     onChange={(v) => handleSettingChange('frequency', v as any)}
@@ -153,7 +153,7 @@ export function MatchDigestTab() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1">Min Match Score</label>
+                                <label className="block text-sm font-medium text-neutral-300 mb-1">Min Match Score</label>
                                 <Select
                                     value={String(matchDigestSettings.minMatchScore)}
                                     onChange={(v) => handleSettingChange('minMatchScore', Number(v))}
@@ -169,7 +169,7 @@ export function MatchDigestTab() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center gap-2">
+                                <label className="block text-sm font-medium text-neutral-300 mb-1 flex items-center gap-2">
                                     <ClockIcon className="h-4 w-4" />
                                     Quiet Hours Start
                                 </label>
@@ -184,7 +184,7 @@ export function MatchDigestTab() {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-300 mb-1 flex items-center gap-2">
+                                <label className="block text-sm font-medium text-neutral-300 mb-1 flex items-center gap-2">
                                     <ClockIcon className="h-4 w-4" />
                                     Quiet Hours End
                                 </label>
@@ -199,10 +199,10 @@ export function MatchDigestTab() {
                             </div>
                         </div>
 
-                        <div className="pt-4 border-t border-gray-700">
-                            <label className="block text-sm font-medium text-gray-300 mb-2">Include in Digest</label>
+                        <div className="pt-4 border-t border-neutral-700">
+                            <label className="block text-sm font-medium text-neutral-300 mb-2">Include in Digest</label>
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                                <label className="flex items-center gap-2 text-sm text-gray-300">
+                                <label className="flex items-center gap-2 text-sm text-neutral-300">
                                     <Toggle
                                         checked={matchDigestSettings.includePendingActions}
                                         onChange={(v) => handleSettingChange('includePendingActions', v)}
@@ -210,7 +210,7 @@ export function MatchDigestTab() {
                                     />
                                     <span>⚡ Pending Actions</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-gray-300">
+                                <label className="flex items-center gap-2 text-sm text-neutral-300">
                                     <Toggle
                                         checked={matchDigestSettings.includeAcceptedMatches}
                                         onChange={(v) => handleSettingChange('includeAcceptedMatches', v)}
@@ -218,7 +218,7 @@ export function MatchDigestTab() {
                                     />
                                     <span>✅ Accepted Matches</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-gray-300">
+                                <label className="flex items-center gap-2 text-sm text-neutral-300">
                                     <Toggle
                                         checked={matchDigestSettings.includeDismissedMatches}
                                         onChange={(v) => handleSettingChange('includeDismissedMatches', v)}
@@ -226,7 +226,7 @@ export function MatchDigestTab() {
                                     />
                                     <span>❌ Dismissed Matches</span>
                                 </label>
-                                <label className="flex items-center gap-2 text-sm text-gray-300">
+                                <label className="flex items-center gap-2 text-sm text-neutral-300">
                                     <Toggle
                                         checked={matchDigestSettings.includeCompletedActions}
                                         onChange={(v) => handleSettingChange('includeCompletedActions', v)}
@@ -240,11 +240,11 @@ export function MatchDigestTab() {
                 )}
             </div>
 
-            <div className="p-4 bg-gray-800 rounded-lg border border-gray-700 space-y-4">
+            <div className="p-4 bg-neutral-800 rounded-lg border border-neutral-700 space-y-4">
                 <div className="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between">
                     <div className="flex-grow">
-                        <label className="block text-sm font-medium text-gray-300 mb-1">Generate Digest</label>
-                        <p className="text-sm text-gray-500">Create an on-demand digest of recent match activity.</p>
+                        <label className="block text-sm font-medium text-neutral-300 mb-1">Generate Digest</label>
+                        <p className="text-sm text-neutral-400">Create an on-demand digest of recent match activity.</p>
                     </div>
                     <div className="flex gap-2">
                         <Button
@@ -270,8 +270,8 @@ export function MatchDigestTab() {
                     </div>
                 </div>
 
-                <div className="pt-4 border-t border-gray-700">
-                    <label className="block text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                <div className="pt-4 border-t border-neutral-700">
+                    <label className="block text-sm font-medium text-neutral-300 mb-2 flex items-center gap-2">
                         <SettingsIcon className="h-4 w-4" />
                         Test Event (for development)
                     </label>
@@ -311,14 +311,14 @@ export function MatchDigestTab() {
             </div>
 
             {digest && (
-                <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+                <div className="p-4 bg-neutral-800 rounded-lg border border-neutral-700">
                     <div className="flex items-center justify-between mb-3">
-                        <h3 className="font-medium text-gray-100">Digest Output</h3>
+                        <h3 className="font-medium text-neutral-100">Digest Output</h3>
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setActiveView('text')}
                                 className={cn(
-                                    'px-2 py-1 text-xs rounded text-gray-400 hover:text-white',
+                                    'px-2 py-1 text-xs rounded text-neutral-400 hover:text-white',
                                     activeView === 'text' && 'bg-blue-900/30 text-blue-400'
                                 )}
                             >
@@ -327,7 +327,7 @@ export function MatchDigestTab() {
                             <button
                                 onClick={() => setActiveView('json')}
                                 className={cn(
-                                    'px-2 py-1 text-xs rounded text-gray-400 hover:text-white',
+                                    'px-2 py-1 text-xs rounded text-neutral-400 hover:text-white',
                                     activeView === 'json' && 'bg-blue-900/30 text-blue-400'
                                 )}
                             >
@@ -335,7 +335,7 @@ export function MatchDigestTab() {
                             </button>
                         </div>
                     </div>
-                    <pre className="text-sm text-gray-300 bg-gray-950 p-4 rounded overflow-x-auto max-h-96 overflow-y-auto font-mono whitespace-pre-wrap">
+                    <pre className="text-sm text-neutral-300 bg-neutral-950 p-4 rounded overflow-x-auto max-h-96 overflow-y-auto font-mono whitespace-pre-wrap">
                         {digest}
                     </pre>
                 </div>

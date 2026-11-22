@@ -37,14 +37,14 @@ export function DashboardLocalMatch({notes, onSelectNote}: DashboardLocalMatchPr
                 <CheckCircleIcon className="w-4 h-4"/> Match found locally
             </div>
             <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <div className="flex-1 min-w-0 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50">
-                    <div className="text-sm text-gray-400 truncate">{localMatch.request.title}</div>
-                    <div className="text-gray-500 text-xs my-1">matches</div>
+                <div className="flex-1 min-w-0 p-4 bg-neutral-900/50 rounded-xl border border-neutral-700/50">
+                    <div className="text-sm text-neutral-400 truncate">{localMatch.request.title}</div>
+                    <div className="text-neutral-400 text-xs my-1">matches</div>
                     <div className="font-semibold text-white truncate">{localMatch.note.title}</div>
                 </div>
                 <div className="text-center md:text-right flex-shrink-0">
                     <div className="text-3xl font-bold text-green-300">{Math.round(localMatch.result.score * 100)}%</div>
-                    <div className="text-xs text-gray-500">{localMatch.result.matches.length} satisfied · {localMatch.result.conflicts.length} conflicting</div>
+                    <div className="text-xs text-neutral-400">{localMatch.result.matches.length} satisfied · {localMatch.result.conflicts.length} conflicting</div>
                     <div className="mt-3 flex flex-wrap justify-center md:justify-end gap-2">
                         <Button
                             size="sm"

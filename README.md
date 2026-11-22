@@ -10,10 +10,10 @@ Everything is a note: memory, queries, and an interface to automation.
 
 ## 📸 A look inside
 
-[![Inbox populated](doc/screenshot/inbox/populated.png)](doc/screenshot/README.md)
-[![Editor with structured details](doc/screenshot/editor/property-chips.png)](doc/screenshot/README.md)
-[![Add a structured detail](doc/screenshot/editor/add-detail.png)](doc/screenshot/README.md)
-[![Local match results](doc/screenshot/matching/results.png)](doc/screenshot/README.md)
+[![Notes canvas](doc/screenshot/notes/grid.png)](doc/screenshot/README.md)
+[![Note detail and context rail](doc/screenshot/note/detail.png)](doc/screenshot/README.md)
+[![One capture field](doc/screenshot/capture/composer.png)](doc/screenshot/README.md)
+[![Matches in the note rail](doc/screenshot/note/context.png)](doc/screenshot/README.md)
 
 Browse the full generated gallery in [`doc/screenshot/README.md`](doc/screenshot/README.md).
 
@@ -194,7 +194,8 @@ Node.js 20 or newer and pnpm are expected. Install dependencies once, then choos
 | Run tests | `pnpm test` |
 | Journey E2E | `pnpm run test:e2e` |
 | Generate screenshots | `pnpm run screenshots` |
-| Refresh one screenshot group | `pnpm screenshot editor` |
+| Refresh one screenshot | `pnpm screenshot notes` |
+| Typecheck + axe + golden path | `pnpm check:ui` |
 | One UI test file | `pnpm test:ui:one src/tests/components/EditorManager.test.tsx` |
 | Local relay | `pnpm run relay -- --port 7000` |
 | UI plus agent and relay | `pnpm run dev:demo` |

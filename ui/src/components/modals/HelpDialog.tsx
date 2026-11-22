@@ -24,24 +24,24 @@ export function HelpDialog({isOpen, onClose, onAddDetail}: {isOpen: boolean; onC
         <Modal isOpen={isOpen} onClose={onClose} title="Help & Shortcuts" className="max-w-2xl">
             <div className="space-y-6 overflow-y-auto custom-scrollbar pr-1">
                 <section>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Concepts</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Concepts</h4>
                     <div className="grid gap-3 sm:grid-cols-2">
                         {CONCEPTS.map(({title, body}) => (
-                            <div key={title} className="rounded-xl border border-gray-700/60 bg-gray-900/60 p-4">
-                                <div className="font-semibold text-gray-100 mb-1">{title}</div>
-                                <p className="text-sm text-gray-400 leading-relaxed">{body}</p>
+                            <div key={title} className="rounded-xl border border-neutral-700/60 bg-neutral-900/60 p-4">
+                                <div className="font-semibold text-neutral-100 mb-1">{title}</div>
+                                <p className="text-sm text-neutral-400 leading-relaxed">{body}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 <section>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">Keyboard</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Keyboard</h4>
                     <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
                         {SHORTCUTS.map(([label, keys]) => (
-                            <div key={label} className="flex items-center justify-between text-sm text-gray-400">
+                            <div key={label} className="flex items-center justify-between text-sm text-neutral-400">
                                 <span>{label}</span>
-                                <kbd className="rounded border border-gray-600/40 bg-gray-700/50 px-1.5 py-0.5 text-xs text-gray-300">{keys}</kbd>
+                                <kbd className="rounded border border-neutral-600/40 bg-neutral-700/50 px-1.5 py-0.5 text-xs text-neutral-300">{keys}</kbd>
                             </div>
                         ))}
                     </div>
@@ -53,8 +53,8 @@ export function HelpDialog({isOpen, onClose, onAddDetail}: {isOpen: boolean; onC
                             <PlusCircleIcon className="w-5 h-5"/>
                         </div>
                         <div className="flex-1">
-                            <div className="font-semibold text-gray-100">Add a detail</div>
-                            <p className="text-sm text-gray-400 mt-1">Use the Add detail button in the editor toolbar, or press Ctrl Shift P. Pick what the detail is about, choose a comparison, and enter a value.</p>
+                            <div className="font-semibold text-neutral-100">Add a detail</div>
+                            <p className="text-sm text-neutral-400 mt-1">Use the Add detail button in the editor toolbar, or press Ctrl Shift P. Pick what the detail is about, choose a comparison, and enter a value.</p>
                             {onAddDetail && (
                                 <button
                                     onClick={onAddDetail}
@@ -68,13 +68,13 @@ export function HelpDialog({isOpen, onClose, onAddDetail}: {isOpen: boolean; onC
                 </section>
 
                 <section>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-3">What you can do</h4>
-                    <div className="grid gap-2 sm:grid-cols-2 text-sm text-gray-400">
-                        <div className="flex items-center gap-2"><TagIcon className="w-4 h-4 text-gray-500"/>Tag notes and filter by them</div>
-                        <div className="flex items-center gap-2"><SearchIcon className="w-4 h-4 text-gray-500"/>Search prose, tags, and details</div>
-                        <div className="flex items-center gap-2"><MapPinIcon className="w-4 h-4 text-gray-500"/>Place notes on the map</div>
-                        <div className="flex items-center gap-2"><SparklesIcon className="w-4 h-4 text-gray-500"/>Extract details from text</div>
-                        <div className="flex items-center gap-2"><KeyIcon className="w-4 h-4 text-gray-500"/>No model is needed to use the app</div>
+                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">What you can do</h4>
+                    <div className="grid gap-2 sm:grid-cols-2 text-sm text-neutral-400">
+                        <div className="flex items-center gap-2"><TagIcon className="w-4 h-4 text-neutral-400"/>Tag notes and filter by them</div>
+                        <div className="flex items-center gap-2"><SearchIcon className="w-4 h-4 text-neutral-400"/>Search prose, tags, and details</div>
+                        <div className="flex items-center gap-2"><MapPinIcon className="w-4 h-4 text-neutral-400"/>Place notes on the map</div>
+                        <div className="flex items-center gap-2"><SparklesIcon className="w-4 h-4 text-neutral-400"/>Extract details from text</div>
+                        <div className="flex items-center gap-2"><KeyIcon className="w-4 h-4 text-neutral-400"/>No model is needed to use the app</div>
                     </div>
                 </section>
             </div>

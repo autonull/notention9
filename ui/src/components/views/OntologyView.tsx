@@ -103,13 +103,13 @@ export function OntologyView() {
     const safeActiveTab = activeTab === 'simulator' ? 'graph' : activeTab;
 
     return (
-        <div className="p-4 md:p-6 h-full overflow-y-auto bg-gray-900 text-white custom-scrollbar">
-            <div className="flex flex-col gap-3 mb-4 border-b border-gray-700/50 pb-4">
+        <div className="p-4 md:p-6 h-full overflow-y-auto bg-neutral-900 text-white custom-scrollbar">
+            <div className="flex flex-col gap-3 mb-4 border-b border-neutral-700/50 pb-4">
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <h2 className="text-xl font-bold text-white">Ontology</h2>
-                        <p className="text-sm text-gray-400">
+                        <p className="text-sm text-neutral-400">
                             The shared vocabulary of your network, built from the details in your notes.
                         </p>
                     </div>
@@ -117,7 +117,7 @@ export function OntologyView() {
                     <div className="flex items-center gap-2">
                         {safeActiveTab === 'graph' && (
                             <div className="flex items-center gap-2 mr-2">
-                                <span className="text-xs text-gray-400 hidden sm:inline">Edit Mode</span>
+                                <span className="text-xs text-neutral-400 hidden sm:inline">Edit Mode</span>
                                 <Toggle checked={isEditing} onChange={() => setIsEditing(p => !p)}/>
                             </div>
                         )}
@@ -127,7 +127,7 @@ export function OntologyView() {
                                 tabs={tabs}
                                 activeTab={safeActiveTab}
                                 onChange={(id: string) => setActiveTab(id as OntologyTab)}
-                                className="bg-gray-800 p-1 rounded-lg"
+                                className="bg-neutral-800 p-1 rounded-lg"
                             />
                         </div>
                     </div>
@@ -174,7 +174,7 @@ export function OntologyView() {
                         </div>
 
                         {suggestions.length === 0 ? (
-                            <div className="text-center text-gray-500 py-12">
+                            <div className="text-center text-neutral-400 py-12">
                                 No suggestions yet. Start using new properties in your notes!
                             </div>
                         ) : (
@@ -217,9 +217,9 @@ export function OntologyView() {
                             </div>
                         )}
 
-                        <div className="bg-gray-900/70 p-6 rounded-lg border border-gray-700/50">
+                        <div className="bg-neutral-900/70 p-6 rounded-lg border border-neutral-700/50">
                             {ontology.length === 0 ? (
-                                <div className="text-center text-gray-500 py-12">
+                                <div className="text-center text-neutral-400 py-12">
                                     <p>Ontology is empty.</p>
                                     <p className="text-sm mt-2">Start writing notes with properties to seed the
                                         graph.</p>

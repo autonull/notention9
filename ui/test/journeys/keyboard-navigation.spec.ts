@@ -30,14 +30,14 @@ test.describe('Keyboard Navigation', () => {
         await expect(focused).toBeVisible();
     });
 
-    test('Ctrl+N focuses the single capture field', async ({page}) => {
+    test('Ctrl+N opens the one composer', async ({page}) => {
         await page.keyboard.press('Control+N');
-        await expect(page.getByTestId('quick-capture-input')).toBeFocused();
+        await expect(page.getByTestId('capture-composer-input')).toBeFocused();
     });
 
-    test('Command palette opens with Ctrl+K', async ({page}) => {
+    test('Search overlay opens with Ctrl+K', async ({page}) => {
         await page.keyboard.press('Control+K');
-        await expect(page.locator('[role="dialog"]:has-text("Command")')).toBeVisible();
+        await expect(page.getByRole('dialog', {name: 'Search'})).toBeVisible();
     });
 
     test('Escape closes modals/dialogs', async ({page}) => {
@@ -63,12 +63,12 @@ test.describe('Keyboard Navigation', () => {
         await expect(focused).toBeVisible();
     });
 
-    test('Capture flow: capture -> Enter -> Save (keyboard only)', async ({page}) => {
+    test('Capture flow: composer -> Keep note (keyboard only)', async ({page}) => {
         await page.keyboard.press('Control+N');
-        const capture = page.getByTestId('quick-capture-input');
-        await expect(capture).toBeFocused();
+        const composer = page.getByTestId('capture-composer-input');
+        await expect(composer).toBeFocused();
         await page.keyboard.type('Test note for keyboard navigation');
-        await page.keyboard.press('Enter');
+        await page.keyboard.press('Control+Enter');
 
         const editor = page.locator('[contenteditable="true"]');
         await expect(editor).toBeVisible();

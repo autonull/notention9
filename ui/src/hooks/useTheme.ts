@@ -34,7 +34,7 @@ export function useTheme() {
 
     // Apply accent color
     useEffect(() => {
-        const accentColor = settings.accentColor ?? '#2563eb';
+        const accentColor = settings.accentColor ?? '#404040';
         const root = document.documentElement;
 
         // Convert hex to RGB for CSS custom property
@@ -72,7 +72,7 @@ export function useTheme() {
 export function initializeTheme(settings: { theme?: string; density?: string; accentColor?: string }) {
     const theme = settings.theme ?? 'system';
     const density = settings.density ?? 'comfortable';
-    const accentColor = settings.accentColor ?? '#2563eb';
+    const accentColor = settings.accentColor ?? '#404040';
 
     const root = document.documentElement;
 

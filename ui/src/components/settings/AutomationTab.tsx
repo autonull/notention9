@@ -18,22 +18,22 @@ export function AutomationTab() {
     };
 
     return (
-        <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-6">
+        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-6">
             <div className="flex flex-col gap-2">
-                <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-neutral-100 flex items-center gap-3">
                     <SparklesIcon className="h-6 w-6 text-purple-400"/>
                     Automation
                 </h2>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-neutral-400">
                     Let the assistant help with repetitive tasks and smart suggestions.
                 </p>
             </div>
 
-            <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+            <div className="p-4 bg-neutral-800 rounded-lg border border-neutral-700">
                 <div className="flex items-center justify-between">
                     <div className="flex-grow">
-                        <label className="font-medium text-gray-300">Enable Automation</label>
-                        <p className="text-sm text-gray-500 mt-1">
+                        <label className="font-medium text-neutral-300">Enable Automation</label>
+                        <p className="text-sm text-neutral-400 mt-1">
                             When enabled, the assistant can auto-tag notes, suggest matches, and run automation rules.
                         </p>
                     </div>
@@ -58,10 +58,10 @@ export function AutomationTab() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                    <div className="flex items-center justify-between pt-4 border-t border-neutral-700">
                         <div className="flex-grow">
-                            <label className="font-medium text-gray-300">Advanced Settings</label>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <label className="font-medium text-neutral-300">Advanced Settings</label>
+                            <p className="text-sm text-neutral-400 mt-1">
                                 Configure agent connection, automation rules, and processing options.
                             </p>
                         </div>
@@ -86,13 +86,13 @@ export function AutomationTab() {
                     </div>
 
                     {showAdvanced && (
-                        <div className="space-y-4 pt-4 border-t border-gray-700 animate-fade-in">
-                            <div className="p-3 bg-gray-800 rounded-lg border border-gray-700">
+                        <div className="space-y-4 pt-4 border-t border-neutral-700 animate-fade-in">
+                            <div className="p-3 bg-neutral-800 rounded-lg border border-neutral-700">
                                 <h4 className="font-medium text-white mb-2 flex items-center gap-2">
                                     <InformationCircleIcon className="w-4 h-4 text-blue-400"/>
                                     Agent Connection
                                 </h4>
-                                <p className="text-sm text-gray-400 mb-3">
+                                <p className="text-sm text-neutral-400 mb-3">
                                     The agent handles semantic processing, skill execution, and memory management.
                                 </p>
                                 <div className="flex gap-2">
@@ -113,9 +113,9 @@ export function AutomationTab() {
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-gray-800 rounded-lg border border-gray-700">
+                            <div className="p-3 bg-neutral-800 rounded-lg border border-neutral-700">
                                 <h4 className="font-medium text-white mb-2">Automation Rules</h4>
-                                <p className="text-sm text-gray-400 mb-3">
+                                <p className="text-sm text-neutral-400 mb-3">
                                     Create <code className="text-blue-400">if/then</code> rules that run automatically on your notes.
                                 </p>
                                 <Button
@@ -132,8 +132,8 @@ export function AutomationTab() {
             )}
 
             {!enabled && (
-                <div className="p-3 bg-gray-800/50 border border-gray-700/30 rounded-lg text-center">
-                    <p className="text-sm text-gray-500">
+                <div className="p-3 bg-neutral-800/50 border border-neutral-700/30 rounded-lg text-center">
+                    <p className="text-sm text-neutral-400">
                         Enable automation to unlock smart features like auto-tagging, match suggestions, and conditional rules.
                     </p>
                 </div>

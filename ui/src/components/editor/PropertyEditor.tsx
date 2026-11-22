@@ -294,7 +294,7 @@ export function PropertyEditor({
             </div>
 
             {showExtraction && (
-                <div className="bg-gray-700/50 p-3 rounded mb-2 border border-purple-500/30">
+                <div className="bg-neutral-700/50 p-3 rounded mb-2 border border-purple-500/30">
                     <Textarea
                         placeholder="Describe property (e.g. 'budget < 200')"
                         value={extractionText}
@@ -326,7 +326,7 @@ export function PropertyEditor({
             )}
 
             <div className="relative">
-                <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">Key</label>
+                <label className="block text-xs uppercase font-bold text-neutral-400 mb-2 tracking-wider">Key</label>
                 <Input
                     list="property-keys"
                     placeholder="Key (e.g. price)"
@@ -349,14 +349,14 @@ export function PropertyEditor({
                     ))}
                 </datalist>
                 {type && !readonly && (
-                    <span className="absolute right-2 top-3 text-[10px] uppercase bg-gray-700 text-gray-300 px-1.5 py-0.5 rounded border border-gray-600">
+                    <span className="absolute right-2 top-3 text-xs uppercase bg-neutral-700 text-neutral-300 px-1.5 py-0.5 rounded border border-neutral-600">
                         {type}
                     </span>
                 )}
             </div>
 
             {description && (
-                <div className="text-xs text-gray-400 italic flex items-start gap-1 mb-2">
+                <div className="text-xs text-neutral-400 italic flex items-start gap-1 mb-2">
                     <InformationCircleIcon className="w-3 h-3 flex-shrink-0 mt-0.5"/>
                     {description}
                 </div>
@@ -364,7 +364,7 @@ export function PropertyEditor({
 
             <div className="grid grid-cols-[1fr,2fr] gap-3">
                 <div>
-                    <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">Comparison</label>
+                    <label className="block text-xs uppercase font-bold text-neutral-400 mb-2 tracking-wider">Comparison</label>
                     <Select
                         value={operator}
                         onChange={(e) => setOperator(e.target.value)}
@@ -373,7 +373,7 @@ export function PropertyEditor({
                     />
                 </div>
                 <div>
-                    <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">Value</label>
+                    <label className="block text-xs uppercase font-bold text-neutral-400 mb-2 tracking-wider">Value</label>
                     <EnhancedPropertyValueInput
                         value={value}
                         onChange={(val) => {
@@ -394,7 +394,7 @@ export function PropertyEditor({
             </div>
 
             {activeDef?.arity && (
-                <div className="text-xs text-gray-500 flex items-center gap-1 mb-2">
+                <div className="text-xs text-neutral-400 flex items-center gap-1 mb-2">
                     <span className="w-3 h-3" style={{background: `url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22%3E%3C/circle%3E%3Cline x1=%2212%22 y1=%228%22 x2=%2212%22 y2=%2216%22%3E%3C/line%3E%3Cline x1=%228%22 y1=%2212%22 x2=%2216%22 y2=%2212%22%3E%3C/line%3E%3C/svg%22")`}} />
                     {activeDef.arity.min > 0 && <span className="text-red-400">Required</span>}
                     {activeDef.arity.max && <span>Max {activeDef.arity.max} values</span>}
@@ -408,7 +408,7 @@ export function PropertyEditor({
                             key={s.key}
                             type="button"
                             onClick={() => setKey(s.key)}
-                            className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-purple-900/30 text-purple-300 border border-purple-800/50 hover:bg-purple-900/50 transition-colors"
+                            className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-900/30 text-purple-300 border border-purple-800/50 hover:bg-purple-900/50 transition-colors"
                         >
                             <SparklesIcon className="w-3 h-3" />
                             {s.key}
@@ -431,7 +431,7 @@ export function PropertyEditor({
                                 });
                                 setKey(s.key);
                             }}
-                            className="flex items-center gap-1 text-[10px] px-2 py-1 rounded-full bg-green-900/30 text-green-300 border border-green-800/50 hover:bg-green-900/50 transition-colors"
+                            className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-green-900/30 text-green-300 border border-green-800/50 hover:bg-green-900/50 transition-colors"
                             title={`Suggested by pattern: ${s.parentContext}`}
                         >
                             <SparklesIcon className="w-3 h-3" />
@@ -450,8 +450,8 @@ export function PropertyEditor({
                         </div>
                     )}
                     {activeDef.aliases && activeDef.aliases.length > 0 && (
-                        <div className="text-gray-500 pl-5">
-                            <span className="italic text-gray-600">Also known as: </span>
+                        <div className="text-neutral-400 pl-5">
+                            <span className="italic text-neutral-400">Also known as: </span>
                             {activeDef.aliases.join(', ')}
                         </div>
                     )}
@@ -505,7 +505,7 @@ export function PropertyEditor({
     }
 
     return (
-        <div className={`bg-gray-800 rounded-lg border space-y-4 animate-fade-in ${isModal ? 'shadow-xl p-4' : 'p-3 shadow-lg border-blue-500/50'}`}>
+        <div className={`bg-neutral-800 rounded-lg border space-y-4 animate-fade-in ${isModal ? 'shadow-xl p-4' : 'p-3 shadow-lg border-blue-500/50'}`}>
             {renderContent()}
         </div>
     );

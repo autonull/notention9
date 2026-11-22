@@ -143,16 +143,16 @@ export function TimelineView() {
 
     if (loading) {
         return (
-            <div className="h-full bg-gray-900 p-4 flex flex-col overflow-hidden">
-                <div className="flex flex-wrap items-center gap-4 mb-4 bg-gray-800 p-2 rounded-lg border border-gray-700">
+            <div className="h-full bg-neutral-900 p-4 flex flex-col overflow-hidden">
+                <div className="flex flex-wrap items-center gap-4 mb-4 bg-neutral-800 p-2 rounded-lg border border-neutral-700">
                     <Skeleton variant="rectangular" height={40} width={120} className="rounded-lg"/>
                     <Skeleton variant="rectangular" height={40} width={160} className="rounded-lg"/>
                     <Skeleton variant="rectangular" height={40} width={100} className="rounded-lg"/>
                 </div>
-                <div className="flex-1 bg-gray-800/50 rounded-lg p-4 animate-pulse-subtle">
+                <div className="flex-1 bg-neutral-800/50 rounded-lg p-4 animate-pulse-subtle">
                     <div className="space-y-3">
                         {Array.from({length: 6}).map((_, i) => (
-                            <div key={i} className="h-8 bg-gray-700/50 rounded animate-shimmer"/>
+                            <div key={i} className="h-8 bg-neutral-700/50 rounded animate-shimmer"/>
                         ))}
                     </div>
                 </div>
@@ -161,16 +161,16 @@ export function TimelineView() {
     }
 
     return (
-        <div className="h-full bg-gray-950 p-4 flex flex-col overflow-hidden">
-            <div className="flex-none flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-sm text-gray-400">
+        <div className="h-full bg-neutral-950 p-4 flex flex-col overflow-hidden">
+            <div className="flex-none flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-sm text-neutral-400">
                 <div
-                    className="flex items-center gap-1.5 rounded-lg border border-gray-800 bg-gray-900/60 pl-2 pr-1"
+                    className="flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-900/60 pl-2 pr-1"
                     title="Filter events by proximity to a location note"
                 >
                     <MapPinIcon className="w-4 h-4 text-blue-400"/>
                     <select
                         aria-label="Filter by location"
-                        className="bg-transparent py-1 text-sm text-gray-200 focus:outline-none max-w-[14rem]"
+                        className="bg-transparent py-1 text-sm text-neutral-200 focus:outline-none max-w-[14rem]"
                         value={locationFilterId}
                         onChange={(e) => setLocationFilterId(e.target.value)}
                     >
@@ -189,16 +189,16 @@ export function TimelineView() {
                             aria-label="Radius in kilometres"
                             value={filterRadius}
                             onChange={(e) => setFilterRadius(Number(e.target.value))}
-                            className="w-14 bg-transparent border-b border-gray-700 px-1 py-0.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                            className="w-14 bg-transparent border-b border-neutral-700 px-1 py-0.5 text-sm text-white focus:outline-none focus:border-blue-500"
                             min="1"
                         />
-                        <span className="text-xs text-gray-500">km</span>
+                        <span className="text-xs text-neutral-400">km</span>
                     </label>
                 )}
 
                 {events.length > 0 && (
                     <>
-                        <span aria-hidden="true" className="text-gray-700">·</span>
+                        <span aria-hidden="true" className="text-neutral-700">·</span>
                         <span>
                             {events.length} dated note{events.length === 1 ? '' : 's'}
                         </span>
@@ -223,7 +223,7 @@ export function TimelineView() {
                     variant="minimal"
                     title="No dated notes yet"
                     description="Add a start or deadline detail to a note to see it on the calendar."
-                    action={<Button variant="primary" onClick={() => setActiveView('inbox')}>Go to capture</Button>}
+                    action={<Button variant="primary" onClick={() => setActiveView('notes')}>Go to capture</Button>}
                 />
             ) : (
                 <div className="flex-1 min-h-0 overflow-hidden">

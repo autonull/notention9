@@ -14,7 +14,7 @@ export function LocalMatchesPanel({
 }: LocalMatchesPanelProps) {
     if (localMatches.length === 0) {
         return (
-            <div className="p-4 text-center text-xs text-gray-500 italic">
+            <div className="p-4 text-center text-xs text-neutral-400 italic">
                 No local matches found.
             </div>
         );

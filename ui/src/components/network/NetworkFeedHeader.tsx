@@ -55,13 +55,13 @@ export function NetworkFeedHeader({
             <div className="flex flex-wrap items-center gap-2">
                 {setActiveFilterId && ontology && (
                     <div
-                        className="flex flex-wrap items-center gap-0.5 bg-gray-900 rounded-lg p-1 border border-gray-700"
+                        className="flex flex-wrap items-center gap-0.5 bg-neutral-900 rounded-lg p-1 border border-neutral-700"
                         role="group"
                         aria-label="Feed filters"
                     >
                         <button
                             onClick={() => setActiveFilterId('all')}
-                            className={`whitespace-nowrap px-2 py-1 text-[11px] font-medium rounded-md transition-colors ${activeFilterId === 'all' ? 'bg-gray-700 text-white shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
+                            className={`whitespace-nowrap px-2 py-1 text-[11px] font-medium rounded-md transition-colors ${activeFilterId === 'all' ? 'bg-neutral-700 text-white shadow-sm' : 'text-neutral-400 hover:text-neutral-200'}`}
                         >
                             All
                         </button>
@@ -69,7 +69,7 @@ export function NetworkFeedHeader({
                             <button
                                 key={node.id}
                                 onClick={() => setActiveFilterId(node.id)}
-                                className={`whitespace-nowrap px-2 py-1 text-[11px] font-medium rounded-md transition-colors ${activeFilterId === node.id ? 'bg-blue-900/50 text-blue-200 shadow-sm' : 'text-gray-400 hover:text-gray-200'}`}
+                                className={`whitespace-nowrap px-2 py-1 text-[11px] font-medium rounded-md transition-colors ${activeFilterId === node.id ? 'bg-blue-900/50 text-blue-200 shadow-sm' : 'text-neutral-400 hover:text-neutral-200'}`}
                             >
                                 {node.label}
                             </button>
@@ -79,7 +79,7 @@ export function NetworkFeedHeader({
                                 type="button"
                                 onClick={() => setShowAllFilters(value => !value)}
                                 aria-expanded={showAllFilters}
-                                className="whitespace-nowrap px-2 py-1 text-[11px] font-medium rounded-md text-gray-400 hover:text-gray-200 hover:bg-gray-800"
+                                className="whitespace-nowrap px-2 py-1 text-[11px] font-medium rounded-md text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800"
                             >
                                 {showAllFilters ? 'Less' : `+${filterNodes.length - VISIBLE_FILTERS} more`}
                             </button>
@@ -103,7 +103,7 @@ export function NetworkFeedHeader({
                                     <button
                                         key={tag}
                                         onClick={() => setFilter(filter === tag ? '' : tag)}
-                                        className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${filter === tag ? 'bg-blue-900/50 border-blue-500 text-blue-200' : 'bg-gray-800 border-gray-700 text-gray-400 hover:text-white'}`}
+                                        className={`text-xs px-1.5 py-0.5 rounded border transition-colors ${filter === tag ? 'bg-blue-900/50 border-blue-500 text-blue-200' : 'bg-neutral-800 border-neutral-700 text-neutral-400 hover:text-white'}`}
                                     >
                                         #{tag}
                                     </button>

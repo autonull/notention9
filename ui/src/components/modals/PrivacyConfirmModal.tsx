@@ -54,10 +54,10 @@ export function PrivacyConfirmModal({
                 </div>
 
                 <div>
-                    <div className="text-xs font-bold uppercase tracking-widest text-gray-500 mb-2">What will be shared</div>
-                    <div className="rounded-xl border border-gray-700 bg-gray-900/70 p-4 space-y-3">
+                    <div className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-2">What will be shared</div>
+                    <div className="rounded-xl border border-neutral-700 bg-neutral-900/70 p-4 space-y-3">
                         <div className="font-semibold text-white">{noteTitle || 'Untitled Note'}</div>
-                        <p className="text-sm text-gray-300 whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">{preview?.body || 'No content'}</p>
+                        <p className="text-sm text-neutral-300 whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">{preview?.body || 'No content'}</p>
                         <div className="flex flex-wrap gap-1.5">
                             {note?.tags.map(tag => (
                                 <span key={tag} className="rounded-full bg-blue-500/10 px-2 py-0.5 text-xs text-blue-300">#{tag}</span>
@@ -71,9 +71,9 @@ export function PrivacyConfirmModal({
                     </div>
                 </div>
 
-                <details className="rounded-xl border border-gray-700/60 bg-gray-900/50">
-                    <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-gray-400 select-none">Raw event</summary>
-                    <pre className="max-h-56 overflow-auto border-t border-gray-800 p-4 text-xs text-gray-400 custom-scrollbar">{JSON.stringify(preview?.raw ?? {}, null, 2)}</pre>
+                <details className="rounded-xl border border-neutral-700/60 bg-neutral-900/50">
+                    <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-neutral-400 select-none">Raw event</summary>
+                    <pre className="max-h-56 overflow-auto border-t border-neutral-800 p-4 text-xs text-neutral-400 custom-scrollbar">{JSON.stringify(preview?.raw ?? {}, null, 2)}</pre>
                 </details>
 
                 <div className="flex justify-end gap-3 pt-1">

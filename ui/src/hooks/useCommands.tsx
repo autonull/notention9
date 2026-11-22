@@ -9,9 +9,7 @@ import {
     DownloadIcon,
     HelpIcon,
     PlusIcon,
-    SidebarIcon,
 } from '../components/ui/icons';
-import {ALL_NAV_VIEWS} from '../utils/navigation';
 import {modShortcut} from '../utils/platform';
 
 interface UseCommandsProps {
@@ -28,12 +26,9 @@ interface PaletteCommand {
 export function useCommands({setIsHelpOpen}: UseCommandsProps) {
     const {notes, addNote} = useNotes();
     const {
-        activeView,
-        setActiveView,
         selectedNoteId,
         setSelectedNoteId,
-        isSidebarOpen,
-        setIsSidebarOpen,
+        setActiveView,
     } = useView();
     const {addToast} = useToast();
 
@@ -43,16 +38,6 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
         setActiveView('notes');
     };
 
-    const viewCommands = ALL_NAV_VIEWS.map((item) => {
-        const Icon = item.icon;
-        return {
-            label: `Go to ${item.label}`,
-            icon: <Icon className="h-5 w-5"/>,
-            action: () => setActiveView(item.id),
-            shortcut: item.shortcut ? `Alt+${item.shortcut}` : undefined,
-        };
-    });
-
     const commands: PaletteCommand[] = [
         {
             ...SHARED_COMMANDS.NEW_NOTE,
@@ -60,13 +45,6 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
             action: handleNewNote,
             shortcut: modShortcut('N'),
         },
-        {
-            label: isSidebarOpen ? 'Hide Sidebar' : 'Show Sidebar',
-            icon: <SidebarIcon className="h-5 w-5"/>,
-            action: () => setIsSidebarOpen(!isSidebarOpen),
-            shortcut: modShortcut('\\'),
-        },
-        ...viewCommands,
         {
             ...SHARED_COMMANDS.HELP,
             label: 'Open Help & Shortcuts',
@@ -76,7 +54,7 @@ export function useCommands({setIsHelpOpen}: UseCommandsProps) {
         },
     ];
 
-    if (activeView === 'notes' && selectedNoteId) {
+    if (selectedNoteId) {
         commands.push({
             label: 'Copy Note ID',
             icon: <DocumentDuplicateIcon className="h-5 w-5"/>,

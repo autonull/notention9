@@ -1,6 +1,50 @@
 import type { Template } from './domain.js';
 
-export type View = 'notes' | 'network' | 'chat' | 'settings' | 'map' | 'timeline' | 'trash' | 'simulator' | 'inbox' | 'actions' | 'responses' | 'labels' | 'ontology' | 'skills' | 'capture' | 'connections';
+export type View = 'notes' | 'settings';
+
+export type NoteMode = 'canvas' | 'list' | 'board' | 'map' | 'timeline';
+
+export type NotesSection = 'all' | 'tasks' | 'tags' | 'trash';
+
+export type NoteTab = 'next' | 'matches' | 'replies';
+
+export type SettingsTab =
+  | 'general'
+  | 'appearance'
+  | 'language'
+  | 'shortcuts'
+  | 'accessibility'
+  | 'network'
+  | 'nostr'
+  | 'sync'
+  | 'relayDiscovery'
+  | 'ai'
+  | 'automation'
+  | 'matchDigest'
+  | 'data'
+  | 'metrics'
+  | 'revisions'
+  | 'labels'
+  | 'ontology'
+  | 'skills';
+
+/** Old hash segments still accepted by the redirect table. */
+export type LegacyView =
+  | 'inbox'
+  | 'capture'
+  | 'network'
+  | 'connections'
+  | 'chat'
+  | 'responses'
+  | 'actions'
+  | 'map'
+  | 'timeline'
+  | 'trash'
+  | 'labels'
+  | 'ontology'
+  | 'skills'
+  | 'simulator'
+  | 'dashboard';
 
 export type SidebarViewMode = 'list' | 'grid';
 

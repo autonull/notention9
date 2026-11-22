@@ -59,18 +59,18 @@ export function AITab({settings, setSettings}: AITabProps) {
     };
 
     return (
-        <div className="bg-gray-900/70 p-6 rounded-lg animate-fade-in space-y-6">
+        <div className="bg-neutral-900/70 p-6 rounded-lg animate-fade-in space-y-6">
             <div className="flex flex-col gap-2">
-                <h2 className="text-xl font-semibold text-gray-100 flex items-center gap-3">
+                <h2 className="text-xl font-semibold text-neutral-100 flex items-center gap-3">
                     <SparklesIcon className="h-6 w-6 text-blue-400"/>
                     AI Enhancements
                 </h2>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-neutral-400">
                     Configure how the Gardener AI works.
                 </p>
             </div>
 
-            <div className="p-4 bg-gray-800 rounded-lg border border-gray-700">
+            <div className="p-4 bg-neutral-800 rounded-lg border border-neutral-700">
                 <Select
                     label="AI Provider"
                     value={settings.aiProvider || 'remote'}
@@ -124,7 +124,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                                 Save
                             </Button>
                         </div>
-                        <p className="text-xs text-gray-400 mt-2">
+                        <p className="text-xs text-neutral-400 mt-2">
                             Your key is stored locally in your browser and sent directly to Google. It never touches our
                             servers.
                         </p>
@@ -132,13 +132,13 @@ export function AITab({settings, setSettings}: AITabProps) {
                 )}
             </div>
 
-            <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+            <div className="flex items-center justify-between pt-4 border-t border-neutral-700">
                 <div className="flex-grow">
                     <label htmlFor="ai-toggle"
-                           className={`font-medium ${isEnabled || (isWebLLM) ? 'text-gray-300' : 'text-gray-500'}`}>
+                           className={`font-medium ${isEnabled || (isWebLLM) ? 'text-neutral-300' : 'text-neutral-400'}`}>
                         Enable AI Features
                     </label>
-                    <p className="text-sm text-gray-400 mt-1">
+                    <p className="text-sm text-neutral-400 mt-1">
                         Enables features like note summarization, auto-tagging, and ontology gardening.
                     </p>
                 </div>
@@ -163,12 +163,12 @@ export function AITab({settings, setSettings}: AITabProps) {
             )}
 
             {!isWebLLM && isEnabled && (
-                <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                <div className="flex items-center justify-between pt-4 border-t border-neutral-700">
                     <div className="flex-grow">
-                        <label htmlFor="ai-remote-consent" className="font-medium text-gray-300">
+                        <label htmlFor="ai-remote-consent" className="font-medium text-neutral-300">
                             Allow sending note text to Google Gemini
                         </label>
-                        <p className="text-sm text-gray-400 mt-1">
+                        <p className="text-sm text-neutral-400 mt-1">
                             Off by default. When allowed, the text you describe is sent to the remote provider once you
                             confirm it in the composer.
                         </p>
@@ -183,13 +183,13 @@ export function AITab({settings, setSettings}: AITabProps) {
             )}
 
             {!isWebLLM && isEnabled && (
-                <div className="space-y-4 pt-4 border-t border-gray-700">
+                <div className="space-y-4 pt-4 border-t border-neutral-700">
                     <div className="flex items-center justify-between">
                         <div className="flex-grow">
-                            <label htmlFor="ai-pii-redaction" className="font-medium text-gray-300">
+                            <label htmlFor="ai-pii-redaction" className="font-medium text-neutral-300">
                                 Redact PII before sending
                             </label>
-                            <p className="text-sm text-gray-400 mt-1">
+                            <p className="text-sm text-neutral-400 mt-1">
                                 Automatically mask emails, phone numbers, and SSNs in text sent to the remote provider.
                                 Recommended for privacy.
                             </p>
@@ -204,10 +204,10 @@ export function AITab({settings, setSettings}: AITabProps) {
 
                     <div className="flex items-center justify-between">
                         <div className="flex-grow">
-                            <label htmlFor="ai-pii-override" className="font-medium text-gray-300">
+                            <label htmlFor="ai-pii-override" className="font-medium text-neutral-300">
                                 Allow sending unredacted (override)
                             </label>
-                            <p className="text-sm text-gray-400 mt-1">
+                            <p className="text-sm text-neutral-400 mt-1">
                                 Explicitly allow sending text with detected PII unmasked. Use with caution.
                             </p>
                         </div>

@@ -271,7 +271,7 @@ function VirtualizedListInner<T>(
                                 height: h,
                             }}
                         >
-                            <div className="h-full w-full bg-gray-800/50 rounded-lg" />
+                            <div className="h-full w-full bg-neutral-800/50 rounded-lg" />
                         </div>
                     ))}
                 </div>
@@ -289,7 +289,7 @@ function VirtualizedListInner<T>(
                 aria-label={ariaLabel}
             >
                 {emptyState || (
-                    <div className="text-center text-gray-500 p-8">
+                    <div className="text-center text-neutral-400 p-8">
                         <svg className="w-12 h-12 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                         </svg>

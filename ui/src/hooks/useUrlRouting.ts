@@ -1,80 +1,84 @@
-import {useEffect, useRef} from 'react';
-import type {View} from '@notention/core';
+import {useCallback, useEffect, useRef} from 'react';
+import {useView} from './useViewContext';
+import {parseRoute, routeToHash, type Route} from '../utils/navigation';
 
-interface UseUrlRoutingProps {
-    activeView: View;
-    setActiveView: (view: View) => void;
-    selectedNoteId: string | null;
-    setSelectedNoteId: (id: string | null) => void;
-}
-
-const VALID_VIEWS: View[] = [
-    'inbox',
-    'capture',
-    'notes',
-    'map',
-    'timeline',
-    'network',
-    'connections',
-    'chat',
-    'ontology',
-    'settings',
-    'trash',
-    'actions',
-    'responses',
-    'labels',
-    'skills',
-];
-
-const viewFromHash = (hash: string): {view: View; id: string | null} => {
-    if (hash === 'dashboard') return {view: 'inbox', id: null};
-    if (!hash) return {view: 'inbox', id: null};
-
-    const [view, id] = hash.split('/');
-    return {
-        view: VALID_VIEWS.includes(view as View) ? (view as View) : 'notes',
-        id: id || null,
-    };
+const focusCapture = () => {
+    requestAnimationFrame(() => {
+        window.dispatchEvent(new CustomEvent('focus-capture'));
+    });
 };
 
-export function useUrlRouting({
-                                  activeView,
-                                  setActiveView,
-                                  selectedNoteId,
-                                  setSelectedNoteId,
-                              }: UseUrlRoutingProps) {
-    // Set while the URL drives the view state; cleared once that state commits.
-    const pendingFromUrl = useRef<{view: View; id: string | null} | null>(null);
+export function useUrlRouting() {
+    const {
+        activeView,
+        setActiveView,
+        selectedNoteId,
+        setSelectedNoteId,
+        notesMode,
+        setNotesMode,
+        notesSection,
+        setNotesSection,
+        settingsTab,
+        setSettingsTab,
+        noteTab,
+        setNoteTab,
+        setIsPaletteOpen,
+    } = useView();
+
+    const pendingFromUrl = useRef<Route | null>(null);
+
+    const applyRoute = useCallback((route: Route) => {
+        pendingFromUrl.current = route;
+        setActiveView(route.view);
+        setSelectedNoteId(route.noteId);
+        setNotesMode(route.mode);
+        setNotesSection(route.section);
+        setSettingsTab(route.settingsTab);
+        setNoteTab(route.tab);
+        if (route.capture) focusCapture();
+        if (route.search || route.explore) setIsPaletteOpen(true);
+    }, [setActiveView, setSelectedNoteId, setNotesMode, setNotesSection, setSettingsTab, setNoteTab, setIsPaletteOpen]);
 
     useEffect(() => {
         const handleUrlChange = () => {
-            const next = viewFromHash(window.location.hash.slice(1));
-            pendingFromUrl.current = next;
-            setActiveView(next.view);
-            setSelectedNoteId(next.id);
+            const route = parseRoute(window.location.hash);
+            applyRoute(route);
+            const canonical = routeToHash(route);
+            if (window.location.hash !== canonical) {
+                window.history.replaceState(null, '', canonical);
+            }
         };
 
         handleUrlChange();
         window.addEventListener('popstate', handleUrlChange);
-        return () => window.removeEventListener('popstate', handleUrlChange);
-    }, [setActiveView, setSelectedNoteId]);
+        window.addEventListener('hashchange', handleUrlChange);
+        return () => {
+            window.removeEventListener('popstate', handleUrlChange);
+            window.removeEventListener('hashchange', handleUrlChange);
+        };
+    }, [applyRoute]);
 
     useEffect(() => {
+        const state: Route = {
+            view: activeView,
+            noteId: activeView === 'notes' ? selectedNoteId : null,
+            mode: notesMode,
+            section: notesSection,
+            tab: noteTab,
+            settingsTab,
+            capture: false,
+            explore: false,
+            search: false,
+        };
         const pending = pendingFromUrl.current;
         if (pending) {
-            if (pending.view === activeView && pending.id === selectedNoteId) {
-                pendingFromUrl.current = null;
-            }
+            pendingFromUrl.current = null;
             return;
         }
 
-        let hash = `#${activeView}`;
-        if (activeView === 'notes' && selectedNoteId) {
-            hash += `/${selectedNoteId}`;
-        }
-
+        const hash = routeToHash(state);
         if (window.location.hash !== hash) {
             window.history.pushState(null, '', hash);
         }
-    }, [activeView, selectedNoteId]);
+    }, [activeView, selectedNoteId, notesMode, notesSection, noteTab, settingsTab]);
 }

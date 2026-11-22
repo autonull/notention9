@@ -69,7 +69,7 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
     };
 
     return (
-        <div className="group relative bg-gray-900/50 border border-gray-700/50 rounded-xl p-4 hover:border-blue-500/50 hover:bg-gray-900 transition-all duration-200">
+        <div className="group relative bg-neutral-900/50 border border-neutral-700/50 rounded-xl p-4 hover:border-blue-500/50 hover:bg-neutral-900 transition-all duration-200">
             {/* Header with icon and frequency */}
             <div className="flex items-start justify-between gap-4 mb-3">
                 <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -79,8 +79,8 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
                         </svg>
                     </div>
                     <div className="min-w-0">
-                        <h4 className="font-medium text-gray-100 truncate">{note.title || 'Unnamed Automation'}</h4>
-                        <p className="text-xs text-gray-500 truncate">{note.content ? getTextFromHtml(note.content).slice(0, 100) : 'No description'}</p>
+                        <h4 className="font-medium text-neutral-100 truncate">{note.title || 'Unnamed Automation'}</h4>
+                        <p className="text-xs text-neutral-400 truncate">{note.content ? getTextFromHtml(note.content).slice(0, 100) : 'No description'}</p>
                     </div>
                 </div>
                 <span className={cn('flex-shrink-0 px-2 py-1 rounded-full text-xs font-medium border', frequencyColors[frequency] || frequencyColors.continuous)}>
@@ -95,13 +95,13 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
                     <div className="relative pl-8">
                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center">
                             <div className="w-2 h-2 rounded-full bg-blue-500" />
-                            <div className="absolute w-full h-0.5 bg-gray-700" />
+                            <div className="absolute w-full h-0.5 bg-neutral-700" />
                         </div>
                         <div className="space-y-2">
                             {conditions.map((condition, idx) => (
                                 <div key={`condition-${idx}`} className="flex items-center gap-2 text-sm">
-                                    <span className="px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-mono text-xs uppercase tracking-wider">IF</span>
-                                    <span className="text-gray-300 flex-1 truncate">{condition}</span>
+                                    <span className="px-2 py-0.5 rounded bg-neutral-800 text-neutral-400 font-mono text-xs uppercase tracking-wider">IF</span>
+                                    <span className="text-neutral-300 flex-1 truncate">{condition}</span>
                                 </div>
                             ))}
                         </div>
@@ -112,8 +112,8 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
                 {(conditions.length > 0 && actions.length > 0) && (
                     <div className="flex items-center justify-center pl-8">
                         <div className="relative">
-                            <div className="absolute left-0 right-0 h-0.5 bg-gray-700" />
-                            <div className="flex items-center gap-1 text-gray-500 text-xs">
+                            <div className="absolute left-0 right-0 h-0.5 bg-neutral-700" />
+                            <div className="flex items-center gap-1 text-neutral-400 text-xs">
                                 <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
                                 </svg>
@@ -128,13 +128,13 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
                     <div className="relative pl-8">
                         <div className="absolute left-0 top-1/2 -translate-y-1/2 w-6 h-6 flex items-center justify-center">
                             <div className="w-2 h-2 rounded-full bg-green-500" />
-                            <div className="absolute w-full h-0.5 bg-gray-700" />
+                            <div className="absolute w-full h-0.5 bg-neutral-700" />
                         </div>
                         <div className="space-y-2">
                             {actions.map((action, idx) => (
                                 <div key={`action-${idx}`} className="flex items-center gap-2 text-sm">
-                                    <span className="px-2 py-0.5 rounded bg-gray-800 text-gray-400 font-mono text-xs uppercase tracking-wider">DO</span>
-                                    <span className="text-gray-300 flex-1 truncate font-medium">{action}</span>
+                                    <span className="px-2 py-0.5 rounded bg-neutral-800 text-neutral-400 font-mono text-xs uppercase tracking-wider">DO</span>
+                                    <span className="text-neutral-300 flex-1 truncate font-medium">{action}</span>
                                 </div>
                             ))}
                         </div>
@@ -143,7 +143,7 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
 
                 {/* Empty state */}
                 {conditions.length === 0 && actions.length === 0 && (
-                    <div className="text-center py-6 text-gray-500 text-sm">
+                    <div className="text-center py-6 text-neutral-400 text-sm">
                         <p>No rules defined yet</p>
                         <p className="text-xs mt-1">Add <code className="text-blue-400">[@if:condition]</code> and <code className="text-green-400">[@then:action]</code> properties</p>
                     </div>
@@ -151,16 +151,16 @@ export function ConditionalAutomationView({note}: RuleCardProps) {
             </div>
 
             {/* Footer with tags and timestamp */}
-            <div className="flex items-center justify-between mt-4 pt-3 border-t border-gray-700/50">
+            <div className="flex items-center justify-between mt-4 pt-3 border-t border-neutral-700/50">
                 <div className="flex flex-wrap gap-1">
                     {note.tags.slice(0, 3).map(tag => (
-                        <span key={tag} className="px-1.5 py-0.5 text-[10px] font-medium bg-gray-800 text-gray-400 rounded">#{tag}</span>
+                        <span key={tag} className="px-1.5 py-0.5 text-xs font-medium bg-neutral-800 text-neutral-400 rounded">#{tag}</span>
                     ))}
                     {note.tags.length > 3 && (
-                        <span className="px-1.5 py-0.5 text-[10px] font-medium bg-gray-800 text-gray-500 rounded">+{note.tags.length - 3}</span>
+                        <span className="px-1.5 py-0.5 text-xs font-medium bg-neutral-800 text-neutral-400 rounded">+{note.tags.length - 3}</span>
                     )}
                 </div>
-                <span className="text-xs text-gray-500">{formatRelativeTime(note.updatedAt)}</span>
+                <span className="text-xs text-neutral-400">{formatRelativeTime(note.updatedAt)}</span>
             </div>
         </div>
     );

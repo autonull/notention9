@@ -1,6 +1,5 @@
 import React from 'react';
 import {ArrowLeftIcon, LockIcon} from '../ui/icons';
-import {TagInput} from './TagInput';
 import {IconButton} from '../ui/Button';
 import {EditorControls} from './EditorControls';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
@@ -46,11 +45,6 @@ export function EditorHeader({
     onPublish,
     isPublishing,
     isPublished,
-    tags,
-    onTagsChange,
-    onAutoTag,
-    isAutoTagging,
-    isApiKeyAvailable,
     onBack,
     onSaveTemplate,
     onExport,
@@ -69,7 +63,7 @@ export function EditorHeader({
     propertyCount = 0,
 }: EditorHeaderProps) {
     return (
-        <header className="flex-shrink-0 bg-gray-950/80 backdrop-blur border-b border-gray-800/80 sticky top-0 z-10">
+        <header className="flex-shrink-0 bg-neutral-950/80 backdrop-blur border-b border-neutral-800/80 sticky top-0 z-10">
             {/* Row 1: Back, Title, Privacy, Core Actions */}
             <div className="flex flex-wrap md:flex-nowrap items-center gap-2 px-4 py-2.5">
                 {onBack && (
@@ -79,7 +73,7 @@ export function EditorHeader({
                         icon={ArrowLeftIcon}
                         variant="secondary"
                         size="sm"
-                        className="md:hidden"
+                        className=""
                     />
                 )}
 
@@ -100,10 +94,10 @@ export function EditorHeader({
                             autoFocus={!title && !readOnly}
                             readOnly={readOnly}
                             disabled={readOnly}
-                            className="w-full bg-transparent border-0 text-2xl font-semibold text-gray-100 placeholder-gray-600 px-1 py-0.5 rounded hover:bg-white/5 focus:outline-none focus:ring-0 focus:bg-white/5"
+                            className="w-full bg-transparent border-0 text-h1 text-neutral-100 placeholder-neutral-600 px-1 py-0.5 rounded hover:bg-white/5 focus:outline-none focus:ring-0 focus:bg-white/5"
                         />
                     </div>
-                    {readOnly && <LockIcon className="h-4 w-4 text-gray-500 ml-2 flex-shrink-0"/>}
+                    {readOnly && <LockIcon className="h-4 w-4 text-neutral-400 ml-2 flex-shrink-0"/>}
                 </div>
 
                 <div className="flex items-center gap-2 basis-full justify-end md:basis-auto">
@@ -128,24 +122,11 @@ export function EditorHeader({
                         onRedo={onRedo}
                         missingProperties={missingProperties}
                         onAddProperty={onAddProperty}
-                        onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
-                        isAutoTagging={isAutoTagging}
                         isInspectorOpen={isInspectorOpen}
                         onToggleInspector={onToggleInspector}
                         propertyCount={propertyCount}
                     />
                 </div>
-            </div>
-
-            {/* Row 2: Tags */}
-            <div className="px-4 pb-2 animate-fade-in">
-                <TagInput
-                    tags={tags}
-                    onChange={onTagsChange}
-                    onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
-                    isAutoTagging={isAutoTagging}
-                    autoFocus={false}
-                />
             </div>
         </header>
     );

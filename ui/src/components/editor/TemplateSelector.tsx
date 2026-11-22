@@ -19,27 +19,27 @@ export function TemplateSelector({ontology, onSelect, onClose}: TemplateSelector
 
     return (
         <div
-            className="absolute top-14 left-4 z-50 bg-gray-800 border border-gray-700 rounded-lg shadow-xl p-4 w-64 animate-fade-in">
+            className="absolute top-14 left-4 z-50 bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl p-4 w-64 animate-fade-in">
             <div className="flex justify-between items-center mb-3">
-                <h3 className="text-sm font-bold text-gray-300 flex items-center gap-2">
+                <h3 className="text-sm font-bold text-neutral-300 flex items-center gap-2">
                     <CubeIcon className="w-4 h-4"/>
                     Templates
                 </h3>
-                <button onClick={onClose} className="text-gray-500 hover:text-white" aria-label="Close templates">&times;</button>
+                <button onClick={onClose} className="text-neutral-400 hover:text-white" aria-label="Close templates">&times;</button>
             </div>
             <div className="flex flex-col gap-2">
                 {templates.map(template => (
                     <button
                         key={template.id}
                         onClick={() => onSelect(template)}
-                        className="text-left text-sm p-2 hover:bg-gray-700 rounded text-gray-300 hover:text-white transition-colors"
+                        className="text-left text-sm p-2 hover:bg-neutral-700 rounded text-neutral-300 hover:text-white transition-colors"
                     >
                         <div className="font-medium">{template.actionLabel}</div>
-                        <div className="text-xs text-gray-500">{template.description ?? template.label}</div>
+                        <div className="text-xs text-neutral-400">{template.description ?? template.label}</div>
                     </button>
                 ))}
                 {templates.length === 0 && (
-                    <div className="text-xs text-gray-500 italic p-2">No templates found.</div>
+                    <div className="text-xs text-neutral-400 italic p-2">No templates found.</div>
                 )}
             </div>
         </div>

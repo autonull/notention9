@@ -128,26 +128,26 @@ export function ProfileHeader({
 
     return (
         <>
-            <div className="flex-shrink-0 p-4 border-b border-gray-700/50 flex items-center gap-4 bg-gray-900/50">
+            <div className="flex-shrink-0 p-4 border-b border-neutral-700/50 flex items-center gap-4 bg-neutral-900/50">
                 <Avatar
                     src={myProfile?.picture}
                     pubkey={pubkey}
                     size="xl"
-                    className="border-2 border-gray-600"
+                    className="border-2 border-neutral-600"
                 />
                 <div className="flex-grow">
                     <h2 className="text-xl font-bold text-white">
                         {myProfile?.name || 'Anonymous'}
                     </h2>
                     <p
-                        className="text-sm text-gray-400 font-mono cursor-pointer hover:text-blue-400"
+                        className="text-sm text-neutral-400 font-mono cursor-pointer hover:text-blue-400"
                         onClick={handleCopy}
                         title="Click to copy"
                     >
                         {formatNpub(npub)}
                     </p>
                     {myProfile?.about && (
-                        <p className="text-sm text-gray-300 mt-1">{myProfile.about}</p>
+                        <p className="text-sm text-neutral-300 mt-1">{myProfile.about}</p>
                     )}
                 </div>
                 <IconButton

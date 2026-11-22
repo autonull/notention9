@@ -5,7 +5,7 @@ import { PaletteIcon, MinimizeIcon, MaximizeIcon, SunIcon, MoonIcon, MonitorIcon
 import { cn } from '../../utils/ui';
 
 const ACCENT_COLORS = [
-    { name: 'Blue', value: '#2563eb' },
+    { name: 'Blue', value: '#404040' },
     { name: 'Violet', value: '#7c3aed' },
     { name: 'Green', value: '#16a34a' },
     { name: 'Orange', value: '#ea580c' },
@@ -20,7 +20,7 @@ export function AppearanceTab() {
 
     const theme = settings.theme ?? 'system';
     const density = settings.density ?? 'comfortable';
-    const accentColor = settings.accentColor ?? '#2563eb';
+    const accentColor = settings.accentColor ?? '#404040';
 
     const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
         setSettings({ ...settings, theme: newTheme });
@@ -38,7 +38,7 @@ export function AppearanceTab() {
         <div className="space-y-6">
             <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Theme</h3>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-neutral-400 text-sm mb-4">
                     Choose your preferred color scheme. System follows your OS setting.
                 </p>
                 <div className="grid grid-cols-3 gap-3">
@@ -54,19 +54,19 @@ export function AppearanceTab() {
                                 'p-4 rounded-lg border-2 transition-all duration-150 flex flex-col items-center gap-2',
                                 theme === option.id
                                     ? 'border-blue-500 bg-blue-900/30 text-blue-400'
-                                    : 'border-gray-700 bg-gray-800/50 text-white hover:border-gray-600 hover:bg-gray-800'
+                                    : 'border-neutral-700 bg-neutral-800/50 text-white hover:border-neutral-600 hover:bg-neutral-800'
                             )}
                             aria-pressed={theme === option.id}
                         >
-                            <span className="text-gray-400">{option.icon}</span>
+                            <span className="text-neutral-400">{option.icon}</span>
                             <span className="font-medium">{option.label}</span>
                         </button>
                     ))}
                 </div>
 
                 {/* System preference indicator */}
-                <div className="mt-3 p-3 bg-gray-800/30 rounded-lg border border-gray-700/30">
-                    <div className="flex items-center gap-2 text-xs text-gray-400">
+                <div className="mt-3 p-3 bg-neutral-800/30 rounded-lg border border-neutral-700/30">
+                    <div className="flex items-center gap-2 text-xs text-neutral-400">
                         <span>
                             System preference: <strong className="text-white">
                                 {window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light'}
@@ -79,7 +79,7 @@ export function AppearanceTab() {
 
             <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Density</h3>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-neutral-400 text-sm mb-4">
                     Adjust the spacing and size of UI elements.
                 </p>
                 <div className="grid grid-cols-2 gap-3">
@@ -94,15 +94,15 @@ export function AppearanceTab() {
                                 'p-4 rounded-lg border-2 transition-all duration-150 flex flex-col items-center gap-2 text-left',
                                 density === option.id
                                     ? 'border-blue-500 bg-blue-900/30 text-blue-400'
-                                    : 'border-gray-700 bg-gray-800/50 text-white hover:border-gray-600 hover:bg-gray-800'
+                                    : 'border-neutral-700 bg-neutral-800/50 text-white hover:border-neutral-600 hover:bg-neutral-800'
                             )}
                             aria-pressed={density === option.id}
                         >
                             <div className="flex items-center gap-2 w-full">
-                                <span className="text-gray-400">{option.icon}</span>
+                                <span className="text-neutral-400">{option.icon}</span>
                                 <span className="font-medium">{option.label}</span>
                             </div>
-                            <span className="text-xs text-gray-500 self-start ml-7">{option.description}</span>
+                            <span className="text-xs text-neutral-400 self-start ml-7">{option.description}</span>
                         </button>
                     ))}
                 </div>
@@ -110,7 +110,7 @@ export function AppearanceTab() {
 
             <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Accent Color</h3>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-neutral-400 text-sm mb-4">
                     Choose the primary color used for buttons, links, and highlights.
                 </p>
                 <div className="flex flex-wrap gap-3">
@@ -122,7 +122,7 @@ export function AppearanceTab() {
                                 'w-10 h-10 rounded-full border-2 transition-all duration-150 relative',
                                 accentColor === color.value
                                     ? 'border-white scale-110 shadow-lg'
-                                    : 'border-gray-700 hover:border-gray-500 hover:scale-105'
+                                    : 'border-neutral-700 hover:border-neutral-500 hover:scale-105'
                             )}
                             style={{ backgroundColor: color.value }}
                             aria-label={color.name}
@@ -141,13 +141,13 @@ export function AppearanceTab() {
 
                 {/* Custom color picker */}
                 <div className="mt-4 flex items-center gap-3">
-                    <label htmlFor="custom-accent" className="text-sm text-gray-400">Custom:</label>
+                    <label htmlFor="custom-accent" className="text-sm text-neutral-400">Custom:</label>
                     <input
                         id="custom-accent"
                         type="color"
                         value={accentColor}
                         onChange={(e) => handleAccentColorChange(e.target.value)}
-                        className="w-10 h-10 rounded-lg border border-gray-700 bg-transparent cursor-pointer"
+                        className="w-10 h-10 rounded-lg border border-neutral-700 bg-transparent cursor-pointer"
                         aria-label="Custom accent color"
                     />
                     <input
@@ -165,7 +165,7 @@ export function AppearanceTab() {
                                 e.target.value = accentColor;
                             }
                         }}
-                        className="w-24 px-2 py-1.5 bg-gray-800 border border-gray-700 rounded-lg text-sm text-white font-mono"
+                        className="w-24 px-2 py-1.5 bg-neutral-800 border border-neutral-700 rounded-lg text-sm text-white font-mono"
                         placeholder="#RRGGBB"
                         aria-label="Custom accent color hex"
                     />
@@ -174,8 +174,8 @@ export function AppearanceTab() {
 
             <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Preview</h3>
-                <p className="text-gray-500 text-sm mb-4">Live preview of your theme settings.</p>
-                <div className="p-4 bg-gray-800/50 rounded-lg border border-gray-700/50 space-y-3">
+                <p className="text-neutral-400 text-sm mb-4">Live preview of your theme settings.</p>
+                <div className="p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50 space-y-3">
                     <div className="flex items-center gap-3 flex-wrap">
                         <button className="btn btn-primary">Primary Button</button>
                         <button className="btn btn-secondary">Secondary Button</button>
@@ -183,8 +183,8 @@ export function AppearanceTab() {
                         <button className="btn btn-primary" disabled>Disabled</button>
                     </div>
                     <div className="flex items-center gap-3">
-                        <input type="text" placeholder="Text input" className="flex-1 px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
-                        <select className="px-3 py-2 bg-gray-900 border border-gray-700 rounded-lg text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                        <input type="text" placeholder="Text input" className="flex-1 px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
+                        <select className="px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
                             <option>Select option</option>
                             <option>Option 1</option>
                             <option>Option 2</option>
@@ -204,10 +204,10 @@ export function AppearanceTab() {
                             <span className="text-white">Toggle</span>
                         </label>
                     </div>
-                    <div className="p-3 bg-gray-900/50 rounded-lg border border-gray-700">
+                    <div className="p-3 bg-neutral-900/50 rounded-lg border border-neutral-700">
                         <p className="text-white">Card with elevated background</p>
-                        <p className="text-gray-400 text-sm mt-1">Secondary text color</p>
-                        <p className="text-gray-500 text-xs mt-1">Muted text color</p>
+                        <p className="text-neutral-400 text-sm mt-1">Secondary text color</p>
+                        <p className="text-neutral-400 text-xs mt-1">Muted text color</p>
                     </div>
                 </div>
             </div>

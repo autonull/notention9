@@ -193,14 +193,14 @@ export function ShortcutsTab() {
     const categoryOrder = ['Navigation', 'Capture', 'Note', 'Search', 'Match', 'Palette', 'Help', 'Other'];
 
     return (
-        <div className="bg-gray-900/70 p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
+        <div className="bg-neutral-900/70 p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
             <div className="flex flex-col gap-2 shrink-0">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-purple-600/20 rounded-lg text-purple-400">
                             <KeyIcon className="h-6 w-6" />
                         </div>
-                        <h2 className="text-xl font-semibold text-gray-100">Keyboard Shortcuts</h2>
+                        <h2 className="text-xl font-semibold text-neutral-100">Keyboard Shortcuts</h2>
                     </div>
                     <div className="flex items-center gap-2">
                         <Button variant="ghost" size="sm" onClick={handleExport} icon={DownloadIcon}>
@@ -214,7 +214,7 @@ export function ShortcutsTab() {
                         </Button>
                     </div>
                 </div>
-                <p className="text-sm text-gray-400">
+                <p className="text-sm text-neutral-400">
                     Customize keyboard shortcuts for actions. Press keys to set a shortcut (e.g., Ctrl+K, ⌘+Shift+P).
                     Conflicts are detected automatically. Mac users: ⌘ = Command, ⌥ = Option, ⇧ = Shift.
                 </p>
@@ -227,7 +227,7 @@ export function ShortcutsTab() {
                     
                     return (
                         <div key={category} className="mb-6">
-                            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 px-2">
+                            <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-4 px-2">
                                 {category}
                             </h3>
                             <div className="space-y-2">
@@ -240,13 +240,13 @@ export function ShortcutsTab() {
                                         <div 
                                             key={action.id} 
                                             className={`flex items-center justify-between p-3 rounded-lg border ${
-                                                conflict ? 'border-red-500/30 bg-red-500/5' : 'border-gray-700/30 bg-gray-900/50'
+                                                conflict ? 'border-red-500/30 bg-red-500/5' : 'border-neutral-700/30 bg-neutral-900/50'
                                             }`}
                                         >
                                             <div className="flex items-center gap-3 flex-1 min-w-0">
                                                 <span className="font-medium text-white truncate">{action.label}</span>
                                                 {action.description && (
-                                                    <span className="text-xs text-gray-500 whitespace-nowrap">{action.description}</span>
+                                                    <span className="text-xs text-neutral-400 whitespace-nowrap">{action.description}</span>
                                                 )}
                                             </div>
                                             <div className="flex items-center gap-2">
@@ -261,12 +261,12 @@ export function ShortcutsTab() {
                                                             }}
                                                             placeholder="Press keys..."
                                                             autoFocus
-                                                            className="w-48 bg-gray-800 border border-blue-500/50 rounded px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500/20"
+                                                            className="w-48 bg-neutral-800 border border-blue-500/50 rounded px-2 py-1 text-white text-sm focus:outline-none focus:ring-1 focus:ring-blue-500/20"
                                                         />
                                                         <Button variant="ghost" size="sm" onClick={() => handleSaveEdit(action.id)} className="text-green-400">
                                                             ✓
                                                         </Button>
-                                                        <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="text-gray-400">
+                                                        <Button variant="ghost" size="sm" onClick={handleCancelEdit} className="text-neutral-400">
                                                             ✕
                                                         </Button>
                                                     </>
@@ -274,14 +274,14 @@ export function ShortcutsTab() {
                                                     <>
                                                         {shortcut ? (
                                                             <>
-                                                                <kbd className="px-2 py-1 text-xs font-mono bg-gray-800 border border-gray-600 rounded text-gray-300 min-w-[120px] text-center">
+                                                                <kbd className="px-2 py-1 text-xs font-mono bg-neutral-800 border border-neutral-600 rounded text-neutral-300 min-w-[120px] text-center">
                                                                     {formatShortcutDisplay(shortcut)}
                                                                 </kbd>
                                                                 <IconButton
                                                                     onClick={() => handleStartEdit(action)}
                                                                     variant="ghost"
                                                                     size="sm"
-                                                                    className="text-gray-500 hover:text-blue-400"
+                                                                    className="text-neutral-400 hover:text-blue-400"
                                                                     aria-label={`Edit shortcut for ${action.label}`}
                                                                     icon={EditIcon}
                                                                 />
@@ -289,7 +289,7 @@ export function ShortcutsTab() {
                                                                     onClick={() => handleRemoveShortcut(action.id)}
                                                                     variant="ghost"
                                                                     size="sm"
-                                                                    className="text-gray-500 hover:text-red-400"
+                                                                    className="text-neutral-400 hover:text-red-400"
                                                                     aria-label={`Remove shortcut for ${action.label}`}
                                                                     icon={TrashIcon}
                                                                 />
@@ -299,13 +299,13 @@ export function ShortcutsTab() {
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleStartEdit(action)}
-                                                                className="text-gray-500 hover:text-blue-400 px-3 py-1"
+                                                                className="text-neutral-400 hover:text-blue-400 px-3 py-1"
                                                             >
                                                                 + Add Shortcut
                                                             </Button>
                                                         )}
                                                         {conflict && (
-                                                            <span className="flex items-center gap-1 text-[10px] text-red-400 bg-red-500/10 px-2 py-0.5 rounded" title={`Conflicts with ${conflict}`}>
+                                                            <span className="flex items-center gap-1 text-xs text-red-400 bg-red-500/10 px-2 py-0.5 rounded" title={`Conflicts with ${conflict}`}>
                                                                 <QuestionMarkCircleIcon className="w-3 h-3" />
                                                                 Conflict
                                                             </span>
@@ -343,7 +343,7 @@ export function ShortcutsTab() {
                 <textarea
                     value={importJson}
                     onChange={(e) => setImportJson(e.target.value)}
-                    className="w-full h-32 bg-gray-800 border border-gray-600 rounded px-3 py-2 text-white text-sm font-mono focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+                    className="w-full h-32 bg-neutral-800 border border-neutral-600 rounded px-3 py-2 text-white text-sm font-mono focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
                     placeholder='{"version":1,"shortcuts":[{"actionId":"nav.goToInbox","shortcut":{"key":"1","ctrl":true}}]}'
                 />
             </ConfirmationModal>

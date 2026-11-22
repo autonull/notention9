@@ -31,7 +31,7 @@ export function LanguageSelector({
                             'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
                             language === lang.code
                                 ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+                                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
                         )}
                         aria-pressed={language === lang.code}
                         aria-label={`${lang.nativeName} (${lang.name})`}
@@ -56,8 +56,8 @@ export function LanguageSelector({
                 className={cn(
                     'flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-colors',
                     'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                    'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600',
-                    'hover:bg-gray-50 dark:hover:bg-gray-700'
+                    'bg-white dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600',
+                    'hover:bg-neutral-50 dark:hover:bg-neutral-700'
                 )}
                 aria-haspopup="listbox"
                 aria-expanded="false"
@@ -78,7 +78,7 @@ export function LanguageSelector({
                 aria-orientation="vertical"
                 className={cn(
                     'absolute mt-1 w-48 origin-top-right rounded-lg shadow-lg border',
-                    'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700',
+                    'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700',
                     'py-1 z-50 animate-in fade-in-0 zoom-in-95 duration-150',
                     direction === 'rtl' ? 'left-0 right-auto' : 'right-0 left-auto'
                 )}
@@ -100,13 +100,13 @@ export function LanguageSelector({
                             'focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/30',
                             language === lang.code
                                 ? 'bg-blue-50 dark:bg-blue-900/30 font-medium text-blue-700 dark:text-blue-300'
-                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                                : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700'
                         )}
                     >
                         <div className="flex items-center justify-between">
                             <span>{lang.nativeName}</span>
                             {showNativeName && lang.name !== lang.nativeName && (
-                                <span className={`text-xs text-gray-500 dark:text-gray-400 ${direction === 'rtl' ? 'mr-2' : 'ml-2'}`}>
+                                <span className={`text-xs text-neutral-400 dark:text-neutral-400 ${direction === 'rtl' ? 'mr-2' : 'ml-2'}`}>
                                     {lang.name}
                                 </span>
                             )}

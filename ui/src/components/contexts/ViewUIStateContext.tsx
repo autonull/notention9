@@ -5,6 +5,8 @@ export interface ViewUIStateContextType {
     setIsPaletteOpen: (isOpen: boolean) => void;
     isHelpOpen: boolean;
     setIsHelpOpen: (isOpen: boolean) => void;
+    isCaptureComposerOpen: boolean;
+    setIsCaptureComposerOpen: (isOpen: boolean) => void;
 }
 
 const ViewUIStateContext = createContext<ViewUIStateContextType | undefined>(undefined);
@@ -12,6 +14,7 @@ const ViewUIStateContext = createContext<ViewUIStateContextType | undefined>(und
 export function ViewUIStateProvider({ children }: { children: ReactNode }) {
     const [isPaletteOpen, setIsPaletteOpen] = useState(false);
     const [isHelpOpen, setIsHelpOpen] = useState(false);
+    const [isCaptureComposerOpen, setIsCaptureComposerOpen] = useState(false);
 
     return (
         <ViewUIStateContext.Provider
@@ -19,7 +22,9 @@ export function ViewUIStateProvider({ children }: { children: ReactNode }) {
                 isPaletteOpen,
                 setIsPaletteOpen,
                 isHelpOpen,
-                setIsHelpOpen
+                setIsHelpOpen,
+                isCaptureComposerOpen,
+                setIsCaptureComposerOpen
             }}
         >
             {children}

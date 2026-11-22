@@ -103,13 +103,13 @@ export function EditorControls({
                     title="Structured details"
                     className={`flex items-center gap-1.5 h-9 px-2.5 rounded-lg text-xs font-medium transition-colors ${
                         isInspectorOpen
-                            ? 'bg-gray-800 text-white'
-                            : 'text-gray-400 hover:text-white hover:bg-gray-800/70'
+                            ? 'bg-neutral-800 text-white'
+                            : 'text-neutral-400 hover:text-white hover:bg-neutral-800/70'
                     }`}
                 >
                     <ListIcon className="w-4 h-4"/>
                     <span className="hidden lg:inline">Details</span>
-                    <span className="text-[10px] text-gray-500 tabular-nums">{propertyCount}</span>
+                    <span className="text-xs text-neutral-400 tabular-nums">{propertyCount}</span>
                 </button>
             )}
 

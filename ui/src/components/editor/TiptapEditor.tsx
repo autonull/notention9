@@ -198,7 +198,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     });
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-1 min-h-0 flex-col">
             {!minimal && showToolbar && (
                 <TiptapToolbar
                     editor={editor}
@@ -231,17 +231,19 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 suggestions={allSuggestions}
                 title={initialModalData ? "Edit detail" : "Add detail"}
             />
-            <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
-                <div className="max-w-[42rem] w-full flex flex-col min-h-full">
+            <div className="flex-grow min-h-0 overflow-y-auto flex flex-col" onClick={handleEditorClick}>
+                <div className="max-w-[42rem] w-full flex flex-1 flex-col">
                     {topContent}
                     {viewMode === 'rich' ? (
                         <>
                             <EditorBubbleMenu editor={editor}/>
-                            <EditorContent editor={editor}/>
+                            <div className="flex min-h-0 flex-1 flex-col">
+                                <EditorContent editor={editor} className="flex min-h-full flex-1 flex-col"/>
+                            </div>
                         </>
                     ) : (
                         <textarea
-                            className="w-full min-h-[60vh] p-6 bg-gray-900 text-gray-300 font-mono focus:outline-none resize-none"
+                            className="w-full min-h-[60vh] p-6 bg-neutral-900 text-neutral-300 font-mono focus:outline-none resize-none"
                             value={prettyPrintHtml(note.content)}
                             onChange={handleCodeChange}
                             placeholder="Enter HTML..."

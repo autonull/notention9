@@ -96,15 +96,15 @@ export function AttributeEditorModal({
                             required
                             className="w-full"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Unique identifier for this property (camelCase recommended).</p>
+                        <p className="text-xs text-neutral-400 mt-1">Unique identifier for this property (camelCase recommended).</p>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">Data Type</label>
+                        <label className="block text-sm font-medium text-neutral-300 mb-1">Data Type</label>
                         <select
                             value={type}
                             onChange={(e) => setType(e.target.value)}
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
                         >
                             {ATTRIBUTE_TYPES.map(t => (
                                 <option key={t} value={t}>{t}</option>
@@ -113,12 +113,12 @@ export function AttributeEditorModal({
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-300 mb-1">Description</label>
+                        <label className="block text-sm font-medium text-neutral-300 mb-1">Description</label>
                         <textarea
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             placeholder="What does this attribute represent?"
-                            className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px] transition-colors"
+                            className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 min-h-[80px] transition-colors"
                         />
                     </div>
 
@@ -130,24 +130,24 @@ export function AttributeEditorModal({
                             placeholder="e.g., cost, amount, fee"
                             className="w-full"
                         />
-                        <p className="text-xs text-gray-500 mt-1">Alternative names used for matching.</p>
+                        <p className="text-xs text-neutral-400 mt-1">Alternative names used for matching.</p>
                     </div>
 
                     {/* JSON Preview */}
-                    <div className="mt-4 pt-4 border-t border-gray-700/50">
-                        <div className="flex items-center gap-2 mb-2 text-gray-400">
+                    <div className="mt-4 pt-4 border-t border-neutral-700/50">
+                        <div className="flex items-center gap-2 mb-2 text-neutral-400">
                              <CodeBlockIcon className="w-4 h-4" />
                              <span className="text-xs font-semibold uppercase tracking-wider">Preview</span>
                         </div>
-                        <div className="bg-gray-900 rounded-md p-3 border border-gray-800 overflow-x-auto">
-                            <pre className="text-[10px] font-mono text-blue-300 leading-relaxed">
+                        <div className="bg-neutral-900 rounded-md p-3 border border-neutral-800 overflow-x-auto">
+                            <pre className="text-xs font-mono text-blue-300 leading-relaxed">
 {JSON.stringify({ [key || 'key']: generatedAttribute }, null, 2)}
                             </pre>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-700 mt-auto">
+                <div className="flex justify-end gap-3 pt-4 border-t border-neutral-700 mt-auto">
                     <Button
                         onClick={onClose}
                         variant="secondary"

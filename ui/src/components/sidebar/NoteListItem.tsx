@@ -146,7 +146,7 @@ export const NoteListItem = React.memo(({
 
             {/* Header */}
             <div className="flex justify-between items-center mb-1 gap-2 relative z-10 pl-1">
-                <h3 className={cn('font-semibold text-sm leading-tight truncate flex-1 transition-colors', isSelected ? 'text-blue-50' : 'text-gray-300 group-hover:text-white')}>
+                <h3 className={cn('font-semibold text-sm leading-tight truncate flex-1 transition-colors', isSelected ? 'text-blue-50' : 'text-neutral-300 group-hover:text-white')}>
                     {highlightedTitle}
                 </h3>
                 {isPinned && (
@@ -155,7 +155,7 @@ export const NoteListItem = React.memo(({
             </div>
 
             {/* Preview */}
-            <p className={cn('text-xs pl-1 mb-2 line-clamp-1 leading-relaxed transition-colors', isSelected ? 'text-blue-200/60' : 'text-gray-500 group-hover:text-gray-400')}>
+            <p className={cn('text-xs pl-1 mb-2 line-clamp-1 leading-relaxed transition-colors', isSelected ? 'text-blue-200/60' : 'text-neutral-400 group-hover:text-neutral-400')}>
                 {highlightedPreview}
             </p>
 
@@ -192,7 +192,7 @@ export const NoteListItem = React.memo(({
                             <IconButton
                                 onClick={(e) => { e.stopPropagation(); onRestore(); }}
                                 tabIndex={-1}
-                                className="text-gray-500 hover:text-green-400 p-0.5"
+                                className="text-neutral-400 hover:text-green-400 p-0.5"
                                 icon={() => <DocumentDuplicateIcon className="h-3 w-3 transform rotate-180"/>}
                                 size="sm"
                                 variant="ghost"
@@ -203,7 +203,7 @@ export const NoteListItem = React.memo(({
                             <IconButton
                                 onClick={(e) => { e.stopPropagation(); onPin(); }}
                                 tabIndex={-1}
-                                className={cn(isPinned ? 'text-blue-400' : 'text-gray-500 hover:text-white p-0.5', isPinned && 'animate-pulse-subtle')}
+                                className={cn(isPinned ? 'text-blue-400' : 'text-neutral-400 hover:text-white p-0.5', isPinned && 'animate-pulse-subtle')}
                                 icon={PinIcon}
                                 size="sm"
                                 variant="ghost"
@@ -213,7 +213,7 @@ export const NoteListItem = React.memo(({
                         <IconButton
                             onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
                             tabIndex={-1}
-                            className="text-gray-500 hover:text-red-400 p-0.5"
+                            className="text-neutral-400 hover:text-red-400 p-0.5"
                             icon={TrashIcon}
                             size="sm"
                             variant="ghost"

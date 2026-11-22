@@ -61,7 +61,7 @@ export function TagInput({
 
     return (
         <div className={`flex flex-wrap items-center gap-2 ${className}`}>
-            <TagIcon className="h-4 w-4 text-gray-400 flex-shrink-0"/>
+            <TagIcon className="h-4 w-4 text-neutral-400 flex-shrink-0"/>
             {tags.map((tag) => (
                 <span
                     key={tag}
@@ -87,7 +87,7 @@ export function TagInput({
                         onKeyDown={handleKeyDown}
                         onBlur={handleBlur}
                         placeholder="Add tags..."
-                        className="flex-grow min-w-[80px] bg-transparent text-sm text-gray-300 focus:outline-none placeholder-gray-600"
+                        className="flex-grow min-w-[80px] bg-transparent text-sm text-neutral-300 focus:outline-none placeholder-neutral-600"
                     />
                     {onAutoTag && (
                         <button
@@ -104,7 +104,7 @@ export function TagInput({
                 <button
                     type="button"
                     onClick={handleAddTagClick}
-                    className="btn btn-ghost btn-xs px-2 py-0.5 text-xs uppercase tracking-wider bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-gray-200 active:scale-95 touch-target flex-shrink-0"
+                    className="btn btn-ghost btn-xs px-2 py-0.5 text-xs uppercase tracking-wider bg-neutral-800 text-neutral-400 border border-neutral-700 hover:bg-neutral-700 hover:text-neutral-200 active:scale-95 touch-target flex-shrink-0"
                 >
                     <PlusIcon className="w-3 h-3 mr-1" />
                     tag

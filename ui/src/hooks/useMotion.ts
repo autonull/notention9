@@ -312,7 +312,7 @@ export function useFocusRing(offset = 2) {
         className: cn(
             'focus-visible:outline-none',
             `focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-${offset}`,
-            'focus-visible:ring-offset-gray-950'
+            'focus-visible:ring-offset-neutral-950'
         ),
     };
 }

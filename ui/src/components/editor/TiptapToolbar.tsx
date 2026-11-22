@@ -133,7 +133,7 @@ function TiptapToolbarContent({
 
     return (
         <div
-            className="flex-shrink-0 px-3 py-1 border-b border-gray-800/70 flex items-center gap-1.5 bg-gray-950/40 overflow-x-auto"
+            className="flex-shrink-0 px-3 py-1 border-b border-neutral-800/70 flex items-center gap-1.5 bg-neutral-950/40 overflow-x-auto"
             role="toolbar"
             aria-label="Editor formatting"
         >
@@ -196,10 +196,10 @@ function TiptapToolbarContent({
                 <DropdownMenu
                     trigger={
                         <button
-                            className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                            className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors"
                             aria-label="Text formatting"
                         >
-                            <span className="text-[10px] uppercase tracking-wider font-bold hidden sm:inline">Text</span>
+                            <span className="text-xs uppercase tracking-wider font-bold hidden sm:inline">Text</span>
                             <ChevronDownIcon className="w-3 h-3"/>
                         </button>
                     }
@@ -207,11 +207,11 @@ function TiptapToolbarContent({
                     align="left"
                 />
 
-                <div className="w-px h-4 bg-gray-700/50 mx-1 flex-shrink-0 hidden sm:block"></div>
+                <div className="w-px h-4 bg-neutral-700/50 mx-1 flex-shrink-0 hidden sm:block"></div>
 
                 {actions.map((item, index) => (
                     item.type === 'separator' ? (
-                        <div key={`sep-${index}`} className="w-px h-4 bg-gray-700/50 mx-1 hidden sm:block flex-shrink-0"></div>
+                        <div key={`sep-${index}`} className="w-px h-4 bg-neutral-700/50 mx-1 hidden sm:block flex-shrink-0"></div>
                     ) : (
                         <div key={item.title} className="flex-shrink-0">
                             <IconButton
@@ -230,7 +230,7 @@ function TiptapToolbarContent({
                 ))}
             </div>
 
-            <div className="border-l border-gray-800/70 pl-1.5 ml-0.5 flex-shrink-0">
+            <div className="border-l border-neutral-800/70 pl-1.5 ml-0.5 flex-shrink-0">
                 <IconButton
                     onClick={toggleViewMode}
                     isActive={viewMode === 'code'}

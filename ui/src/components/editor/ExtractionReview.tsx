@@ -12,17 +12,17 @@ interface ExtractionReviewProps {
 
 function ProvenanceBadge({provenance}: {provenance?: Property['provenance']}) {
     if (!provenance) return null;
-    
+
     const isDeterministic = provenance === 'deterministic' || provenance === 'pattern';
     const isAI = provenance === 'ai';
-    
+
     return (
         <span
-            className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium ${isDeterministic 
-                ? 'bg-amber-900/30 text-amber-300 border border-amber-800' 
-                : isAI 
-                    ? 'bg-green-900/30 text-green-300 border border-green-800' 
-                    : 'bg-gray-800 text-gray-300'}`}
+            className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded text-xs font-medium ${isDeterministic
+                ? 'bg-amber-900/30 text-amber-300 border border-amber-800'
+                : isAI
+                    ? 'bg-green-900/30 text-green-300 border border-green-800'
+                    : 'bg-neutral-800 text-neutral-300'}`}
             title={`Property source: ${provenance}`}
         >
             {isDeterministic && <CpuChipIcon className="w-2.5 h-2.5" />}
@@ -37,18 +37,18 @@ export function ExtractionReview({items, onAccept, onReject}: ExtractionReviewPr
     if (items.length === 0) return null;
 
     // Check if any items have deterministic provenance (degraded)
-    const hasDegraded = items.some(item => 
+    const hasDegraded = items.some(item =>
         item.property.provenance === 'deterministic' || item.property.provenance === 'pattern'
     );
 
     return (
-        <div className="pt-3 border-t border-gray-800 mt-2" data-testid="extraction-review">
+        <div className="pt-3 border-t border-neutral-800 mt-2" data-testid="extraction-review">
             <div className="flex items-center gap-2 mb-2 px-1">
                 <SparklesIcon className="w-3 h-3 text-purple-400"/>
-                <span className="text-xs font-bold text-gray-400 uppercase">Review suggestions</span>
-                <span className="text-[10px] text-gray-600">{items.length}</span>
+                <span className="text-xs font-bold text-neutral-400 uppercase">Review suggestions</span>
+                <span className="text-xs text-neutral-400">{items.length}</span>
                 {hasDegraded && (
-                    <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-900/30 border border-amber-800 text-amber-300 text-[10px] font-medium">
+                    <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-900/30 border border-amber-800 text-amber-300 text-xs font-medium">
                         <CpuChipIcon className="w-3 h-3" />
                         Degraded mode (fallback)
                     </span>
@@ -63,18 +63,18 @@ export function ExtractionReview({items, onAccept, onReject}: ExtractionReviewPr
                         <div className="min-w-0">
                             <div className="flex items-center gap-1.5 text-xs">
                                 <span className="font-semibold text-purple-200 truncate">{item.property.key}</span>
-                                <span className="text-gray-500">{item.property.operator}</span>
-                                <span className="text-gray-300 truncate">{item.property.values.join(', ')}</span>
+                                <span className="text-neutral-400">{item.property.operator}</span>
+                                <span className="text-neutral-300 truncate">{item.property.values.join(', ')}</span>
                                 <ProvenanceBadge provenance={item.property.provenance} />
                             </div>
                             <div className="flex items-center gap-2 mt-1.5">
-                                <div className="h-1 w-14 bg-gray-700 rounded-full overflow-hidden">
+                                <div className="h-1 w-14 bg-neutral-700 rounded-full overflow-hidden">
                                     <div
                                         className="h-full rounded-full bg-purple-400"
                                         style={{width: `${item.confidence * 100}%`}}
                                     />
                                 </div>
-                                <span className="text-[10px] font-mono text-gray-500">
+                                <span className="text-xs font-mono text-neutral-400">
                                     {Math.round(item.confidence * 100)}%
                                 </span>
                             </div>
@@ -92,7 +92,7 @@ export function ExtractionReview({items, onAccept, onReject}: ExtractionReviewPr
                             <Button
                                 size="xs"
                                 variant="ghost"
-                                className="text-gray-500 hover:text-red-300"
+                                className="text-neutral-400 hover:text-red-300"
                                 onClick={() => onReject(item)}
                                 title={`Reject ${item.property.key}`}
                             >

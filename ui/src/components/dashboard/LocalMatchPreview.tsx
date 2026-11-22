@@ -22,7 +22,7 @@ interface LocalMatchPreviewProps {
 }
 
 function getMatchTypeColor(details?: MatchDetails) {
-    if (!details) return 'text-gray-400';
+    if (!details) return 'text-neutral-400';
     switch (details.type) {
         case 'exact': return 'text-green-400';
         case 'alias': return 'text-blue-400';
@@ -31,7 +31,7 @@ function getMatchTypeColor(details?: MatchDetails) {
         case 'partial': return 'text-orange-400';
         case 'geo': return 'text-cyan-400';
         case 'date': return 'text-pink-400';
-        default: return 'text-gray-400';
+        default: return 'text-neutral-400';
     }
 }
 
@@ -101,14 +101,14 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                 <CheckCircleIcon className="w-4 h-4"/> Match found locally
             </div>
             <div className="flex flex-col md:flex-row md:items-center gap-4">
-                <div className="flex-1 min-w-0 p-4 bg-gray-900/50 rounded-xl border border-gray-700/50">
-                    <div className="text-sm text-gray-400 truncate">{match.request.title}</div>
-                    <div className="text-gray-500 text-xs my-1">matches</div>
+                <div className="flex-1 min-w-0 p-4 bg-neutral-900/50 rounded-xl border border-neutral-700/50">
+                    <div className="text-sm text-neutral-400 truncate">{match.request.title}</div>
+                    <div className="text-neutral-400 text-xs my-1">matches</div>
                     <div className="font-semibold text-white truncate">{match.note.title}</div>
                 </div>
                 <div className="text-center md:text-right flex-shrink-0">
                     <div className="text-3xl font-bold text-green-300">{Math.round(result.score * 100)}%</div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-neutral-400">
                         {totalMatches} satisfied · {totalConflicts} conflicting · {totalMissing} missing
                     </div>
                     
@@ -118,7 +118,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                             data-testid="match-explanations"
                             onToggle={(e) => handleExplanationToggle(e.currentTarget.open)}
                         >
-                            <summary className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer hover:text-gray-200">
+                            <summary className="flex items-center gap-2 text-sm text-neutral-400 cursor-pointer hover:text-neutral-200">
                                 <InformationCircleIcon className="w-4 h-4 flex-shrink-0"/>
                                 Why this match?
                             </summary>
@@ -135,13 +135,13 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                                 .map((m, i) => (
                                                     <div key={i} className="text-[11px]">
                                                         <span className="font-medium">{m.requestProp.key}</span>
-                                                        <span className="text-gray-500"> → </span>
+                                                        <span className="text-neutral-400"> → </span>
                                                         <span className="font-medium">{m.offerProp.key}</span>
-                                                        <span className="text-gray-500"> (</span>
-                                                        <span className="text-gray-400">{m.requestProp.operator} {m.requestProp.values.join(', ')}</span>
-                                                        <span className="text-gray-500"> matched to </span>
-                                                        <span className="text-gray-400">{m.offerProp.operator} {m.offerProp.values.join(', ')}</span>
-                                                        <span className="text-gray-500">)</span>
+                                                        <span className="text-neutral-400"> (</span>
+                                                        <span className="text-neutral-400">{m.requestProp.operator} {m.requestProp.values.join(', ')}</span>
+                                                        <span className="text-neutral-400"> matched to </span>
+                                                        <span className="text-neutral-400">{m.offerProp.operator} {m.offerProp.values.join(', ')}</span>
+                                                        <span className="text-neutral-400">)</span>
                                                     </div>
                                                 ))}
                                         </div>
@@ -161,10 +161,10 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                                     <div key={i} className="flex items-center justify-between text-[11px]">
                                                         <div className="flex items-center gap-2">
                                                             <span className="font-medium">{m.requestProp.key}</span>
-                                                            <span className="text-gray-500">{m.requestProp.operator}</span>
-                                                            <span className="text-gray-400">{m.requestProp.values.join(', ')}</span>
+                                                            <span className="text-neutral-400">{m.requestProp.operator}</span>
+                                                            <span className="text-neutral-400">{m.requestProp.values.join(', ')}</span>
                                                             {explanation.crossKeyUsed && (
-                                                                <span className="text-blue-400 text-[10px]">via cross-key</span>
+                                                                <span className="text-blue-400 text-xs">via cross-key</span>
                                                             )}
                                                         </div>
                                                         <span className="font-mono text-green-400">{explanation.scoreContribution}</span>
@@ -190,24 +190,24 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                                     <div className="flex-1 min-w-0">
                                                         <div className="text-white">
                                                             <span className="font-medium">{m.requestProp.key}</span>
-                                                            <span className="text-gray-500"> {m.requestProp.operator} </span>
-                                                            <span className="text-gray-300">{m.requestProp.values.join(', ')}</span>
+                                                            <span className="text-neutral-400"> {m.requestProp.operator} </span>
+                                                            <span className="text-neutral-300">{m.requestProp.values.join(', ')}</span>
                                                             {m.requestProp.unit && (
-                                                                <span className="text-gray-400 font-mono text-[11px]"> {m.requestProp.unit}</span>
+                                                                <span className="text-neutral-400 font-mono text-[11px]"> {m.requestProp.unit}</span>
                                                             )}
                                                         </div>
                                                         <div className="flex items-center gap-2 mt-1">
-                                                            <span className={`text-[10px] font-mono ${getMatchTypeColor(m.details)}`}>
+                                                            <span className={`text-xs font-mono ${getMatchTypeColor(m.details)}`}>
                                                                 {m.details ? getMatchTypeLabel(m.details) : 'Matched'}
                                                             </span>
                                                             {m.reason && (
-                                                                <span className="text-gray-500 text-[10px]">{m.reason}</span>
+                                                                <span className="text-neutral-400 text-xs">{m.reason}</span>
                                                             )}
                                                             {m.details?.aliasUsed && (
-                                                                <span className="text-blue-400 text-[10px]">via alias: {m.details.aliasUsed}</span>
+                                                                <span className="text-blue-400 text-xs">via alias: {m.details.aliasUsed}</span>
                                                             )}
                                                             {m.details?.valueMatch && (
-                                                                <span className="text-gray-400 text-[10px]">value: {m.details.valueMatch}</span>
+                                                                <span className="text-neutral-400 text-xs">value: {m.details.valueMatch}</span>
                                                             )}
                                                         </div>
                                                     </div>
@@ -227,13 +227,13 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                                     <div className="flex-1 min-w-0">
                                                         <div className="text-white">
                                                             <span className="font-medium">{c.requestProp.key}</span>
-                                                            <span className="text-gray-500"> {c.requestProp.operator} </span>
-                                                            <span className="text-gray-300">{c.requestProp.values.join(', ')}</span>
+                                                            <span className="text-neutral-400"> {c.requestProp.operator} </span>
+                                                            <span className="text-neutral-300">{c.requestProp.values.join(', ')}</span>
                                                             {c.requestProp.unit && (
-                                                                <span className="text-gray-400 font-mono text-[11px]"> {c.requestProp.unit}</span>
+                                                                <span className="text-neutral-400 font-mono text-[11px]"> {c.requestProp.unit}</span>
                                                             )}
                                                         </div>
-                                                        <div className="text-red-300 text-[10px] mt-1">{c.reason}</div>
+                                                        <div className="text-red-300 text-xs mt-1">{c.reason}</div>
                                                     </div>
                                                 </div>
                                             ))}
@@ -250,8 +250,8 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                                     <MinusIcon className="w-3 h-3 text-yellow-400 flex-shrink-0"/>
                                                     <div className="text-white">
                                                         <span className="font-medium">{m.key}</span>
-                                                        <span className="text-gray-500"> {m.operator} </span>
-                                                        <span className="text-gray-300">{m.values.join(', ')}</span>
+                                                        <span className="text-neutral-400"> {m.operator} </span>
+                                                        <span className="text-neutral-300">{m.values.join(', ')}</span>
                                                     </div>
                                                 </div>
                                             ))}

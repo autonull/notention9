@@ -30,26 +30,26 @@ const variantStyles = {
 };
 
 const iconContainerStyles = {
-    default: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
+    default: 'flex items-center justify-center rounded-full mb-3 bg-neutral-800 p-3',
     card: 'empty-state-icon',
-    minimal: 'flex items-center justify-center rounded-full mb-3 bg-gray-800 p-3',
+    minimal: 'flex items-center justify-center rounded-full mb-3 bg-neutral-800 p-3',
     illustrated: 'flex items-center justify-center rounded-full mb-6 w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
     actionable: 'empty-state-icon',
 };
 
 const titleStyles = {
-    default: 'font-medium text-gray-300 text-lg mb-2',
+    default: 'font-medium text-neutral-300 text-lg mb-2',
     card: 'empty-state-title text-lg',
-    minimal: 'font-medium text-gray-300 text-base mb-1',
+    minimal: 'font-medium text-neutral-300 text-base mb-1',
     illustrated: 'font-semibold text-white text-xl mb-3',
     actionable: 'empty-state-title',
 };
 
 const descriptionStyles = {
-    default: 'text-sm max-w-xs text-gray-300 mb-4',
-    card: 'empty-state-description text-gray-300',
-    minimal: 'text-sm max-w-xs text-gray-300 mb-4',
-    illustrated: 'text-base max-w-md text-gray-300 mb-4 leading-relaxed',
+    default: 'text-sm max-w-xs text-neutral-300 mb-4',
+    card: 'empty-state-description text-neutral-300',
+    minimal: 'text-sm max-w-xs text-neutral-300 mb-4',
+    illustrated: 'text-base max-w-md text-neutral-300 mb-4 leading-relaxed',
     actionable: 'empty-state-description',
 };
 
@@ -109,30 +109,30 @@ export function EmptyState({
                 </div>
             )}
             {hint && (
-                <div className="mb-6 hidden md:block p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 max-w-xs text-left animate-fade-in-up">
-                    <p className="text-xs text-gray-300 mb-1">{hint}</p>
+                <div className="mb-6 hidden md:block p-3 bg-neutral-800/50 rounded-lg border border-neutral-700/50 max-w-xs text-left animate-fade-in-up">
+                    <p className="text-xs text-neutral-300 mb-1">{hint}</p>
                 </div>
             )}
             {showSearchSuggestion && searchTerm && (
-                <div className="mb-6 p-3 bg-gray-800/50 rounded-lg border border-gray-700/50 max-w-xs text-left animate-fade-in-up">
-                    <p className="text-xs text-gray-500 mb-1">Try searching for:</p>
+                <div className="mb-6 p-3 bg-neutral-800/50 rounded-lg border border-neutral-700/50 max-w-xs text-left animate-fade-in-up">
+                    <p className="text-xs text-neutral-400 mb-1">Try searching for:</p>
                     <code className="text-sm text-blue-400 font-mono">#{searchTerm}</code>
-                    <p className="text-xs text-gray-500 mt-1">or</p>
+                    <p className="text-xs text-neutral-400 mt-1">or</p>
                     <code className="text-sm text-blue-400 font-mono">{searchTerm}</code>
                 </div>
             )}
             {action && <div className="empty-state-actions">{action}</div>}
             {secondaryAction && <div className="empty-state-actions">{secondaryAction}</div>}
             {showShortcuts && contextShortcuts.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-gray-700/50 w-full max-w-xs animate-fade-in-up">
-                    <p className="text-xs text-gray-500 mb-2 flex items-center gap-1">
+                <div className="mt-6 pt-6 border-t border-neutral-700/50 w-full max-w-xs animate-fade-in-up">
+                    <p className="text-xs text-neutral-400 mb-2 flex items-center gap-1">
                         <HelpIcon className="w-3 h-3" /> Quick shortcuts:
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                         {contextShortcuts.map((sc, i) => (
-                            <kbd key={i} className="text-[10px] font-mono px-2 py-1 bg-gray-800 text-gray-300 rounded border border-gray-700/50 whitespace-nowrap">
+                            <kbd key={i} className="text-xs font-mono px-2 py-1 bg-neutral-800 text-neutral-300 rounded border border-neutral-700/50 whitespace-nowrap">
                                 {sc.keys}
-                                <span className="ml-1 text-gray-500">{sc.label}</span>
+                                <span className="ml-1 text-neutral-400">{sc.label}</span>
                             </kbd>
                         ))}
                     </div>
@@ -144,7 +144,7 @@ export function EmptyState({
 
 export function EmptyStateIllustration({children}: {children: React.ReactNode}) {
     return (
-        <svg className="w-28 h-28 text-gray-700/50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg className="w-28 h-28 text-neutral-700/50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
                 <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.1"/>
@@ -162,10 +162,10 @@ export function EmptyStateIllustration({children}: {children: React.ReactNode}) 
 export function NotesEmptyIllustration() {
     return (
         <EmptyStateIllustration>
-            <circle cx="0" cy="-20" r="35" stroke="#6b7280" strokeWidth="2" fill="none" strokeDasharray="10,5" opacity="0.5"/>
-            <path d="M-30 20 L30 20" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
-            <path d="M-20 35 L20 35" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
-            <path d="M-15 50 L15 50" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+            <circle cx="0" cy="-20" r="35" stroke="#737373" strokeWidth="2" fill="none" strokeDasharray="10,5" opacity="0.5"/>
+            <path d="M-30 20 L30 20" stroke="#737373" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+            <path d="M-20 35 L20 35" stroke="#737373" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+            <path d="M-15 50 L15 50" stroke="#737373" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
             <circle cx="-40" cy="-30" r="4" fill="#3b82f6" opacity="0.6"/>
             <circle cx="40" cy="-30" r="4" fill="#7c3aed" opacity="0.6"/>
             <circle cx="0" cy="10" r="4" fill="#16a34a" opacity="0.6"/>
@@ -176,8 +176,8 @@ export function NotesEmptyIllustration() {
 export function SearchEmptyIllustration() {
     return (
         <EmptyStateIllustration>
-            <circle cx="0" cy="0" r="30" stroke="#6b7280" strokeWidth="2" fill="none" opacity="0.5"/>
-            <path d="M15 15 L25 25" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
+            <circle cx="0" cy="0" r="30" stroke="#737373" strokeWidth="2" fill="none" opacity="0.5"/>
+            <path d="M15 15 L25 25" stroke="#737373" strokeWidth="2" strokeLinecap="round" opacity="0.5"/>
             <path d="M-25 -10 Q0 10 25 -10" stroke="#3b82f6" strokeWidth="2.5" fill="none" strokeLinecap="round" opacity="0.8"/>
             <circle cx="-15" cy="-15" r="3" fill="#3b82f6" opacity="0.8"/>
             <circle cx="15" cy="-15" r="3" fill="#7c3aed" opacity="0.8"/>
@@ -188,9 +188,9 @@ export function SearchEmptyIllustration() {
 export function NetworkEmptyIllustration() {
     return (
         <EmptyStateIllustration>
-            <circle cx="-40" cy="-20" r="18" stroke="#6b7280" strokeWidth="2" fill="none" opacity="0.4"/>
-            <circle cx="40" cy="-20" r="18" stroke="#6b7280" strokeWidth="2" fill="none" opacity="0.4"/>
-            <circle cx="0" cy="30" r="18" stroke="#6b7280" strokeWidth="2" fill="none" opacity="0.4"/>
+            <circle cx="-40" cy="-20" r="18" stroke="#737373" strokeWidth="2" fill="none" opacity="0.4"/>
+            <circle cx="40" cy="-20" r="18" stroke="#737373" strokeWidth="2" fill="none" opacity="0.4"/>
+            <circle cx="0" cy="30" r="18" stroke="#737373" strokeWidth="2" fill="none" opacity="0.4"/>
             <path d="M-28 -20 L28 -20" stroke="#3b82f6" strokeWidth="2" strokeDasharray="5,5" opacity="0.6"/>
             <path d="M-12 -5 Q0 15 12 -5" stroke="#7c3aed" strokeWidth="2" strokeDasharray="5,5" opacity="0.6"/>
             <path d="M-12 -5 Q-26 20 -12 30" stroke="#16a34a" strokeWidth="2" strokeDasharray="5,5" opacity="0.6"/>
@@ -205,13 +205,13 @@ export function NetworkEmptyIllustration() {
 export function TrashEmptyIllustration() {
     return (
         <EmptyStateIllustration>
-            <path d="M-25 -40 L25 -40" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
-            <path d="M-35 -40 L-35 20 Q0 40 35 20 L35 -40" stroke="#6b7280" strokeWidth="2" fill="none" opacity="0.4"/>
-            <path d="M-15 -40 L-15 -10" stroke="#6b7280" strokeWidth="1.5" opacity="0.3"/>
-            <path d="M0 -40 L0 -10" stroke="#6b7280" strokeWidth="1.5" opacity="0.3"/>
-            <path d="M15 -40 L15 -10" stroke="#6b7280" strokeWidth="1.5" opacity="0.3"/>
-            <path d="M-20 5 L20 5" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
-            <path d="M0 -15 L0 10" stroke="#6b7280" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.5"/>
+            <path d="M-25 -40 L25 -40" stroke="#737373" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+            <path d="M-35 -40 L-35 20 Q0 40 35 20 L35 -40" stroke="#737373" strokeWidth="2" fill="none" opacity="0.4"/>
+            <path d="M-15 -40 L-15 -10" stroke="#737373" strokeWidth="1.5" opacity="0.3"/>
+            <path d="M0 -40 L0 -10" stroke="#737373" strokeWidth="1.5" opacity="0.3"/>
+            <path d="M15 -40 L15 -10" stroke="#737373" strokeWidth="1.5" opacity="0.3"/>
+            <path d="M-20 5 L20 5" stroke="#737373" strokeWidth="2" strokeLinecap="round" opacity="0.4"/>
+            <path d="M0 -15 L0 10" stroke="#737373" strokeWidth="1.5" strokeDasharray="3,3" opacity="0.5"/>
             <circle cx="0" cy="10" r="5" fill="#3b82f6" opacity="0.6"/>
         </EmptyStateIllustration>
     );

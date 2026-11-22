@@ -20,7 +20,7 @@ export function TrashView() {
 
     if (loading) {
         return (
-            <div className="h-full overflow-y-auto bg-gray-950 p-4 md:p-8 custom-scrollbar" data-testid="trash-view">
+            <div className="h-full overflow-y-auto bg-neutral-950 p-4 md:p-8 custom-scrollbar" data-testid="trash-view">
                 <div className="mx-auto max-w-4xl">
                     <div className="mb-6 flex items-center gap-3">
                         <div className="rounded-xl bg-red-500/10 p-2.5 text-red-400">
@@ -28,14 +28,14 @@ export function TrashView() {
                         </div>
                         <div>
                             <h1 className="text-2xl font-bold text-white">Recently deleted</h1>
-                            <p className="text-sm text-gray-400">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
+                            <p className="text-sm text-neutral-400">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
                         </div>
                     </div>
                     <div className="space-y-2">
-                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-gray-800 bg-gray-900/60 p-4"/>
-                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-gray-800 bg-gray-900/60 p-4"/>
-                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-gray-800 bg-gray-900/60 p-4"/>
-                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-gray-800 bg-gray-900/60 p-4"/>
+                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-4"/>
+                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-4"/>
+                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-4"/>
+                        <Skeleton variant="rectangular" height={100} width="100%" className="rounded-xl border border-neutral-800 bg-neutral-900/60 p-4"/>
                     </div>
                 </div>
             </div>
@@ -55,7 +55,7 @@ export function TrashView() {
     };
 
     return (
-        <div className="h-full overflow-y-auto bg-gray-950 p-4 md:p-8 custom-scrollbar" data-testid="trash-view">
+        <div className="h-full overflow-y-auto bg-neutral-950 p-4 md:p-8 custom-scrollbar" data-testid="trash-view">
             <div className="mx-auto max-w-4xl">
                 <div className="mb-6 flex items-center gap-3">
                     <div className="rounded-xl bg-red-500/10 p-2.5 text-red-400">
@@ -63,7 +63,7 @@ export function TrashView() {
                     </div>
                     <div>
                         <h1 className="text-2xl font-bold text-white">Recently deleted</h1>
-                        <p className="text-sm text-gray-400">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
+                        <p className="text-sm text-neutral-400">Restore a note or delete it permanently. Deleted notes are never removed automatically.</p>
                     </div>
                 </div>
 
@@ -77,11 +77,11 @@ export function TrashView() {
                 ) : (
                     <div className="space-y-2">
                         {deletedNotes.map(note => (
-                            <div key={note.id} className="flex items-center gap-4 rounded-xl border border-gray-800 bg-gray-900/60 p-4">
+                            <div key={note.id} className="flex items-center gap-4 rounded-xl border border-neutral-800 bg-neutral-900/60 p-4">
                                 <div className="min-w-0 flex-1">
-                                    <div className="truncate font-semibold text-gray-200">{note.title || 'Untitled Note'}</div>
-                                    <div className="mt-1 truncate text-sm text-gray-400">{getTextFromHtml(note.content) || 'No content'}</div>
-                                    <div className="mt-1 text-xs text-gray-600">
+                                    <div className="truncate font-semibold text-neutral-200">{note.title || 'Untitled Note'}</div>
+                                    <div className="mt-1 truncate text-sm text-neutral-400">{getTextFromHtml(note.content) || 'No content'}</div>
+                                    <div className="mt-1 text-xs text-neutral-400">
                                         Deleted {note.deletedAt ? new Date(note.deletedAt).toLocaleString() : 'recently'}
                                     </div>
                                 </div>

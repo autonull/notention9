@@ -27,9 +27,9 @@ export function MapView() {
     }, [onDropPin]);
 
     return (
-        <div className="h-full w-full bg-gray-800/50 rounded-lg p-4 flex flex-col gap-4 relative">
+        <div className="h-full w-full bg-neutral-800/50 rounded-lg p-4 flex flex-col gap-4 relative">
             {!hasPoints && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm">
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-neutral-900/80 backdrop-blur-sm">
                     <EmptyState
                         icon={MapPinIcon}
                         title="No Location Notes"

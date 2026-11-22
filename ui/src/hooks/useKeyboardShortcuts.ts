@@ -1,6 +1,11 @@
 import {useEffect} from 'react';
 import type {View} from '@notention/core';
-import {VIEW_SHORTCUTS} from '../utils/navigation';
+
+const VIEW_SHORTCUTS: Record<string, View> = {
+    '1': 'notes',
+    '2': 'settings',
+    ',': 'settings',
+};
 
 interface UseKeyboardShortcutsProps {
 	onNewNote: () => void;

@@ -86,8 +86,13 @@ const main = async () => {
 
     // Atomic swap: rename .tmp to a temp name outside OUTPUT, remove old OUTPUT, then move into place
     const SWAP_OUTPUT = path.join(ROOT, 'doc/screenshot.swap');
+    const ARCHIVE = path.join(OUTPUT, 'archive');
+    const ARCHIVE_SWAP = path.join(SWAP_OUTPUT, 'archive');
     await fs.rm(SWAP_OUTPUT, {recursive: true, force: true});
     await fs.rename(TMP_OUTPUT, SWAP_OUTPUT);
+    if (await fs.stat(ARCHIVE).then(() => true).catch(() => false)) {
+        await fs.cp(ARCHIVE, ARCHIVE_SWAP, {recursive: true});
+    }
     await fs.rm(OUTPUT, {recursive: true, force: true});
     await fs.rename(SWAP_OUTPUT, OUTPUT);
     console.log('Gallery swapped successfully');

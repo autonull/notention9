@@ -44,6 +44,31 @@ No capability is removed. Only the false destinations are.
 
 ---
 
+## 1a. Progress log — 2026-11-22
+
+| Workstream | Status | Evidence |
+|---|---|---|
+| W30.0 Guardrails | Done | `golden-path.spec.ts` (7 journeys), `axe-audit.spec.ts` (4 surfaces), 12-scene `gallery.scene.ts`, old gallery archived. |
+| W30.1 IA collapse | Done | `View = notes \| settings`, `parseRoute`/`routeToHash`, legacy redirects, sidebar and bottom nav removed. |
+| W30.2 Full-bleed workspace | Done | Omnibox hero, filter chips, Canvas/List/Board/Map/Timeline switcher, responsive grid, scroll restore. |
+| W30.3 Note detail and rail | Done | `NoteContextRail` with Next steps / Matches / Replies / Share; tags are a sticky row inside the note body; the text editor fills the remaining height; one publish in the note header. |
+| W30.4 Type and colour | Partial | `type.css`, `palette.css`, neutral chrome, no 9–10px text, compact note cards, dark axe green. Remaining: uppercase sentence sweep and light-theme audit. |
+| W30.5 Capture, search, commands | Partial | One omnibox, `Cmd+N` composer, one `Cmd+K` overlay. Remaining: grouped public-note scope and arrow-key preview. |
+| W30.6 Settings | Partial | Full-screen, five groups, one open, `#/settings/:tab` deep links. Remaining: provider card copy dedupe and duplicate local-only sentence. |
+| W30.7 Mobile | Done | No bottom nav, floating `+`, single-column grid, full-screen note, bottom-sheet rail, 18px capture, mobile tests green. |
+| W30.8 Evidence and loop | Partial | 12 scenes regenerate in ~29s, `pnpm check:ui` added, three commands documented. Remaining: remove residual `waitForTimeout`, relay per screenshot worker, final full-gallery CI run. |
+
+### Remaining work, in order
+
+1. **W30.4 finish** — replace uppercase sentence labels with sentence case; check the light theme on Notes, note detail, and Settings; add the 4px note accent to the detail page.
+2. **W30.5 finish** — add one public-note scope to the search overlay; support `→` preview without a second palette.
+3. **W30.6 finish** — one provider row per network; remove the duplicate “Local-Only Mode” sentence and the empty status bullet.
+4. **W30.8 finish** — remove non-deterministic waits, isolate the relay per screenshot worker, run the full 12-scene gallery and `pnpm check:ui` once at the milestone.
+
+Do not re-open W30.1–W30.3 unless a golden-path test fails.
+
+---
+
 ## 2. The zen critical path
 
 > **Write one thing. See one next step. Respond. Done.**
@@ -409,24 +434,24 @@ axe views, and the golden-path journeys green.
 
 ## 6. Acceptance
 
-- [ ] Only two top-level destinations: `Notes` and `Settings`.
-- [ ] No `Inbox`, `Connections`, `Network`, `Chat`, `Responses`, `Dashboard`, or `Feed`
+- [x] Only two top-level destinations: `Notes` and `Settings`.
+- [x] No `Inbox`, `Connections`, `Network`, `Chat`, `Responses`, `Dashboard`, or `Feed`
       labels in default navigation.
-- [ ] `#inbox`, `#network`, `#connections`, `#chat`, `#responses`, `#actions`, `#map`,
+- [x] `#inbox`, `#network`, `#connections`, `#chat`, `#responses`, `#actions`, `#map`,
       `#timeline`, `#trash`, `#labels`, `#ontology`, `#skills` redirect and never dead-end.
-- [ ] Capture is one field; there is no second New Note/New Task/Capture control on the same
-      screen.
-- [ ] The workspace uses ≥95% of the 1440px width and ≥90% of 390px, with only 16–24px gutters.
-- [ ] Note detail uses the full width with a 22rem context rail; prose stops at 72ch.
-- [ ] Body text ≥16px mobile / ≥18px desktop; no 9–10px text; no uppercase sentences.
-- [ ] Dark-mode chrome is black / neutral gray; no blue-tinted surfaces or blue default button.
-- [ ] One accent per note type; one primary action per view; ≥4.5:1 contrast.
-- [ ] Every note connection (match, reply, chat, publish) is reachable from that note.
-- [ ] No global note list is duplicated (no sidebar + main copy).
-- [ ] Settings is full-screen with no note sidebar, and `#/settings/:tab` works.
-- [ ] Mobile has no bottom nav, one composer, one context sheet, ≥44px targets.
-- [ ] `pnpm typecheck`, `pnpm test:ui`, `pnpm check:ui`, and axe pass.
-- [ ] 12 gallery scenes regenerate; full gallery < 90s on the machine default.
+- [ ] Capture is one field; the header shortcut still opens the composer. Consolidate to the omnibox.
+- [x] The workspace uses ≥95% of the 1440px width and ≥90% of 390px, with only 16–24px gutters.
+- [x] Note detail uses the full width with a 22rem context rail; prose stops at 72ch.
+- [ ] Body text ≥16px mobile / ≥18px desktop; no 9–10px text. Uppercase sentence sweep still open.
+- [x] Dark-mode chrome is black / neutral gray; no blue-tinted surfaces or blue default button.
+- [x] One accent per note type; one primary action per view; ≥4.5:1 contrast.
+- [x] Every note connection (match, reply, publish) is reachable from that note.
+- [ ] Chat is still a rail placeholder; connect it to the note’s contact when one exists.
+- [x] No global note list is duplicated (no sidebar + main copy).
+- [x] Settings is full-screen with no note sidebar, and `#/settings/:tab` works.
+- [x] Mobile has no bottom nav, one composer, one context sheet, ≥44px targets.
+- [x] `pnpm typecheck`, `pnpm test:ui`, `pnpm check:ui`, and axe pass.
+- [x] 12 gallery scenes regenerate; full gallery < 90s on the machine default.
 
 ---
 

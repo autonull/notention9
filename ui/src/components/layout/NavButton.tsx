@@ -39,19 +39,19 @@ export function NavButton({
                 showLabel ? 'gap-1.5 px-2.5 py-2' : 'p-2',
                 isActive
                     ? 'bg-blue-900/40 text-blue-400 shadow-sm'
-                    : 'text-gray-500 hover:bg-gray-800 hover:text-gray-200'
+                    : 'text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
             )}
         >
             {React.cloneElement(icon, {className: showLabel ? 'h-4 w-4' : 'h-5 w-5'})}
             {showLabel && (
-                <span className={cn('text-xs font-medium', !isActive && 'text-gray-400')}>{label}</span>
+                <span className={cn('text-xs font-medium', !isActive && 'text-neutral-400')}>{label}</span>
             )}
             {badgeCount !== undefined && badgeCount > 0 && (
                 <Badge
                     variant="danger"
                     size="sm"
                     pill
-                    className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 font-bold ring-1 ring-gray-900"
+                    className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 font-bold ring-1 ring-neutral-900"
                 >
                     {badgeCount > 99 ? '99+' : badgeCount}
                 </Badge>

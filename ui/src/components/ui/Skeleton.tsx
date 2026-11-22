@@ -72,10 +72,10 @@ export function NoteItemSkeleton() {
             <Skeleton variant="text" lines={2} className="pl-1 mb-2"/>
             <div className="flex items-center justify-between pl-1 relative z-10">
                 <div className="flex items-center gap-1.5 overflow-hidden">
-                    <Skeleton variant="text" width="80px" className="text-[10px] whitespace-nowrap"/>
+                    <Skeleton variant="text" width="80px" className="text-xs whitespace-nowrap"/>
                     <div className="flex gap-1">
-                        <Skeleton variant="text" width="50px" height="16px" className="text-[9px] uppercase tracking-wider font-bold rounded"/>
-                        <Skeleton variant="text" width="50px" height="16px" className="text-[9px] uppercase tracking-wider font-bold rounded"/>
+                        <Skeleton variant="text" width="50px" height="16px" className="text-xs uppercase tracking-wider font-bold rounded"/>
+                        <Skeleton variant="text" width="50px" height="16px" className="text-xs uppercase tracking-wider font-bold rounded"/>
                     </div>
                 </div>
                 <div className="flex items-center gap-0.5 opacity-0">
@@ -90,7 +90,7 @@ export function NoteItemSkeleton() {
 
 export function NetworkEventSkeleton() {
     return (
-        <Skeleton variant="network-event" className="animate-fade-in border border-gray-700/50">
+        <Skeleton variant="network-event" className="animate-fade-in border border-neutral-700/50">
             <div className="flex items-start gap-4">
                 <Skeleton variant="circular" width={44} height={44} className="flex-shrink-0"/>
                 <div className="flex-1 min-w-0">
@@ -112,7 +112,7 @@ export function NetworkEventSkeleton() {
 export function EditorSkeleton() {
     return (
         <div className="flex flex-col h-full">
-            <div className="flex-shrink-0 p-4 border-b border-gray-700/50">
+            <div className="flex-shrink-0 p-4 border-b border-neutral-700/50">
                 <Skeleton variant="text" width="40%" className="text-xl font-semibold mb-2"/>
                 <div className="flex flex-wrap gap-2">
                     <Skeleton variant="text" width="80px" height="24px" className="rounded-full"/>
@@ -132,7 +132,7 @@ export function EditorSkeleton() {
 export function SidebarSkeleton() {
     return (
         <div className="flex flex-col h-full">
-            <div className="flex-shrink-0 border-b border-gray-700/50 bg-gray-900/95 backdrop-blur-sm sticky top-0 z-10 p-3 space-y-3">
+            <div className="flex-shrink-0 border-b border-neutral-700/50 bg-neutral-900/95 backdrop-blur-sm sticky top-0 z-10 p-3 space-y-3">
                 <Skeleton variant="rectangular" height={44} width="100%" className="rounded-lg"/>
                 <div className="flex items-center gap-2 overflow-hidden">
                     <Skeleton variant="rectangular" height={36} width="100%" className="rounded-lg flex-grow min-w-0"/>
@@ -153,7 +153,7 @@ export function MatchesPanelSkeleton() {
     return (
         <div className="space-y-4">
             {Array.from({length: 4}).map((_, i) => (
-                <Skeleton key={i} variant="card" className="p-4 border border-gray-700/50 animate-fade-in">
+                <Skeleton key={i} variant="card" className="p-4 border border-neutral-700/50 animate-fade-in">
                     <div className="flex items-start gap-3">
                         <Skeleton variant="circular" width={40} height={40} className="flex-shrink-0"/>
                         <div className="flex-1 min-w-0">

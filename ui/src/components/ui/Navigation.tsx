@@ -31,24 +31,24 @@ export function Tabs({
 }: TabsProps) {
     const variantStyles = {
         default: {
-            container: 'bg-gray-800/50 p-1 rounded-xl border border-gray-700/50',
+            container: 'bg-neutral-800/50 p-1 rounded-xl border border-neutral-700/50',
             tab: 'data-[state=active]:bg-white/5 data-[state=active]:text-white data-[state=active]:shadow-sm',
-            base: 'px-3 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-all duration-150',
+            base: 'px-3 py-2 rounded-lg text-sm font-medium text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 transition-all duration-150',
         },
         pills: {
             container: 'flex gap-1',
             tab: 'data-[state=active]:bg-blue-600 data-[state=active]:text-white data-[state=active]:shadow-lg',
-            base: 'px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-all duration-150',
+            base: 'px-4 py-2 rounded-xl text-sm font-medium text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 transition-all duration-150',
         },
         underline: {
-            container: 'border-b border-gray-700/50',
+            container: 'border-b border-neutral-700/50',
             tab: 'data-[state=active]:text-blue-400 data-[state=active]:border-blue-500',
-            base: 'px-4 py-3 border-b-2 border-transparent text-sm font-medium text-gray-400 hover:text-gray-200 hover:border-gray-600 transition-all duration-150',
+            base: 'px-4 py-3 border-b-2 border-transparent text-sm font-medium text-neutral-400 hover:text-neutral-200 hover:border-neutral-600 transition-all duration-150',
         },
         segmented: {
-            container: 'bg-gray-800 p-1 rounded-xl border border-gray-700/50',
-            tab: 'data-[state=active]:bg-gray-700 data-[state=active]:text-white data-[state=active]:shadow-sm',
-            base: 'px-4 py-2.5 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-200 transition-all duration-150',
+            container: 'bg-neutral-800 p-1 rounded-xl border border-neutral-700/50',
+            tab: 'data-[state=active]:bg-neutral-700 data-[state=active]:text-white data-[state=active]:shadow-sm',
+            base: 'px-4 py-2.5 rounded-lg text-sm font-medium text-neutral-400 hover:text-neutral-200 transition-all duration-150',
         },
     };
 
@@ -88,10 +88,10 @@ export function Tabs({
                     <span>{tab.label}</span>
                     {(tab.count !== undefined || tab.badge) && (
                         <span className={cn(
-                            'ml-2 px-1.5 py-0.5 text-[10px] font-medium rounded-full',
+                            'ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full',
                             activeTab === tab.id
                                 ? variant === 'pills' ? 'bg-white/20 text-white' : 'bg-blue-500/20 text-blue-300'
-                                : 'bg-gray-700 text-gray-300'
+                                : 'bg-neutral-700 text-neutral-300'
                         )}>
                             {tab.badge || tab.count}
                         </span>
@@ -153,7 +153,7 @@ export function Breadcrumb({
                 {visibleItems.map((item, index) => (
                     <li key={item.label} className="flex items-center gap-1">
                         {index > 0 && (
-                            <span className="text-gray-500 flex-shrink-0" aria-hidden="true">
+                            <span className="text-neutral-400 flex-shrink-0" aria-hidden="true">
                                 {separator}
                             </span>
                         )}
@@ -161,7 +161,7 @@ export function Breadcrumb({
                             <button
                                 onClick={item.onClick}
                                 className={cn(
-                                    'flex items-center gap-1 text-gray-400 hover:text-white transition-colors',
+                                    'flex items-center gap-1 text-neutral-400 hover:text-white transition-colors',
                                     'px-2 py-1 rounded-lg',
                                     item.current && 'text-white font-medium'
                                 )}
@@ -172,7 +172,7 @@ export function Breadcrumb({
                             </button>
                         ) : (
                             <span className={cn(
-                                'flex items-center gap-1 text-gray-500',
+                                'flex items-center gap-1 text-neutral-400',
                                 'px-2 py-1',
                                 item.current && 'text-white font-medium'
                             )} aria-current={item.current ? 'page' : undefined}>
@@ -240,7 +240,7 @@ export function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
-                    className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     aria-label="Previous page"
                     aria-disabled={currentPage === 1}
                 >
@@ -253,7 +253,7 @@ export function Pagination({
             <div className="flex items-center gap-1" role="group" aria-label="Pages">
                 {pages.map((page, index) =>
                     page === 'ellipsis' ? (
-                        <span key={`ellipsis-${index}`} className="px-2 text-gray-500" aria-hidden="true">…</span>
+                        <span key={`ellipsis-${index}`} className="px-2 text-neutral-400" aria-hidden="true">…</span>
                     ) : (
                         <button
                             key={page}
@@ -263,7 +263,7 @@ export function Pagination({
                                 'min-w-[2.5rem]',
                                 currentPage === page
                                     ? 'bg-blue-600 text-white shadow-sm shadow-blue-500/20'
-                                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                                    : 'text-neutral-400 hover:text-white hover:bg-neutral-800'
                             )}
                             aria-label={`Page ${page}`}
                             aria-current={currentPage === page ? 'page' : undefined}
@@ -278,7 +278,7 @@ export function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
-                    className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     aria-label="Next page"
                     aria-disabled={currentPage === totalPages}
                 >
@@ -337,7 +337,7 @@ export function Stepper({
                                 isError ? 'border-red-500 bg-red-900/30 text-red-400' :
                                 isCompleted ? 'border-green-500 bg-green-500 text-white' :
                                 isActive ? 'border-blue-500 bg-blue-500 text-white' :
-                                'border-gray-600 bg-gray-800 text-gray-500'
+                                'border-neutral-600 bg-neutral-800 text-neutral-400'
                             )}>
                                 {isCompleted && !isError ? (
                                     <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -355,7 +355,7 @@ export function Stepper({
                                     isError ? 'text-red-400' :
                                     isCompleted ? 'text-green-400' :
                                     isActive ? 'text-blue-400' :
-                                    'text-gray-400'
+                                    'text-neutral-400'
                                 )}>
                                     {step.label}
                                 </p>
@@ -365,7 +365,7 @@ export function Stepper({
                                         isError ? 'text-red-500' :
                                         isCompleted ? 'text-green-500' :
                                         isActive ? 'text-blue-500' :
-                                        'text-gray-500'
+                                        'text-neutral-400'
                                     )}>
                                         {step.description}
                                     </p>
@@ -376,7 +376,7 @@ export function Stepper({
                             <div className={cn(
                                 'absolute top-5 left-1/2 w-full h-0.5',
                                 orientation === 'vertical' && 'top-1/2 left-5 w-0.5 h-full',
-                                isCompleted ? 'bg-green-500' : 'bg-gray-700'
+                                isCompleted ? 'bg-green-500' : 'bg-neutral-700'
                             )} aria-hidden="true" />
                         )}
                     </div>
@@ -408,19 +408,19 @@ export interface NavProps {
 export function Nav({items, onSelect, variant = 'sidebar', className = '', orientation = 'vertical'}: NavProps) {
     const variantStyles = {
         sidebar: {
-            item: 'px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800/50 transition-all duration-150 flex items-center gap-3',
+            item: 'px-3 py-2.5 rounded-xl text-sm font-medium text-neutral-400 hover:text-white hover:bg-neutral-800/50 transition-all duration-150 flex items-center gap-3',
             active: 'bg-blue-900/30 text-blue-400 border-l-2 border-blue-500',
-            badge: 'ml-auto px-2 py-0.5 text-[10px] font-medium rounded-full bg-blue-900/50 text-blue-300',
+            badge: 'ml-auto px-2 py-0.5 text-xs font-medium rounded-full bg-blue-900/50 text-blue-300',
         },
         tabs: {
-            item: 'px-4 py-3 border-b-2 border-transparent text-sm font-medium text-gray-400 hover:text-gray-200 hover:border-gray-600 transition-all duration-150',
+            item: 'px-4 py-3 border-b-2 border-transparent text-sm font-medium text-neutral-400 hover:text-neutral-200 hover:border-neutral-600 transition-all duration-150',
             active: 'text-blue-400 border-blue-500',
-            badge: 'ml-2 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-blue-900/50 text-blue-300',
+            badge: 'ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full bg-blue-900/50 text-blue-300',
         },
         pills: {
-            item: 'px-4 py-2 rounded-xl text-sm font-medium text-gray-400 hover:text-gray-200 hover:bg-gray-800/50 transition-all duration-150',
+            item: 'px-4 py-2 rounded-xl text-sm font-medium text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800/50 transition-all duration-150',
             active: 'bg-blue-600 text-white shadow-lg shadow-blue-500/20',
-            badge: 'ml-2 px-1.5 py-0.5 text-[10px] font-medium rounded-full bg-white/20 text-white',
+            badge: 'ml-2 px-1.5 py-0.5 text-xs font-medium rounded-full bg-white/20 text-white',
         },
     };
 

@@ -23,7 +23,7 @@ const BubbleButton = ({
         className={`p-1.5 transition-all first:rounded-l-md last:rounded-r-md ${
             isActive
                 ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                : 'bg-gray-900 text-gray-500 hover:text-gray-200 hover:bg-gray-800'
+                : 'bg-neutral-900 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
         }`}
         title={title}
         type="button"
@@ -40,7 +40,7 @@ export function EditorBubbleMenu({editor}: EditorBubbleMenuProps) {
     return (
         <BubbleMenu
             editor={editor}
-            className="flex items-center rounded-md shadow-2xl border border-gray-800 overflow-hidden bg-gray-900 ring-1 ring-white/5"
+            className="flex items-center rounded-md shadow-2xl border border-neutral-800 overflow-hidden bg-neutral-900 ring-1 ring-white/5"
         >
             <BubbleButton
                 onClick={() => editor.chain().focus().toggleBold().run()}
@@ -60,7 +60,7 @@ export function EditorBubbleMenu({editor}: EditorBubbleMenuProps) {
                 icon={StrikethroughIcon}
                 title="Strikethrough"
             />
-            <div className="w-px h-8 bg-gray-700"/>
+            <div className="w-px h-8 bg-neutral-700"/>
             <BubbleButton
                 onClick={() => editor.chain().focus().toggleCode().run()}
                 isActive={editor.isActive('code')}

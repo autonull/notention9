@@ -83,7 +83,7 @@ export function ContactList({
                 onClick={() => onSelectContact(contact)}
                 className={`
             flex items-center gap-3 p-3 cursor-pointer transition-colors
-            ${isSelected ? 'bg-blue-900/20 border-r-2 border-blue-500' : 'hover:bg-gray-800/50 border-r-2 border-transparent'}
+            ${isSelected ? 'bg-blue-900/20 border-r-2 border-blue-500' : 'hover:bg-neutral-800/50 border-r-2 border-transparent'}
           `}
             >
                 <div className="relative">
@@ -95,7 +95,7 @@ export function ContactList({
                 </div>
                 <div className="overflow-hidden flex-1 min-w-0">
                     <div className="flex justify-between items-baseline">
-                        <p className={`font-semibold truncate text-sm ${isSelected ? 'text-white' : 'text-gray-200'}`}>
+                        <p className={`font-semibold truncate text-sm ${isSelected ? 'text-white' : 'text-neutral-200'}`}>
                             {contact.name || profile?.name || (
                                 (() => {
                                     try {
@@ -107,7 +107,7 @@ export function ContactList({
                             )}
                         </p>
                     </div>
-                    <p className="text-xs text-gray-500 truncate">
+                    <p className="text-xs text-neutral-400 truncate">
                         {contact.about || profile?.about || 'No bio available'}
                     </p>
                 </div>
@@ -116,8 +116,8 @@ export function ContactList({
     };
 
     return (
-        <div className="h-full flex flex-col border-r border-gray-700/50 bg-gray-900/50">
-            <div className="p-4 border-b border-gray-700/50 space-y-3">
+        <div className="h-full flex flex-col border-r border-neutral-700/50 bg-neutral-900/50">
+            <div className="p-4 border-b border-neutral-700/50 space-y-3">
                 <h2 className="text-lg font-bold text-white flex justify-between items-center">
                     Chats
                     <div className="flex gap-1">
@@ -132,7 +132,7 @@ export function ContactList({
                 </h2>
 
                 {isAddingContact && (
-                    <div className="animate-fade-in bg-gray-800/50 p-3 rounded-lg border border-gray-700">
+                    <div className="animate-fade-in bg-neutral-800/50 p-3 rounded-lg border border-neutral-700">
                         <form onSubmit={handleAddContact} className="flex flex-col gap-2">
                             <Input
                                 value={newContactNpub}
@@ -164,13 +164,13 @@ export function ContactList({
                 )}
 
                 <div className="relative">
-                    <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500"/>
+                    <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400"/>
                     <input
                         type="text"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         placeholder="Search..."
-                        className="w-full bg-gray-800 border border-gray-700 rounded-full py-1.5 pl-9 pr-4 text-sm text-gray-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                        className="w-full bg-neutral-800 border border-neutral-700 rounded-full py-1.5 pl-9 pr-4 text-sm text-neutral-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
                     />
                 </div>
             </div>

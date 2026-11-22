@@ -13,8 +13,8 @@ export function MatchReplies({matches, onMatchClick, onMatchRespond}: MatchRepli
     if (!matches || matches.length === 0) return null;
 
     return (
-        <div className="mt-8 border-t border-gray-800 pt-6" data-testid="match-replies">
-            <div className="flex items-center gap-2 mb-4 text-gray-400">
+        <div className="mt-8 border-t border-neutral-800 pt-6" data-testid="match-replies">
+            <div className="flex items-center gap-2 mb-4 text-neutral-400">
                 <SparklesIcon className="w-4 h-4 text-blue-400"/>
                 <h3 className="text-sm font-semibold uppercase tracking-wider">Semantic Matches</h3>
                 <span className="text-xs bg-blue-900/30 text-blue-300 px-2 py-0.5 rounded-full border border-blue-800/50">
@@ -24,9 +24,9 @@ export function MatchReplies({matches, onMatchClick, onMatchRespond}: MatchRepli
 
             <div className="space-y-4">
                 {matches.map((match) => (
-                    <div key={match.note.id} className="relative pl-6 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-gray-800">
+                    <div key={match.note.id} className="relative pl-6 before:absolute before:left-0 before:top-0 before:bottom-0 before:w-0.5 before:bg-neutral-800">
                         {/* Avatar / Line Connector Placeholder */}
-                        <div className="absolute left-[-5px] top-4 w-2.5 h-2.5 rounded-full bg-gray-700 border-2 border-gray-900"></div>
+                        <div className="absolute left-[-5px] top-4 w-2.5 h-2.5 rounded-full bg-neutral-700 border-2 border-neutral-900"></div>
 
                         <MatchItem
                             match={match}

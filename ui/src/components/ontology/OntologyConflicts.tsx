@@ -20,7 +20,7 @@ export function OntologyConflicts({conflicts, onSelectNote}: OntologyConflictsPr
     }, [conflicts]);
 
     return (
-        <div className="flex flex-col items-center justify-start h-full text-center text-gray-400 pt-4">
+        <div className="flex flex-col items-center justify-start h-full text-center text-neutral-400 pt-4">
             {conflicts.length > 0 ? (
                 <div className="w-full max-w-4xl space-y-6 pb-8">
                     <div
@@ -28,7 +28,7 @@ export function OntologyConflicts({conflicts, onSelectNote}: OntologyConflictsPr
                         <div className="text-3xl">⚠️</div>
                         <div>
                             <h3 className="text-lg font-bold text-white">Conflicts Detected</h3>
-                            <p className="text-sm text-gray-400">
+                            <p className="text-sm text-neutral-400">
                                 Found {conflicts.length} issues across {Object.keys(groupedConflicts).length} notes.
                                 These properties do not match the expected types defined in your Ontology.
                             </p>

@@ -74,10 +74,10 @@ export function TimePickerModal({
                     />
                 </div>
 
-                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-gray-700/50">
+                <div className="flex justify-end gap-3 mt-8 pt-4 border-t border-neutral-700/50">
                     <button
                         onClick={onClose}
-                        className="px-4 py-2 text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors font-medium text-sm"
+                        className="px-4 py-2 text-neutral-400 hover:text-white hover:bg-neutral-800 rounded-lg transition-colors font-medium text-sm"
                     >
                         Cancel
                     </button>

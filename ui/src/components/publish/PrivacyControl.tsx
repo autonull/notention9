@@ -102,17 +102,17 @@ export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
 
     return (
         <div className="relative flex items-center">
-            <div className="flex bg-gray-800/50 rounded-lg border border-gray-700/50 p-0.5">
+            <div className="flex bg-neutral-800/50 rounded-lg border border-neutral-700/50 p-0.5">
                 {(['private', 'public'] as PrivacyLevel[]).map(level => (
                     <button
                         key={level}
                         onClick={() => requestPrivacy(level)}
                         aria-pressed={privacy === level}
                         className={`
-                            flex items-center gap-1 px-2 py-1 rounded-md text-[10px] font-medium transition-all
+                            flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium transition-all
                             ${privacy === level
-                            ? 'bg-gray-700 text-white shadow-sm'
-                            : 'text-gray-400 hover:text-gray-200 hover:bg-gray-700/30'}
+                            ? 'bg-neutral-700 text-white shadow-sm'
+                            : 'text-neutral-400 hover:text-neutral-200 hover:bg-neutral-700/30'}
                         `}
                         title={`Set to ${level}`}
                     >
@@ -123,14 +123,14 @@ export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
             </div>
 
             {isPublishing && (
-                <div className="absolute -bottom-4 right-0 text-[9px] text-blue-400 animate-pulse whitespace-nowrap">
+                <div className="absolute -bottom-4 right-0 text-xs text-blue-400 animate-pulse whitespace-nowrap">
                     Publishing...
                 </div>
             )}
 
             {pendingPrivacy && (
                 <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 p-4">
-                    <div className="bg-gray-800 p-4 rounded-lg shadow-xl border border-gray-700 max-w-sm w-full animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-neutral-800 p-4 rounded-lg shadow-xl border border-neutral-700 max-w-sm w-full animate-in fade-in zoom-in-95 duration-200">
                         <h3 className="text-sm font-bold text-white mb-2 flex items-center gap-2">
                             {getIcon(pendingPrivacy)}
                             {pendingPrivacy === 'public' ? 'Publish publicly?' : 'Make private?'}
@@ -138,11 +138,11 @@ export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
 
                         {pendingPrivacy === 'public' ? (
                             <>
-                                <div className="text-[11px] text-gray-300 bg-gray-900/60 border border-gray-700 rounded p-2 mb-3 max-h-32 overflow-auto whitespace-pre-wrap">
-                                    {publishedPreview || <span className="text-gray-500">(empty note)</span>}
+                                <div className="text-[11px] text-neutral-300 bg-neutral-900/60 border border-neutral-700 rounded p-2 mb-3 max-h-32 overflow-auto whitespace-pre-wrap">
+                                    {publishedPreview || <span className="text-neutral-400">(empty note)</span>}
                                 </div>
 
-                                <ul className="text-[10px] text-gray-400 space-y-1 mb-3">
+                                <ul className="text-xs text-neutral-400 space-y-1 mb-3">
                                     <li>{note.properties.length} propert{note.properties.length === 1 ? 'y' : 'ies'} become public tags</li>
                                     <li>
                                         {relays.length > 0 ? `Sends to ${relays.length} relays` : 'Sends to the default relays'}
@@ -150,7 +150,7 @@ export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
                                     <li>Published notes are permanent; deletion is a best-effort NIP-09 request</li>
                                 </ul>
 
-                                <label className="flex items-center gap-2 text-[10px] text-gray-300 mb-3">
+                                <label className="flex items-center gap-2 text-xs text-neutral-300 mb-3">
                                     <input
                                         type="checkbox"
                                         checked={redactPII}
@@ -165,13 +165,13 @@ export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
                             </>
                         ) : (
                             <>
-                                <p className="text-[11px] text-gray-300 mb-3">
+                                <p className="text-[11px] text-neutral-300 mb-3">
                                     The note stays on this device. Copies already published are not removed
                                     unless relays honor a deletion request.
                                 </p>
 
                                 {note.nostrEventId && (
-                                    <label className="flex items-center gap-2 text-[10px] text-gray-300 mb-3">
+                                    <label className="flex items-center gap-2 text-xs text-neutral-300 mb-3">
                                         <input
                                             type="checkbox"
                                             checked={requestDeletion}
@@ -184,7 +184,7 @@ export function PrivacyControl({note, onUpdate}: PrivacyControlProps) {
                         )}
 
                         {publishError && (
-                            <p className="text-[10px] text-red-400 mb-2">{publishError}</p>
+                            <p className="text-xs text-red-400 mb-2">{publishError}</p>
                         )}
 
                         <div className="flex justify-end gap-2">

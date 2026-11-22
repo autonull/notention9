@@ -17,7 +17,8 @@ import {InspectorSidebar} from './InspectorPanel';
 import {EditorModals} from './EditorModals';
 import {PublishErrorBanner} from './PublishErrorBanner';
 import {MobileBackdrop} from './MobileBackdrop';
-import {NextStepStrip, NextStepsDrawer} from '../next-steps';
+import {NextStepsDrawer} from '../next-steps';
+import {NoteContextRail} from '../note/NoteContextRail';
 import {SkillApprovalDialog} from '../skills/SkillApprovalDialog';
 
 interface EditorManagerProps {
@@ -27,7 +28,7 @@ interface EditorManagerProps {
 }
 
 export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
-    const {notes} = useNotes();
+    const {notes, addNote} = useNotes();
     const {
         dirtyNote,
         handleNoteUpdate,
@@ -156,9 +157,18 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         editorRef.current?.openPropertyModal(key);
     };
 
-    const handleMatchClick = useCallback((match: ScoredMatch) => {
-        setSelectedNoteId(match.note.id);
-    }, [setSelectedNoteId]);
+    const handleRespondMatch = useCallback((match: ScoredMatch) => {
+        const response = addNote({
+            title: `Re: ${match.note.title || 'Untitled note'}`,
+            content: `<p>I would like to respond to this.</p>`,
+            tags: ['response'],
+            properties: [
+                {key: 'intent', operator: 'is', values: ['response']},
+                {key: 'inResponseTo', operator: 'is', values: [match.note.id]},
+            ],
+        });
+        setSelectedNoteId(response.id);
+    }, [addNote, setSelectedNoteId]);
 
     // Next Steps drawer state
     const [isNextStepsDrawerOpen, setIsNextStepsDrawerOpen] = useState(false);
@@ -212,7 +222,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     });
 
     return (
-        <div className="flex flex-col h-full relative">
+        <div className="relative flex h-full flex-col">
             <EditorHeader
                 key={note.id}
                 note={dirtyNote}
@@ -247,13 +257,65 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />
             )}
 
-            {!isNextStepsDrawerOpen && (
-                <NextStepStrip
+            <div className="relative flex min-h-0 flex-1">
+                <div className="flex min-w-0 flex-1 flex-col">
+                    <EditorContent
+                        editorRef={editorRef}
+                        dirtyNote={dirtyNote}
+                        onSave={handleContentSave}
+                        onNoteUpdate={handleNoteUpdate}
+                        ontology={settings.ontology ?? []}
+                        templates={settings.customTemplates ?? []}
+                        showToolbar={isToolbarVisible}
+                        onMagic={() => {
+                            if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
+                                addToast('Loading local model... this may take a while.', 'info');
+                            }
+                            handleMagic();
+                        }}
+                        onTemplates={() => setIsTemplateSelectorOpen(!isTemplateSelectorOpen)}
+                        notes={notes}
+                        saveStatus={saveStatus}
+                        isTemplateSelectorOpen={isTemplateSelectorOpen}
+                        onCloseTemplateSelector={() => setIsTemplateSelectorOpen(false)}
+                        onInsertTemplate={handleInsertTemplate}
+                        onPickLocation={handleRequestLocationPick}
+                        onTagsChange={handleTagsChange}
+                        onAutoTag={handleAutoTag}
+                        isAutoTagging={isAutoTagging}
+                        isApiKeyAvailable={isApiKeyAvailable}
+                    />
+                    <MobileBackdrop
+                        isVisible={isInspectorOpen}
+                        onClick={() => setIsInspectorOpen(false)}
+                    />
+                    {isInspectorOpen && (
+                        <InspectorSidebar
+                            isOpen={isInspectorOpen}
+                            onClose={() => setIsInspectorOpen(false)}
+                            note={dirtyNote}
+                            onNoteUpdate={handleContentSave}
+                            properties={dirtyNote.properties}
+                            onUpdateProperty={handleUpdateTextFromInspector}
+                            onPickLocation={handleRequestLocationPick}
+                            onPickTime={handlePickTime}
+                            ontology={settings.ontology ?? []}
+                        />
+                    )}
+                </div>
+
+                <NoteContextRail
                     note={dirtyNote}
                     model={nextStepsModel}
                     onOpenDrawer={handleOpenNextStepsDrawer}
+                    onPublish={handlePublish}
+                    isPublished={isPublished}
+                    isPublishing={isPublishing}
+                    onNavigateToNote={setSelectedNoteId}
+                    onRespond={handleRespondMatch}
                 />
-            )}
+            </div>
+
             <NextStepsDrawer
                 isOpen={isNextStepsDrawerOpen}
                 onClose={handleCloseNextStepsDrawer}
@@ -275,46 +337,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 />
             )}
 
-            <div className="flex flex-1 overflow-hidden relative">
-                <EditorContent
-                    editorRef={editorRef}
-                    dirtyNote={dirtyNote}
-                    onSave={handleContentSave}
-                    onNoteUpdate={handleNoteUpdate}
-                    ontology={settings.ontology ?? []}
-                    templates={settings.customTemplates ?? []}
-                    showToolbar={isToolbarVisible}
-                    onMagic={() => {
-                        if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
-                            addToast('Loading local model... this may take a while.', 'info');
-                        }
-                        handleMagic();
-                    }}
-                    onTemplates={() => setIsTemplateSelectorOpen(!isTemplateSelectorOpen)}
-                    notes={notes}
-                    saveStatus={saveStatus}
-                    isTemplateSelectorOpen={isTemplateSelectorOpen}
-                    onCloseTemplateSelector={() => setIsTemplateSelectorOpen(false)}
-                    onInsertTemplate={handleInsertTemplate}
-                    onMatchClick={handleMatchClick}
-                    onPickLocation={handleRequestLocationPick}
-                />
-                <MobileBackdrop
-                    isVisible={isInspectorOpen}
-                    onClick={() => setIsInspectorOpen(false)}
-                />
-                <InspectorSidebar
-                    isOpen={isInspectorOpen}
-                    onClose={() => setIsInspectorOpen(false)}
-                    note={dirtyNote}
-                    onNoteUpdate={handleContentSave}
-                    properties={dirtyNote.properties}
-                    onUpdateProperty={handleUpdateTextFromInspector}
-                    onPickLocation={handleRequestLocationPick}
-                    onPickTime={handlePickTime}
-                    ontology={settings.ontology ?? []}
-                />
-            </div>
             <EditorModals
                 isSaveTemplateModalOpen={isSaveTemplateModalOpen}
                 onSaveTemplateModalClose={() => setIsSaveTemplateModalOpen(false)}

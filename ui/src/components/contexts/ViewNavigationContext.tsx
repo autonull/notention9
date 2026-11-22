@@ -1,10 +1,9 @@
 import React, { createContext, ReactNode, useState } from 'react';
 import { useLocalForage } from '../../hooks/useLocalForage';
-import type { SidebarViewMode, SortOrder, View } from '@notention/core';
+import type { NoteMode, NoteTab, NotesSection, SettingsTab, SidebarViewMode, SortOrder, View } from '@notention/core';
 import { STORAGE_KEYS } from '../../config/storageKeys';
 
-export type NotesSection = 'all' | 'tasks' | 'tags' | 'trash';
-export type NotesMode = 'list' | 'board' | 'map' | 'timeline';
+export type { NoteMode, NoteTab, NotesSection, SettingsTab };
 
 export interface ViewNavigationContextType {
     activeView: View;
@@ -19,21 +18,27 @@ export interface ViewNavigationContextType {
     setSortOrder: (order: SortOrder) => void;
     notesSection: NotesSection;
     setNotesSection: (section: NotesSection) => void;
-    notesMode: NotesMode;
-    setNotesMode: (mode: NotesMode) => void;
+    notesMode: NoteMode;
+    setNotesMode: (mode: NoteMode) => void;
+    noteTab: NoteTab;
+    setNoteTab: (tab: NoteTab) => void;
+    settingsTab: SettingsTab;
+    setSettingsTab: (tab: SettingsTab) => void;
 }
 
 const ViewNavigationContext = createContext<ViewNavigationContextType | undefined>(undefined);
 
 export function ViewNavigationProvider({ children }: { children: ReactNode }) {
     const [sortOrder, setSortOrder] = useLocalForage<SortOrder>(STORAGE_KEYS.sortOrder, 'updatedAt_desc');
-    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>(STORAGE_KEYS.sidebarViewMode, 'list');
+    const [sidebarViewMode, setSidebarViewMode] = useLocalForage<SidebarViewMode>(STORAGE_KEYS.sidebarViewMode, 'grid');
     const [notesSection, setNotesSection] = useLocalForage<NotesSection>(STORAGE_KEYS.notesSection, 'all');
-    const [notesMode, setNotesMode] = useLocalForage<NotesMode>(STORAGE_KEYS.notesMode, 'list');
+    const [notesMode, setNotesMode] = useLocalForage<NoteMode>(STORAGE_KEYS.notesMode, 'canvas');
 
-    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-    const [activeView, setActiveView] = useState<View>('capture');
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [activeView, setActiveView] = useState<View>('notes');
     const [searchTerm, setSearchTerm] = useState('');
+    const [noteTab, setNoteTab] = useState<NoteTab>('next');
+    const [settingsTab, setSettingsTab] = useState<SettingsTab>('general');
 
     return (
         <ViewNavigationContext.Provider
@@ -51,7 +56,11 @@ export function ViewNavigationProvider({ children }: { children: ReactNode }) {
                 notesSection,
                 setNotesSection,
                 notesMode,
-                setNotesMode
+                setNotesMode,
+                noteTab,
+                setNoteTab,
+                settingsTab,
+                setSettingsTab
             }}
         >
             {children}

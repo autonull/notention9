@@ -7,28 +7,21 @@ test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
 });
 
-test('chat explains that an identity is required', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#chat'});
-    await expect(page.getByText('Chat needs an identity')).toBeVisible();
-});
-
 test('relay changes persist', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#settings'});
-    await page.getByRole('tab', {name: /Nostr Keys/}).click();
-    const input = page.getByPlaceholder('wss://relay.example.com');
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/settings/nostr'});
+        const input = page.getByPlaceholder('wss://relay.example.com');
     await input.fill('ws://localhost:7001');
     await page.getByRole('button', {name: 'Add', exact: true}).click();
     await page.reload();
     await page.waitForSelector('[data-ready]');
-    await page.getByRole('tab', {name: /Nostr Keys/}).click();
-    await expect(page.getByText('ws://localhost:7001')).toBeVisible();
+        await expect(page.getByText('ws://localhost:7001')).toBeVisible();
 });
 
 test('theme and developer mode persist', async ({page}) => {
     await seed(page, {
         notes: demoNotes(),
         settings: defaultSettings({developerMode: true, theme: 'light'}),
-        hash: '#settings',
+        hash: '#/settings/nostr',
     });
     await page.reload();
     await page.waitForSelector('[data-ready]');

@@ -151,11 +151,11 @@ export function getNoteItemClasses(
             relative aspect-square flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-all border focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50
             ${isSelected
                 ? 'bg-blue-900/30 border-blue-500/50 text-blue-100 shadow-md shadow-blue-900/20'
-                : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
+                : 'bg-neutral-800/50 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
             }
             ${!isSelected && displayState.isPublic ? 'border-green-800/50' : ''}
-            ${!isSelected && !displayState.isPublic && !displayState.isVeryLowPriority ? 'border-gray-700/50' : ''}
-            ${!isSelected && displayState.isVeryLowPriority ? 'border-gray-700/50 border-dashed' : ''}
+            ${!isSelected && !displayState.isPublic && !displayState.isVeryLowPriority ? 'border-neutral-700/50' : ''}
+            ${!isSelected && displayState.isVeryLowPriority ? 'border-neutral-700/50 border-dashed' : ''}
             ${displayState.isLowPriority ? 'opacity-50' : ''}
         `.trim();
     }
@@ -165,9 +165,9 @@ export function getNoteItemClasses(
         note-list-item group relative flex flex-col p-3 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden pressable
         ${isSelected
             ? 'bg-blue-900/20 shadow-sm ring-1 ring-blue-500/30'
-            : 'bg-transparent hover:bg-gray-800/60 active:bg-gray-700/50'
+            : 'bg-transparent hover:bg-neutral-800/60 active:bg-neutral-700/50'
         }
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900
     `.trim();
 }
 
@@ -176,10 +176,10 @@ export function getNoteItemClasses(
  */
 export function getPropertyBadgeClasses(isSelected: boolean): string {
     return `
-        inline-block max-w-[150px] truncate align-bottom text-[10px] tracking-normal font-medium whitespace-nowrap transition-colors px-1.5 py-0.5 rounded border
+        inline-block max-w-[150px] truncate align-bottom text-xs tracking-normal font-medium whitespace-nowrap transition-colors px-1.5 py-0.5 rounded border
         ${isSelected
             ? 'text-blue-200/70 border-blue-800/50 bg-blue-900/20'
-            : 'text-gray-400 border-gray-700/60 bg-gray-800/40 group-hover:text-gray-300'
+            : 'text-neutral-400 border-neutral-700/60 bg-neutral-800/40 group-hover:text-neutral-300'
         }
     `.trim();
 }
@@ -190,6 +190,6 @@ export function getPropertyBadgeClasses(isSelected: boolean): string {
 export function getRelativeTimeClasses(isSelected: boolean): string {
     return `
         text-[11px] whitespace-nowrap transition-colors
-        ${isSelected ? 'text-blue-300/60' : 'text-gray-500 group-hover:text-gray-400'}
+        ${isSelected ? 'text-blue-300/60' : 'text-neutral-400 group-hover:text-neutral-400'}
     `.trim();
 }

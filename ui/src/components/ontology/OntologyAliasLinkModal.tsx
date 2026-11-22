@@ -87,7 +87,7 @@ export function OntologyAliasLinkModal({
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={`Link Alias: ${aliasCandidate}`}>
             <div className="space-y-4">
-                <p className="text-sm text-gray-300">
+                <p className="text-sm text-neutral-300">
                     Select the existing attribute that <strong>{aliasCandidate}</strong> is an alias for.
                 </p>
 
@@ -100,16 +100,16 @@ export function OntologyAliasLinkModal({
                         <div
                             onClick={() => setSelectedAttribute(`${topMatch.nodeId}:${topMatch.key}`)}
                             className={`
-                                p-2 cursor-pointer rounded border border-purple-700/50 flex flex-col bg-gray-900/50 hover:bg-gray-800 transition-colors
+                                p-2 cursor-pointer rounded border border-purple-700/50 flex flex-col bg-neutral-900/50 hover:bg-neutral-800 transition-colors
                                 ${selectedAttribute === `${topMatch.nodeId}:${topMatch.key}` ? 'ring-2 ring-purple-500' : ''}
                             `}
                         >
                             <div className="flex justify-between items-baseline">
                                 <span className="font-bold text-white">{topMatch.key}</span>
-                                <span className="text-[10px] text-gray-400">{topMatch.nodeLabel}</span>
+                                <span className="text-xs text-neutral-400">{topMatch.nodeLabel}</span>
                             </div>
                             {topMatch.description && (
-                                <span className="text-xs text-gray-400 truncate">{topMatch.description}</span>
+                                <span className="text-xs text-neutral-400 truncate">{topMatch.description}</span>
                             )}
                         </div>
                     </div>
@@ -121,13 +121,13 @@ export function OntologyAliasLinkModal({
                         placeholder="Search attributes..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-gray-800 border border-gray-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                        className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
                         autoFocus
                     />
 
-                    <div className="max-h-60 overflow-y-auto border border-gray-700 rounded-md bg-gray-900/50">
+                    <div className="max-h-60 overflow-y-auto border border-neutral-700 rounded-md bg-neutral-900/50">
                         {filteredAttributes.length === 0 ? (
-                            <div className="p-3 text-sm text-gray-500 text-center">No attributes found.</div>
+                            <div className="p-3 text-sm text-neutral-400 text-center">No attributes found.</div>
                         ) : (
                             filteredAttributes.map(attr => {
                                 const id = `${attr.nodeId}:${attr.key}`;
@@ -137,27 +137,27 @@ export function OntologyAliasLinkModal({
                                         key={id}
                                         onClick={() => setSelectedAttribute(id)}
                                         className={`
-                                            p-2 cursor-pointer border-b border-gray-800 last:border-b-0 flex flex-col
-                                            ${isSelected ? 'bg-blue-900/40' : 'hover:bg-gray-800'}
+                                            p-2 cursor-pointer border-b border-neutral-800 last:border-b-0 flex flex-col
+                                            ${isSelected ? 'bg-blue-900/40' : 'hover:bg-neutral-800'}
                                         `}
                                     >
                                         <div className="flex justify-between items-baseline">
-                                            <span className={`font-medium ${isSelected ? 'text-blue-300' : 'text-gray-200'}`}>
+                                            <span className={`font-medium ${isSelected ? 'text-blue-300' : 'text-neutral-200'}`}>
                                                 {attr.key}
                                             </span>
                                             <div className="flex items-center gap-2">
                                                 {attr.score && attr.score > 0.5 && (
-                                                    <span className="text-[10px] text-green-500">
+                                                    <span className="text-xs text-green-500">
                                                         {Math.round(attr.score * 100)}%
                                                     </span>
                                                 )}
-                                                <span className="text-[10px] text-gray-500 uppercase tracking-wide">
+                                                <span className="text-xs text-neutral-400 uppercase tracking-wide">
                                                     {attr.nodeLabel}
                                                 </span>
                                             </div>
                                         </div>
                                         {attr.description && (
-                                            <span className="text-xs text-gray-400 truncate">
+                                            <span className="text-xs text-neutral-400 truncate">
                                                 {attr.description}
                                             </span>
                                         )}
@@ -168,7 +168,7 @@ export function OntologyAliasLinkModal({
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-gray-700">
+                <div className="flex justify-end gap-3 pt-4 border-t border-neutral-700">
                     <Button
                         onClick={onClose}
                         variant="secondary"

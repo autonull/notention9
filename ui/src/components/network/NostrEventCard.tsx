@@ -36,7 +36,7 @@ export function NostrEventCard({
 
     const handleChat = () => {
         setSelectedChatPubkey(event.pubkey);
-        setActiveView('chat');
+        setActiveView('notes');
     };
 
     const properties = extractPropertiesFromTags(event.tags);
@@ -44,7 +44,7 @@ export function NostrEventCard({
 
     return (
         <div
-            className="bg-gray-800 rounded-lg border border-gray-700/80 animate-fade-in relative overflow-hidden group hover:border-blue-500/30 transition-colors">
+            className="bg-neutral-800 rounded-lg border border-neutral-700/80 animate-fade-in relative overflow-hidden group hover:border-blue-500/30 transition-colors">
 
             {/* Match Score Badge */}
             {matchScore !== undefined && (
@@ -54,7 +54,7 @@ export function NostrEventCard({
                             ? 'bg-green-600 text-white'
                             : matchScore > 50
                                 ? 'bg-yellow-600 text-white'
-                                : 'bg-gray-600 text-gray-200'
+                                : 'bg-neutral-600 text-neutral-200'
                     }`}
                 >
                     {Math.round(matchScore)}% Match
@@ -76,12 +76,12 @@ export function NostrEventCard({
                         >
                             {profile?.name || formatNpub(authorNpub)}
                         </div>
-                        <div className="text-xs text-gray-500">{eventDate}</div>
+                        <div className="text-xs text-neutral-400">{eventDate}</div>
                     </div>
                 </div>
 
                 {/* Content */}
-                <div className="text-gray-300 text-sm whitespace-pre-wrap break-words mb-4 line-clamp-6">
+                <div className="text-neutral-300 text-sm whitespace-pre-wrap break-words mb-4 line-clamp-6">
                     {event.content}
                 </div>
 
@@ -101,7 +101,7 @@ export function NostrEventCard({
 
                 {/* Hashtags */}
                 {hashtags.length > 0 && (
-                    <div className="mb-4 flex flex-wrap gap-2 text-xs text-gray-400">
+                    <div className="mb-4 flex flex-wrap gap-2 text-xs text-neutral-400">
                         {hashtags.map((tag, idx) => (
                             <span key={idx} className="hover:text-blue-400 cursor-pointer">#{tag}</span>
                         ))}
@@ -110,7 +110,7 @@ export function NostrEventCard({
 
                 {/* Actions */}
                 <div
-                    className="flex justify-end gap-2 pt-3 border-t border-gray-700/50 opacity-100 md:opacity-80 group-hover:opacity-100 transition-all">
+                    className="flex justify-end gap-2 pt-3 border-t border-neutral-700/50 opacity-100 md:opacity-80 group-hover:opacity-100 transition-all">
                     {onApplyMatch && properties.length > 0 && (
                         <Button
                             onClick={() => onApplyMatch(event)}

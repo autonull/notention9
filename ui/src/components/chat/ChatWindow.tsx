@@ -88,20 +88,20 @@ export function ChatWindow({
 
     if (!selectedContact) {
         return (
-            <div className="h-full flex flex-col bg-gray-800/20 items-center justify-center text-center text-gray-500">
-                <div className="bg-gray-800 p-8 rounded-full mb-4">
+            <div className="h-full flex flex-col bg-neutral-800/20 items-center justify-center text-center text-neutral-400">
+                <div className="bg-neutral-800 p-8 rounded-full mb-4">
                     <span className="text-4xl">💬</span>
                 </div>
-                <p className="text-lg font-semibold text-gray-400">Select a contact to start chatting</p>
+                <p className="text-lg font-semibold text-neutral-400">Select a contact to start chatting</p>
                 <p className="text-sm">Your messages are end-to-end encrypted.</p>
             </div>
         );
     }
 
     return (
-        <div className="h-full flex flex-col bg-gray-900/30">
+        <div className="h-full flex flex-col bg-neutral-900/30">
             {/* Header */}
-            <div className="flex-shrink-0 p-3 border-b border-gray-700/50 flex items-center gap-3 bg-gray-900/50">
+            <div className="flex-shrink-0 p-3 border-b border-neutral-700/50 flex items-center gap-3 bg-neutral-900/50">
                 <div className="md:hidden -ml-1">
                     <IconButton
                         onClick={onBack}
@@ -115,7 +115,7 @@ export function ChatWindow({
                         src={selectedProfile?.picture || selectedContact.picture}
                         pubkey={selectedContact.pubkey}
                         size="md"
-                        className="border border-gray-600"
+                        className="border border-neutral-600"
                     />
                     {/* Online status could go here */}
                 </div>
@@ -126,7 +126,7 @@ export function ChatWindow({
                     </p>
                     {!selectedContact.isAgent && (
                         <p
-                            className="text-xs text-gray-400 font-mono truncate"
+                            className="text-xs text-neutral-400 font-mono truncate"
                             title={nip19.npubEncode(selectedContact.pubkey)}
                         >
                             {formatNpub(nip19.npubEncode(selectedContact.pubkey))}
@@ -167,7 +167,7 @@ export function ChatWindow({
             {/* Messages */}
             <div className="flex-grow p-4 overflow-y-auto space-y-4">
                 {messages.length === 0 && !isLoading && (
-                    <div className="text-center text-gray-600 py-10">
+                    <div className="text-center text-neutral-400 py-10">
                         <p>No messages yet.</p>
                         <p className="text-xs">Say hello! 👋</p>
                     </div>
@@ -213,7 +213,7 @@ export function ChatWindow({
                         max-w-[85%] sm:max-w-lg px-4 py-2 rounded-2xl text-sm leading-relaxed shadow-sm
                         ${isMe
                                         ? 'bg-blue-600 text-white rounded-tr-sm'
-                                        : 'bg-gray-700 text-gray-100 rounded-tl-sm border border-gray-600'}
+                                        : 'bg-neutral-700 text-neutral-100 rounded-tl-sm border border-neutral-600'}
                       `}
                                 >
                                     <p className="whitespace-pre-wrap break-words">
@@ -222,7 +222,7 @@ export function ChatWindow({
                                 </div>
                             </div>
                             {showTime && (
-                                <span className="text-[10px] text-gray-500 mt-1 px-1">
+                                <span className="text-xs text-neutral-400 mt-1 px-1">
                         {new Date(msg.created_at * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
                     </span>
                             )}
@@ -233,14 +233,14 @@ export function ChatWindow({
             </div>
 
             {/* Input */}
-            <div className="flex-shrink-0 p-4 bg-gray-900/50 border-t border-gray-700/50">
+            <div className="flex-shrink-0 p-4 bg-neutral-900/50 border-t border-neutral-700/50">
                 <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto">
                     <input
                         type="text"
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Type a message..."
-                        className="flex-grow p-3 bg-gray-800 border border-gray-700 rounded-full text-white placeholder-gray-500 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+                        className="flex-grow p-3 bg-neutral-800 border border-neutral-700 rounded-full text-white placeholder-neutral-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
                     />
                     <IconButton
                         type="submit"

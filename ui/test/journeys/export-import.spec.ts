@@ -7,10 +7,10 @@ import {demoNotes, defaultSettings} from '../fixtures/workspace';
 
 const openDataTab = async (page: Page) => {
     await page.evaluate(() => {
-        window.location.hash = '#settings';
+        window.location.hash = '#/settings/data';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
-    await page.getByRole('tab', {name: /Data Management/}).click();
+    await expect(page.getByRole('tabpanel', {name: 'Data Management'})).toBeVisible();
 };
 
 test.beforeEach(async ({page}) => {
@@ -36,7 +36,7 @@ test('export, clear, and restore a backup', async ({page}) => {
     expect(raw).not.toMatch(/"privkey"\s*:\s*"[0-9a-f]{16,}"/i);
 
     await clearStorage(page);
-    await expect(page.getByTestId('local-match')).toHaveCount(0);
+    await expect(page.getByTestId('quick-capture-input')).toBeVisible();
 
     await openDataTab(page);
     await page.setInputFiles('input[type="file"]', {
@@ -47,10 +47,10 @@ test('export, clear, and restore a backup', async ({page}) => {
     await page.getByRole('button', {name: 'Restore & Overwrite'}).click();
 
     await page.evaluate(() => {
-        window.location.hash = '#inbox';
+        window.location.hash = '#/notes';
         window.dispatchEvent(new PopStateEvent('popstate'));
     });
-    await expect(page.getByTestId('local-match')).toBeVisible({timeout: 15_000});
+    await expect(page.getByText('Looking for a React developer').first()).toBeVisible({timeout: 15_000});
 });
 
 test('exports the friction journal as complete JSONL', async ({page}) => {

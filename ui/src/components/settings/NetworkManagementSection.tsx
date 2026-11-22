@@ -113,15 +113,15 @@ export function NetworkManagementSection() {
     return (
         <div className="space-y-6">
             {/* Privacy Mode Toggle */}
-            <div className="p-4 rounded-lg border bg-gray-800/50 border-gray-700">
+            <div className="p-4 rounded-lg border bg-neutral-800/50 border-neutral-700">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <div className={`p-2 rounded-lg ${isPrivateMode ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'}`}>
                             <LockIcon className="h-5 w-5" />
                         </div>
                         <div>
-                            <h4 className="font-medium text-gray-100">Local-Only Mode</h4>
-                            <p className="text-sm text-gray-400">
+                            <h4 className="font-medium text-neutral-100">Local-Only Mode</h4>
+                            <p className="text-sm text-neutral-400">
                                 {isPrivateMode 
                                     ? 'All network providers disabled. No data leaves this device. Notes sync when re-enabled.' 
                                     : 'Network providers can connect and sync data. Nostr and Meshtastic are available.'}
@@ -135,8 +135,8 @@ export function NetworkManagementSection() {
                             checked={isPrivateMode}
                             onChange={(e) => setPrivacyMode(e.target.checked ? 'local-only' : 'shared')}
                         />
-                        <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
-                        <span className={`ml-3 text-sm font-medium ${isPrivateMode ? 'text-yellow-400' : 'text-gray-400'}`}>
+                        <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
+                        <span className={`ml-3 text-sm font-medium ${isPrivateMode ? 'text-yellow-400' : 'text-neutral-400'}`}>
                             {isPrivateMode ? 'Enabled' : 'Disabled'}
                         </span>
                     </label>
@@ -149,7 +149,7 @@ export function NetworkManagementSection() {
                         <GlobeIcon className="h-5 w-5 text-blue-400" />
                         Network Providers
                     </h3>
-                    <p className="text-sm text-gray-400">Enable or disable external network protocols.</p>
+                    <p className="text-sm text-neutral-400">Enable or disable external network protocols.</p>
                 </div>
                 {isPrivateMode && (
                     <div className="flex items-center gap-2 px-3 py-1 bg-yellow-900/30 text-yellow-500 rounded-full text-xs border border-yellow-700/50">
@@ -165,18 +165,18 @@ export function NetworkManagementSection() {
                     const statusLabel = status.details || (status.connected ? 'Connected' : provider.enabled ? 'Enabled' : 'Disabled');
                     return (
                     <div key={provider.id} className={`p-4 rounded-lg border transition-colors ${
-                        provider.enabled ? 'bg-gray-800/50 border-blue-500/30' : 'bg-gray-900/30 border-gray-700'
+                        provider.enabled ? 'bg-neutral-800/50 border-blue-500/30' : 'bg-neutral-900/30 border-neutral-700'
                     }`}>
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-3">
-                                <div className={`p-2 rounded-lg ${provider.enabled ? 'bg-blue-500/20 text-blue-400' : 'bg-gray-800 text-gray-500'}`}>
+                                <div className={`p-2 rounded-lg ${provider.enabled ? 'bg-blue-500/20 text-blue-400' : 'bg-neutral-800 text-neutral-400'}`}>
                                     {provider.id === 'nostr' ? <GlobeIcon className="h-5 w-5" /> : <SignalIcon className="h-5 w-5" />}
                                 </div>
                                 <div>
-                                    <h4 className="font-medium text-gray-100">{provider.name}</h4>
-                                    <span className="text-xs text-gray-400 uppercase tracking-wider">{provider.id}</span>
-                                    <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
-                                        <span className={`h-1.5 w-1.5 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-blue-400' : 'bg-gray-600'}`}/>
+                                    <h4 className="font-medium text-neutral-100">{provider.name}</h4>
+                                    <span className="text-xs text-neutral-400 uppercase tracking-wider">{provider.id}</span>
+                                    <div className="mt-1 flex items-center gap-1.5 text-xs text-neutral-400">
+                                        <span className={`h-1.5 w-1.5 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-blue-400' : 'bg-neutral-600'}`}/>
                                         {statusLabel}
                                     </div>
                                 </div>
@@ -186,7 +186,7 @@ export function NetworkManagementSection() {
                                     <input
                                         type="checkbox"
                                         id={`publish-${provider.id}`}
-                                        className="rounded border-gray-700 bg-gray-900 text-blue-600 focus:ring-blue-500"
+                                        className="rounded border-neutral-700 bg-neutral-900 text-blue-600 focus:ring-blue-500"
                                         checked={provider.id === 'nostr' ? (nostrSettings?.publishEnabled !== false) : (meshtasticSettings?.publishEnabled === true)}
                                         onChange={(e) => {
                                             const enabled = e.target.checked;
@@ -197,7 +197,7 @@ export function NetworkManagementSection() {
                                             }
                                         }}
                                     />
-                                    <label htmlFor={`publish-${provider.id}`} className="text-xs text-gray-400 cursor-pointer">Publish target</label>
+                                    <label htmlFor={`publish-${provider.id}`} className="text-xs text-neutral-400 cursor-pointer">Publish target</label>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
@@ -208,18 +208,18 @@ export function NetworkManagementSection() {
                                         disabled={isPrivateMode}
                                         aria-label={`Enable ${provider.name}`}
                                     />
-                                    <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                    <div className="w-11 h-6 bg-neutral-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                 </label>
                             </div>
                         </div>
 
                         {provider.id === 'meshtastic' && provider.enabled && (
-                            <div className="mt-4 pt-4 border-t border-gray-700/50 space-y-4">
+                            <div className="mt-4 pt-4 border-t border-neutral-700/50 space-y-4">
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-xs font-medium text-gray-400 mb-1">Connection Type</label>
+                                        <label className="block text-xs font-medium text-neutral-400 mb-1">Connection Type</label>
                                         <select
-                                            className="w-full bg-gray-900 border border-gray-700 rounded p-2 text-sm text-gray-200"
+                                            className="w-full bg-neutral-900 border border-neutral-700 rounded p-2 text-sm text-neutral-200"
                                             value={connectionType}
                                             onChange={(e) => setConnectionType(e.target.value as 'webserial' | 'server-proxy')}
                                         >
@@ -240,7 +240,7 @@ export function NetworkManagementSection() {
                                 <div className="flex items-center justify-between mt-4">
                                     <div className="flex items-center gap-2">
                                         <div className={`w-2 h-2 rounded-full ${meshStatus.connected ? 'bg-green-500 animate-pulse' : 'bg-red-500'}`}></div>
-                                        <span className="text-xs text-gray-400">
+                                        <span className="text-xs text-neutral-400">
                                             {meshStatus.connected ? 'Connected to Mesh' : 'Disconnected'}
                                         </span>
                                     </div>
@@ -249,7 +249,7 @@ export function NetworkManagementSection() {
                                             <input
                                                 type="checkbox"
                                                 id="auto-save"
-                                                className="rounded border-gray-700 bg-gray-900 text-blue-600 focus:ring-blue-500"
+                                                className="rounded border-neutral-700 bg-neutral-900 text-blue-600 focus:ring-blue-500"
                                                 checked={meshtasticSettings.saveReceivedNotes}
                                                 onChange={(e) => {
                                                     const saveReceivedNotes = e.target.checked;
@@ -259,7 +259,7 @@ export function NetworkManagementSection() {
                                                     }
                                                 }}
                                             />
-                                            <label htmlFor="auto-save" className="text-xs text-gray-300 cursor-pointer">Auto-save received notes</label>
+                                            <label htmlFor="auto-save" className="text-xs text-neutral-300 cursor-pointer">Auto-save received notes</label>
                                         </div>
                                         <Button
                                             size="sm"

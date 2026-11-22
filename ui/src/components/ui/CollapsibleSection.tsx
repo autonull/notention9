@@ -57,17 +57,17 @@ export function CollapsibleSection({
                 onClick={handleToggle}
                 className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 text-left transition-colors',
-                    'hover:bg-gray-800/50',
+                    'hover:bg-neutral-800/50',
                     titleClassName
                 )}
                 aria-expanded={isOpen}
                 aria-controls={`${title.replace(/\s+/g, '-').toLowerCase()}-content`}
             >
-                {icon && <span className="flex-shrink-0 w-5 h-5 text-gray-300" aria-hidden="true">{icon}</span>}
-                <span className="flex-1 font-medium text-gray-100">{title}</span>
+                {icon && <span className="flex-shrink-0 w-5 h-5 text-neutral-300" aria-hidden="true">{icon}</span>}
+                <span className="flex-1 font-medium text-neutral-100">{title}</span>
                 <ChevronDownIcon
                     className={cn(
-                        'flex-shrink-0 w-5 h-5 text-gray-400 transition-transform duration-200',
+                        'flex-shrink-0 w-5 h-5 text-neutral-400 transition-transform duration-200',
                         isOpen && 'rotate-180'
                     )}
                     aria-hidden="true"

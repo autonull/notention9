@@ -9,7 +9,7 @@ export function TextWidget({value, onChange, onKeyDown, placeholder}: TextWidget
             onChange={(e) => onChange(e.target.value)}
             onKeyDown={onKeyDown}
             placeholder={placeholder || "Value..."}
-            className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-1.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full bg-neutral-700 border border-neutral-600 rounded px-3 py-1.5 text-sm text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             autoFocus
         />
     );

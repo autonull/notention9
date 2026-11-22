@@ -11,7 +11,7 @@ export function OperatorDropdown({value, options, onChange}: OperatorDropdownPro
         <select
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-sm text-gray-200 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-sm text-neutral-200 focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
         >
             {options.map(op => (
                 <option key={op} value={op}>{op}</option>

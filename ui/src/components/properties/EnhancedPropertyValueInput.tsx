@@ -40,7 +40,7 @@ export function EnhancedPropertyValueInput({
         const options = attrDef?.options || selectOptions || [];
         return (
             <select
-                className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+                className="w-full bg-neutral-900/50 border border-neutral-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}
@@ -106,7 +106,7 @@ export function EnhancedPropertyValueInput({
     if (type === 'boolean') {
         return (
             <select
-                className="w-full bg-gray-900/50 border border-gray-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+                className="w-full bg-neutral-900/50 border border-neutral-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
                 autoFocus={!!attributeDef}
@@ -163,7 +163,7 @@ export function EnhancedPropertyValueInput({
                             className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all border flex-shrink-0 ${
                                 value === emoji
                                     ? 'bg-blue-600/20 border-blue-500/30 text-blue-200 scale-110'
-                                    : 'bg-gray-700/30 border-gray-600/30 text-gray-300 hover:bg-gray-700/50'
+                                    : 'bg-neutral-700/30 border-neutral-600/30 text-neutral-300 hover:bg-neutral-700/50'
                             } ${readonly ? 'opacity-50 cursor-not-allowed' : ''}`}
                             disabled={readonly}
                         >

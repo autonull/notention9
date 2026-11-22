@@ -32,7 +32,7 @@ export function ExtractionStatus({
     if (compact) {
         if (isLoading) {
             return (
-                <span className="flex items-center gap-1 text-xs text-gray-500" aria-live="polite">
+                <span className="flex items-center gap-1 text-xs text-neutral-400" aria-live="polite">
                     <LoadingSpinner className="h-3 w-3" />
                     Extracting…
                 </span>
@@ -92,7 +92,7 @@ export function ExtractionStatus({
                     <div className="text-sm font-medium">Extraction failed</div>
                 )}
 
-                <div className="mt-1 text-xs text-gray-400">
+                <div className="mt-1 text-xs text-neutral-400">
                     {isLoading && 'Heuristic patterns are running; AI refinement pending…'}
                     {isFallback && (
                         <>
@@ -145,7 +145,7 @@ export function ExtractionProviderBadge({
         <span
             className={cn(
                 'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium',
-                isHeuristic && 'bg-gray-800 text-gray-300',
+                isHeuristic && 'bg-neutral-800 text-neutral-300',
                 isLocalModel && 'bg-green-900/30 text-green-300 border border-green-800',
                 isRemote && 'bg-blue-900/30 text-blue-300 border border-blue-800',
                 fallbackUsed && 'bg-amber-900/30 text-amber-300 border border-amber-800'

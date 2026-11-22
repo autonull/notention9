@@ -134,8 +134,8 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
     };
 
     return (
-        <div className="border-t border-gray-700 pt-6">
-            <h3 className="text-lg font-semibold text-gray-100 mb-4 flex items-center gap-2">
+        <div className="border-t border-neutral-700 pt-6">
+            <h3 className="text-lg font-semibold text-neutral-100 mb-4 flex items-center gap-2">
                 <BellIcon className="h-5 w-5 text-blue-400"/>
                 Auto-Backup
             </h3>
@@ -147,20 +147,20 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                         type="checkbox"
                         checked={autoBackup.enabled}
                         onChange={(e) => updateAutoBackup({enabled: e.target.checked})}
-                        className="w-4 h-4 text-blue-500 border-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-500 border-neutral-600 rounded focus:ring-blue-500"
                     />
-                    <span className="text-sm text-gray-300">Enable automatic backup reminders</span>
+                    <span className="text-sm text-neutral-300">Enable automatic backup reminders</span>
                 </label>
 
                 {autoBackup.enabled && (
                     <>
                         {/* Frequency */}
                         <div className="pl-7">
-                            <label className="block text-sm text-gray-400 mb-1">Backup frequency</label>
+                            <label className="block text-sm text-neutral-400 mb-1">Backup frequency</label>
                             <select
                                 value={autoBackup.frequency}
                                 onChange={(e) => updateAutoBackup({frequency: e.target.value as any})}
-                                className="w-full md:w-48 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                                className="w-full md:w-48 bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                             >
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
@@ -176,22 +176,22 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                     type="checkbox"
                                     checked={autoBackup.encrypt}
                                     onChange={(e) => updateAutoBackup({encrypt: e.target.checked})}
-                                    className="w-4 h-4 text-blue-500 border-gray-600 rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-blue-500 border-neutral-600 rounded focus:ring-blue-500"
                                 />
-                                <span className="text-sm text-gray-300">Encrypt backups (recommended)</span>
-                                <LockIcon className="h-4 w-4 text-gray-500"/>
+                                <span className="text-sm text-neutral-300">Encrypt backups (recommended)</span>
+                                <LockIcon className="h-4 w-4 text-neutral-400"/>
                             </label>
 
                             {autoBackup.encrypt && (
                                 <div className="pl-7 mt-2 space-y-2">
-                                    <label className="block text-sm text-gray-400 mb-1">Passphrase</label>
+                                    <label className="block text-sm text-neutral-400 mb-1">Passphrase</label>
                                     <div className="flex gap-2">
                                         <input
                                             type={showPassphrase ? 'text' : 'password'}
                                             value={passphrase}
                                             onChange={(e) => setPassphrase(e.target.value)}
                                             placeholder="Enter passphrase for encryption"
-                                            className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                                            className="flex-1 bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                                         />
                                         <Button
                                             variant="secondary"
@@ -201,7 +201,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                             {showPassphrase ? 'Hide' : 'Show'}
                                         </Button>
                                     </div>
-                                    <p className="text-xs text-gray-500">
+                                    <p className="text-xs text-neutral-400">
                                         This passphrase will be stored locally and used to encrypt automatic backups.
                                         Keep it safe - without it, backups cannot be restored.
                                     </p>
@@ -211,7 +211,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
 
                         {/* Rotation count */}
                         <div className="pl-7">
-                            <label className="block text-sm text-gray-400 mb-1">
+                            <label className="block text-sm text-neutral-400 mb-1">
                                 Rotation count: {autoBackup.rotationCount} backups
                             </label>
                             <input
@@ -220,18 +220,18 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                 max="30"
                                 value={autoBackup.rotationCount}
                                 onChange={(e) => updateAutoBackup({rotationCount: parseInt(e.target.value)})}
-                                className="w-full md:w-64 h-2 bg-gray-700 rounded-lg appearance-none accent-blue-500"
+                                className="w-full md:w-64 h-2 bg-neutral-700 rounded-lg appearance-none accent-blue-500"
                             />
-                            <p className="text-xs text-gray-500 mt-1">
+                            <p className="text-xs text-neutral-400 mt-1">
                                 Old backups beyond this count will be purged on next backup.
                             </p>
                         </div>
 
                         {/* Status */}
-                        <div className="pl-7 bg-gray-800/50 rounded-lg p-3 space-y-2">
+                        <div className="pl-7 bg-neutral-800/50 rounded-lg p-3 space-y-2">
                             <div className="flex items-center gap-2 text-sm">
-                                <CalendarIcon className="h-4 w-4 text-gray-400"/>
-                                <span className="text-gray-300">
+                                <CalendarIcon className="h-4 w-4 text-neutral-400"/>
+                                <span className="text-neutral-300">
                                     {autoBackup.lastBackupAt
                                         ? `Last backup: ${formatDistanceToNow(parseISO(autoBackup.lastBackupAt), {addSuffix: true})}`
                                         : 'No backup yet'}
@@ -239,8 +239,8 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                             </div>
                             {nextBackupAt && (
                                 <div className="flex items-center gap-2 text-sm">
-                                    <BellIcon className={`h-4 w-4 ${isDue ? 'text-amber-400' : 'text-gray-400'}`}/>
-                                    <span className={isDue ? 'text-amber-300' : 'text-gray-300'}>
+                                    <BellIcon className={`h-4 w-4 ${isDue ? 'text-amber-400' : 'text-neutral-400'}`}/>
+                                    <span className={isDue ? 'text-amber-300' : 'text-neutral-300'}>
                                         {isDue
                                             ? `Backup due! (was due ${formatDistanceToNow(nextBackupAt, {addSuffix: true})})`
                                             : `Next backup: ${formatDistanceToNow(nextBackupAt, {addSuffix: true})}`}
@@ -251,20 +251,20 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
 
                         {/* Backup History */}
                         {backupHistory.length > 0 && (
-                            <div className="pl-7 bg-gray-800/50 rounded-lg p-3 space-y-2">
+                            <div className="pl-7 bg-neutral-800/50 rounded-lg p-3 space-y-2">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <HistoryIcon className="h-4 w-4 text-gray-400"/>
-                                    <span className="text-gray-300 font-medium">Backup History ({backupHistory.length})</span>
+                                    <HistoryIcon className="h-4 w-4 text-neutral-400"/>
+                                    <span className="text-neutral-300 font-medium">Backup History ({backupHistory.length})</span>
                                 </div>
                                 <div className="max-h-48 overflow-y-auto space-y-1">
                                     {backupHistory.map((record, index) => (
-                                        <div key={index} className="text-xs text-gray-400 flex items-center gap-2 px-2 py-1 hover:bg-gray-700/50 rounded">
+                                        <div key={index} className="text-xs text-neutral-400 flex items-center gap-2 px-2 py-1 hover:bg-neutral-700/50 rounded">
                                             <span className="w-32">{formatBackupDate(record.timestamp)}</span>
-                                            <span className="text-gray-500">|</span>
+                                            <span className="text-neutral-400">|</span>
                                             <span>{record.noteCount} notes</span>
-                                            <span className="text-gray-500">|</span>
+                                            <span className="text-neutral-400">|</span>
                                             <span>{record.encrypted ? '🔒 Encrypted' : '📄 Plain'}</span>
-                                            <span className="text-gray-500">|</span>
+                                            <span className="text-neutral-400">|</span>
                                             <span>{(record.size / 1024).toFixed(1)} KB</span>
                                         </div>
                                     ))}
@@ -316,7 +316,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                         value={passphrase}
                                         onChange={(e) => setPassphrase(e.target.value)}
                                         placeholder="Passphrase"
-                                        className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
+                                        className="flex-1 bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
                                         onKeyDown={(e) => e.key === 'Enter' && handlePassphraseConfirm()}
                                     />
                                     <Button variant="primary" size="sm" onClick={handlePassphraseConfirm}>
@@ -332,7 +332,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                 )}
             </div>
 
-            <p className="text-xs text-gray-500 mt-4">
+            <p className="text-xs text-neutral-400 mt-4">
                 Backups are downloaded to your device - browsers cannot write files automatically.
                 You'll get a notification when a backup is due. Encrypted backups require a passphrase
                 that is stored locally. To restore, use the Import JSON button above.

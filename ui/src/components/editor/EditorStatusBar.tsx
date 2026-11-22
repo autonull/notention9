@@ -17,7 +17,7 @@ export function EditorStatusBar({editor, saveStatus}: EditorStatusBarProps) {
 
     return (
         <div
-            className="flex-shrink-0 px-4 py-1 bg-gray-900 border-t border-gray-700/50 text-xs text-gray-500 flex items-center justify-between font-mono animate-fade-in">
+            className="flex-shrink-0 px-4 py-1 bg-neutral-900 border-t border-neutral-700/50 text-xs text-neutral-400 flex items-center justify-between font-mono animate-fade-in">
             <div className="flex items-center gap-2">
                 {saveStatus === 'saving' && (
                     <div className="flex items-center gap-1.5 text-blue-400">
