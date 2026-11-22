@@ -48,7 +48,7 @@ No capability is removed. Only the false destinations are.
 
 | Workstream | Status | Evidence |
 |---|---|---|
-| W30.0 Guardrails | Done | `golden-path.spec.ts` (8 journeys), `axe-audit.spec.ts` (4 surfaces), 18-scene `gallery.scene.ts`, old gallery archived. |
+| W30.0 Guardrails | Done | `golden-path.spec.ts` (8 journeys), `axe-audit.spec.ts` (4 surfaces), 47-scene gallery (`gallery.scene.ts` plus restored capability scenes), old gallery archived. |
 | W30.1 IA collapse | Done | `View = notes \| settings`, `parseRoute`/`routeToHash`, legacy redirects, sidebar and bottom nav removed. |
 | W30.2 Full-bleed workspace | Done | Omnibox hero, filter chips, Canvas/List/Board/Map/Timeline switcher, responsive grid, scroll restore. |
 | W30.3 Note detail and rail | Done | `NoteContextRail` with Next steps / Matches / Replies / Chat / Share; tags are a sticky row inside the note body; the text editor fills the remaining height; one publish in the note header. |
@@ -56,14 +56,14 @@ No capability is removed. Only the false destinations are.
 | W30.5 Capture, search, commands | Partial | One omnibox, `Cmd+N` composer, one `Cmd+K` overlay with Search / Explore public notes / Chat scopes. Remaining: `→` preview. |
 | W30.6 Settings | Partial | Full-screen, five groups, one open, `#/settings/:tab` deep links. Remaining: provider card copy dedupe and duplicate local-only sentence. |
 | W30.7 Mobile | Done | No bottom nav, floating `+`, single-column grid, full-screen note, bottom-sheet rail, 18px capture, mobile tests green. |
-| W30.8 Evidence and loop | Partial | 18 scenes regenerate in ~44s, covering notes, note detail, replies, chat, search, explore, board, map, timeline, and five settings tabs. `pnpm check:ui` added. Remaining: remove residual `waitForTimeout`, relay per screenshot worker, final full-gallery CI run. |
+| W30.8 Evidence and loop | Partial | 47 scenes regenerate in ~90s, covering every capability: notes, detail, editor states, next steps, suggestions, replies, chat, search, explore, board, map, timeline, modals, trash, mobile, and all settings tabs. `pnpm check:ui` added. Remaining: remove residual `waitForTimeout`, relay per screenshot worker, final CI run. |
 
 ### Remaining work, in order
 
 1. **W30.4 finish** — replace uppercase sentence labels with sentence case; check the light theme on Notes, note detail, and Settings; add the 4px note accent to the detail page.
 2. **W30.5 finish** — support `→` preview without a second palette. Public-note scope and Chat are live in the overlay.
 3. **W30.6 finish** — one provider row per network; remove the duplicate “Local-Only Mode” sentence and the empty status bullet.
-4. **W30.8 finish** — remove non-deterministic waits, isolate the relay per screenshot worker, and run `pnpm check:ui` in CI. The full 18-scene gallery already regenerates locally.
+4. **W30.8 finish** — remove non-deterministic waits, isolate the relay per screenshot worker, and run `pnpm check:ui` in CI. The full 47-scene gallery already regenerates locally.
 
 Do not re-open W30.1–W30.3 unless a golden-path test fails.
 
@@ -469,7 +469,7 @@ axe views, and the golden-path journeys green.
 - [x] Settings is full-screen with no note sidebar, and `#/settings/:tab` works.
 - [x] Mobile has no bottom nav, one composer, one context sheet, ≥44px targets.
 - [x] `pnpm typecheck`, `pnpm test:ui`, `pnpm check:ui`, and axe pass.
-- [x] 18 gallery scenes regenerate; full gallery < 90s on the machine default.
+- [x] 47 gallery scenes regenerate; full gallery < 2 min on the machine default.
 
 ---
 

@@ -63,7 +63,7 @@ export function EditorHeader({
     propertyCount = 0,
 }: EditorHeaderProps) {
     return (
-        <header className="flex-shrink-0 bg-neutral-950/80 backdrop-blur border-b border-neutral-800/80 sticky top-0 z-10">
+        <header className="flex-shrink-0 bg-neutral-950/80 backdrop-blur border-b border-neutral-800/80 sticky top-0 z-40">
             {/* Row 1: Back, Title, Privacy, Core Actions */}
             <div className="flex flex-wrap md:flex-nowrap items-center gap-2 px-4 py-2.5">
                 {onBack && (

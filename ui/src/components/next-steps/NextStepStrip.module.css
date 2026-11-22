@@ -3,6 +3,7 @@
   flex-direction: column;
   padding: 0 12px 6px;
   flex-shrink: 0;
+  container-type: inline-size;
 }
 
 .hint {
@@ -149,6 +150,16 @@
 @media (max-width: 1100px) {
   .evidence {
     display: none;
+  }
+}
+
+@container (max-width: 32rem) {
+  .evidence {
+    display: none;
+  }
+
+  .title {
+    white-space: normal;
   }
 }
 
