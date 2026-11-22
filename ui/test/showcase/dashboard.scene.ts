@@ -24,6 +24,6 @@ test('inbox populated (was dashboard)', async ({page}) => {
     await snap(page, {
         area: 'inbox',
         state: 'populated',
-        description: 'Stats, an offline match preview, recent activity, and tools.',
+        description: 'Capture, a local match, and recent notes.',
     });
 });

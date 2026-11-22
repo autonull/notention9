@@ -143,10 +143,10 @@ test('suggestions: empty state when no triggers', async ({page}) => {
         settings: defaultSettings({aiEnabled: false, developerMode: true}),
         hash: '#notes/scene-simple-note',
     });
-    await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
+    await page.waitForSelector('[data-testid="editor-content"]', {timeout: 15_000});
     await snap(page, {
         area: 'suggestions',
         state: 'empty-state',
-        description: 'Simple note with no matching rules shows the empty next-steps state with refresh.',
+        description: 'A note with no triggers stays quiet: no empty next-steps chrome.',
     });
 });

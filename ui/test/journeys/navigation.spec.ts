@@ -10,17 +10,18 @@ test.beforeEach(async ({page}) => {
 const routes: Array<[string, string]> = [
     ['#inbox', 'Recent notes'],
     ['#notes', 'Notes'],
-    ['#actions', 'Actions'],
+    ['#actions', 'todo'],
     ['#map', 'OpenStreetMap'],
-    ['#timeline', 'Spacetime Filter'],
+    ['#timeline', 'Month'],
     ['#network', 'Read-only public feed'],
     ['#chat', 'Chat needs an identity'],
     ['#responses', 'Responses'],
     ['#labels', 'Labels'],
-    ['#trash', 'Recently deleted'],
+    ['#trash', 'Trash'],
     ['#settings', 'Settings'],
     ['#dashboard', 'Recent notes'], // W10.2: dashboard redirects to inbox
     ['#ontology', 'Ontology'],
+    ['#skills', 'Skills'],
 ];
 
 test('every navigation route renders content', async ({page}) => {
@@ -36,8 +37,8 @@ test('every navigation route renders content', async ({page}) => {
 test('trash restores and permanently deletes', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
     await page.evaluate(() => { window.location.hash = '#trash'; window.dispatchEvent(new PopStateEvent('popstate')); });
-    await expect(page.getByTestId('trash-view')).toBeVisible();
-    await expect(page.getByTestId('trash-view').getByRole('heading', {name: 'Trash is empty'}).first()).toBeVisible();
+    await expect(page.getByRole('tab', {name: /Trash/})).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('main')).toContainText('Trash is empty');
 });
 
 test('persistence survives reload', async ({page}) => {

@@ -104,3 +104,13 @@ test('settings networks', async ({page}) => {
         description: 'Provider status and relay management.',
     });
 });
+
+test('settings skills', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#skills'});
+    await page.getByRole('heading', {name: /Skill Approvals & Management/}).waitFor({timeout: 10_000});
+    await snap(page, {
+        area: 'settings',
+        state: 'skills',
+        description: 'Skill approvals, capability scopes, and execution history.',
+    });
+});

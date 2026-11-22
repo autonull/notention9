@@ -16,8 +16,11 @@ export interface SnapOptions {
     mask?: string[];
 }
 
-export async function snap(page: Page, options: SnapOptions) {    await settle(page);
+export async function snap(page: Page, options: SnapOptions) {
+    await settle(page);
     await disableMotion(page);
+    // Park the pointer so hover tooltips do not leak into the gallery.
+    await page.mouse.move(0, 0);
 
     const directory = path.join(OUTPUT, options.area);
     await fs.mkdir(directory, {recursive: true});

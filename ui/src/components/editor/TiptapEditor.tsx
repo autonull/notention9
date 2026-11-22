@@ -36,7 +36,10 @@ interface TiptapEditorProps {
 }
 
 export interface TiptapEditorRef {
-    openPropertyModal: (key?: string) => void;
+    openPropertyModal: (
+        key?: string,
+        initial?: {operator?: string; value?: string}
+    ) => void;
     editor: Editor | null;
     scrollToPosition: (pos: number) => void;
 }
@@ -95,7 +98,8 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     }, [ontologySuggestions, patternSuggestions]);
 
     useImperativeHandle(ref, () => ({
-        openPropertyModal: handleOpenPropertyModal,
+        openPropertyModal: (key?: string, initial?: {operator?: string; value?: string}) =>
+            handleOpenPropertyModal(key, undefined, initial),
         editor,
         scrollToPosition: (pos: number) => {
             if (editor && !editor.isDestroyed && editor.view) {
@@ -228,21 +232,23 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 title={initialModalData ? "Edit detail" : "Add detail"}
             />
             <div className="flex-grow overflow-y-auto" onClick={handleEditorClick}>
-                {topContent}
-                {viewMode === 'rich' ? (
-                    <>
-                        <EditorBubbleMenu editor={editor}/>
-                        <EditorContent editor={editor}/>
-                    </>
-                ) : (
-                    <textarea
-                        className="w-full h-full p-4 bg-gray-900 text-gray-300 font-mono focus:outline-none resize-none"
-                        value={prettyPrintHtml(note.content)}
-                        onChange={handleCodeChange}
-                        placeholder="Enter HTML..."
-                    />
-                )}
-                {children}
+                <div className="max-w-[42rem] w-full flex flex-col min-h-full">
+                    {topContent}
+                    {viewMode === 'rich' ? (
+                        <>
+                            <EditorBubbleMenu editor={editor}/>
+                            <EditorContent editor={editor}/>
+                        </>
+                    ) : (
+                        <textarea
+                            className="w-full min-h-[60vh] p-6 bg-gray-900 text-gray-300 font-mono focus:outline-none resize-none"
+                            value={prettyPrintHtml(note.content)}
+                            onChange={handleCodeChange}
+                            placeholder="Enter HTML..."
+                        />
+                    )}
+                    {children}
+                </div>
             </div>
             {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus}/>}
         </div>

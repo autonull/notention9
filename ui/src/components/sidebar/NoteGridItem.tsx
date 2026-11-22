@@ -1,8 +1,9 @@
 import React from 'react';
 import type {Note} from '@notention/core';
-import {DownloadIcon, LockIcon, NoteIcon, WorldIcon} from '../ui/icons';
+import {DownloadIcon, LockIcon, PinIcon, WorldIcon} from '../ui/icons';
 import {Badge} from '../ui/Badge';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
+import {useNoteDisplay} from './useNoteDisplay';
 
 interface NoteGridItemProps {
     note: Note;
@@ -11,14 +12,14 @@ interface NoteGridItemProps {
 }
 
 export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
-    // Visual indicators based on note state
-    const isPublic = note.privacy === 'public';
-    const isImported = note.source?.type === 'import' || note.source?.type === 'skill';
-
-    // Priority Logic (Phase 3.2)
-    const priority = note.priority ?? 1.0;
-    const isLowPriority = priority < 0.5;
-    const isVeryLowPriority = priority < 0.3;
+    const {
+        contentPreview,
+        isPublic,
+        isImported,
+        isPinned,
+        isLowPriority,
+        isVeryLowPriority,
+    } = useNoteDisplay(note);
 
     return (
         <div
@@ -33,7 +34,7 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
             tabIndex={0}
             aria-current={isSelected ? 'true' : undefined}
             className={`
-        relative aspect-square flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-all border focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50
+        relative aspect-square flex flex-col p-2.5 rounded-lg cursor-pointer transition-all border focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50
         ${isSelected
                 ? 'bg-blue-900/30 border-blue-500/50 text-blue-100 shadow-md shadow-blue-900/20'
                 : 'bg-gray-800/50 text-gray-400 hover:bg-gray-800 hover:text-gray-200'
@@ -45,7 +46,11 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
       `}
             title={note.title}
         >
-            <div className="absolute top-2 right-2 flex gap-1">
+            <div className="flex items-center justify-between gap-1 min-h-[14px]">
+                <div className="flex items-center gap-1">
+                    {isPinned && <PinIcon className="w-3 h-3 text-blue-400"/>}
+                    {isImported && <DownloadIcon className="w-3 h-3 text-blue-400/50"/>}
+                </div>
                 {isPublic ? (
                     <WorldIcon className="w-3 h-3 text-green-500/70"/>
                 ) : (
@@ -53,22 +58,17 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
                 )}
             </div>
 
-            {isImported && (
-                <div className="absolute top-2 left-2">
-                    <DownloadIcon className="w-3 h-3 text-blue-400/50"/>
-                </div>
-            )}
-
-            <NoteIcon className={`h-8 w-8 mb-2 ${isPublic ? 'text-green-500/30' : 'opacity-50'}`}/>
-
-            <span className="text-xs text-center line-clamp-2 leading-tight break-words w-full px-1">
-        {note.title || 'Untitled'}
-      </span>
+            <span className="mt-1 text-xs font-medium text-center line-clamp-2 leading-tight break-words w-full">
+                {note.title || 'Untitled'}
+            </span>
+            <span className="mt-1 text-[10px] text-gray-500 text-center line-clamp-2 leading-snug w-full">
+                {contentPreview}
+            </span>
 
             {isLowPriority && (
-                <div className="absolute bottom-2">
+                <div className="absolute bottom-2 left-0 right-0 flex justify-center">
                     <Badge variant="outline" size="xs" className="text-[9px] px-1 py-0 h-auto opacity-70">
-                        Low Prio
+                        Low priority
                     </Badge>
                 </div>
             )}

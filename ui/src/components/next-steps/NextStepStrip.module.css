@@ -1,199 +1,216 @@
 .strip {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  padding: 0 12px 6px;
+  flex-shrink: 0;
 }
 
-.cardWrapper {
-  /* Card styles are in NextStepCard.module.css */
-}
-
-.loading,
-.error,
-.empty {
+.hint {
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
-  padding: 16px;
-  font-size: 14px;
-  color: var(--color-text-muted, #9ca3af);
-  background: var(--color-surface, #181818);
+  min-height: 40px;
+  padding: 4px 8px;
+  background: var(--color-surface-raised, #1e1e1e);
   border: 1px solid var(--color-border, #333);
+  border-left: 3px solid var(--color-accent, #3b82f6);
   border-radius: 8px;
 }
 
-.loading {
-  min-height: 48px;
+.hint.appliedHint {
+  border-left-color: var(--color-success, #10b981);
 }
 
-.spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid var(--color-border, #444);
-  border-top-color: var(--color-accent, #3b82f6);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
+.appliedIcon {
+  color: var(--color-success, #10b981);
 }
 
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
+.appliedTag {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--color-success, #10b981);
 }
 
-.error {
-  color: var(--color-error, #fca5a5);
-  border-color: var(--color-error-muted, #7f1d1d);
-  background: var(--color-error-bg, #7f1d1d);
+.icon {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+  color: var(--color-accent, #3b82f6);
 }
 
-.retryButton {
-  padding: 8px 14px;
+.title {
   font-size: 13px;
   font-weight: 600;
-  background: var(--color-error, #ef4444);
-  color: white;
+  color: var(--color-text, #e8e8e8);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+.evidence {
+  font-size: 11px;
+  color: var(--color-text-muted, #9ca3af);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+.actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.why,
+.more {
+  padding: 4px 6px;
+  background: none;
   border: none;
-  border-radius: 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-text-muted, #9ca3af);
   cursor: pointer;
-  transition: background-color 0.15s, opacity 0.15s, transform 0.1s;
-  min-height: 40px;
 }
 
-.retryButton:hover {
-  background: var(--color-error-hover, #dc2626);
-  transform: translateY(-1px);
+.why:hover,
+.more:hover {
+  color: var(--color-text, #e8e8e8);
+  background: var(--color-surface-hover, #2a2a2a);
 }
 
-.retryButton:focus-visible {
-  outline: 2px solid var(--color-error, #ef4444);
-  outline-offset: 2px;
+.apply {
+  min-height: 28px;
+  padding: 4px 10px;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-accent, #3b82f6);
+  color: white;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
 }
 
-.empty {
-  min-height: 48px;
+.apply:hover:not(:disabled) {
+  background: var(--color-accent-hover, #2563eb);
 }
 
-.refreshButton {
-  width: 44px;
-  height: 44px;
+.apply:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.iconButton {
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--color-surface-hover, #2a2a2a);
-  border: 1px solid var(--color-border, #333);
-  border-radius: 8px;
+  background: none;
+  border: none;
+  border-radius: 6px;
   color: var(--color-text-muted, #9ca3af);
   cursor: pointer;
-  font-size: 14px;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-  min-height: 44px;
 }
 
-.refreshButton:hover {
-  background: var(--color-surface-hover-strong, #333);
-  color: var(--color-text, #e8e8e8);
-  border-color: var(--color-accent, #3b82f6);
+.iconButton:hover {
+  background: var(--color-error-bg, #7f1d1d);
+  color: var(--color-error, #ef4444);
 }
 
-.refreshButton:focus-visible {
-  outline: 2px solid var(--color-accent, #3b82f6);
-  outline-offset: 2px;
-}
-
-.openDrawer {
+.more {
   display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 6px;
-  padding: 10px 16px;
-  font-size: 13px;
-  font-weight: 500;
+  gap: 1px;
+}
+
+.explain {
+  margin: 0;
+  padding: 5px 10px 1px 27px;
+  font-size: 12px;
+  line-height: 1.5;
   color: var(--color-text-muted, #9ca3af);
-  background: var(--color-surface, #181818);
-  border: 1px solid var(--color-border, #333);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.15s, color 0.15s, border-color 0.15s;
-  min-height: 44px;
-  align-self: center;
 }
 
-.openDrawer:hover {
-  background: var(--color-surface-hover, #2a2a2a);
-  color: var(--color-text, #e8e8e8);
-  border-color: var(--color-border-hover, #444);
-}
-
-.openDrawer:focus-visible {
+.why:focus-visible,
+.more:focus-visible,
+.apply:focus-visible,
+.iconButton:focus-visible {
   outline: 2px solid var(--color-accent, #3b82f6);
   outline-offset: 2px;
 }
 
-/* Mobile adjustments */
-@media (max-width: 640px) {
-  .retryButton {
-    min-height: 44px;
-  }
-  
-  .refreshButton {
-    min-height: 44px;
-  }
-  
-  .openDrawer {
-    min-height: 44px;
+@media (max-width: 1100px) {
+  .evidence {
+    display: none;
   }
 }
 
-/* Light theme support */
+@media (max-width: 640px) {
+  .strip {
+    padding: 0 8px 6px;
+  }
+
+  .hint {
+    gap: 4px 8px;
+    padding: 4px 8px;
+  }
+
+  .title {
+    flex: 1;
+  }
+
+  .apply {
+    min-height: 40px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .iconButton {
+    width: 36px;
+    height: 36px;
+  }
+
+  .why,
+  .more {
+    min-height: 36px;
+    padding: 8px;
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .explain {
+    padding-left: 10px;
+  }
+}
+
 @media (prefers-color-scheme: light) {
-  .loading,
-  .empty {
-    background: var(--color-surface, #f5f5f5);
-    border-color: var(--color-border, #d0d0d0);
-    color: var(--color-text-muted, #6b7280);
+  .hint {
+    background: var(--color-surface-raised, #f9fafb);
+    border-color: var(--color-border, #e0e0e0);
   }
 
-  .error {
-    background: var(--color-error-bg, #fef2f2);
-    border-color: var(--color-error, #dc2626);
-    color: var(--color-error, #dc2626);
-  }
-
-  .spinner {
-    border-color: var(--color-border, #d0d0d0);
-  }
-
-  .retryButton {
-    background: var(--color-error, #dc2626);
-  }
-
-  .retryButton:hover {
-    background: var(--color-error-hover, #b91c1c);
-  }
-
-  .refreshButton {
-    background: var(--color-surface-hover, #e5e7eb);
-    border-color: var(--color-border, #d0d0d0);
-    color: var(--color-text-muted, #6b7280);
-  }
-
-  .refreshButton:hover {
-    background: var(--color-surface-hover-strong, #d1d5db);
+  .title {
     color: var(--color-text, #111);
-    border-color: var(--color-accent, #3b82f6);
   }
 
-  .openDrawer {
-    background: var(--color-surface, #f9fafb);
-    border-color: var(--color-border, #d0d0d0);
+  .evidence,
+  .why,
+  .more,
+  .explain,
+  .iconButton {
     color: var(--color-text-muted, #6b7280);
   }
 
-  .openDrawer:hover {
+  .why:hover,
+  .more:hover {
+    color: var(--color-text, #111);
     background: var(--color-surface-hover, #f3f4f6);
-    color: var(--color-text, #111);
-    border-color: var(--color-border-hover, #bbb);
   }
 }

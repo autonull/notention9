@@ -28,6 +28,6 @@ test('actions board', async ({page}) => {
     await snap(page, {
         area: 'actions',
         state: 'board',
-        description: 'Task board grouped by status, with a new-task action.',
+        description: 'Tasks grouped into status columns, with capture in reach.',
     });
 });

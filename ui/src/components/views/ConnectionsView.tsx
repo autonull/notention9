@@ -1,24 +1,32 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useView} from '../../hooks/useViewContext';
+import {useNotes} from '../../hooks/useNotes';
+import {cn} from '../../utils/ui';
 import {NetworkView} from './NetworkView';
 import {ChatView} from './ChatView';
 import {ResponsesView} from './ResponsesView';
 import {MatchesView} from './MatchesView';
+import {ChatIcon, MessageIcon, SignalIcon, SparklesIcon} from '../ui/icons';
 
 const CONNECTIONS_TABS = [
-    {id: 'feed', label: 'Feed', icon: '📡'},
-    {id: 'matches', label: 'Matches', icon: '🎯'},
-    {id: 'replies', label: 'Replies', icon: '💬'},
-    {id: 'chat', label: 'Chat', icon: '💭'},
+    {id: 'feed', label: 'Feed', icon: SignalIcon},
+    {id: 'matches', label: 'Matches', icon: SparklesIcon},
+    {id: 'replies', label: 'Replies', icon: MessageIcon},
+    {id: 'chat', label: 'Chat', icon: ChatIcon},
 ] as const;
 
 export function ConnectionsView() {
-    const {activeView, setActiveView, setSelectedNoteId} = useView();
-    const [currentTab, setCurrentTab] = useState<'feed' | 'matches' | 'replies' | 'chat'>('feed');
+    const {activeView, matchingNoteId} = useView();
+    const {notes} = useNotes();
+    const matchNote = matchingNoteId ? notes.find(note => note.id === matchingNoteId) ?? null : null;
+    const routeTab = activeView === 'chat' ? 'chat' : activeView === 'responses' ? 'replies' : 'feed';
+    const [currentTab, setCurrentTab] = useState<'feed' | 'matches' | 'replies' | 'chat'>(routeTab);
+
+    useEffect(() => setCurrentTab(routeTab), [routeTab]);
 
     return (
-        <div className="h-full overflow-y-auto bg-gray-950 text-white p-4 md:p-6 lg:p-8">
-            <div className="max-w-3xl mx-auto space-y-4">
+        <div className="h-full flex flex-col overflow-hidden bg-gray-950 text-white p-4 md:p-6 lg:p-8">
+            <div className="w-full max-w-3xl mx-auto flex flex-1 min-h-0 flex-col gap-4">
                 <header className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                     <div className="flex items-center gap-4">
                         <h1 className="text-xl font-semibold">Connections</h1>
@@ -30,21 +38,26 @@ export function ConnectionsView() {
                                     role="tab"
                                     aria-selected={currentTab === tab.id}
                                     onClick={() => setCurrentTab(tab.id)}
-                                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                                    className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
                                         currentTab === tab.id
                                             ? 'bg-indigo-600/20 text-indigo-400'
                                             : 'text-gray-400 hover:text-white hover:bg-gray-800/50'
                                     }`}
                                 >
-                                    {tab.icon} {tab.label}
+                                    <tab.icon className="w-3.5 h-3.5" aria-hidden="true"/>
+                                    {tab.label}
                                 </button>
                             ))}
                         </div>
                     </div>
                 </header>
 
-                <div className="space-y-2">
-                    {currentTab === 'feed' && <NetworkView />}
+                <div
+                    className={cn('flex-1 min-h-0', currentTab === 'matches' || currentTab === 'replies' ? 'overflow-y-auto' : 'overflow-hidden')}
+                    role="tabpanel"
+                    aria-label={CONNECTIONS_TABS.find(tab => tab.id === currentTab)?.label}
+                >
+                    {currentTab === 'feed' && <NetworkView matchAgainst={matchNote}/>}
                     {currentTab === 'matches' && <MatchesView />}
                     {currentTab === 'replies' && <ResponsesView />}
                     {currentTab === 'chat' && <ChatView />}

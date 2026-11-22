@@ -92,7 +92,7 @@ export function NostrEventCard({
                             <div key={idx}
                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-blue-900/30 text-blue-300 border border-blue-900/50">
                                 <span className="font-bold">{prop.key}</span>
-                                <span className="opacity-70">{prop.operator === 'is' ? ':' : prop.operator}</span>
+                                <span className="opacity-70">{prop.operator === 'is' ? '=' : prop.operator}</span>
                                 <span className="text-white">{prop.values.join(', ')}</span>
                             </div>
                         ))}

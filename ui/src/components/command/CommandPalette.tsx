@@ -6,6 +6,7 @@ import { Input } from '../ui/Input';
 import { KeyIcon, SearchIcon, SearchSparkleIcon, MenuIcon, ChevronRightIcon, type LucideIcon } from '../ui/icons';
 import { useView } from '../../hooks/useViewContext';
 import { useNotes } from '../../hooks/useNotes';
+import { modShortcut } from '../../utils/platform';
 import { getTextFromHtml } from '@notention/core';
 import { sanitizeHTML } from '../../utils/sanitize';
 
@@ -40,37 +41,41 @@ function formatShortcut(shortcut?: { key: string; ctrl?: boolean; meta?: boolean
     return parts.join('+');
 }
 
-function fuzzyMatch(query: string, text: string): boolean {
-    if (!query) return true;
+/** First letters of each word, e.g. "Open Settings" → "os". */
+function wordInitials(text: string): string {
+    return text.split(/[^\p{L}\p{N}]+/u).filter(Boolean).map(word => word[0].toLowerCase()).join('');
+}
+
+/**
+ * Predictable relevance: contiguous label match, then acronym, then body text.
+ * Scattered-letter matches are too noisy for a result list.
+ */
+function scoreMatch(query: string, action: RegisteredAction): number | null {
+    const base = action.priority ?? 0;
+    if (!query) return base;
+
     const q = query.toLowerCase();
-    const t = text.toLowerCase();
-    let qi = 0;
-    for (let i = 0; i < t.length && qi < q.length; i++) {
-        if (t[i] === q[qi]) qi++;
-    }
-    return qi === q.length;
+    const label = action.label.toLowerCase();
+    const description = (action.description ?? '').toLowerCase();
+
+    if (label.startsWith(q)) return 3000 + base;
+    if (label.includes(q)) return 2000 + base;
+    if (wordInitials(action.label).startsWith(q)) return 1500 + base;
+    if (description.includes(q)) return 1000 + base;
+    return null;
 }
 
 function highlightMatch(text: string, query: string): React.ReactNode {
-    if (!query) return text;
-    const q = query.toLowerCase();
-    const parts: React.ReactNode[] = [];
-    let lastIndex = 0;
-    let qi = 0;
-    for (let i = 0; i < text.length && qi < q.length; i++) {
-        if (text[i].toLowerCase() === q[qi]) {
-            if (i > lastIndex) {
-                parts.push(text.slice(lastIndex, i));
-            }
-            parts.push(<mark key={i} className="bg-yellow-500/30 text-yellow-300">{text[i]}</mark>);
-            lastIndex = i + 1;
-            qi++;
-        }
-    }
-    if (lastIndex < text.length) {
-        parts.push(text.slice(lastIndex));
-    }
-    return parts.length > 0 ? parts : text;
+    const term = query.trim().toLowerCase();
+    const index = term ? text.toLowerCase().indexOf(term) : -1;
+    if (index === -1) return text;
+    return (
+        <>
+            {text.slice(0, index)}
+            <mark className="bg-yellow-500/30 text-yellow-200 rounded-sm px-0.5">{text.slice(index, index + term.length)}</mark>
+            {text.slice(index + term.length)}
+        </>
+    );
 }
 
 interface ScoredAction {
@@ -116,18 +121,11 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
         const scored: ScoredAction[] = [];
 
         for (const action of allActions) {
-            const searchText = `${action.label} ${action.description || ''} ${action.tags?.join(' ') || ''} ${action.category || ''}`;
-            if (fuzzyMatch(query, searchText)) {
-                // Score: exact prefix match > fuzzy match, higher priority > lower
-                let score = action.priority ?? 0;
-                const labelLower = action.label.toLowerCase();
-                const queryLower = query.toLowerCase();
-                if (labelLower.startsWith(queryLower)) score += 1000;
-                else if (labelLower.includes(queryLower)) score += 500;
-                else score += 100;
-                // Boost notes slightly lower than actions
-                if (action.id.startsWith('note:')) score -= 50;
-                scored.push({ action, score, matchedText: action.label });
+            const score = scoreMatch(query, action);
+            if (score !== null) {
+                // Notes rank below commands of equal relevance
+                const adjusted = action.id.startsWith('note:') ? score - 50 : score;
+                scored.push({action, score: adjusted, matchedText: action.label});
             }
         }
 
@@ -228,7 +226,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                             spellCheck={false}
                         />
                         <kbd className="absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-gray-500 bg-gray-800/50 rounded">
-                            ⌘P
+                            {modShortcut('K')}
                         </kbd>
                     </div>
                 </div>
@@ -284,7 +282,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                                                 </div>
                                             )}
                                         </div>
-                                        {isNote && (
+                                        {isNote && results.some(result => !result.action.id.startsWith('note:')) && (
                                             <span className="px-2 py-0.5 text-[10px] text-gray-500 bg-gray-800/50 rounded border border-gray-700/50">
                                                 Note
                                             </span>
@@ -299,9 +297,8 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                 {/* Footer hint */}
                 <div className="px-4 py-3 border-t border-gray-700/50 flex items-center justify-between text-xs text-gray-500">
                     <span>↑↓ navigate • Enter select • Esc close</span>
-                    <span className="flex items-center gap-1">
-                        <MenuIcon className="w-3 h-3" aria-hidden="true" />
-                        Command Palette
+                    <span className="tabular-nums">
+                        {results.length} {results.length === 1 ? 'result' : 'results'}
                     </span>
                 </div>
             </div>

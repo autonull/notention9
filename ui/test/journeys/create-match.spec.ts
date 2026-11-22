@@ -16,8 +16,7 @@ test('compose a detail through the popup without bracket syntax', async ({page})
     await dialog.getByPlaceholder('Key (e.g. price)').fill('skill');
     // Value input for string type has placeholder "e.g. Active, 100, 2024-01-01"
     await dialog.getByPlaceholder('e.g. Active, 100, 2024-01-01').fill('React');
-    // Save button is an IconButton with title="Save" -> aria-label="Save"
-    await dialog.getByRole('button', {name: 'Save'}).click();
+    await dialog.getByRole('button', {name: 'Add detail'}).click();
 
     await expect(page.locator('.node-property').last()).toContainText('skill');
     await expect(page.locator('.node-property').last()).toContainText('React');

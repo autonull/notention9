@@ -1,5 +1,5 @@
 import React, {useEffect, useMemo, useState} from 'react';
-import {CheckIcon, ClockIcon, InformationCircleIcon, MapPinIcon, SearchSparkleIcon, XIcon, SparklesIcon, ChevronDownIcon, ChevronUpIcon} from '../ui/icons';
+import {ClockIcon, InformationCircleIcon, MapPinIcon, MapIcon, ExclamationTriangleIcon, SparklesIcon} from '../ui/icons';
 import type {OntologyNode, OntologyAttribute} from '@notention/core';
 import {Logger} from '@notention/core';
 import {findAttributeDefInTree, validateAttributeValue} from '@notention/core';
@@ -10,13 +10,13 @@ import {useGardener} from '../../hooks/useGardener';
 import {useAIAlign} from '../../hooks/useAIAlign';
 import {EnhancedPropertyValueInput} from '../properties/EnhancedPropertyValueInput';
 import {Input, ExtractionStatus} from '../ui/Primitives';
-import {Button} from '../ui/Button';
-import {IconButton} from '../ui/Button';
+import {Button, IconButton} from '../ui/Button';
 import {Select} from '../ui/Select';
 import {Textarea} from '../ui/Textarea';
 import {useOntologySuggestions} from '../../hooks/useOntologySuggestions';
 import {usePatternSuggestions} from '../../hooks/usePatternSuggestions';
 import type {SuggestedAttribute} from '@notention/core';
+import {isCustomEnumValue} from '../../utils/propertyValidation';
 import {Metrics, useMetrics} from '../../hooks/useMetrics';
 import {Modal} from '../ui/Modal';
 
@@ -72,7 +72,6 @@ export function PropertyEditor({
     const [value, setValue] = useState(initialValue);
     const [showExtraction, setShowExtraction] = useState(false);
     const [extractionText, setExtractionText] = useState('');
-    const [showAdvanced, setShowAdvanced] = useState(false);
     const [touched, setTouched] = useState(false);
     const {addToast} = useToast();
     const announce = useAnnounce();
@@ -118,6 +117,9 @@ export function PropertyEditor({
     const validation = useMemo(() => {
         return validateAttributeValue(key, operator, value, activeDef);
     }, [key, operator, value, activeDef]);
+
+    const customValue = isCustomEnumValue(activeDef, value);
+    const canSave = Boolean(key.trim() && value.trim()) && (validation.isValid || customValue);
 
     const type = activeDef?.type;
     const description = activeDef?.description;
@@ -166,7 +168,8 @@ export function PropertyEditor({
 
     const handleSave = () => {
         setTouched(true);
-        if (!key.trim() || !value.trim() || !validation.isValid) return;
+        if (!key.trim() || !value.trim()) return;
+        if (!validation.isValid && !isCustomEnumValue(activeDef, value)) return;
 
         onSave(key.trim(), operator, value.trim(), initialPropertyId, activeDef?.icon);
         if (isAdding) {
@@ -222,82 +225,71 @@ export function PropertyEditor({
 
     const renderContent = () => (
         <>
-            <div className="flex justify-between items-center flex-wrap gap-1 mb-2">
-                <span className="text-xs font-bold text-blue-400 uppercase tracking-wider">
-                    {title || (isAdding ? 'New Property' : 'Edit Property')}
-                </span>
-                <div className="flex gap-1 flex-wrap">
+            <div className="flex items-center flex-wrap gap-1 mb-2">
+                {!isModal && (
+                    <span className="mr-auto text-xs font-bold text-blue-400 uppercase tracking-wider">
+                        {title || (isAdding ? 'New Property' : 'Edit Property')}
+                    </span>
+                )}
+                <div className="flex gap-1 flex-wrap ml-auto">
                     {!readonly && isAdding && (
-                        <Button
+                        <IconButton
                             onClick={() => setShowExtraction(!showExtraction)}
-                            variant={showExtraction ? 'primary' : 'secondary'}
-                            size="xs"
-                            icon={SearchSparkleIcon}
-                            className="text-purple-300 border-purple-900/50 bg-purple-900/20 hover:bg-purple-900/40"
-                            title="Extract properties from text"
-                        >
-                            <SparklesIcon className="w-3 h-3 mr-1" />
-                            Magic
-                        </Button>
+                            variant={showExtraction ? 'secondary' : 'ghost'}
+                            size="sm"
+                            icon={SparklesIcon}
+                            tooltip="Extract a detail from text"
+                            aria-label="Extract a detail from text"
+                            isActive={showExtraction}
+                            label="Extract"
+                            className="text-purple-300"
+                        />
                     )}
                     {onPickLocation && (isAdding || ['location', 'geo', 'place'].includes(key)) && (
-                        <div className="flex gap-1">
-                            <Button
+                        <>
+                            <IconButton
                                 onClick={handleUseCurrentLocation}
-                                variant="secondary"
-                                size="xs"
+                                size="sm"
                                 icon={MapPinIcon}
-                                title="Use current location"
+                                tooltip="Use current location"
+                                aria-label="Use current location"
+                                label="Locate"
                                 disabled={readonly}
-                            >
-                                GPS
-                            </Button>
-                            <Button
+                            />
+                            <IconButton
                                 onClick={() => {
                                     if (isAdding && !key) setKey('location');
                                     onPickLocation?.();
                                 }}
-                                variant="secondary"
-                                size="xs"
-                                icon={MapPinIcon}
-                                title="Pick location on map"
+                                size="sm"
+                                icon={MapIcon}
+                                tooltip="Pick location on map"
+                                aria-label="Pick location on map"
+                                label="Map"
                                 disabled={readonly}
-                            >
-                                Map
-                            </Button>
-                        </div>
+                            />
+                        </>
                     )}
                     {onPickTime && (isAdding || isTemporal) && (
-                        <Button
+                        <IconButton
                             onClick={() => {
                                 const defaultKey = 'startDateTime';
                                 if (isAdding && !key) setKey(defaultKey);
                                 onPickTime?.(key || defaultKey);
                             }}
-                            variant="secondary"
-                            size="xs"
-                            className="text-green-300 bg-green-900/30 hover:bg-green-900/50 border-green-900/50"
+                            size="sm"
                             icon={ClockIcon}
-                            title="Pick date/time"
+                            tooltip="Pick date and time"
+                            aria-label="Pick date and time"
+                            label="Date"
                             disabled={readonly}
-                        >
-                            Time
-                        </Button>
+                        />
                     )}
                     {activeDef?.readonly && (
                         <span className="text-xs text-yellow-400 bg-yellow-900/20 px-2 py-0.5 rounded border border-yellow-700/30 flex items-center gap-1">
-                            <span className="w-3 h-3" style={{background: `url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Crect x=%223%22 y=%2211%22 width=%2218%22 height=%2211%22 rx=%222%22 ry=%222%22%3E%3C/rect%3E%3Cpath d=%22M7 11V7a5 5 0 0 1 10 0v4%22%3E%3C/path%3E%3C/svg%22")`}} />
                             Read-only
                         </span>
                     )}
-                    <Button
-                        onClick={() => setShowAdvanced(!showAdvanced)}
-                        variant="secondary"
-                        size="xs"
-                        icon={showAdvanced ? ChevronUpIcon : ChevronDownIcon}
-                        title={showAdvanced ? 'Hide advanced' : 'Show advanced'}
-                        className="text-gray-400 hover:text-white"
-                    />
                 </div>
             </div>
 
@@ -334,6 +326,7 @@ export function PropertyEditor({
             )}
 
             <div className="relative">
+                <label className="block text-xs uppercase font-bold text-gray-500 mb-2 tracking-wider">Key</label>
                 <Input
                     list="property-keys"
                     placeholder="Key (e.g. price)"
@@ -465,40 +458,38 @@ export function PropertyEditor({
                 </div>
             )}
 
-            {touched && !validation.isValid && (
+            {touched && !validation.isValid && !customValue && (
                 <div className="bg-red-900/20 border border-red-900/50 rounded p-2 mb-2 flex items-center gap-2 text-red-300 text-xs animate-fadeIn">
-                    <span className="w-4 h-4 flex-shrink-0">!</span>
+                    <ExclamationTriangleIcon className="w-4 h-4 flex-shrink-0"/>
                     <span>{validation.message}</span>
                 </div>
             )}
 
-            <div className={`mt-2 p-3 rounded-lg border flex items-center justify-between transition-colors ${
-                validation.isValid && key && value ? 'bg-gray-900/80 border-gray-700' : 'bg-gray-900/30 border-gray-800'
-            }`}>
-                <div className="flex items-center gap-2 text-gray-500">
-                    <span className="text-xs uppercase font-semibold">Summary</span>
+            {customValue && (
+                <div className="bg-amber-900/15 border border-amber-900/40 rounded p-2 mb-2 flex items-start gap-2 text-amber-300/90 text-xs">
+                    <InformationCircleIcon className="w-3.5 h-3.5 flex-shrink-0 mt-0.5"/>
+                    <span>Custom value. Ontology suggests: {activeDef?.options?.join(', ')}</span>
                 </div>
-                <span className={`${validation.isValid && key && value ? 'text-blue-300' : 'text-gray-600'} text-sm`}>
-                    {key && value ? `${key} ${operator} ${value}` : 'Choose a detail'}
-                </span>
-            </div>
+            )}
 
             <div className="flex justify-end gap-2 pt-2">
-                <IconButton
+                <Button
+                    type="button"
                     onClick={onCancel}
                     variant="secondary"
-                    icon={XIcon}
-                    title="Cancel"
+                    size="sm"
                     disabled={readonly}
-                />
-                <IconButton
-                    onClick={handleSave}
-                    variant="ghost"
-                    className="text-green-500 hover:text-green-400 hover:bg-gray-700"
-                    icon={CheckIcon}
-                    title="Save"
-                    disabled={readonly || !key.trim() || !value.trim() || !validation.isValid}
-                />
+                >
+                    Cancel
+                </Button>
+                <Button
+                    type="submit"
+                    variant="primary"
+                    size="sm"
+                    disabled={readonly || !canSave}
+                >
+                    {isAdding ? 'Add detail' : 'Save changes'}
+                </Button>
             </div>
         </>
     );

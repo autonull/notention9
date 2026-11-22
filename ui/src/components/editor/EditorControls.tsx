@@ -9,6 +9,7 @@ import {
     ArrowUpTrayIcon,
     ArrowLeftIcon,
     ArrowRightIcon,
+    ListIcon,
 } from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {Button} from '../ui/Button';
@@ -30,6 +31,9 @@ export interface EditorControlsProps {
     onAddProperty?: (key: string) => void;
     onAutoTag?: () => void;
     isAutoTagging?: boolean;
+    isInspectorOpen?: boolean;
+    onToggleInspector?: () => void;
+    propertyCount?: number;
 }
 
 export function EditorControls({
@@ -48,6 +52,9 @@ export function EditorControls({
     onAddProperty,
     onAutoTag,
     isAutoTagging,
+    isInspectorOpen = false,
+    onToggleInspector,
+    propertyCount = 0,
 }: EditorControlsProps) {
     const menuItems: DropdownMenuItem[] = [
         ...(onSaveTemplate ? [{
@@ -86,6 +93,26 @@ export function EditorControls({
 
     return (
         <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Contextual details: metadata, related notes, typed values */}
+            {onToggleInspector && (
+                <button
+                    type="button"
+                    onClick={onToggleInspector}
+                    aria-pressed={isInspectorOpen}
+                    aria-label={`Structured details (${propertyCount})`}
+                    title="Structured details"
+                    className={`flex items-center gap-1.5 h-9 px-2.5 rounded-lg text-xs font-medium transition-colors ${
+                        isInspectorOpen
+                            ? 'bg-gray-800 text-white'
+                            : 'text-gray-400 hover:text-white hover:bg-gray-800/70'
+                    }`}
+                >
+                    <ListIcon className="w-4 h-4"/>
+                    <span className="hidden lg:inline">Details</span>
+                    <span className="text-[10px] text-gray-500 tabular-nums">{propertyCount}</span>
+                </button>
+            )}
+
             {/* Primary Actions */}
             <div className="flex items-center gap-2">
                 <Button

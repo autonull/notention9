@@ -329,16 +329,23 @@ export function InboxView(_props: InboxViewProps) {
                 )}
 
                 <section aria-label="Recent notes" data-testid="notes-list">
-                    <header className="mb-3 flex items-baseline justify-between">
+                    <header className="mb-3 flex items-baseline justify-between gap-3">
                         <h1 className="text-xl font-semibold text-white">Recent notes</h1>
                         {filteredNotes.length > 0 && (
-                            <span className="text-xs text-gray-500">{filteredNotes.length}</span>
+                            <div className="flex items-center gap-3">
+                                <span className="text-xs text-gray-500">{filteredNotes.length}</span>
+                                {filteredNotes.length > 3 && (
+                                    <Button variant="ghost" size="xs" onClick={() => setActiveView('notes')}>
+                                        See all
+                                    </Button>
+                                )}
+                            </div>
                         )}
                     </header>
 
                     {filteredNotes.length > 0 ? (
-                        <div className="space-y-2" role="list" data-testid="notes-list-items">
-                            {filteredNotes.map((note) => (
+                        <div className="grid gap-2 md:grid-cols-2" role="list" data-testid="notes-list-items">
+                            {filteredNotes.slice(0, 4).map((note) => (
                                 <NoteListItem
                                     key={note.id}
                                     note={note}
@@ -451,9 +458,11 @@ function LocalMatchCard({
         <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6" data-testid="local-match">
             <div className="flex items-center justify-between gap-4 mb-4">
                 <div className="flex items-center gap-2 text-green-300 text-xs font-bold uppercase tracking-widest">
-                    <CheckCircleIcon className="w-4 h-4"/> Match found locally
+                    <CheckCircleIcon className="w-4 h-4"/> Local match
                 </div>
-                <div className="text-3xl font-bold text-green-300">{Math.round(result.score * 100)}%</div>
+                <div className="text-2xl font-bold text-green-300 tabular-nums" aria-label={`Match score ${Math.round(result.score * 100)} percent`}>
+                    {Math.round(result.score * 100)}%
+                </div>
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">

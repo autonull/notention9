@@ -118,11 +118,12 @@ test.describe('Next Steps E2E', () => {
         await page.reload();
         await page.waitForSelector('[data-ready]');
         
-        // Wait for suggestions to regenerate or show empty state
+        // Wait for suggestions to regenerate or stay suppressed
+        await page.waitForSelector('[data-testid="editor-content"]', {timeout: 15_000});
         await page.waitForTimeout(3000);
 
-        // The strip should be visible (either with suggestions or empty state)
-        await expect(page.locator('[data-testid="next-step-strip"]')).toBeVisible({timeout: 15_000});
+        // The dismissed step stays suppressed, so the quiet strip is absent
+        await expect(page.locator('[data-testid="next-step-strip"]')).toHaveCount(0, {timeout: 15_000});
     });
 
     test('edit → stale → regenerate', async ({page}) => {
@@ -160,7 +161,7 @@ test.describe('Next Steps E2E', () => {
         await expect(page.locator('[data-testid^="next-step-card-"]').first()).toBeVisible();
 
         // Open drawer with multiple steps
-        await page.locator('button:has-text("next steps")').first().click();
+        await page.locator('button[aria-label^="Open next steps"]').first().click();
         await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
 
         // Tab navigation in drawer
@@ -172,7 +173,7 @@ test.describe('Next Steps E2E', () => {
         await expect(page.locator('[data-testid="next-steps-drawer"]')).toBeHidden({timeout: 2_000});
 
         // Re-open drawer
-        await page.locator('button:has-text("next steps")').first().click();
+        await page.locator('button[aria-label^="Open next steps"]').first().click();
         await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
 
         // Test j/k navigation (if implemented)
@@ -183,6 +184,41 @@ test.describe('Next Steps E2E', () => {
 
         // Close drawer
         await page.keyboard.press('Escape');
+    });
+
+    test('apply prefills the suggested detail but leaves the value to the user', async ({page}) => {
+        await seed(page, {
+            notes: [jobRequestNote()],
+            settings: defaultSettings({aiEnabled: false, developerMode: true}),
+            hash: '#notes/journey-job-request',
+        });
+
+        await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
+        await page.locator('[data-testid^="next-step-card-"]').first().locator('button:has-text("Add")').click();
+
+        await expect(page.getByPlaceholder('Key (e.g. price)')).toHaveValue('budget');
+        await expect(page.getByText('Add detail')).toBeVisible();
+    });
+
+    test('layout: the next step stays a single line above the note', async ({page}) => {
+        await seed(page, {
+            notes: [jobRequestNote()],
+            settings: defaultSettings({aiEnabled: false, developerMode: true}),
+            hash: '#notes/journey-job-request',
+        });
+
+        const strip = page.locator('[data-testid="next-step-strip"]');
+        await strip.waitFor({timeout: 15_000});
+        await expect(page.locator('[data-testid^="next-step-card-"]').first()).toBeVisible();
+
+        const body = page.locator('.ProseMirror');
+        await expect(body).toBeVisible();
+
+        const stripBox = await strip.boundingBox();
+        const bodyBox = await body.boundingBox();
+        expect(stripBox?.height ?? 0).toBeLessThan(64);
+        expect(bodyBox?.y ?? 0).toBeLessThan(420);
+        expect(bodyBox?.width ?? 0).toBeGreaterThan(300);
     });
 
     test('focus visible and live region announces results', async ({page}) => {

@@ -5,8 +5,20 @@ import {ICON_MAP} from '../layout/iconMap';
 import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
 import {validateAttributeValue} from '@notention/core';
+import {isCustomEnumValue} from '../../utils/propertyValidation';
 
 const NodeViewWrapper = NodeViewWrapperComponent as any;
+
+const OPERATOR_GLYPH: Record<string, string> = {
+    'is': '=',
+    'is not': '≠',
+    'greater than': '>',
+    'less than': '<',
+    'between': '↔',
+    'near': '≈',
+    'before': '←',
+    'after': '→',
+};
 
 interface PropertyAttrs {
     name: string;
@@ -39,29 +51,38 @@ export function PropertyChip({node}: PropertyViewProps) {
         return validateAttributeValue(name, operator, value, definition);
     }, [name, operator, value, definition]);
 
+    const customValue = isCustomEnumValue(definition, value);
+
     // Styling
     const baseClasses = "node-property inline-flex items-center gap-1.5 px-2 py-0.5 mx-1 border rounded-md select-none cursor-pointer transition-colors text-sm";
     const validClasses = "bg-blue-900/30 border-blue-700/50 hover:bg-blue-900/50 hover:border-blue-600 text-blue-100";
     const invalidClasses = "bg-red-900/30 border-red-700/50 hover:bg-red-900/50 hover:border-red-600 text-red-100";
+    const customClasses = "bg-amber-900/20 border-amber-700/40 hover:bg-amber-900/40 hover:border-amber-600/60 text-amber-100";
 
     return (
         <NodeViewWrapper
             as="span"
-            className={`${baseClasses} ${validation.isValid ? validClasses : invalidClasses}`}
+            className={`${baseClasses} ${!validation.isValid && !customValue ? invalidClasses : customValue ? customClasses : validClasses}`}
             data-property-id={propertyId ?? undefined}
             title={
-                !validation.isValid ? validation.message : "Click to edit"
+                !validation.isValid && !customValue
+                    ? validation.message
+                    : customValue
+                    ? `Custom value; ontology expects: ${definition?.options?.join(', ')}`
+                    : "Click to edit"
             }
         >
-            <IconComponent className={`w-3.5 h-3.5 ${validation.isValid ? 'text-blue-400' : 'text-red-400'}`}/>
-            <span className={`font-semibold ${validation.isValid ? 'text-blue-300' : 'text-red-300'} flex items-center gap-1`}>
+            <IconComponent className={`w-3.5 h-3.5 ${!validation.isValid && !customValue ? 'text-red-400' : customValue ? 'text-amber-400' : 'text-blue-400'}`}/>
+            <span className={`font-semibold ${!validation.isValid && !customValue ? 'text-red-300' : customValue ? 'text-amber-200' : 'text-blue-300'} flex items-center gap-1`}>
                 {name}
             </span>
             <span
-                className={`${validation.isValid ? 'text-blue-500' : 'text-red-500'} text-xs uppercase font-bold`}>{operator}</span>
+                className={`${!validation.isValid && !customValue ? 'text-red-500' : customValue ? 'text-amber-400' : 'text-blue-500'} text-xs font-medium`}
+                title={operator}
+            >{OPERATOR_GLYPH[operator] ?? operator}</span>
             <span
-                className={`font-mono px-1 rounded ${validation.isValid ? 'bg-blue-900/50 text-blue-200' : 'bg-red-900/50 text-red-200'}`}>{value}</span>
-            {!validation.isValid && <ExclamationTriangleIcon className="w-3.5 h-3.5 text-red-400 ml-1"/>}
+                className={`font-mono px-1 rounded ${!validation.isValid && !customValue ? 'bg-red-900/50 text-red-200' : customValue ? 'bg-amber-900/40 text-amber-200' : 'bg-blue-900/50 text-blue-200'}`}>{value}</span>
+            {!validation.isValid && !customValue && <ExclamationTriangleIcon className="w-3.5 h-3.5 text-red-400 ml-1"/>}
         </NodeViewWrapper>
     );
 }

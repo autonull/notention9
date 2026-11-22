@@ -10,7 +10,7 @@ Everything is a note: memory, queries, and an interface to automation.
 
 ## 📸 A look inside
 
-[![Dashboard populated](doc/screenshot/dashboard/populated.png)](doc/screenshot/README.md)
+[![Inbox populated](doc/screenshot/inbox/populated.png)](doc/screenshot/README.md)
 [![Editor with structured details](doc/screenshot/editor/property-chips.png)](doc/screenshot/README.md)
 [![Add a structured detail](doc/screenshot/editor/add-detail.png)](doc/screenshot/README.md)
 [![Local match results](doc/screenshot/matching/results.png)](doc/screenshot/README.md)
@@ -194,6 +194,8 @@ Node.js 20 or newer and pnpm are expected. Install dependencies once, then choos
 | Run tests | `pnpm test` |
 | Journey E2E | `pnpm run test:e2e` |
 | Generate screenshots | `pnpm run screenshots` |
+| Refresh one screenshot group | `pnpm screenshot editor` |
+| One UI test file | `pnpm test:ui:one src/tests/components/EditorManager.test.tsx` |
 | Local relay | `pnpm run relay -- --port 7000` |
 | UI plus agent and relay | `pnpm run dev:demo` |
 | Simulator | `pnpm run build -w simulator` then `pnpm start -w simulator -- --ui-server` |

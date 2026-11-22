@@ -145,6 +145,52 @@ async function seedAppliedState(page: any, noteId: string) {
     }, noteId);
 }
 
+async function seedStaleState(page: any, note: any) {
+    const contentHash = `${note.content}|${note.properties.map((p: any) => `${p.key}:${p.operator}:${p.values.join(',')}`).sort().join(';')}|${[...note.tags].sort().join(',')}`;
+    await page.evaluate(async ({id, hash}: {id: string; hash: string}) => {
+        const now = Date.now();
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            const req = indexedDB.open('notention:next-steps:v1');
+            req.onupgradeneeded = () => {
+                if (!req.result.objectStoreNames.contains('nextSteps')) {
+                    req.result.createObjectStore('nextSteps');
+                }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+        const tx = db.transaction('nextSteps', 'readwrite');
+        tx.objectStore('nextSteps').put({
+            version: 1,
+            noteId: id,
+            contentHash: hash,
+            generationId: 'seed',
+            active: [],
+            stale: [{
+                id: 'stale-budget',
+                noteId: id,
+                kind: 'add-property',
+                status: 'stale',
+                title: 'Add budget',
+                description: 'Job requests should indicate a budget range',
+                evidence: [{source: 'rules', ruleId: 'rule-add-budget-for-job', confidence: 1}],
+                proposedChange: {type: 'add', property: {key: 'budget', operator: 'gte', values: ['1000']}, placeholder: ''},
+                createdAt: now - 1000,
+                updatedAt: now - 1000,
+                generationId: 'seed',
+            }],
+            suppressed: [],
+            updatedAt: now,
+            applied: [],
+        }, `notention:next-steps:v1:${id}`);
+        await new Promise<void>((resolve, reject) => {
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+        });
+        db.close();
+    }, {id: note.id, hash: contentHash});
+}
+
 test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
 });
@@ -159,11 +205,11 @@ test('next-steps: empty state when no triggers', async ({page}) => {
         hash: '#notes/scene-simple-note'
     });
     // Wait for next steps strip to load
-    await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
+    await page.waitForSelector('[data-testid="editor-content"]', {timeout: 15_000});
     await snap(page, {
         area: 'next-steps',
         state: 'empty',
-        description: 'Simple note with no matching rules shows empty next steps state with refresh button.',
+        description: 'A note with no triggers stays quiet: no empty next-steps chrome.',
     });
 });
 
@@ -217,13 +263,14 @@ test('next-steps: applied history shows result links and fit count', async ({pag
     await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
 
     // Open drawer to see applied history (multiTriggerNote has multiple steps)
-    await page.locator('button:has-text("next steps")').first().click();
+    await page.locator('button[aria-label^="Open next steps"]').first().click();
     await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
+    await page.locator('summary:has-text("Applied history")').click();
 
     await snap(page, {
         area: 'next-steps',
         state: 'applied',
-        description: 'After applying a next step, it shows in applied history with fit count and undo button.',
+        description: 'Applied history opens on demand, with fit count and undo.',
     });
 });
 
@@ -231,27 +278,22 @@ test('next-steps: applied history shows result links and fit count', async ({pag
 // Stale state after edit
 // ============================================================================
 test('next-steps: stale state after edit', async ({page}) => {
+    const note = jobRequestNote();
     await seed(page, {
-        notes: [jobRequestNote()],
+        notes: [note],
         settings: defaultSettings({aiEnabled: false, developerMode: true}),
         hash: '#notes/scene-job-request-note'
     });
     await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
-    await page.locator('[data-testid^="next-step-card-"]').first().waitFor({timeout: 10_000});
-    
-    // Edit the note to trigger regeneration
-    await page.locator('[contenteditable="true"]').first().click();
-    await page.keyboard.press('ControlOrMeta+A');
-    await page.keyboard.type('Updated: ');
-    await page.keyboard.press('Enter');
-    
-    // Wait for debounced regeneration (2s)
-    await page.waitForTimeout(3000);
-    
+    await seedStaleState(page, note);
+    await page.reload();
+    await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
+    await page.waitForSelector('[data-testid^="next-step-card-"]', {timeout: 10_000});
+
     await snap(page, {
         area: 'next-steps',
         state: 'stale',
-        description: 'After editing a note, prior next steps become stale (showing refresh action) and new generation starts.',
+        description: 'A suggestion from before an edit stays visible with a Refresh action, instead of disappearing.',
     });
 });
 
@@ -268,13 +310,13 @@ test('next-steps: zero match state', async ({page}) => {
     await page.locator('[data-testid^="next-step-card-"]').first().waitFor({timeout: 10_000});
     
     // Open drawer to see matches section (should be empty)
-    await page.locator('button:has-text("next steps")').first().click();
+    await page.locator('button[aria-label^="Open next steps"]').first().click();
     await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
     
     await snap(page, {
         area: 'next-steps',
         state: 'zero-match',
-        description: 'Note with next step shows zero local/network matches in drawer.',
+        description: 'The drawer keeps suggestions and history separate from the note, even with no matches.',
     });
 });
 
@@ -311,7 +353,7 @@ test('next-steps: drawer opened from strip', async ({page}) => {
     await page.locator('[data-testid^="next-step-card-"]').first().waitFor({timeout: 10_000});
     
     // Click the drawer open button (shows when multiple steps)
-    await page.locator('button:has-text("next steps")').first().click();
+    await page.locator('button[aria-label^="Open next steps"]').first().click();
     
     // Wait for drawer to open
     await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});

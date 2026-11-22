@@ -8,7 +8,6 @@ interface TagInputProps {
     isAutoTagging?: boolean;
     autoFocus?: boolean;
     className?: string;
-    onAddDetail?: () => void;
 }
 
 export function TagInput({
@@ -17,8 +16,7 @@ export function TagInput({
                               onAutoTag,
                               isAutoTagging,
                               autoFocus,
-                              className = "p-2 bg-gray-900/50 rounded-md border border-gray-700/30",
-                              onAddDetail,
+                              className = "",
                           }: TagInputProps) {
     const [input, setInput] = useState('');
     const [isExpanded, setIsExpanded] = useState(tags.length > 0);
@@ -110,17 +108,6 @@ export function TagInput({
                 >
                     <PlusIcon className="w-3 h-3 mr-1" />
                     tag
-                </button>
-            )}
-            {onAddDetail && (
-                <button
-                    type="button"
-                    onClick={onAddDetail}
-                    className="btn btn-ghost btn-xs px-2 py-0.5 text-xs uppercase tracking-wider bg-gray-800 text-gray-400 border border-gray-700 hover:bg-gray-700 hover:text-gray-200 active:scale-95 touch-target flex-shrink-0"
-                    title="Add property from ontology"
-                >
-                    <PlusIcon className="w-3 h-3 mr-1" />
-                    detail
                 </button>
             )}
         </div>

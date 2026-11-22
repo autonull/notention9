@@ -14,8 +14,13 @@ export function usePropertyInsertion() {
         propertyId?: string;
     } | undefined>(undefined);
 
-    const handleOpenPropertyModal = useCallback((key?: string, propertyId?: string) => {
-        setInitialModalData(key ? {key, operator: 'is', value: '', propertyId} : undefined);
+    const handleOpenPropertyModal = useCallback((key?: string, propertyId?: string, initial?: {operator?: string; value?: string}) => {
+        setInitialModalData(key ? {
+            key,
+            operator: initial?.operator ?? 'is',
+            value: initial?.value ?? '',
+            propertyId,
+        } : undefined);
         if (propertyId) setEditingPropertyId(propertyId);
         setIsPropertyModalOpen(true);
     }, []);

@@ -63,10 +63,13 @@ test('relay-down banner retries without losing local notes', async ({page}) => {
         hash: '#network',
     });
 
-    await expect(page.getByTestId('relay-banner')).toBeVisible({timeout: 15_000});
+    await expect(page.getByTestId('relay-status-detailed')).toBeVisible({timeout: 15_000});
     await page.getByRole('button', {name: 'Retry'}).click();
-    await expect(page.getByTestId('relay-banner')).toBeVisible();
-    await expect(page.getByText('Still here offline')).toBeVisible();
+    await expect(page.getByTestId('relay-status-detailed')).toBeVisible();
+
+    // Connections is network-first; local notes remain in the Notes workspace.
+    await page.getByRole('button', {name: 'Notes', exact: true}).click();
+    await expect(page.getByText('Still here offline').first()).toBeVisible();
 });
 
 test('publish failure surfaces a retryable error', async ({page}) => {

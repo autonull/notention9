@@ -62,7 +62,7 @@ const SidebarListInner = forwardRef<VirtualizedListRef, SidebarListProps>(({ vir
             <EmptyState
                 variant="minimal"
                 title="No notes yet"
-                description="Capture in the inbox. Everything stays on this device."
+                description="Capture a thought above and it will appear here."
             />
         );
     }, [searchTerm, setSearchTerm, isTrashView]);

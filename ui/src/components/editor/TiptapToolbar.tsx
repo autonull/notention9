@@ -133,13 +133,13 @@ function TiptapToolbarContent({
 
     return (
         <div
-            className="flex-shrink-0 px-3 py-2 border-b border-gray-700/50 flex items-center gap-2 bg-gray-900/50 backdrop-blur-sm overflow-x-auto flex-wrap"
+            className="flex-shrink-0 px-3 py-1 border-b border-gray-800/70 flex items-center gap-1.5 bg-gray-950/40 overflow-x-auto"
             role="toolbar"
             aria-label="Editor formatting"
         >
             {hasSemanticActions && (
                 <div
-                    className="flex items-center gap-1.5 bg-purple-900/20 p-1 rounded-lg border border-purple-500/20 mr-2 flex-shrink-0"
+                    className="flex items-center gap-0.5 mr-1 flex-shrink-0"
                     role="group"
                     aria-label="Semantic actions"
                 >
@@ -148,55 +148,55 @@ function TiptapToolbarContent({
                             onClick={onInsertProperty}
                             data-testid="add-detail"
                             title="Add detail (Ctrl+Shift+P)"
-                            className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold text-purple-200 hover:bg-purple-900/40 hover:text-white transition-colors"
+                            className="flex items-center gap-1.5 rounded-md border border-purple-500/25 px-2 py-1 text-xs font-medium text-purple-300 hover:bg-purple-500/10 hover:text-purple-100 transition-colors"
                         >
-                            <KeyIcon className="w-4 h-4"/>
+                            <KeyIcon className="w-3.5 h-3.5"/>
                             <span className="hidden sm:inline">Add detail</span>
                         </button>
                     )}
                     {onDescribe && (
-                        <IconButton
+                        <button
+                            type="button"
                             onClick={onDescribe}
-                            tooltip="Describe it — suggest details from your words"
-                            icon={LightBulbIcon}
-                            isActive={false}
                             data-testid="describe-it"
-                            className="text-purple-300 hover:text-white"
-                            variant="ghost"
-                            size="md"
-                        />
+                            title="Describe it — suggest details from your words"
+                            aria-label="Describe it"
+                            className="p-1.5 rounded-md text-purple-300/80 hover:bg-purple-500/10 hover:text-purple-100 transition-colors"
+                        >
+                            <LightBulbIcon className="w-4 h-4"/>
+                        </button>
                     )}
                     {onMagic && (
-                        <IconButton
+                        <button
+                            type="button"
                             onClick={onMagic}
-                            tooltip="Magic Align — auto-generate semantic properties"
-                            icon={SparklesIcon}
-                            isActive={false}
-                            className="text-purple-300 hover:text-white"
-                            variant="ghost"
-                            size="md"
-                        />
+                            title="Magic Align — auto-generate semantic properties"
+                            aria-label="Magic Align"
+                            className="p-1.5 rounded-md text-purple-300/80 hover:bg-purple-500/10 hover:text-purple-100 transition-colors"
+                        >
+                            <SparklesIcon className="w-4 h-4"/>
+                        </button>
                     )}
                     {onTemplates && (
-                        <IconButton
+                        <button
+                            type="button"
                             onClick={onTemplates}
-                            tooltip="Insert Template"
-                            icon={CubeIcon}
-                            isActive={false}
-                            className="text-purple-300 hover:text-white"
-                            variant="ghost"
-                            size="md"
-                        />
+                            title="Insert template"
+                            aria-label="Insert template"
+                            className="p-1.5 rounded-md text-purple-300/80 hover:bg-purple-500/10 hover:text-purple-100 transition-colors"
+                        >
+                            <CubeIcon className="w-4 h-4"/>
+                        </button>
                     )}
                 </div>
             )}
 
-            <div className="flex items-center gap-0.5 flex-grow flex-wrap">
+            <div className="flex items-center gap-0.5 flex-grow flex-nowrap">
                 {/* Heading Dropdown */}
                 <DropdownMenu
                     trigger={
                         <button
-                            className="flex items-center gap-1 px-3 py-1.5 rounded-md hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
+                            className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-gray-800 text-gray-400 hover:text-white transition-colors"
                             aria-label="Text formatting"
                         >
                             <span className="text-[10px] uppercase tracking-wider font-bold hidden sm:inline">Text</span>
@@ -207,11 +207,11 @@ function TiptapToolbarContent({
                     align="left"
                 />
 
-                <div className="w-px h-5 bg-gray-700/50 mx-1.5 flex-shrink-0 hidden sm:block"></div>
+                <div className="w-px h-4 bg-gray-700/50 mx-1 flex-shrink-0 hidden sm:block"></div>
 
                 {actions.map((item, index) => (
                     item.type === 'separator' ? (
-                        <div key={`sep-${index}`} className="w-px h-5 bg-gray-700/50 mx-1.5 hidden sm:block flex-shrink-0"></div>
+                        <div key={`sep-${index}`} className="w-px h-4 bg-gray-700/50 mx-1 hidden sm:block flex-shrink-0"></div>
                     ) : (
                         <div key={item.title} className="flex-shrink-0">
                             <IconButton
@@ -220,15 +220,17 @@ function TiptapToolbarContent({
                                 isActive={item.isActive?.()}
                                 tooltip={item.title}
                                 icon={item.icon}
-                                size="md"
+                                size="sm"
+                                touchTarget={false}
                                 variant={item.isActive?.() ? 'secondary' : 'ghost'}
+                                className="p-1.5"
                             />
                         </div>
                     )
                 ))}
             </div>
 
-            <div className="border-l border-gray-700/50 pl-2 ml-1 flex-shrink-0">
+            <div className="border-l border-gray-800/70 pl-1.5 ml-0.5 flex-shrink-0">
                 <IconButton
                     onClick={toggleViewMode}
                     isActive={viewMode === 'code'}
@@ -237,7 +239,9 @@ function TiptapToolbarContent({
                     }
                     tooltipPosition="left"
                     icon={CodeBracketsIcon}
-                    size="md"
+                    size="sm"
+                    touchTarget={false}
+                    className="p-1.5"
                 />
             </div>
         </div>

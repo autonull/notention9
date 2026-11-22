@@ -4,7 +4,7 @@ import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {cn} from '../../utils/ui';
 import {useSwipeActions, type SwipeActionItem} from '../../hooks/useTouchGestures';
-import {useNoteDisplay, useHighlightedText, useHighlightedPreview, getNoteItemClasses, getPropertyBadgeClasses, getRelativeTimeClasses} from './useNoteDisplay';
+import {useNoteDisplay, useHighlightedText, useHighlightedPreview, getNoteItemClasses, getPropertyBadgeClasses, getRelativeTimeClasses, formatPropertyChip} from './useNoteDisplay';
 
 interface NoteListItemProps {
     note: Note;
@@ -48,6 +48,10 @@ export const NoteListItem = React.memo(({
 
     const highlightedTitle = useHighlightedText(note.title || 'Untitled Note', searchTerm);
     const highlightedPreview = useHighlightedPreview(contentPreview, searchTerm);
+
+    const metaChips = displayProperties.length > 0
+        ? displayProperties.map(formatPropertyChip)
+        : note.tags.slice(0, 1).map(tag => `#${tag}`);
 
     // Swipe actions for mobile
     const swipeActions: SwipeActionItem[] = isMobile ? [
@@ -146,12 +150,12 @@ export const NoteListItem = React.memo(({
                     {highlightedTitle}
                 </h3>
                 {isPinned && (
-                    <PinIcon className="h-2.5 w-2.5 text-blue-400 flex-shrink-0 animate-pulse-subtle"/>
+                    <PinIcon className="h-3 w-3 text-blue-400 flex-shrink-0"/>
                 )}
             </div>
 
             {/* Preview */}
-            <p className={cn('text-[11px] pl-1 mb-2 line-clamp-1 leading-relaxed transition-colors', isSelected ? 'text-blue-200/60' : 'text-gray-500 group-hover:text-gray-400')}>
+            <p className={cn('text-xs pl-1 mb-2 line-clamp-1 leading-relaxed transition-colors', isSelected ? 'text-blue-200/60' : 'text-gray-500 group-hover:text-gray-400')}>
                 {highlightedPreview}
             </p>
 
@@ -161,14 +165,17 @@ export const NoteListItem = React.memo(({
                     <span className={getRelativeTimeClasses(isSelected)}>
                         {relativeTime}
                     </span>
-                    {displayProperties.length > 0 && (
-                        <div className="flex gap-1">
-                            {displayProperties.map((p, i) => (
+                    {metaChips.length > 0 && (
+                        <div className="flex items-center gap-1 flex-shrink-0">
+                            {metaChips.map((label, i) => (
                                 <span
-                                    key={i}
+                                    key={`${label}-${i}`}
                                     className={getPropertyBadgeClasses(isSelected)}
+                                    title={displayProperties[i]
+                                        ? `${displayProperties[i].key} ${displayProperties[i].operator} ${displayProperties[i].values.join(', ')}`
+                                        : label}
                                 >
-                                    #{p.key}
+                                    {label}
                                 </span>
                             ))}
                         </div>
@@ -179,7 +186,7 @@ export const NoteListItem = React.memo(({
                 {!isMobile && (
                     <div className={cn(
                         'flex items-center gap-0.5 transition-all duration-200',
-                        isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                        isTrash || isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
                     )}>
                         {isTrash && onRestore && (
                             <IconButton

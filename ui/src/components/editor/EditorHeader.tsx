@@ -33,6 +33,9 @@ interface EditorHeaderProps {
     canRedo?: boolean;
     onUndo?: () => void;
     onRedo?: () => void;
+    isInspectorOpen?: boolean;
+    onToggleInspector?: () => void;
+    propertyCount?: number;
 }
 
 export function EditorHeader({
@@ -61,16 +64,14 @@ export function EditorHeader({
     canRedo = false,
     onUndo,
     onRedo,
+    isInspectorOpen = false,
+    onToggleInspector,
+    propertyCount = 0,
 }: EditorHeaderProps) {
-    const handleAddDetail = () => {
-        // TODO: Open searchable ontology/property picker
-        console.log('Open ontology/property picker');
-    };
-
     return (
-        <header className="flex-shrink-0 bg-gray-900 border-b border-gray-700/50 sticky top-0 z-10">
+        <header className="flex-shrink-0 bg-gray-950/80 backdrop-blur border-b border-gray-800/80 sticky top-0 z-10">
             {/* Row 1: Back, Title, Privacy, Core Actions */}
-            <div className="flex items-center gap-2 p-3">
+            <div className="flex flex-wrap md:flex-nowrap items-center gap-2 px-4 py-2.5">
                 {onBack && (
                     <IconButton
                         onClick={onBack}
@@ -78,12 +79,11 @@ export function EditorHeader({
                         icon={ArrowLeftIcon}
                         variant="secondary"
                         size="sm"
-                        label="Alt+←"
                         className="md:hidden"
                     />
                 )}
 
-                <div className="flex-grow min-w-0 flex items-center mr-2">
+                <div className="flex-grow min-w-0 flex items-center mr-2 basis-[calc(100%-3.5rem)] md:basis-auto">
                     <div className="relative w-full">
                         <input
                             id="note-title-input"
@@ -100,48 +100,51 @@ export function EditorHeader({
                             autoFocus={!title && !readOnly}
                             readOnly={readOnly}
                             disabled={readOnly}
-                            className="input w-full bg-transparent text-xl font-bold py-1 focus:ring-0 focus:border-transparent"
+                            className="w-full bg-transparent border-0 text-2xl font-semibold text-gray-100 placeholder-gray-600 px-1 py-0.5 rounded hover:bg-white/5 focus:outline-none focus:ring-0 focus:bg-white/5"
                         />
                     </div>
                     {readOnly && <LockIcon className="h-4 w-4 text-gray-500 ml-2 flex-shrink-0"/>}
                 </div>
 
-                {id && <SkillExecutionIndicator noteId={id}/>}
+                <div className="flex items-center gap-2 basis-full justify-end md:basis-auto">
+                    {id && <SkillExecutionIndicator noteId={id}/>}
 
-                {/* Privacy Control Inline */}
-                <div className="flex-shrink-0 mr-2">
-                    <PrivacyControl note={note} onUpdate={onUpdateNote}/>
+                    {/* Privacy Control Inline */}
+                    <div className="flex-shrink-0">
+                        <PrivacyControl note={note} onUpdate={onUpdateNote}/>
+                    </div>
+
+                    <EditorControls
+                        onPublish={onPublish}
+                        isPublishing={isPublishing}
+                        isPublished={isPublished}
+                        actionLabel={actionLabel}
+                        onSaveTemplate={onSaveTemplate}
+                        onExport={onExport}
+                        onCopyContent={onCopyContent}
+                        canUndo={canUndo}
+                        canRedo={canRedo}
+                        onUndo={onUndo}
+                        onRedo={onRedo}
+                        missingProperties={missingProperties}
+                        onAddProperty={onAddProperty}
+                        onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
+                        isAutoTagging={isAutoTagging}
+                        isInspectorOpen={isInspectorOpen}
+                        onToggleInspector={onToggleInspector}
+                        propertyCount={propertyCount}
+                    />
                 </div>
-
-                <EditorControls
-                    onPublish={onPublish}
-                    isPublishing={isPublishing}
-                    isPublished={isPublished}
-                    actionLabel={actionLabel}
-                    onSaveTemplate={onSaveTemplate}
-                    onExport={onExport}
-                    onCopyContent={onCopyContent}
-                    canUndo={canUndo}
-                    canRedo={canRedo}
-                    onUndo={onUndo}
-                    onRedo={onRedo}
-                    missingProperties={missingProperties}
-                    onAddProperty={onAddProperty}
-                    onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
-                    isAutoTagging={isAutoTagging}
-                />
             </div>
 
-            {/* Row 2: Tags + Suggestions */}
-            <div className="px-3 pb-2 animate-fade-in">
+            {/* Row 2: Tags */}
+            <div className="px-4 pb-2 animate-fade-in">
                 <TagInput
                     tags={tags}
                     onChange={onTagsChange}
                     onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
                     isAutoTagging={isAutoTagging}
                     autoFocus={false}
-                    className="input"
-                    onAddDetail={handleAddDetail}
                 />
             </div>
         </header>

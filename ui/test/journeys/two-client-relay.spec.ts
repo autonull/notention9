@@ -17,7 +17,7 @@ const addDetail = async (page: Page, key: string, value: string) => {
         await dialog.locator('input').nth(1).fill(value);
     }
 
-    const save = dialog.getByRole('button', {name: 'Save'});
+    const save = dialog.getByRole('button', {name: 'Add detail'});
     await save.waitFor({state: 'visible'});
     await save.click();
     await expect(dialog).toBeHidden();

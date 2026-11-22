@@ -16,7 +16,7 @@ test('map pins', async ({page}) => {
     await snap(page, {
         area: 'map',
         state: 'pins',
-        description: 'Notes with locations grouped in the map view.',
+        description: 'Notes with locations plotted on the map.',
     });
 });
 
@@ -28,6 +28,6 @@ test('timeline month', async ({page}) => {
     await snap(page, {
         area: 'timeline',
         state: 'month',
-        description: 'Notes ordered by time in the timeline view.',
+        description: 'Dated notes on a month calendar, filterable by location.',
     });
 });

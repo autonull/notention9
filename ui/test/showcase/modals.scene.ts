@@ -31,6 +31,6 @@ test('help', async ({page}) => {
     await snap(page, {
         area: 'modals',
         state: 'help',
-        description: 'Keyboard shortcut reference with the concept groups.',
+        description: 'Keyboard shortcut reference grouped by task.',
     });
 });

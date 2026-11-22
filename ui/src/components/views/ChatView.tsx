@@ -64,18 +64,10 @@ export function ChatView() {
                     <div className="w-full flex flex-col bg-gray-900/50 p-8">
                         <div className="text-center text-gray-500 max-w-md mx-auto">
                             <KeyIcon className="h-12 w-12 text-gray-600 mx-auto mb-4"/>
-                            <h3 className="text-lg font-semibold text-gray-300 mb-2">Add an identity to chat</h3>
-                            <p className="text-sm text-gray-500 mb-6">
-                                Messages are encrypted end to end and signed by your key.
-                                Add a Nostr identity in Settings to start a conversation.
+                            <h3 className="text-lg font-semibold text-gray-300 mb-2">Chat needs an identity</h3>
+                            <p className="text-sm text-gray-400">
+                                Add an identity above to send encrypted messages. Your key stays on this device.
                             </p>
-                            <button
-                                onClick={onNavigateToSettings}
-                                data-variant="primary"
-                                className="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm transition-colors"
-                            >
-                                Go to Settings
-                            </button>
                         </div>
                     </div>
                 </>

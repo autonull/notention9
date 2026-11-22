@@ -26,17 +26,10 @@ export const SHORTCUT_GROUPS: ShortcutGroup[] = [
     {
         category: 'View Switching',
         shortcuts: [
-            viewShortcuts('Dashboard', '1'),
+            viewShortcuts('Inbox', '1'),
             viewShortcuts('Notes', '2'),
-            viewShortcuts('Map', '3'),
-            viewShortcuts('Timeline', '4'),
-            viewShortcuts('Network', '5'),
-            viewShortcuts('Chat', '6'),
-            viewShortcuts('Actions', '7'),
-            viewShortcuts('Ontology', '8'),
-            viewShortcuts('Trash', '9'),
-            viewShortcuts('Settings', '0'),
-            viewShortcuts('Skills', 'S'),
+            viewShortcuts('Connections', '3'),
+            viewShortcuts('Settings', ','),
         ],
     },
     {
@@ -78,7 +71,7 @@ export const COMMAND_PALETTE_SHORTCUTS: ShortcutGroup[] = [
             {label: 'Command Palette', keys: [MOD, 'K']},
             {label: 'Search Notes', keys: [MOD, '/']},
             {label: 'Toggle Sidebar', keys: [MOD, '\\']},
-            {label: 'Switch View', keys: ['Alt', '1–0']},
+            {label: 'Switch View', keys: ['Alt', '1–3']},
         ],
     },
     {

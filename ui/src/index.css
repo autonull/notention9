@@ -7,6 +7,13 @@
 
 @custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));
 
+/* Native controls (checkbox, select, date) should match the surface, not the OS. */
+:root { color-scheme: dark; }
+:root[data-theme='light'] { color-scheme: light; }
+@media (prefers-color-scheme: light) {
+    :root:not([data-theme='dark']) { color-scheme: light; }
+}
+
 /* General Editor Styles */
 .ProseMirror {
     outline: none;
@@ -1201,19 +1208,37 @@ html.high-contrast [class*="border-"] {
     font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
+.rbc-calendar .rbc-toolbar {
+    margin-bottom: 0.75rem;
+}
+
 .rbc-calendar .rbc-toolbar button {
-    color: #e5e7eb;
-    border-color: #374151;
+    color: #d1d5db;
+    background-color: transparent;
+    border-color: #1f2937;
+    border-radius: 6px;
+    padding: 0.25rem 0.6rem;
+    font-size: 0.8125rem;
 }
 
 .rbc-calendar .rbc-toolbar button:hover {
-    background-color: #374151;
+    background-color: #1f2937;
+    border-color: #374151;
+    color: #f9fafb;
 }
 
-.rbc-calendar .rbc-toolbar button.rbc-active {
-    background-color: #2563eb;
-    color: white;
-    border-color: #2563eb;
+.rbc-calendar .rbc-toolbar button:active,
+.rbc-calendar .rbc-toolbar button.rbc-active,
+.rbc-calendar .rbc-toolbar button.rbc-active:hover {
+    background-color: #312e81;
+    color: #e0e7ff;
+    border-color: #3730a3;
+    box-shadow: none;
+}
+
+.rbc-calendar .rbc-toolbar .rbc-toolbar-label {
+    font-weight: 600;
+    color: #e5e7eb;
 }
 
 .rbc-calendar .rbc-off-range-bg {
@@ -1281,4 +1306,26 @@ html.high-contrast [class*="border-"] {
 
 .rbc-calendar .rbc-day-bg {
     border-left-color: #374151;
+}
+
+/* Leaflet chrome should recede behind the map content */
+.leaflet-control-attribution {
+    background: rgba(17, 24, 39, 0.75) !important;
+    color: #6b7280 !important;
+    font-size: 10px;
+}
+
+.leaflet-control-attribution a {
+    color: #9ca3af !important;
+}
+
+.leaflet-bar a {
+    background: #111827;
+    color: #d1d5db;
+    border-bottom-color: #374151;
+}
+
+.leaflet-bar a:hover {
+    background: #1f2937;
+    color: #f9fafb;
 }

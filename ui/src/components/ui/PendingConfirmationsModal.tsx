@@ -5,7 +5,9 @@ import {usePendingConfirmations} from '../../hooks/usePendingConfirmations';
 export function PendingConfirmationsModal() {
     const {pendingConfirmations, removePendingConfirmation} = usePendingConfirmations();
 
-    const current = pendingConfirmations[0];
+    // Publishing has a dedicated disclosure in the editor (content, tags, raw event).
+    // Keep the pending state for traces, but do not stack a second generic modal on top.
+    const current = pendingConfirmations.find(confirmation => confirmation.action !== 'publish') ?? null;
 
     const handleConfirm = () => {
         if (current) {

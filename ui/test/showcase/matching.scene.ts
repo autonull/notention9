@@ -22,11 +22,11 @@ test('matching results', async ({page}) => {
 
 test('mobile notes', async ({page}) => {
     await page.setViewportSize({width: 390, height: 844});
-    await seed(page, {notes: demoNotes(), settings: defaultSettings()});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#notes'});
     await snap(page, {
         area: 'mobile',
         state: 'notes',
-        description: 'Mobile list and bottom navigation.',
+        description: 'The mobile note list with bottom navigation.',
         viewport: 'mobile',
     });
 });

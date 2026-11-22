@@ -86,7 +86,8 @@ export function KeyboardShortcutsHelp({
                     />
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
+                <div className="relative flex-1 min-h-0">
+                    <div className="h-full overflow-y-auto p-4 pb-10 custom-scrollbar">
                     {groups.map((group) => (
                         <div key={group.category} className="mb-8">
                             <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-4 px-2">
@@ -143,6 +144,11 @@ export function KeyboardShortcutsHelp({
                             Global shortcuts (marked with ring) work anywhere in the app.
                         </div>
                     </div>
+                    </div>
+                    <div
+                        aria-hidden="true"
+                        className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-gray-800 to-transparent"
+                    />
                 </div>
             </div>
         </div>

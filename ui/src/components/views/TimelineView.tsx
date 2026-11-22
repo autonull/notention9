@@ -161,55 +161,48 @@ export function TimelineView() {
     }
 
     return (
-        <div className="h-full bg-gray-900 p-4 flex flex-col overflow-hidden">
-            {/* Toolbar */}
-            <div className="flex flex-wrap items-center gap-4 mb-4 bg-gray-800 p-2 rounded-lg border border-gray-700">
-                <div className="flex items-center gap-2 text-gray-300"
-                     title="Filter events by proximity to a location note">
-                    <MapPinIcon className="w-5 h-5 text-blue-400"/>
-                    <span className="text-sm font-semibold hidden sm:inline">Spacetime Filter:</span>
-                </div>
-                <select
-                    className="bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500 max-w-xs"
-                    value={locationFilterId}
-                    onChange={(e) => setLocationFilterId(e.target.value)}
+        <div className="h-full bg-gray-950 p-4 flex flex-col overflow-hidden">
+            <div className="flex-none flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-sm text-gray-400">
+                <div
+                    className="flex items-center gap-1.5 rounded-lg border border-gray-800 bg-gray-900/60 pl-2 pr-1"
+                    title="Filter events by proximity to a location note"
                 >
-                    <option value="">Anywhere (Global)</option>
-                    {locationNotes.map(n => (
-                        <option key={n.id} value={n.id}>
-                            Near {n.title || 'Untitled Location'}
-                        </option>
-                    ))}
-                </select>
+                    <MapPinIcon className="w-4 h-4 text-blue-400"/>
+                    <select
+                        aria-label="Filter by location"
+                        className="bg-transparent py-1 text-sm text-gray-200 focus:outline-none max-w-[14rem]"
+                        value={locationFilterId}
+                        onChange={(e) => setLocationFilterId(e.target.value)}
+                    >
+                        <option value="">Anywhere (Global)</option>
+                        {locationNotes.map(n => (
+                            <option key={n.id} value={n.id}>
+                                Near {n.title || 'Untitled Location'}
+                            </option>
+                        ))}
+                    </select>
+                </div>
                 {locationFilterId && (
-                    <div className="flex items-center gap-2">
+                    <label className="flex items-center gap-1">
                         <input
                             type="number"
+                            aria-label="Radius in kilometres"
                             value={filterRadius}
                             onChange={(e) => setFilterRadius(Number(e.target.value))}
-                            className="w-16 bg-gray-900 border border-gray-700 rounded px-2 py-1 text-sm text-white focus:outline-none focus:border-blue-500"
+                            className="w-14 bg-transparent border-b border-gray-700 px-1 py-0.5 text-sm text-white focus:outline-none focus:border-blue-500"
                             min="1"
                         />
-                        <span className="text-xs text-gray-500">km radius</span>
-                    </div>
+                        <span className="text-xs text-gray-500">km</span>
+                    </label>
                 )}
-            </div>
 
-            {events.length === 0 ? (
-                <EmptyState
-                    variant="minimal"
-                    title="No dated notes yet"
-                    description="Add a start or deadline detail to a note to see it on the calendar."
-                    action={<Button variant="primary" onClick={() => setActiveView('inbox')}>Go to capture</Button>}
-                />
-            ) : (
-                <>
-                    <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm text-gray-400">
+                {events.length > 0 && (
+                    <>
+                        <span aria-hidden="true" className="text-gray-700">·</span>
                         <span>
                             {events.length} dated note{events.length === 1 ? '' : 's'}
                         </span>
-                        <span aria-hidden="true">·</span>
-                        <span className="truncate">
+                        <span className="min-w-0 truncate">
                             {nextEvent
                                 ? `Next: ${nextEvent.title} — ${format(nextEvent.start, 'MMM d, HH:mm')}`
                                 : latestEvent && `Latest: ${format(latestEvent.start, 'MMM d, yyyy')}`}
@@ -221,7 +214,19 @@ export function TimelineView() {
                         >
                             {nextEvent ? 'Jump to next' : 'Jump to latest'}
                         </Button>
-                    </div>
+                    </>
+                )}
+            </div>
+
+            {events.length === 0 ? (
+                <EmptyState
+                    variant="minimal"
+                    title="No dated notes yet"
+                    description="Add a start or deadline detail to a note to see it on the calendar."
+                    action={<Button variant="primary" onClick={() => setActiveView('inbox')}>Go to capture</Button>}
+                />
+            ) : (
+                <div className="flex-1 min-h-0 overflow-hidden">
                     <Calendar
                         localizer={localizer}
                         events={events}
@@ -235,7 +240,7 @@ export function TimelineView() {
                         onSelectEvent={handleSelectEvent}
                         views={['month', 'week', 'day', 'agenda']}
                     />
-                </>
+                </div>
             )}
         </div>
     );

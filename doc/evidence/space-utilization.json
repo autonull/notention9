@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T15:54:50.856Z",
+  "generatedAt": "2026-11-22T12:01:10.995Z",
   "cases": [
     {
       "id": "inbox-empty",
@@ -62,7 +62,7 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.844,
+        "contentRatio": 0.84,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
@@ -71,7 +71,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 14,
+        "density": 17.8,
         "actions": [
           {
             "label": "Create note",
@@ -91,7 +91,7 @@
           },
           {
             "label": "RequestLooking for a React developerWe a",
-            "top": 353
+            "top": 349
           }
         ],
         "facts": 0
@@ -108,36 +108,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.857,
-        "wastedSpace": 2,
-        "wastedRatio": 0.002,
+        "contentRatio": 0.897,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 821,
+        "contentHeight": 826,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 46.3,
+        "density": 41.2,
         "actions": [
           {
             "label": "Private",
-            "top": 92
-          },
-          {
-            "label": "Semi",
-            "top": 92
+            "top": 87
           },
           {
             "label": "Public",
-            "top": 92
+            "top": 87
           },
           {
-            "label": "Undo (Ctrl+Z)",
-            "top": 81
+            "label": "Structured details (5)",
+            "top": 80
           },
           {
-            "label": "Redo (Ctrl+Shift+Z)",
-            "top": 81
+            "label": "Publish",
+            "top": 76
+          },
+          {
+            "label": "More actions",
+            "top": 74
           }
         ],
         "facts": 5
@@ -154,36 +154,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.787,
-        "wastedSpace": 0,
-        "wastedRatio": 0,
+        "contentRatio": 0.883,
+        "wastedSpace": 5,
+        "wastedRatio": 0.006,
         "trailingSpace": 0,
-        "contentHeight": 804,
+        "contentHeight": 824,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 19.9,
+        "density": 18.2,
         "actions": [
           {
-            "label": "Capture a new note",
-            "top": 96
+            "label": "All20",
+            "top": 88
           },
           {
-            "label": "Move to trash",
-            "top": 221
+            "label": "Tasks1",
+            "top": 88
           },
           {
-            "label": "Move to trash",
-            "top": 221
+            "label": "Tags20",
+            "top": 88
           },
           {
-            "label": "Move to trash",
-            "top": 221
+            "label": "Trash",
+            "top": 88
           },
           {
-            "label": "Move to trash",
-            "top": 358
+            "label": "List",
+            "top": 86
           }
         ],
         "facts": 0
@@ -200,24 +200,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.929,
-        "wastedSpace": 0,
-        "wastedRatio": 0,
-        "trailingSpace": 0,
-        "contentHeight": 836,
+        "contentRatio": 0.189,
+        "wastedSpace": 5,
+        "wastedRatio": 0.006,
+        "trailingSpace": 625,
+        "contentHeight": 200,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 2.4,
+        "density": 35.1,
         "actions": [
           {
-            "label": "Restore",
-            "top": 199
+            "label": "All",
+            "top": 88
           },
           {
-            "label": "Delete forever",
-            "top": 199
+            "label": "Tasks",
+            "top": 88
+          },
+          {
+            "label": "Tags",
+            "top": 88
+          },
+          {
+            "label": "Trash1",
+            "top": 88
+          },
+          {
+            "label": "Capture a new note",
+            "top": 76
           }
         ],
         "facts": 0
@@ -234,36 +246,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.307,
-        "wastedSpace": 272,
-        "wastedRatio": 0.302,
-        "trailingSpace": 114,
-        "contentHeight": 697,
+        "contentRatio": 0.317,
+        "wastedSpace": 274,
+        "wastedRatio": 0.304,
+        "trailingSpace": 113,
+        "contentHeight": 711,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 63.1,
+        "density": 74.6,
         "actions": [
           {
-            "label": "Anywhere (Global)Near Looking for a Reac",
-            "top": 89
+            "label": "All20",
+            "top": 88
           },
           {
-            "label": "Jump to latest",
-            "top": 145
+            "label": "Tasks1",
+            "top": 88
           },
           {
-            "label": "Today",
-            "top": 205
+            "label": "Tags20",
+            "top": 88
           },
           {
-            "label": "Back",
-            "top": 205
+            "label": "Trash",
+            "top": 88
           },
           {
-            "label": "Next",
-            "top": 205
+            "label": "List",
+            "top": 86
           }
         ],
         "facts": 0
@@ -280,39 +292,39 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.663,
-        "wastedSpace": 63,
-        "wastedRatio": 0.069,
-        "trailingSpace": 41,
-        "contentHeight": 771,
+        "contentRatio": 0.883,
+        "wastedSpace": 5,
+        "wastedRatio": 0.006,
+        "trailingSpace": 0,
+        "contentHeight": 824,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 9.1,
+        "density": 38.8,
         "actions": [
           {
-            "label": "+ New Task",
+            "label": "All24",
             "top": 88
           },
           {
-            "label": "Print flyers for the meetuptype: task#ta",
-            "top": 189
+            "label": "Tasks5",
+            "top": 88
           },
           {
-            "label": "Collect tools for repair daytype: task#t",
-            "top": 310
+            "label": "Tags24",
+            "top": 88
           },
           {
-            "label": "Ask John about the shared gardentype: ta",
-            "top": 385
+            "label": "Trash",
+            "top": 88
           },
           {
-            "label": "Print flyers for the meetuptype: taskdea",
-            "top": 506
+            "label": "List",
+            "top": 86
           }
         ],
-        "facts": 0
+        "facts": 7
       }
     },
     {
@@ -326,11 +338,11 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.16,
-        "wastedSpace": 34,
-        "wastedRatio": 0.038,
-        "trailingSpace": 592,
-        "contentHeight": 229,
+        "contentRatio": 0.191,
+        "wastedSpace": 46,
+        "wastedRatio": 0.051,
+        "trailingSpace": 506,
+        "contentHeight": 293,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
@@ -339,11 +351,27 @@
           "height": 204,
           "footprint": 0.227
         },
-        "density": 4.4,
+        "density": 17.1,
         "actions": [
           {
+            "label": "Feed",
+            "top": 101
+          },
+          {
+            "label": "Matches",
+            "top": 101
+          },
+          {
+            "label": "Replies",
+            "top": 101
+          },
+          {
+            "label": "Chat",
+            "top": 101
+          },
+          {
             "label": "Find a match",
-            "top": 260
+            "top": 346
           }
         ],
         "facts": 0
@@ -360,36 +388,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.584,
-        "wastedSpace": 46,
-        "wastedRatio": 0.051,
-        "trailingSpace": 7,
-        "contentHeight": 773,
+        "contentRatio": 0.829,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
+        "trailingSpace": 0,
+        "contentHeight": 815,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 25.9,
+        "density": 39.3,
         "actions": [
           {
-            "label": "Add",
-            "top": 220
+            "label": "General",
+            "top": 181
           },
           {
-            "label": "Ontology Editor",
-            "top": 806
+            "label": "Appearance",
+            "top": 225
           },
           {
-            "label": "Rename community",
-            "top": 205
+            "label": "Labels",
+            "top": 269
           },
           {
-            "label": "Delete community",
-            "top": 205
+            "label": "Language & Region",
+            "top": 313
           },
           {
-            "label": "Rename event",
-            "top": 285
+            "label": "Keyboard Shortcuts",
+            "top": 357
           }
         ],
         "facts": 0
@@ -406,39 +434,39 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.739,
-        "wastedSpace": 45,
-        "wastedRatio": 0.05,
+        "contentRatio": 0.869,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 812,
+        "contentHeight": 815,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 28.3,
+        "density": 41.7,
         "actions": [
           {
-            "label": "Graph",
-            "top": 94
+            "label": "General",
+            "top": 181
           },
           {
-            "label": "Learning1",
-            "top": 94
+            "label": "Appearance",
+            "top": 225
           },
           {
-            "label": "Conflicts0",
-            "top": 94
+            "label": "Labels",
+            "top": 269
           },
           {
-            "label": "Update Ontology",
-            "top": 148
+            "label": "Language & Region",
+            "top": 313
           },
           {
-            "label": "Optimize",
-            "top": 148
+            "label": "Keyboard Shortcuts",
+            "top": 357
           }
         ],
-        "facts": 18
+        "facts": 14
       }
     },
     {
@@ -452,36 +480,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.959,
+        "contentRatio": 0.919,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 863,
+        "contentHeight": 827,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 5.8,
+        "density": 16.9,
         "actions": [
           {
-            "label": "Zoom in",
-            "top": 92
+            "label": "All20",
+            "top": 88
           },
           {
-            "label": "Zoom out",
-            "top": 122
+            "label": "Tasks1",
+            "top": 88
           },
           {
-            "label": "Leaflet",
-            "top": 868
+            "label": "Tags20",
+            "top": 88
           },
           {
-            "label": "OpenStreetMap",
-            "top": 868
+            "label": "Trash",
+            "top": 88
           },
           {
-            "label": "Drop a pin to capture a location",
-            "top": 836
+            "label": "List",
+            "top": 86
           }
         ],
         "facts": 0
@@ -498,36 +526,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.722,
+        "contentRatio": 0.845,
         "wastedSpace": 0,
         "wastedRatio": 0,
-        "trailingSpace": 82,
-        "contentHeight": 734,
+        "trailingSpace": 0,
+        "contentHeight": 815,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 20.4,
+        "density": 19.6,
         "actions": [
           {
-            "label": "Profile & Strategies",
+            "label": "General",
             "top": 181
           },
           {
-            "label": "Labels",
+            "label": "Appearance",
             "top": 225
           },
           {
-            "label": "Language & Region",
+            "label": "Labels",
             "top": 269
           },
           {
-            "label": "AI Assistant",
-            "top": 341
+            "label": "Language & Region",
+            "top": 313
           },
           {
-            "label": "Automation",
-            "top": 385
+            "label": "Keyboard Shortcuts",
+            "top": 357
           }
         ],
         "facts": 0
@@ -544,11 +572,11 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.299,
-        "wastedSpace": 107,
-        "wastedRatio": 0.119,
-        "trailingSpace": 371,
-        "contentHeight": 448,
+        "contentRatio": 0.388,
+        "wastedSpace": 143,
+        "wastedRatio": 0.159,
+        "trailingSpace": 197,
+        "contentHeight": 602,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
@@ -557,19 +585,27 @@
           "height": 216,
           "footprint": 0.24
         },
-        "density": 6.7,
+        "density": 10,
         "actions": [
           {
+            "label": "Feed",
+            "top": 101
+          },
+          {
+            "label": "Matches",
+            "top": 101
+          },
+          {
+            "label": "Replies",
+            "top": 101
+          },
+          {
+            "label": "Chat",
+            "top": 101
+          },
+          {
             "label": "Add identity",
-            "top": 83
-          },
-          {
-            "label": "Add Contact",
-            "top": 243
-          },
-          {
-            "label": "Go to Settings",
-            "top": 260
+            "top": 213
           }
         ],
         "facts": 0
@@ -586,36 +622,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.857,
-        "wastedSpace": 2,
-        "wastedRatio": 0.002,
+        "contentRatio": 0.897,
+        "wastedSpace": 0,
+        "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 821,
+        "contentHeight": 826,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 39,
+        "density": 30.3,
         "actions": [
           {
             "label": "Private",
-            "top": 92
-          },
-          {
-            "label": "Semi",
-            "top": 92
+            "top": 87
           },
           {
             "label": "Public",
-            "top": 92
+            "top": 87
           },
           {
-            "label": "Undo (Ctrl+Z)",
-            "top": 81
+            "label": "Structured details (2)",
+            "top": 80
           },
           {
-            "label": "Redo (Ctrl+Shift+Z)",
-            "top": 81
+            "label": "Publish",
+            "top": 76
+          },
+          {
+            "label": "More actions",
+            "top": 74
           }
         ],
         "facts": 2
@@ -632,11 +668,11 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.406,
-        "wastedSpace": 177,
-        "wastedRatio": 0.197,
-        "trailingSpace": 140,
-        "contentHeight": 655,
+        "contentRatio": 0.374,
+        "wastedSpace": 215,
+        "wastedRatio": 0.239,
+        "trailingSpace": 98,
+        "contentHeight": 702,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
@@ -645,27 +681,27 @@
           "height": 320,
           "footprint": 0.356
         },
-        "density": 27.5,
+        "density": 24.2,
         "actions": [
           {
+            "label": "Feed",
+            "top": 101
+          },
+          {
+            "label": "Matches",
+            "top": 101
+          },
+          {
+            "label": "Replies",
+            "top": 101
+          },
+          {
+            "label": "Chat",
+            "top": 101
+          },
+          {
             "label": "Add identity",
-            "top": 105
-          },
-          {
-            "label": "Check Connection Settings",
-            "top": 105
-          },
-          {
-            "label": "Retry All",
-            "top": 227
-          },
-          {
-            "label": "All",
-            "top": 397
-          },
-          {
-            "label": "Entity",
-            "top": 397
+            "top": 191
           }
         ],
         "facts": 0
@@ -732,7 +768,7 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.864,
+        "contentRatio": 0.859,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
@@ -741,7 +777,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 12,
+        "density": 13.4,
         "actions": [
           {
             "label": "Create note",
@@ -761,7 +797,7 @@
           },
           {
             "label": "RequestLooking for a React developerWe a",
-            "top": 325
+            "top": 321
           }
         ],
         "facts": 0
@@ -778,36 +814,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.904,
-        "wastedSpace": 5,
-        "wastedRatio": 0.006,
+        "contentRatio": 0.936,
+        "wastedSpace": 8,
+        "wastedRatio": 0.009,
         "trailingSpace": 0,
-        "contentHeight": 825,
+        "contentHeight": 832,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 47.3,
+        "density": 43.3,
         "actions": [
           {
             "label": "Back to List",
-            "top": 76
+            "top": 74
           },
           {
             "label": "Private",
-            "top": 90
-          },
-          {
-            "label": "Semi",
-            "top": 90
+            "top": 188
           },
           {
             "label": "Public",
-            "top": 90
+            "top": 188
           },
           {
-            "label": "Undo (Ctrl+Z)",
-            "top": 78
+            "label": "Structured details (5)",
+            "top": 180
+          },
+          {
+            "label": "Publish",
+            "top": 176
           }
         ],
         "facts": 5
@@ -833,7 +869,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 24.7,
+        "density": 15.6,
         "actions": [
           {
             "label": "Search notes",
@@ -841,19 +877,19 @@
           },
           {
             "label": "All",
-            "top": 145
+            "top": 134
           },
           {
             "label": "Tasks",
-            "top": 145
+            "top": 134
           },
           {
             "label": "Journal",
-            "top": 145
+            "top": 134
           },
           {
             "label": "Ideas",
-            "top": 145
+            "top": 134
           }
         ],
         "facts": 0
@@ -870,24 +906,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.829,
-        "wastedSpace": 0,
-        "wastedRatio": 0,
-        "trailingSpace": 80,
-        "contentHeight": 700,
+        "contentRatio": 0.17,
+        "wastedSpace": 5,
+        "wastedRatio": 0.006,
+        "trailingSpace": 596,
+        "contentHeight": 173,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 2.9,
+        "density": 29,
         "actions": [
           {
-            "label": "Restore",
-            "top": 239
+            "label": "All",
+            "top": 88
           },
           {
-            "label": "Delete forever",
-            "top": 239
+            "label": "Tasks",
+            "top": 88
+          },
+          {
+            "label": "Tags",
+            "top": 88
+          },
+          {
+            "label": "Trash1",
+            "top": 88
+          },
+          {
+            "label": "Capture a new note",
+            "top": 76
           }
         ],
         "facts": 0
@@ -904,36 +952,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.421,
-        "wastedSpace": 67,
-        "wastedRatio": 0.079,
-        "trailingSpace": 142,
-        "contentHeight": 577,
+        "contentRatio": 0.488,
+        "wastedSpace": 51,
+        "wastedRatio": 0.06,
+        "trailingSpace": 135,
+        "contentHeight": 632,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 76.2,
+        "density": 83.8,
         "actions": [
           {
-            "label": "Anywhere (Global)Near Looking for a Reac",
-            "top": 125
+            "label": "All20",
+            "top": 79
           },
           {
-            "label": "Jump to latest",
-            "top": 209
+            "label": "Tasks1",
+            "top": 79
           },
           {
-            "label": "Today",
-            "top": 269
+            "label": "Tags20",
+            "top": 79
           },
           {
-            "label": "Back",
-            "top": 269
+            "label": "Trash",
+            "top": 79
           },
           {
-            "label": "Next",
-            "top": 269
+            "label": "List",
+            "top": 124
           }
         ],
         "facts": 0
@@ -950,39 +998,39 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.626,
-        "wastedSpace": 0,
-        "wastedRatio": 0,
-        "trailingSpace": 136,
-        "contentHeight": 629,
+        "contentRatio": 0.863,
+        "wastedSpace": 5,
+        "wastedRatio": 0.006,
+        "trailingSpace": 0,
+        "contentHeight": 767,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 9.5,
+        "density": 20.9,
         "actions": [
           {
-            "label": "+ New Task",
-            "top": 80
+            "label": "All24",
+            "top": 79
           },
           {
-            "label": "Print flyers for the meetuptype: task#ta",
-            "top": 173
+            "label": "Tasks5",
+            "top": 79
           },
           {
-            "label": "Collect tools for repair daytype: task#t",
-            "top": 294
+            "label": "Tags24",
+            "top": 79
           },
           {
-            "label": "Ask John about the shared gardentype: ta",
-            "top": 369
+            "label": "Trash",
+            "top": 79
           },
           {
-            "label": "Print flyers for the meetuptype: taskdea",
-            "top": 490
+            "label": "List",
+            "top": 124
           }
         ],
-        "facts": 0
+        "facts": 7
       }
     },
     {
@@ -996,11 +1044,11 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.171,
-        "wastedSpace": 34,
-        "wastedRatio": 0.04,
-        "trailingSpace": 536,
-        "contentHeight": 229,
+        "contentRatio": 0.204,
+        "wastedSpace": 46,
+        "wastedRatio": 0.055,
+        "trailingSpace": 466,
+        "contentHeight": 293,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
@@ -1009,11 +1057,27 @@
           "height": 204,
           "footprint": 0.242
         },
-        "density": 4.4,
+        "density": 17.1,
         "actions": [
           {
+            "label": "Feed",
+            "top": 85
+          },
+          {
+            "label": "Matches",
+            "top": 85
+          },
+          {
+            "label": "Replies",
+            "top": 85
+          },
+          {
+            "label": "Chat",
+            "top": 85
+          },
+          {
             "label": "Find a match",
-            "top": 260
+            "top": 330
           }
         ],
         "facts": 0
@@ -1030,36 +1094,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.552,
-        "wastedSpace": 53,
-        "wastedRatio": 0.063,
+        "contentRatio": 0.572,
+        "wastedSpace": 57,
+        "wastedRatio": 0.068,
         "trailingSpace": 0,
-        "contentHeight": 748,
+        "contentHeight": 765,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 18.7,
+        "density": 14.4,
         "actions": [
           {
+            "label": "GeneralAppearanceLabelsLanguage & Region",
+            "top": 168
+          },
+          {
             "label": "Add",
-            "top": 216
+            "top": 359
           },
           {
             "label": "Ontology Editor",
-            "top": 406
+            "top": 549
           },
           {
             "label": "Rename community",
-            "top": 469
+            "top": 612
           },
           {
             "label": "Delete community",
-            "top": 469
-          },
-          {
-            "label": "Rename event",
-            "top": 541
+            "top": 612
           }
         ],
         "facts": 0
@@ -1076,39 +1140,39 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.722,
-        "wastedSpace": 45,
-        "wastedRatio": 0.053,
-        "trailingSpace": 8,
-        "contentHeight": 756,
+        "contentRatio": 0.675,
+        "wastedSpace": 49,
+        "wastedRatio": 0.058,
+        "trailingSpace": 0,
+        "contentHeight": 765,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 25.1,
+        "density": 19.6,
         "actions": [
           {
+            "label": "GeneralAppearanceLabelsLanguage & Region",
+            "top": 168
+          },
+          {
             "label": "Graph",
-            "top": 165
+            "top": 324
           },
           {
             "label": "Learning1",
-            "top": 165
+            "top": 324
           },
           {
             "label": "Conflicts0",
-            "top": 165
+            "top": 324
           },
           {
             "label": "Update Ontology",
-            "top": 218
-          },
-          {
-            "label": "Optimize",
-            "top": 218
+            "top": 377
           }
         ],
-        "facts": 14
+        "facts": 9
       }
     },
     {
@@ -1122,36 +1186,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 1,
+        "contentRatio": 0.91,
         "wastedSpace": 0,
         "wastedRatio": 0,
-        "trailingSpace": 0,
-        "contentHeight": 844,
+        "trailingSpace": 52,
+        "contentHeight": 768,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 5.9,
+        "density": 18.2,
         "actions": [
           {
-            "label": "Zoom in",
-            "top": 92
+            "label": "All20",
+            "top": 79
           },
           {
-            "label": "Zoom out",
-            "top": 122
+            "label": "Tasks1",
+            "top": 79
           },
           {
-            "label": "Leaflet",
-            "top": 732
+            "label": "Tags20",
+            "top": 79
           },
           {
-            "label": "OpenStreetMap",
-            "top": 732
+            "label": "Trash",
+            "top": 79
           },
           {
-            "label": "Drop a pin to capture a location",
-            "top": 700
+            "label": "List",
+            "top": 124
           }
         ],
         "facts": 0
@@ -1168,32 +1232,24 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.586,
-        "wastedSpace": 78,
-        "wastedRatio": 0.092,
-        "trailingSpace": 26,
-        "contentHeight": 739,
+        "contentRatio": 0.608,
+        "wastedSpace": 23,
+        "wastedRatio": 0.027,
+        "trailingSpace": 0,
+        "contentHeight": 765,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 5.4,
+        "density": 2.6,
         "actions": [
           {
-            "label": "Profile & StrategiesLabelsLanguage & Reg",
+            "label": "GeneralAppearanceLabelsLanguage & Region",
             "top": 168
           },
           {
-            "label": "Google Gemini (Remote API)Llama 3.2 (Loc",
-            "top": 368
-          },
-          {
-            "label": "Save",
-            "top": 452
-          },
-          {
-            "label": "Enable AI Features",
-            "top": 646
+            "label": "Default — Balanced experience for all us",
+            "top": 408
           }
         ],
         "facts": 0
@@ -1210,32 +1266,40 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.487,
-        "wastedSpace": 102,
-        "wastedRatio": 0.121,
-        "trailingSpace": 155,
-        "contentHeight": 572,
+        "contentRatio": 0.544,
+        "wastedSpace": 172,
+        "wastedRatio": 0.204,
+        "trailingSpace": 37,
+        "contentHeight": 722,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": {
           "element": "flex flex-col items-center justify-center py-6 px-4 text-cen",
-          "height": 260,
-          "footprint": 0.308
+          "height": 280,
+          "footprint": 0.332
         },
-        "density": 5.2,
+        "density": 8.3,
         "actions": [
           {
+            "label": "Feed",
+            "top": 85
+          },
+          {
+            "label": "Matches",
+            "top": 85
+          },
+          {
+            "label": "Replies",
+            "top": 85
+          },
+          {
+            "label": "Chat",
+            "top": 85
+          },
+          {
             "label": "Add identity",
-            "top": 201
-          },
-          {
-            "label": "Add Contact",
-            "top": 359
-          },
-          {
-            "label": "Go to Settings",
-            "top": 368
+            "top": 271
           }
         ],
         "facts": 0
@@ -1252,36 +1316,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.817,
-        "wastedSpace": 6,
-        "wastedRatio": 0.007,
+        "contentRatio": 0.841,
+        "wastedSpace": 8,
+        "wastedRatio": 0.009,
         "trailingSpace": 80,
-        "contentHeight": 745,
+        "contentHeight": 752,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 44.3,
+        "density": 34.6,
         "actions": [
           {
             "label": "Back to List",
-            "top": 76
+            "top": 74
           },
           {
             "label": "Private",
-            "top": 90
-          },
-          {
-            "label": "Semi",
-            "top": 90
+            "top": 188
           },
           {
             "label": "Public",
-            "top": 90
+            "top": 188
           },
           {
-            "label": "Undo (Ctrl+Z)",
-            "top": 78
+            "label": "Structured details (2)",
+            "top": 180
+          },
+          {
+            "label": "Publish",
+            "top": 176
           }
         ],
         "facts": 2
@@ -1298,11 +1362,11 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.611,
-        "wastedSpace": 25,
-        "wastedRatio": 0.03,
-        "trailingSpace": 0,
-        "contentHeight": 711,
+        "contentRatio": 0.496,
+        "wastedSpace": 91,
+        "wastedRatio": 0.108,
+        "trailingSpace": 87,
+        "contentHeight": 672,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
@@ -1314,24 +1378,24 @@
         "density": 25.3,
         "actions": [
           {
+            "label": "Feed",
+            "top": 85
+          },
+          {
+            "label": "Matches",
+            "top": 85
+          },
+          {
+            "label": "Replies",
+            "top": 85
+          },
+          {
+            "label": "Chat",
+            "top": 85
+          },
+          {
             "label": "Add identity",
-            "top": 181
-          },
-          {
-            "label": "Check Connection Settings",
-            "top": 237
-          },
-          {
-            "label": "Retry All",
-            "top": 335
-          },
-          {
-            "label": "All",
-            "top": 535
-          },
-          {
-            "label": "Entity",
-            "top": 535
+            "top": 251
           }
         ],
         "facts": 0

@@ -126,10 +126,9 @@ export function MatchItem({
                 {isLocal ? (
                     <Button
                         size="xs"
-                        variant="success"
+                        variant="secondary"
                         onClick={(e) => { e.stopPropagation(); onRespond?.(); }}
                         icon={ArrowRightIcon}
-                        className="flex-1"
                         data-testid="match-respond-button"
                     >
                         Respond
@@ -140,7 +139,6 @@ export function MatchItem({
                         variant="secondary"
                         onClick={(e) => { e.stopPropagation(); onChat?.(); }}
                         icon={ChatIcon}
-                        className="flex-1"
                     >
                         Chat
                     </Button>
@@ -150,7 +148,6 @@ export function MatchItem({
                         variant="primary"
                         onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
                         icon={UserPlusIcon}
-                        className="flex-1"
                     >
                         Connect
                     </Button>

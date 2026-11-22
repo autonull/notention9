@@ -1,7 +1,7 @@
 import React, {useMemo, useState} from 'react';
 import type {Note, OntologyNode, Property} from '@notention/core';
 import {parseGeoFromValues} from '@notention/core';
-import {ClockIcon, MapPinIcon, GlobeIcon, SparklesIcon, SearchIcon, LinkIcon, PlusIcon, TrashIcon, EditIcon} from '../ui/icons';
+import {ClockIcon, MapPinIcon, GlobeIcon, PlusIcon, XIcon} from '../ui/icons';
 import {RelatedNotesPanel} from '../assistant/RelatedNotesPanel';
 import {useRelatedNotes} from '../../hooks/useRelatedNotes';
 import {useNotes} from '../../hooks/useNotes';
@@ -23,8 +23,6 @@ interface InspectorPanelProps {
     onPickLocation: () => void;
     onPickTime: (key: string) => void;
     ontology: OntologyNode[];
-    isSidebarOpen?: boolean;
-    onToggleSidebar?: () => void;
     className?: string;
 }
 
@@ -48,8 +46,6 @@ export function InspectorPanel({
     onPickLocation,
     onPickTime,
     ontology,
-    isSidebarOpen = false,
-    onToggleSidebar,
     className = '',
 }: InspectorPanelProps) {
     const { notes: allNotes } = useNotes();
@@ -167,27 +163,6 @@ export function InspectorPanel({
                 </div>
             )}
 
-            {onToggleSidebar && (
-                <div className="px-4 py-2 border-b border-gray-700/30">
-                    <button
-                        onClick={onToggleSidebar}
-                        className="w-full flex items-center justify-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
-                    >
-                        {isSidebarOpen ? (
-                            <>
-                                <SearchIcon className="w-4 h-4" />
-                                Hide sidebar
-                            </>
-                        ) : (
-                            <>
-                                <SparklesIcon className="w-4 h-4" />
-                                Show sidebar
-                            </>
-                        )}
-                    </button>
-                </div>
-            )}
-
             <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
                 <div className="flex-1 overflow-y-auto p-4 space-y-4">
                     {/* Properties section */}
@@ -302,6 +277,17 @@ export function InspectorSidebar({
 
     return (
         <div className={sidebarClass}>
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-800 flex-shrink-0">
+                <h2 className="text-sm font-semibold text-gray-200">Details</h2>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    aria-label="Close details"
+                    className="p-1.5 rounded-md text-gray-500 hover:text-white hover:bg-gray-800"
+                >
+                    <XIcon className="w-4 h-4"/>
+                </button>
+            </div>
             <InspectorPanel
                 note={note}
                 onNoteUpdate={onNoteUpdate}
@@ -310,8 +296,6 @@ export function InspectorSidebar({
                 onPickLocation={onPickLocation}
                 onPickTime={onPickTime}
                 ontology={ontology}
-                isSidebarOpen={isOpen}
-                onToggleSidebar={onClose}
             />
         </div>
     );

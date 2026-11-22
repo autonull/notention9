@@ -1,12 +1,27 @@
 import { useMemo } from 'react';
 import type { Note } from '@notention/core';
 import { getTextFromHtml } from '../../utils/html';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
+
+const formatCompactRelativeTime = (date: Date): string =>
+    formatDistanceToNowStrict(date, { addSuffix: true })
+        .replace(' minutes', 'm')
+        .replace(' minute', 'm')
+        .replace(' hours', 'h')
+        .replace(' hour', 'h')
+        .replace(' days', 'd')
+        .replace(' day', 'd')
+        .replace(' months', 'mo')
+        .replace(' month', 'mo')
+        .replace(' years', 'y')
+        .replace(' year', 'y')
+        .replace(' seconds', 's')
+        .replace(' second', 's');
 
 export interface NoteDisplayState {
     contentPreview: string;
     relativeTime: string;
-    displayProperties: Array<{ key: string }>;
+    displayProperties: Array<{ key: string; operator: string; values: string[] }>;
     isPublic: boolean;
     isImported: boolean;
     isPinned: boolean;
@@ -27,14 +42,18 @@ export function useNoteDisplay(note: Note): NoteDisplayState {
 
     const relativeTime = useMemo(() => {
         try {
-            return formatDistanceToNow(new Date(note.updatedAt), { addSuffix: true });
+            return formatCompactRelativeTime(new Date(note.updatedAt));
         } catch {
             return '';
         }
     }, [note.updatedAt]);
 
     const displayProperties = useMemo(() => {
-        return note.properties.slice(0, 2);
+        const preference = ['intent', 'type', 'status'];
+        const preferred = preference
+            .map(key => note.properties.find(property => property.key === key))
+            .find(Boolean);
+        return preferred ? [preferred] : note.properties.slice(0, 1);
     }, [note.properties]);
 
     const isPublic = note.privacy === 'public';
@@ -105,6 +124,20 @@ export function useHighlightedPreview(preview: string, searchTerm: string): Reac
 }
 
 /**
+ * Human-readable label for a property chip in a list row.
+ * `intent = request` reads as `request`; `rate = 25` reads as `rate 25`.
+ */
+export function formatPropertyChip(property: {key: string; values: string[]}): string {
+    const primaryValue = (property.values[0] ?? '').trim();
+    const value = primaryValue.includes('/')
+        ? primaryValue.split('/').pop()!.replace(/[-_]/g, ' ')
+        : primaryValue;
+    const compactKeys = new Set(['intent', 'type', 'status']);
+    if (!value) return property.key;
+    return compactKeys.has(property.key) ? value : `${property.key} ${value}`;
+}
+
+/**
  * Returns the CSS classes for a note item based on its state and selection.
  */
 export function getNoteItemClasses(
@@ -143,10 +176,10 @@ export function getNoteItemClasses(
  */
 export function getPropertyBadgeClasses(isSelected: boolean): string {
     return `
-        text-[9px] uppercase tracking-wider font-bold transition-colors px-1.5 py-0.5 rounded border
+        inline-block max-w-[150px] truncate align-bottom text-[10px] tracking-normal font-medium whitespace-nowrap transition-colors px-1.5 py-0.5 rounded border
         ${isSelected
-            ? 'text-blue-400/60 border-blue-800/50 bg-blue-900/20'
-            : 'text-gray-700 group-hover:text-gray-600 border-gray-700 bg-gray-800/50'
+            ? 'text-blue-200/70 border-blue-800/50 bg-blue-900/20'
+            : 'text-gray-400 border-gray-700/60 bg-gray-800/40 group-hover:text-gray-300'
         }
     `.trim();
 }
@@ -156,7 +189,7 @@ export function getPropertyBadgeClasses(isSelected: boolean): string {
  */
 export function getRelativeTimeClasses(isSelected: boolean): string {
     return `
-        text-[10px] whitespace-nowrap transition-colors
-        ${isSelected ? 'text-blue-300/40' : 'text-gray-600 group-hover:text-gray-500'}
+        text-[11px] whitespace-nowrap transition-colors
+        ${isSelected ? 'text-blue-300/60' : 'text-gray-500 group-hover:text-gray-400'}
     `.trim();
 }

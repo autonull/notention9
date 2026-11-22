@@ -34,6 +34,8 @@ export function SidebarHeader({
         setShowPinnedOnly
     } = useSidebar();
 
+    const showBrowserControls = sortedNotes.length > 0 || searchTerm.length > 0;
+
     const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
         if (e.key === 'Escape') {
             searchInputRef.current?.blur();
@@ -71,18 +73,15 @@ export function SidebarHeader({
                 )}
             </div>
 
-            {showFullContent && (
+            {showFullContent && showBrowserControls && (
                 <>
-                    <div className="flex items-center gap-2 overflow-hidden" role="group" aria-label="View and filter options">
+                    <div className="flex items-center gap-2 overflow-hidden" role="group" aria-label="Quick filters">
                         <div className="flex-grow min-w-0">
                             <FilterBar searchTerm={searchTerm} onSetSearch={setSearchTerm} notes={sortedNotes}/>
                         </div>
-                        <div className="flex items-center gap-1 border-l border-gray-700/50 pl-2">
-                            <ViewSelector viewMode={sidebarViewMode} onViewChange={setSidebarViewMode}/>
-                        </div>
                     </div>
 
-                    <div className="flex items-center gap-2 px-1" role="group" aria-label="Sort and filter options">
+                    <div className="flex items-center gap-2 px-1" role="group" aria-label="Sort, filter, and view options">
                         <SortSelector sortOrder={sortOrder} onSortChange={setSortOrder}/>
                         {sortedNotes.some(n => n.pinned) && (
                             <label className="flex items-center gap-2 text-sm text-gray-400 hover:text-gray-200 cursor-pointer touch-target-48">
@@ -93,10 +92,12 @@ export function SidebarHeader({
                                     className="w-4 h-4 accent-blue-500 rounded border-gray-700 bg-gray-800 focus:ring-2 focus:ring-blue-500"
                                     aria-label="Show pinned only"
                                 />
-                                <span className="hidden sm:inline">Pinned only</span>
-                                <span className="sm:hidden" aria-hidden="true">📌</span>
+                                <span>Pinned</span>
                             </label>
                         )}
+                        <div className="ml-auto flex items-center gap-1">
+                            <ViewSelector viewMode={sidebarViewMode} onViewChange={setSidebarViewMode}/>
+                        </div>
                     </div>
                 </>
             )}

@@ -6,10 +6,9 @@ import {useToast} from '../../hooks/useToast';
 import {useNotes} from '../../hooks/useNotes';
 import {useEditorActions} from '../../hooks/useEditorActions';
 import {useEditorShortcuts} from '../../hooks/useEditorShortcuts';
-import {useNoteSuggestions} from '../../hooks/useNoteSuggestions';
-import {SimpleMatch} from '../../hooks/useNextSteps';
+import {useNextSteps} from '../../hooks/useNextSteps';
 
-import type {Note, OntologyNode, ScoredMatch, NoteSuggestion} from '@notention/core';
+import type {Note, OntologyNode, ScoredMatch} from '@notention/core';
 import {propertyToHtml} from '@notention/core';
 import {EditorHeader} from './EditorHeader';
 import {TiptapEditorRef} from './TiptapEditor';
@@ -19,6 +18,7 @@ import {EditorModals} from './EditorModals';
 import {PublishErrorBanner} from './PublishErrorBanner';
 import {MobileBackdrop} from './MobileBackdrop';
 import {NextStepStrip, NextStepsDrawer} from '../next-steps';
+import {SkillApprovalDialog} from '../skills/SkillApprovalDialog';
 
 interface EditorManagerProps {
     note: Note;
@@ -60,24 +60,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         undo,
         redo
     } = useEditorLogic({note, onSave});
-
-    const { applySuggestion, dismissSuggestion, undoApply, undoDismiss } = useNoteSuggestions({ note: dirtyNote });
-
-    const handleSuggestionApplied = useCallback((suggestionId: string) => {
-        applySuggestion(suggestionId);
-    }, [applySuggestion]);
-
-    const handleSuggestionDismissed = useCallback((suggestionId: string) => {
-        dismissSuggestion(suggestionId);
-    }, [dismissSuggestion]);
-
-    const handleSuggestionUndoApply = useCallback((suggestionId: string) => {
-        undoApply(suggestionId);
-    }, [undoApply]);
-
-    const handleSuggestionUndoDismiss = useCallback((suggestionId: string) => {
-        undoDismiss(suggestionId);
-    }, [undoDismiss]);
 
     const {
         isInspectorOpen, setIsInspectorOpen,
@@ -181,10 +163,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     // Next Steps drawer state
     const [isNextStepsDrawerOpen, setIsNextStepsDrawerOpen] = useState(false);
 
-    // Get matches for the drawer (empty for now - will be populated by match system)
-    const localMatches: SimpleMatch[] = [];
-    const networkMatches: SimpleMatch[] = [];
-
     const handleOpenNextStepsDrawer = useCallback(() => {
         setIsNextStepsDrawerOpen(true);
     }, []);
@@ -193,16 +171,9 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         setIsNextStepsDrawerOpen(false);
     }, []);
 
-    const handleNavigateToMatch = useCallback((noteId: string) => {
-        setSelectedNoteId(noteId);
-        setIsNextStepsDrawerOpen(false);
-    }, [setSelectedNoteId]);
-
     // Next Steps apply path handlers
     const handleOpenPropertyEditor = useCallback((key: string, operator: string, value: string, placeholder?: string) => {
-        editorRef.current?.openPropertyModal(key);
-        // Pre-fill the property editor with the suggested values
-        // The openPropertyModal will use initialModalData to pre-fill
+        editorRef.current?.openPropertyModal(key, {operator, value});
     }, []);
 
     const handleApplyPropertyChange = useCallback((key: string, operator: string, value: string, previousProperty?: any) => {
@@ -230,6 +201,15 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
         // This will be implemented when we have the skill executor integrated
         return { success: false, error: 'Skill execution not yet implemented' };
     }, []);
+
+    const nextStepsModel = useNextSteps({
+        note: dirtyNote,
+        onOpenPropertyEditor: handleOpenPropertyEditor,
+        onUpdateProperty: handleApplyPropertyChange,
+        onRemoveProperty: handleRemoveProperty,
+        onNavigateToNote: handleNavigateToNote,
+        onExecuteSkill: handleExecuteSkill,
+    });
 
     return (
         <div className="flex flex-col h-full relative">
@@ -259,39 +239,41 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 canRedo={canRedo}
                 onUndo={handleUndo}
                 onRedo={handleRedo}
+                isInspectorOpen={isInspectorOpen}
+                onToggleInspector={() => setIsInspectorOpen(!isInspectorOpen)}
+                propertyCount={dirtyNote.properties.length}
             />
             {publishError && (
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />
             )}
 
-            <NextStepStrip
-                note={dirtyNote}
-                localMatches={localMatches}
-                networkMatches={networkMatches}
-                onStepApplied={handleSuggestionApplied}
-                onStepDismissed={handleSuggestionDismissed}
-                onOpenDrawer={handleOpenNextStepsDrawer}
-                onOpenPropertyEditor={handleOpenPropertyEditor}
-                onUpdateProperty={handleApplyPropertyChange}
-                onRemoveProperty={handleRemoveProperty}
-                onNavigateToNote={handleNavigateToNote}
-                onExecuteSkill={handleExecuteSkill}
-            />
+            {!isNextStepsDrawerOpen && (
+                <NextStepStrip
+                    note={dirtyNote}
+                    model={nextStepsModel}
+                    onOpenDrawer={handleOpenNextStepsDrawer}
+                />
+            )}
             <NextStepsDrawer
                 isOpen={isNextStepsDrawerOpen}
                 onClose={handleCloseNextStepsDrawer}
-                note={dirtyNote}
-                localMatches={localMatches}
-                networkMatches={networkMatches}
-                onStepApplied={handleSuggestionApplied}
-                onStepDismissed={handleSuggestionDismissed}
-                onNavigateToMatch={handleNavigateToMatch}
-                onOpenPropertyEditor={handleOpenPropertyEditor}
-                onUpdateProperty={handleApplyPropertyChange}
-                onRemoveProperty={handleRemoveProperty}
-                onNavigateToNote={handleNavigateToNote}
-                onExecuteSkill={handleExecuteSkill}
+                model={nextStepsModel}
             />
+            {nextStepsModel.skillApproval.isOpen && nextStepsModel.skillApproval.step && (
+                <SkillApprovalDialog
+                    isOpen={nextStepsModel.skillApproval.isOpen}
+                    onClose={nextStepsModel.closeSkillApproval}
+                    onApprove={nextStepsModel.skillApproval.onApprove}
+                    onReject={nextStepsModel.skillApproval.onReject}
+                    skillName={nextStepsModel.skillApproval.step.skillName || ''}
+                    skillDescription={nextStepsModel.skillApproval.step.skillDescription || ''}
+                    actions={nextStepsModel.skillApproval.step.skillActions || []}
+                    domains={nextStepsModel.skillApproval.step.skillDomains || []}
+                    requiresAuth={nextStepsModel.skillApproval.step.skillRequiresAuth || false}
+                    expectedOutcome={nextStepsModel.skillApproval.step.skillExpectedOutcome}
+                    preview={nextStepsModel.skillApproval.step.skillPreview}
+                />
+            )}
 
             <div className="flex flex-1 overflow-hidden relative">
                 <EditorContent

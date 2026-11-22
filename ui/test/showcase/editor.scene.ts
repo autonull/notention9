@@ -32,11 +32,12 @@ test('editor add detail', async ({page}) => {
 
 test('editor property inspector', async ({page}) => {
     await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#notes/scene-editor-note'});
+    await page.getByRole('button', {name: /Structured details/}).click();
     await page.getByText(/\d+ Properties/).waitFor({timeout: 15_000});
     await snap(page, {
         area: 'editor',
         state: 'property-inspector',
-        description: 'Inspector with typed widgets, ontology hints, and validation.',
+        description: 'The details drawer with typed widgets, ontology hints, and validation.',
     });
 });
 

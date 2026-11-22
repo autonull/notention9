@@ -1,6 +1,7 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {cn} from '../../utils/ui';
 
+import {useView} from '../../hooks/useViewContext';
 import {useSettingsView} from '../../hooks/useSettingsView';
 import {useDirection} from '../../hooks/useI18n';
 import {AITab} from '../settings/AITab';
@@ -20,6 +21,7 @@ import {SyncTab} from '../settings/SyncTab';
 import {RelayDiscoverySection} from '../settings/RelayDiscoverySection';
 import {AppearanceTab} from '../settings/AppearanceTab';
 import {OntologyView} from './OntologyView';
+import {SkillManagementView} from '../skills';
 import {SparklesIcon, BoltIcon, TagIcon, GlobeIcon, KeyIcon, CubeIcon, ChartBarIcon, UserGroupIcon, ClockIcon, ShieldIcon, InboxIcon, NetworkIcon, PaletteIcon, CogIcon, BookOpenIcon} from '../../components/ui/icons';
 
 interface SettingsGroup {
@@ -40,9 +42,17 @@ export function SettingsView() {
     } = useSettingsView();
     const direction = useDirection();
     const isRTL = direction === 'rtl';
+    const {activeView, setActiveView} = useView();
+    const deepLinkTab = activeView === 'labels' || activeView === 'ontology' || activeView === 'skills'
+        ? activeView
+        : null;
 
-    const [activeTab, setActiveTab] = useState('general');
+    const [activeTab, setActiveTab] = useState(deepLinkTab ?? 'general');
     const tabRefs = useRef(new Map<string, HTMLButtonElement>());
+
+    useEffect(() => {
+        if (deepLinkTab) setActiveTab(deepLinkTab);
+    }, [deepLinkTab]);
 
     const groups: SettingsGroup[] = [
         {
@@ -142,7 +152,7 @@ export function SettingsView() {
             case 'relayDiscovery':
                 return <RelayDiscoverySection settings={settings} setSettings={setSettings}/>;
             case 'skills':
-                return <div className="p-4"><h3 className="text-lg font-medium mb-4">Skills</h3><p className="text-gray-400">Skills management coming soon.</p></div>;
+                return <SkillManagementView/>;
             case 'ontology':
                 return <OntologyView/>;
             default:
@@ -155,6 +165,7 @@ export function SettingsView() {
 
     const selectTab = (id: string) => {
         setActiveTab(id);
+        setActiveView(id === 'labels' || id === 'ontology' || id === 'skills' ? id : 'settings');
         tabRefs.current.get(id)?.focus();
     };
 
@@ -217,7 +228,7 @@ export function SettingsView() {
                                             aria-selected={activeTab === tab.id}
                                             aria-controls={`settings-panel-${tab.id}`}
                                             tabIndex={activeTab === tab.id ? 0 : -1}
-                                            onClick={() => setActiveTab(tab.id)}
+                                            onClick={() => selectTab(tab.id)}
                                             className={cn(
                                                 'w-full px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 flex items-center gap-3',
                                                 isRTL ? 'text-right' : 'text-left',

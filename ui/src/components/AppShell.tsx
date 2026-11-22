@@ -23,6 +23,7 @@ import {DegradedModeBanner} from './layout/DegradedModeBanner';
 import {useToast} from '../hooks/useToast';
 import {useIsMobile} from '../hooks/useMediaQuery';
 import {useSidebarState} from '../hooks/useSidebarState';
+import {usesNoteSidebar} from '../utils/navigation';
 import {cn} from '../utils/ui';
 import {PendingConfirmationsProvider} from '../hooks/usePendingConfirmations';
 import {PendingConfirmationsModal} from './ui/PendingConfirmationsModal';
@@ -285,9 +286,10 @@ export function AppShell() {
     });
 
     const isMobileNoteList = isMobile && activeView === 'notes' && !selectedNoteId;
-    const effectiveSidebarOpen = isMobile ? isMobileNoteList : isSidebarOpen;
-    // On mobile the sidebar is the notes list, not permanent chrome; every other view paints first.
-    const hideSidebar = isMobile && !effectiveSidebarOpen;
+    const noteSidebarAvailable = usesNoteSidebar(activeView);
+    // Connections and Settings are not note browsers; give them the full canvas.
+    const desktopSidebarOpen = isSidebarOpen && noteSidebarAvailable;
+    const hideSidebar = isMobile ? !isMobileNoteList : !desktopSidebarOpen;
 
     const mainClasses = cn(
         'flex-1 overflow-hidden pb-20 md:pb-0',
@@ -300,7 +302,7 @@ export function AppShell() {
         <PendingConfirmationsProvider>
             <SelectorRegistryProvider>
                 <div className="flex flex-col h-screen bg-gray-950 text-gray-200" data-ready>
-                    <Header onToggleSidebar={toggleSidebar}/>
+                    <Header onToggleSidebar={toggleSidebar} showSidebarToggle={noteSidebarAvailable}/>
                     <ConnectivityBanner/>
                     <DegradedModeBanner/>
                     <div className="flex flex-1 overflow-hidden relative">
@@ -308,14 +310,14 @@ export function AppShell() {
                             <Sidebar
                                 sortedNotes={sortedNotes}
                                 onToggleSidebar={toggleSidebar}
-                                isSidebarOpen={effectiveSidebarOpen}
+                                isSidebarOpen={!hideSidebar}
                                 isLoading={notesLoading}
                                 sidebarWidth={isMobile ? 320 : effectiveWidth}
                                 isCollapsed={!isMobile && isCollapsed}
                             />
                         </div>
 
-                        {!isMobile && isSidebarOpen && effectiveWidth > 48 && (
+                        {!isMobile && desktopSidebarOpen && effectiveWidth > 48 && (
                             <div
                                 className="absolute top-16 bottom-0 w-1 cursor-col-resize z-10 hover:bg-blue-500/30 transition-colors"
                                 style={{left: `${effectiveWidth}px`}}

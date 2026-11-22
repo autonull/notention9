@@ -136,7 +136,7 @@ export function NetworkManagementSection() {
                             onChange={(e) => setPrivacyMode(e.target.checked ? 'local-only' : 'shared')}
                         />
                         <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-yellow-500"></div>
-                        <span className="ml-3 text-sm font-medium {isPrivateMode ? 'text-yellow-400' : 'text-gray-400'}">
+                        <span className={`ml-3 text-sm font-medium ${isPrivateMode ? 'text-yellow-400' : 'text-gray-400'}`}>
                             {isPrivateMode ? 'Enabled' : 'Disabled'}
                         </span>
                     </label>
@@ -160,7 +160,10 @@ export function NetworkManagementSection() {
             </div>
 
             <div className="grid gap-4">
-                {providers.map(provider => (
+                {providers.map(provider => {
+                    const status = provider.getStatus();
+                    const statusLabel = status.details || (status.connected ? 'Connected' : provider.enabled ? 'Enabled' : 'Disabled');
+                    return (
                     <div key={provider.id} className={`p-4 rounded-lg border transition-colors ${
                         provider.enabled ? 'bg-gray-800/50 border-blue-500/30' : 'bg-gray-900/30 border-gray-700'
                     }`}>
@@ -173,8 +176,8 @@ export function NetworkManagementSection() {
                                     <h4 className="font-medium text-gray-100">{provider.name}</h4>
                                     <span className="text-xs text-gray-400 uppercase tracking-wider">{provider.id}</span>
                                     <div className="mt-1 flex items-center gap-1.5 text-xs text-gray-500">
-                                        <span className={`h-1.5 w-1.5 rounded-full ${provider.getStatus().connected ? 'bg-green-500' : 'bg-gray-600'}`}/>
-                                        {provider.getStatus().details}
+                                        <span className={`h-1.5 w-1.5 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-blue-400' : 'bg-gray-600'}`}/>
+                                        {statusLabel}
                                     </div>
                                 </div>
                             </div>
@@ -194,7 +197,7 @@ export function NetworkManagementSection() {
                                             }
                                         }}
                                     />
-                                    <label htmlFor={`publish-${provider.id}`} className="text-xs text-gray-400 cursor-pointer">Publish Target</label>
+                                    <label htmlFor={`publish-${provider.id}`} className="text-xs text-gray-400 cursor-pointer">Publish target</label>
                                 </div>
                                 <label className="relative inline-flex items-center cursor-pointer">
                                     <input
@@ -203,6 +206,7 @@ export function NetworkManagementSection() {
                                         checked={provider.enabled}
                                         onChange={(e) => toggleProvider(provider.id, e.target.checked)}
                                         disabled={isPrivateMode}
+                                        aria-label={`Enable ${provider.name}`}
                                     />
                                     <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
                                 </label>
@@ -271,7 +275,8 @@ export function NetworkManagementSection() {
                             </div>
                         )}
                     </div>
-                ))}
+                    );
+                })}
             </div>
         </div>
     );

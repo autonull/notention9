@@ -93,7 +93,15 @@ export function EditorContent({
                         )}
                     </>
                 }
-            />
+            >
+                <div className="px-6 pb-10">
+                    <MatchReplies
+                        matches={matches}
+                        onMatchClick={onMatchClick}
+                        onMatchRespond={handleMatchRespond}
+                    />
+                </div>
+            </HybridEditor>
 
             {isTemplateSelectorOpen && (
                 <TemplateSelector
@@ -102,10 +110,6 @@ export function EditorContent({
                     onClose={onCloseTemplateSelector}
                 />
             )}
-
-            <div className="px-8 pb-8 max-w-4xl mx-auto w-full">
-                <MatchReplies matches={matches} onMatchClick={onMatchClick} onMatchRespond={handleMatchRespond} />
-            </div>
         </div>
     );
 }

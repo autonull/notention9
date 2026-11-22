@@ -31,7 +31,7 @@ test('export, clear, and restore a backup', async ({page}) => {
     const raw = await fs.readFile(file!, 'utf8');
     const backup = JSON.parse(raw);
     expect(backup.version).toBe(1);
-    expect(backup.notes).toHaveLength(10);
+    expect(backup.notes).toHaveLength(20);
     expect(backup.settings.nostr.privkey).toBeNull();
     expect(raw).not.toMatch(/"privkey"\s*:\s*"[0-9a-f]{16,}"/i);
 

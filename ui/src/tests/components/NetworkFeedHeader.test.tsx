@@ -45,7 +45,7 @@ describe('NetworkFeedHeader', () => {
     it('updates search input', () => {
         render(<NetworkFeedHeader {...defaultProps} />);
 
-        const input = screen.getByPlaceholderText('Search notes...');
+        const input = screen.getByPlaceholderText('Filter feed…');
         fireEvent.change(input, {target: {value: 'test'}});
         expect(mockSetFilter).toHaveBeenCalledWith('test');
     });

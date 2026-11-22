@@ -61,7 +61,6 @@ const browserEntries = {
   'fixtures/index': 'src/fixtures/index.ts',
   'feedback/index': 'src/feedback/index.ts',
   // Extensibility
-  'suggestions/SuggestionStore': 'src/suggestions/SuggestionStore.browser.ts',
   'suggestions/note/index': 'src/suggestions/note/index.ts',
   'validation/index': 'src/validation/index.ts',
   'events/index': 'src/events/index.ts',
@@ -170,7 +169,6 @@ const nodeEntries = [
   'src/feedback/index.ts',
   // Extensibility
   'src/ontology/index.ts',
-  'src/suggestions/SuggestionStore.ts',
   'src/test-utils/index.ts',
   'src/validation/index.ts',
   'src/events/index.ts',

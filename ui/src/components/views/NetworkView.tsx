@@ -67,7 +67,7 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
                 />
             ) : (
                 <div className="p-4 md:p-6 pb-0">
-                    <ConnectIdentityPrompt compact onNavigateToSettings={onNavigateToSettings} showConnectionCheck />
+                    <ConnectIdentityPrompt compact onNavigateToSettings={onNavigateToSettings} />
                 </div>
             )}
             <RelayStatusBanner relays={settings.nostr.relays} detailed={true}/>

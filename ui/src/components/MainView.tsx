@@ -9,13 +9,10 @@ import {useChatNotifications} from '../hooks/useChatNotifications';
 import {useMetaprogramming} from '../hooks/useMetaprogramming';
 import {LoadingSpinner} from './ui/icons';
 import {ChatView} from './views/ChatView';
-import {NetworkView} from './views/NetworkView';
 import {NotesView} from './views/NotesView';
 import {SettingsView} from './views/SettingsView';
 import {ResponsesView} from './views/ResponsesView';
 import {InboxView} from './views/InboxView';
-import {OntologyView} from './views/OntologyView';
-import {SkillManagementView} from './skills';
 import {ConnectionsView} from './views/ConnectionsView';
 import {LEGACY_VIEW_ALIASES} from '../utils/navigation';
 
@@ -24,7 +21,7 @@ interface MainViewProps {
 }
 
 export function MainView({sortedNotes}: MainViewProps) {
-    const {activeView, matchingNoteId, sidebarViewMode} = useView();
+    const {activeView, sidebarViewMode} = useView();
     const {settingsLoading} = useSettings();
     const {notes, loading: notesLoading} = useNotes();
 
@@ -54,17 +51,8 @@ export function MainView({sortedNotes}: MainViewProps) {
                 return <ConnectionsView/>;
             case 'settings':
                 return <SettingsView/>;
-            case 'skills':
-                return <SkillManagementView/>;
-            case 'ontology':
-                return <OntologyView/>;
             case 'chat':
                 return <ChatView/>;
-            case 'network':
-                const matchNote = matchingNoteId
-                    ? notes.find((n) => n.id === matchingNoteId)
-                    : null;
-                return <NetworkView matchAgainst={matchNote}/>;
             case 'responses':
                 return <ResponsesView/>;
             default:

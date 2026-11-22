@@ -4,7 +4,7 @@
     "state": "board",
     "file": "actions/board.png",
     "viewport": "desktop",
-    "description": "Task board grouped by status, with a new-task action."
+    "description": "Tasks grouped into status columns, with capture in reach."
   },
   {
     "area": "chat",
@@ -39,7 +39,7 @@
     "state": "property-inspector",
     "file": "editor/property-inspector.png",
     "viewport": "desktop",
-    "description": "Inspector with typed widgets, ontology hints, and validation."
+    "description": "The details drawer with typed widgets, ontology hints, and validation."
   },
   {
     "area": "editor",
@@ -67,14 +67,14 @@
     "state": "populated",
     "file": "inbox/populated.png",
     "viewport": "desktop",
-    "description": "Stats, an offline match preview, recent activity, and tools."
+    "description": "Capture, a local match, and recent notes."
   },
   {
     "area": "map",
     "state": "pins",
     "file": "map/pins.png",
     "viewport": "desktop",
-    "description": "Notes with locations grouped in the map view."
+    "description": "Notes with locations plotted on the map."
   },
   {
     "area": "matching",
@@ -88,7 +88,7 @@
     "state": "notes",
     "file": "mobile/notes.png",
     "viewport": "mobile",
-    "description": "Mobile list and bottom navigation."
+    "description": "The mobile note list with bottom navigation."
   },
   {
     "area": "modals",
@@ -102,7 +102,7 @@
     "state": "help",
     "file": "modals/help.png",
     "viewport": "desktop",
-    "description": "Keyboard shortcut reference with the concept groups."
+    "description": "Keyboard shortcut reference grouped by task."
   },
   {
     "area": "network",
@@ -123,7 +123,7 @@
     "state": "applied",
     "file": "next-steps/applied.png",
     "viewport": "desktop",
-    "description": "After applying a next step, it shows in applied history with fit count and undo button."
+    "description": "Applied history opens on demand, with fit count and undo."
   },
   {
     "area": "next-steps",
@@ -137,7 +137,7 @@
     "state": "empty",
     "file": "next-steps/empty.png",
     "viewport": "desktop",
-    "description": "Simple note with no matching rules shows empty next steps state with refresh button."
+    "description": "A note with no triggers stays quiet: no empty next-steps chrome."
   },
   {
     "area": "next-steps",
@@ -165,14 +165,14 @@
     "state": "stale",
     "file": "next-steps/stale.png",
     "viewport": "desktop",
-    "description": "After editing a note, prior next steps become stale (showing refresh action) and new generation starts."
+    "description": "A suggestion from before an edit stays visible with a Refresh action, instead of disappearing."
   },
   {
     "area": "next-steps",
     "state": "zero-match",
     "file": "next-steps/zero-match.png",
     "viewport": "desktop",
-    "description": "Note with next step shows zero local/network matches in drawer."
+    "description": "The drawer keeps suggestions and history separate from the note, even with no matches."
   },
   {
     "area": "notes",
@@ -210,11 +210,18 @@
     "description": "Provider status and relay management."
   },
   {
+    "area": "settings",
+    "state": "skills",
+    "file": "settings/skills.png",
+    "viewport": "desktop",
+    "description": "Skill approvals, capability scopes, and execution history."
+  },
+  {
     "area": "suggestions",
     "state": "empty-state",
     "file": "suggestions/empty-state.png",
     "viewport": "desktop",
-    "description": "Simple note with no matching rules shows the empty next-steps state with refresh."
+    "description": "A note with no triggers stays quiet: no empty next-steps chrome."
   },
   {
     "area": "suggestions",
@@ -256,6 +263,6 @@
     "state": "month",
     "file": "timeline/month.png",
     "viewport": "desktop",
-    "description": "Notes ordered by time in the timeline view."
+    "description": "Dated notes on a month calendar, filterable by location."
   }
 ]

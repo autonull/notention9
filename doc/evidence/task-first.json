@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T15:57:01.247Z",
+  "generatedAt": "2026-11-22T12:03:43.004Z",
   "cases": [
     {
       "view": "inbox",
@@ -34,7 +34,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 12,
+        "focusableCount": 15,
         "firstContentTop": 113,
         "tabStopsToContent": 0
       }
@@ -47,19 +47,19 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 81,
-            "tabStops": 9,
+            "top": 76,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [
           {
             "label": "respond",
-            "count": 3
+            "count": 2
           }
         ],
-        "focusableCount": 62,
-        "firstContentTop": 82,
+        "focusableCount": 36,
+        "firstContentTop": 80,
         "tabStopsToContent": 0
       }
     },
@@ -70,9 +70,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 19,
-        "firstContentTop": 160,
-        "tabStopsToContent": 1
+        "focusableCount": 16,
+        "firstContentTop": 153,
+        "tabStopsToContent": 9
       }
     },
     {
@@ -82,9 +82,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 2,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 6,
+        "firstContentTop": 153,
+        "tabStopsToContent": 5
       }
     },
     {
@@ -95,14 +95,14 @@
         "primaries": [
           {
             "label": "Month",
-            "top": 205,
-            "tabStops": 5,
+            "top": 213,
+            "tabStops": 14,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 44,
-        "firstContentTop": 205,
+        "focusableCount": 53,
+        "firstContentTop": 213,
         "tabStopsToContent": -1
       }
     },
@@ -111,18 +111,11 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "+ New Task",
-            "top": 88,
-            "tabStops": 0,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 7,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 26,
+        "firstContentTop": 153,
+        "tabStopsToContent": -1
       }
     },
     {
@@ -133,13 +126,13 @@
         "primaries": [
           {
             "label": "Find a match",
-            "top": 260,
-            "tabStops": 0,
+            "top": 346,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 1,
+        "focusableCount": 5,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -152,15 +145,15 @@
         "primaries": [
           {
             "label": "Add",
-            "top": 220,
-            "tabStops": 1,
+            "top": 284,
+            "tabStops": 2,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 21,
-        "firstContentTop": 233,
-        "tabStopsToContent": 0
+        "focusableCount": 19,
+        "firstContentTop": 297,
+        "tabStopsToContent": 1
       }
     },
     {
@@ -171,14 +164,14 @@
         "primaries": [
           {
             "label": "Update Ontology",
-            "top": 148,
+            "top": 244,
             "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
         "focusableCount": 6,
-        "firstContentTop": 330,
+        "firstContentTop": 426,
         "tabStopsToContent": -1
       }
     },
@@ -191,12 +184,12 @@
           {
             "label": "Drop a pin to capture a location",
             "top": 836,
-            "tabStops": 11,
+            "tabStops": 20,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 12,
+        "focusableCount": 21,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -206,18 +199,11 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Save",
-            "top": 389,
-            "tabStops": 3,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 4,
-        "firstContentTop": 391,
-        "tabStopsToContent": 2
+        "focusableCount": 3,
+        "firstContentTop": null,
+        "tabStopsToContent": null
       }
     },
     {
@@ -228,21 +214,15 @@
         "primaries": [
           {
             "label": "Add identity",
-            "top": 83,
-            "tabStops": 0,
-            "visible": true
-          },
-          {
-            "label": "Go to Settings",
-            "top": 260,
-            "tabStops": 3,
+            "top": 213,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 4,
-        "firstContentTop": 303,
-        "tabStopsToContent": 2
+        "focusableCount": 7,
+        "firstContentTop": 477,
+        "tabStopsToContent": 6
       }
     },
     {
@@ -253,14 +233,14 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 81,
-            "tabStops": 8,
+            "top": 76,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 45,
-        "firstContentTop": 82,
+        "focusableCount": 29,
+        "firstContentTop": 80,
         "tabStopsToContent": 0
       }
     },
@@ -272,15 +252,15 @@
         "primaries": [
           {
             "label": "Add identity",
-            "top": 105,
-            "tabStops": 0,
+            "top": 191,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
-        "firstContentTop": 386,
-        "tabStopsToContent": 17
+        "focusableCount": 17,
+        "firstContentTop": 429,
+        "tabStopsToContent": 15
       }
     },
     {
@@ -316,7 +296,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
+        "focusableCount": 12,
         "firstContentTop": 97,
         "tabStopsToContent": 0
       }
@@ -329,19 +309,14 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 78,
-            "tabStops": 9,
+            "top": 176,
+            "tabStops": 5,
             "visible": true
           }
         ],
-        "duplicateLabels": [
-          {
-            "label": "respond",
-            "count": 3
-          }
-        ],
-        "focusableCount": 63,
-        "firstContentTop": 79,
+        "duplicateLabels": [],
+        "focusableCount": 38,
+        "firstContentTop": 130,
         "tabStopsToContent": 1
       }
     },
@@ -364,9 +339,9 @@
       "metrics": {
         "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 2,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 6,
+        "firstContentTop": 153,
+        "tabStopsToContent": 5
       }
     },
     {
@@ -377,14 +352,14 @@
         "primaries": [
           {
             "label": "Month",
-            "top": 329,
-            "tabStops": 5,
+            "top": 370,
+            "tabStops": 14,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 44,
-        "firstContentTop": 269,
+        "focusableCount": 53,
+        "firstContentTop": 318,
         "tabStopsToContent": -1
       }
     },
@@ -393,18 +368,11 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "+ New Task",
-            "top": 80,
-            "tabStops": 0,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 6,
-        "firstContentTop": null,
-        "tabStopsToContent": null
+        "focusableCount": 26,
+        "firstContentTop": 191,
+        "tabStopsToContent": -1
       }
     },
     {
@@ -415,13 +383,13 @@
         "primaries": [
           {
             "label": "Find a match",
-            "top": 260,
-            "tabStops": 0,
+            "top": 330,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 1,
+        "focusableCount": 5,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -434,15 +402,15 @@
         "primaries": [
           {
             "label": "Add",
-            "top": 216,
-            "tabStops": 1,
+            "top": 359,
+            "tabStops": 2,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 15,
-        "firstContentTop": 229,
-        "tabStopsToContent": 0
+        "focusableCount": 12,
+        "firstContentTop": 372,
+        "tabStopsToContent": 1
       }
     },
     {
@@ -453,14 +421,14 @@
         "primaries": [
           {
             "label": "Update Ontology",
-            "top": 218,
-            "tabStops": 4,
+            "top": 377,
+            "tabStops": 5,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 6,
-        "firstContentTop": 400,
+        "focusableCount": 7,
+        "firstContentTop": 559,
         "tabStopsToContent": -1
       }
     },
@@ -473,12 +441,12 @@
           {
             "label": "Drop a pin to capture a location",
             "top": 700,
-            "tabStops": 11,
+            "tabStops": 20,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 12,
+        "focusableCount": 21,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -488,18 +456,11 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "Save",
-            "top": 452,
-            "tabStops": 3,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 4,
-        "firstContentTop": 454,
-        "tabStopsToContent": 2
+        "focusableCount": 3,
+        "firstContentTop": null,
+        "tabStopsToContent": null
       }
     },
     {
@@ -510,21 +471,15 @@
         "primaries": [
           {
             "label": "Add identity",
-            "top": 201,
-            "tabStops": 0,
-            "visible": true
-          },
-          {
-            "label": "Go to Settings",
-            "top": 368,
-            "tabStops": 3,
+            "top": 271,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 4,
-        "firstContentTop": 419,
-        "tabStopsToContent": 2
+        "focusableCount": 7,
+        "firstContentTop": 517,
+        "tabStopsToContent": 6
       }
     },
     {
@@ -535,14 +490,14 @@
         "primaries": [
           {
             "label": "Publish",
-            "top": 78,
-            "tabStops": 9,
+            "top": 176,
+            "tabStops": 5,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 47,
-        "firstContentTop": 79,
+        "focusableCount": 30,
+        "firstContentTop": 130,
         "tabStopsToContent": 1
       }
     },
@@ -554,15 +509,15 @@
         "primaries": [
           {
             "label": "Add identity",
-            "top": 181,
-            "tabStops": 0,
+            "top": 251,
+            "tabStops": 4,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
-        "firstContentTop": 576,
-        "tabStopsToContent": 17
+        "focusableCount": 17,
+        "firstContentTop": 483,
+        "tabStopsToContent": 15
       }
     }
   ]

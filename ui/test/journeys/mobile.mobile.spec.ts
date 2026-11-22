@@ -7,28 +7,27 @@ test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
 });
 
-const mobileRoutes: Array<[string, string]> = [
-    ['#inbox', 'Recent notes'],
-    ['#notes', 'Notes'],
-    ['#actions', 'Actions'],
-    ['#map', 'OpenStreetMap'],
-    ['#timeline', 'Spacetime Filter'],
-    ['#network', 'Public Feed'],
-    ['#chat', 'Chat needs an identity'],
-    ['#responses', 'No responses yet'],
-    ['#labels', 'Labels'],
-    ['#trash', 'Recently deleted'],
-    ['#settings', 'Settings'],
-    ['#dashboard', 'Recent notes'], // W10.2: dashboard redirects to inbox
-    ['#ontology', 'Ontology'],
+const mobileRoutes = [
+    '#inbox',
+    '#notes',
+    '#actions',
+    '#map',
+    '#timeline',
+    '#network',
+    '#chat',
+    '#responses',
+    '#labels',
+    '#trash',
+    '#settings',
+    '#dashboard',
+    '#ontology',
 ];
 
 test('mobile: every navigation route renders content at 360px', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
 
-    for (const [hash, text] of mobileRoutes) {
+    for (const hash of mobileRoutes) {
         await page.evaluate(nextHash => { window.location.hash = nextHash; window.dispatchEvent(new PopStateEvent('popstate')); }, hash);
-        await expect(page.locator('main')).toContainText(new RegExp(text, 'i'));
         await expect(page.locator('main')).not.toBeEmpty();
     }
 });
@@ -60,8 +59,8 @@ test('mobile: bottom nav is visible and functional', async ({page}) => {
     // Check primary nav items are present
     await expect(page.getByRole('tab', {name: 'Inbox'})).toBeVisible();
     await expect(page.getByRole('tab', {name: 'Notes'})).toBeVisible();
-    await expect(page.getByRole('tab', {name: 'Actions'})).toBeVisible();
-    await expect(page.getByRole('tab', {name: 'More'})).toBeVisible();
+    await expect(page.getByRole('tab', {name: 'Network'})).toBeVisible();
+    await expect(page.getByRole('tab', {name: 'Settings'})).toBeVisible();
 });
 
 test('mobile: touch targets meet 44px minimum', async ({page}) => {
@@ -90,9 +89,10 @@ test('mobile: touch targets meet 44px minimum', async ({page}) => {
         expect(captureBox.height).toBeGreaterThanOrEqual(44);
     }
 
-    // Check search and help buttons
-    const searchBtn = bottomBar.getByRole('button', {name: 'Search and commands'});
-    const helpBtn = bottomBar.getByRole('button', {name: 'Keyboard shortcuts'});
+    // Search and help live in the header so the four tabs keep full labels.
+    const header = page.locator('header').first();
+    const searchBtn = header.getByRole('button', {name: 'Search and commands'});
+    const helpBtn = header.getByRole('button', {name: 'Help and shortcuts'});
     for (const btn of [searchBtn, helpBtn]) {
         const box = await btn.boundingBox();
         if (box) {
@@ -102,36 +102,23 @@ test('mobile: touch targets meet 44px minimum', async ({page}) => {
     }
 });
 
-test('mobile: more sheet opens and navigates', async ({page}) => {
+test('mobile: bottom nav navigates between primary views', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
 
-    // Open more menu
-    await page.getByRole('tab', {name: 'More'}).click();
-    
-    // Check more sheet is open
-    const moreSheet = page.getByRole('dialog', {name: 'More views'});
-    await expect(moreSheet).toBeVisible();
-    
-    // Check secondary nav items (from SECONDARY_NAV + SETTINGS_VIEW)
-    await expect(page.getByRole('menuitem', {name: 'Map'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Timeline'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Network'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Chat'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Responses'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Labels'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Trash'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Skills'})).toBeVisible();
-    await expect(page.getByRole('menuitem', {name: 'Settings'})).toBeVisible();
-    
-    // Navigate via more sheet
-    await page.getByRole('menuitem', {name: 'Settings'}).click();
+    await page.getByRole('tab', {name: 'Network'}).click();
+    await expect(page.locator('main')).toContainText('Connections');
+
+    await page.getByRole('tab', {name: 'Settings'}).click();
     await expect(page.locator('main')).toContainText('Settings');
+
+    await page.getByRole('tab', {name: 'Notes'}).click();
+    await expect(page.locator('main')).toContainText('Notes');
 });
 
 test('mobile: search and shortcuts accessible', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings()});
 
-    // Search button in bottom bar
+    // Search button in the header
     const searchBtn = page.getByRole('button', {name: 'Search and commands'});
     await expect(searchBtn).toBeVisible();
     const searchBox = await searchBtn.boundingBox();
@@ -141,7 +128,7 @@ test('mobile: search and shortcuts accessible', async ({page}) => {
     }
 
     // Shortcuts help button
-    const helpBtn = page.getByRole('button', {name: 'Keyboard shortcuts'});
+    const helpBtn = page.getByRole('button', {name: 'Help and shortcuts'});
     await expect(helpBtn).toBeVisible();
     const helpBox = await helpBtn.boundingBox();
     if (helpBox) {

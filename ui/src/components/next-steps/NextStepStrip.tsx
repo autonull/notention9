@@ -1,154 +1,117 @@
-import React from 'react';
-import { Note } from '@notention/core';
-import { ChevronDownIcon, SparklesIcon } from '../ui/icons';
-import { NextStepCard } from './NextStepCard';
-import { useNextSteps, NextStep, SimpleMatch, SkillApprovalState } from '../../hooks/useNextSteps';
-import { SkillApprovalDialog } from '../skills/SkillApprovalDialog';
+import React, {useEffect, useState} from 'react';
+import type {Note} from '@notention/core';
+import {ArrowPathIcon, CheckIcon, ChevronRightIcon, SparklesIcon, XIcon} from '../ui/icons';
+import type {NextStep, UseNextStepsReturn} from '../../hooks/useNextSteps';
 import styles from './NextStepStrip.module.css';
 
 interface NextStepStripProps {
   note: Note | null;
-  localMatches?: SimpleMatch[];
-  networkMatches?: SimpleMatch[];
-  onStepApplied?: (stepId: string) => void;
-  onStepDismissed?: (stepId: string) => void;
+  model: UseNextStepsReturn;
   onOpenDrawer?: () => void;
-  // Apply path handlers
-  onOpenPropertyEditor?: (key: string, operator: string, value: string, placeholder?: string) => void;
-  onUpdateProperty?: (key: string, operator: string, value: string, previousProperty?: any) => void;
-  onRemoveProperty?: (key: string) => void;
-  onNavigateToNote?: (noteId: string) => void;
-  onExecuteSkill?: (skillId: string, note: Note) => Promise<{ success: boolean; resultNoteIds?: string[]; fitCount?: number; error?: string }>;
 }
 
-export function NextStepStrip({
-  note,
-  localMatches = [],
-  networkMatches = [],
-  onStepApplied,
-  onStepDismissed,
-  onOpenDrawer,
-  onOpenPropertyEditor,
-  onUpdateProperty,
-  onRemoveProperty,
-  onNavigateToNote,
-  onExecuteSkill,
-}: NextStepStripProps) {
-  const {
-    topNextStep,
-    hasNextSteps,
-    isGenerating,
-    error,
-    refresh,
-    nextSteps,
-    skillApproval,
-    closeSkillApproval,
-  } = useNextSteps({ 
-    note, 
-    localMatches, 
-    networkMatches,
-    onOpenPropertyEditor,
-    onUpdateProperty,
-    onRemoveProperty,
-    onNavigateToNote,
-    onExecuteSkill,
-  });
+function DrawerButton({count, onOpenDrawer}: {count: number; onOpenDrawer?: () => void}) {
+  if (!onOpenDrawer) return null;
+  return (
+    <button
+      type="button"
+      className={styles.more}
+      onClick={onOpenDrawer}
+      aria-label={`Open next steps (${count})`}
+    >
+      {count > 1 ? `${count - 1} more` : 'All'}
+      <ChevronRightIcon className="w-3.5 h-3.5"/>
+    </button>
+  );
+}
 
-  const handleApply = (stepId: string) => {
-    const step = nextSteps.find(s => s.id === stepId);
-    if (step && step.apply) {
-      step.apply();
-      if (step.state === 'active') {
-        onStepApplied?.(stepId);
-      }
-    }
-  };
+function AppliedHint({step, count, onOpenDrawer}: {step: NextStep; count: number; onOpenDrawer?: () => void}) {
+  return (
+    <div className={styles.strip} role="region" aria-label="Next steps" data-testid="next-step-strip">
+      <div className={`${styles.hint} ${styles.appliedHint}`} data-testid={`next-step-card-${step.id}`}>
+        <CheckIcon className={`${styles.icon} ${styles.appliedIcon}`} aria-hidden="true"/>
+        <span className={styles.appliedTag}>Applied</span>
+        <span className={styles.title}>{step.title}</span>
+        <span className={styles.evidence}>{step.evidence}</span>
+        <div className={styles.actions}>
+          <button
+            type="button"
+            className={styles.why}
+            onClick={() => step.undo?.()}
+            aria-label="Undo applied step"
+          >
+            <ArrowPathIcon className="w-3.5 h-3.5"/>
+            Undo
+          </button>
+          <DrawerButton count={count} onOpenDrawer={onOpenDrawer}/>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  const handleDismiss = (stepId: string) => {
-    const step = nextSteps.find(s => s.id === stepId);
-    if (step && step.dismiss) {
-      step.dismiss();
-      onStepDismissed?.(stepId);
-    }
-  };
+/**
+ * One quiet line for the top next step. Detail lives in the drawer.
+ */
+export function NextStepStrip({note, model, onOpenDrawer}: NextStepStripProps) {
+  const {topNextStep, nextSteps} = model;
+  const [showWhy, setShowWhy] = useState(false);
+  const step = topNextStep ?? nextSteps.find(candidate => candidate.state === 'stale') ?? null;
+  const appliedStep = step ? null : nextSteps.find(candidate => candidate.state === 'applied') ?? null;
+  const stepId = step?.id ?? appliedStep?.id;
 
-  const handleUndo = (stepId: string) => {
-    const step = nextSteps.find(s => s.id === stepId);
-    if (step && step.undo) {
-      step.undo();
-    }
-  };
+  useEffect(() => {
+    setShowWhy(false);
+  }, [stepId]);
 
   if (!note) return null;
-
-  if (isGenerating && !hasNextSteps) {
-    return (
-      <div className={styles.loading} role="status" aria-live="polite">
-        <div className={styles.spinner} />
-        <span>Generating next steps…</span>
-      </div>
-    );
+  if (!step) {
+    return appliedStep ? <AppliedHint step={appliedStep} count={nextSteps.length} onOpenDrawer={onOpenDrawer}/> : null;
   }
 
-  if (error) {
-    return (
-      <div className={styles.error} role="alert">
-        <span>Error: {error.message}</span>
-        <button onClick={refresh} className={styles.retryButton}>
-          Retry
-        </button>
-      </div>
-    );
-  }
-
-  if (!hasNextSteps) {
-    return (
-      <div className={styles.empty} data-testid="next-step-strip">
-        <span>No next steps</span>
-        <button onClick={refresh} className={styles.refreshButton} aria-label="Refresh">
-          ⟳
-        </button>
-      </div>
-    );
-  }
+  const isStale = step.state === 'stale';
+  const applyDisabled = isStale && !step.apply;
 
   return (
     <div className={styles.strip} role="region" aria-label="Next steps" data-testid="next-step-strip">
-      <div className={styles.cardWrapper}>
-        {topNextStep && (
-          <NextStepCard
-            step={topNextStep}
-            onApply={handleApply}
-            onDismiss={handleDismiss}
-            onUndo={handleUndo}
-          />
-        )}
+      <div className={styles.hint} data-testid={`next-step-card-${step.id}`} aria-live="polite">
+        <SparklesIcon className={styles.icon} aria-hidden="true"/>
+        <span className={styles.title}>{step.title}</span>
+        <span className={styles.evidence}>{step.evidence}</span>
+
+        <div className={styles.actions}>
+          {step.why && (
+            <button
+              type="button"
+              className={styles.why}
+              onClick={() => setShowWhy(value => !value)}
+              aria-expanded={showWhy}
+            >
+              Why
+            </button>
+          )}
+          <button
+            type="button"
+            className={styles.apply}
+            onClick={() => step.apply?.()}
+            disabled={applyDisabled}
+          >
+            {isStale ? 'Refresh' : step.actionLabel || 'Apply'}
+          </button>
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={() => step.dismiss?.()}
+            aria-label="Dismiss suggestion"
+            title="Dismiss"
+          >
+            <XIcon className="w-4 h-4"/>
+          </button>
+          <DrawerButton count={nextSteps.length} onOpenDrawer={onOpenDrawer}/>
+        </div>
       </div>
-      {nextSteps.length > 1 && onOpenDrawer && (
-        <button
-          className={styles.openDrawer}
-          onClick={onOpenDrawer}
-          aria-label={`Open drawer with ${nextSteps.length} next steps`}
-        >
-          <SparklesIcon className="w-4 h-4" />
-          <span>{nextSteps.length} next steps</span>
-          <ChevronDownIcon className="w-4 h-4" />
-        </button>
-      )}
-      {skillApproval.isOpen && skillApproval.step && (
-        <SkillApprovalDialog
-          isOpen={skillApproval.isOpen}
-          onClose={closeSkillApproval}
-          onApprove={skillApproval.onApprove}
-          onReject={skillApproval.onReject}
-          skillName={skillApproval.step.skillName || ''}
-          skillDescription={skillApproval.step.skillDescription || ''}
-          actions={skillApproval.step.skillActions || []}
-          domains={skillApproval.step.skillDomains || []}
-          requiresAuth={skillApproval.step.skillRequiresAuth || false}
-          expectedOutcome={skillApproval.step.skillExpectedOutcome}
-          preview={skillApproval.step.skillPreview}
-        />
+      {showWhy && step.why && (
+        <p className={styles.explain}>{step.why}</p>
       )}
     </div>
   );

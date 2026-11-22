@@ -70,6 +70,8 @@ export default defineConfig({
         {
             name: 'showcase',
             testMatch: 'showcase/**/*.scene.ts',
+            // Scenes seed their own workspace in an isolated context, so they can run in parallel.
+            fullyParallel: true,
             use: {
                 viewport: {width: 1440, height: 900},
             },

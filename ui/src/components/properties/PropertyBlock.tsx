@@ -163,7 +163,10 @@ export function PropertyBlock({
             }}
         >
             {!isEditing ? (
-                <div className="flex items-center gap-3">
+                <div
+                    className="flex items-center gap-3"
+                    aria-label={`${property.key} ${property.operator} ${formatValue(property)}. Source ${provenance}. Confidence ${confidenceBucketLabel}.`}
+                >
                     <div className="flex items-center justify-center w-6 h-6 rounded bg-gray-700/50 text-gray-400">
                         <IconComponent className="w-3.5 h-3.5" />
                     </div>
@@ -180,15 +183,19 @@ export function PropertyBlock({
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="hidden group-hover:flex items-center gap-1.5 flex-shrink-0">
                         {/* Provenance badge */}
-                        <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
-                            {provenance}
-                        </span>
+                        {property.provenance && (
+                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
+                                {provenance}
+                            </span>
+                        )}
                         {/* Confidence bucket badge (calibrated) */}
-                        <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
-                            {confidenceBucketLabel}
-                        </span>
+                        {property.confidence !== undefined && (
+                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
+                                {confidenceBucketLabel}
+                            </span>
+                        )}
                         {/* Focus source button */}
                         {hasSourceSpan && (
                             <button
@@ -254,13 +261,17 @@ export function PropertyBlock({
                             <IconComponent className="w-4 h-4 text-blue-400" />
                             <span className="font-bold text-sm text-gray-200 tracking-wide">{property.key}</span>
                             {/* Provenance badge in editing mode */}
-                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
-                                {provenance}
-                            </span>
+                            {property.provenance && (
+                                <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${provenanceColor}`}>
+                                    {provenance}
+                                </span>
+                            )}
                             {/* Confidence bucket badge in editing mode */}
-                            <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
-                                {confidenceBucketLabel}
-                            </span>
+                            {property.confidence !== undefined && (
+                                <span className={`px-1.5 py-0.5 text-[10px] font-medium rounded border ${confidenceBucketColor}`}>
+                                    {confidenceBucketLabel}
+                                </span>
+                            )}
                             {/* Focus source button in editing mode */}
                             {hasSourceSpan && (
                                 <button

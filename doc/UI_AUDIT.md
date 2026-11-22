@@ -1,5 +1,8 @@
 # UI/UX Audit — 2026-11-17
 
+> Later pass: [2026-11-22](UI_AUDIT_2026-11-22.md) — navigation labels, note-row legibility,
+> deep-link routing, publish disclosure, and screenshot loop.
+
 ## Verdict
 
 The app works, but the screenshots showed a surface that needed onboarding, repeated the same

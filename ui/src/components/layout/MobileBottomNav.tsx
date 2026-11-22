@@ -1,9 +1,8 @@
 import React, {useCallback} from 'react';
 import {useView} from '../../hooks/useViewContext';
 import type {View} from '@notention/core';
-import {SearchIcon, HelpIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
-import {MOBILE_NAV, SETTINGS_VIEW} from '../../utils/navigation';
+import {MOBILE_NAV, navTabFor} from '../../utils/navigation';
 
 interface MobileBottomNavProps {
     isOpen?: boolean;
@@ -38,7 +37,7 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
                     <div className="flex flex-1 items-center gap-0.5" role="tablist" aria-label="Main navigation">
                         {MOBILE_NAV.map((item) => {
                             const Icon = item.icon;
-                            const isActive = activeView === item.id;
+                            const isActive = navTabFor(activeView) === item.id;
                             const badgeCount = getBadgeCount(item as {badgeCountKey?: 'notificationCount' | 'chatNotificationCount'});
 
                             return (
@@ -46,7 +45,7 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
                                     key={item.id}
                                     onClick={() => handleSelect(item.id)}
                                     className={cn(
-                                        'btn btn-ghost btn-xs flex flex-col items-center gap-0.5 px-2 py-1.5 rounded-xl min-w-0 flex-1 touch-target transition-all duration-200',
+                                        'btn btn-ghost btn-xs flex flex-col items-center gap-0.5 px-1 py-1.5 rounded-xl min-w-0 flex-1 touch-target transition-all duration-200',
                                         isActive
                                             ? 'bg-indigo-600/20 text-indigo-400'
                                             : 'text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50'
@@ -64,30 +63,12 @@ export function MobileBottomNav({isOpen = false}: MobileBottomNavProps) {
                                             </span>
                                         )}
                                     </div>
-                                    <span className="text-[9px] font-medium uppercase tracking-normal truncate max-w-full text-center">
+                                    <span className="text-[10px] font-medium truncate max-w-full text-center">
                                         {item.label}
                                     </span>
                                 </button>
                             );
                         })}
-                    </div>
-
-                    <div className="flex items-center flex-shrink-0 border-l border-gray-700/30 pl-1">
-                        <button
-                            onClick={() => setIsPaletteOpen(true)}
-                            className="btn btn-ghost btn-md p-2 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center touch-target transition-all duration-200 text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50"
-                            aria-label="Search and commands"
-                            aria-keyshortcuts="Meta+K"
-                        >
-                            <SearchIcon className="w-5 h-5"/>
-                        </button>
-                        <button
-                            onClick={() => window.dispatchEvent(new CustomEvent('open-shortcuts-help'))}
-                            className="btn btn-ghost btn-md p-2 rounded-xl min-w-[44px] min-h-[44px] flex items-center justify-center touch-target transition-all duration-200 text-gray-500 hover:text-gray-300 hover:bg-gray-800/50 active:bg-gray-700/50"
-                            aria-label="Keyboard shortcuts"
-                        >
-                            <HelpIcon className="w-5 h-5"/>
-                        </button>
                     </div>
                 </div>
             </div>

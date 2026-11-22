@@ -998,6 +998,16 @@ export function GridIcon(props: IconProps) { return (
     </OutlineIcon>
 ); }
 
+export function ColumnsIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M3.75 4.5h4.5v15h-4.5v-15zm6.75 0h4.5v10.5h-4.5V4.5zm6.75 0h3.75v7.5h-3.75V4.5z"
+        />
+    </OutlineIcon>
+); }
+
 export function ListIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path

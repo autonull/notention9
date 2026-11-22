@@ -1,12 +1,12 @@
 import React from 'react';
-import {CpuChipIcon, BrainIcon, GlobeIcon, ExclamationTriangleIcon, WifiIcon} from '../ui/icons';
+import {CpuChipIcon, BrainIcon, GlobeIcon, WifiIcon} from '../ui/icons';
 import {useBestProviderStatus} from '../../hooks/useExtractionStatus';
 import {cn} from '../../utils/ui';
 
 export function ExtractionStatusBadge() {
     const {status, providerName, providerKind} = useBestProviderStatus();
 
-    if (status === 'unknown') return null;
+    if (status === 'unknown' || !providerName || providerName === 'none') return null;
 
     const isHeuristic = providerKind === 'heuristic';
     const isLocalModel = providerKind === 'local-model';
@@ -40,7 +40,7 @@ export function ExtractionStatusBadge() {
 export function ExtractionStatusIndicator() {
     const {status, providerName, providerKind} = useBestProviderStatus();
 
-    if (status === 'unknown') return null;
+    if (status === 'unknown' || !providerName || providerName === 'none') return null;
 
     const isHeuristic = providerKind === 'heuristic';
     const isLocalModel = providerKind === 'local-model';

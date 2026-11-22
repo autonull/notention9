@@ -89,7 +89,7 @@ function getVerbTitle(suggestion: NoteSuggestion): string {
     'fulfillment-hint': 'Run',
     'related-note': 'Open',
     'skill-match': 'Run',
-    'inferred-constraint': 'Apply',
+    'inferred-constraint': 'Add',
   };
   const verb = verbMap[suggestion.kind] || 'Add';
   const prop = suggestion.proposedChange?.property;
@@ -116,12 +116,9 @@ function getEvidenceLine(suggestion: NoteSuggestion): string {
 
   switch (evidence.source) {
     case 'rules':
-      if (evidence.ruleId) {
-        return `Rule: ${evidence.ruleId.replace(/^rule-/, '').replace(/-/g, ' ')}`;
-      }
-      return 'Rule-based suggestion';
+      return suggestion.description?.trim() || 'Suggested from a note pattern';
     case 'fulfillment':
-      return 'Skill match available';
+      return 'Skill available';
     case 'related':
       return evidence.matchedNoteId ? 'Matching note found' : 'Related content';
     case 'llm':
@@ -129,6 +126,14 @@ function getEvidenceLine(suggestion: NoteSuggestion): string {
     default:
       return 'Suggestion available';
   }
+}
+
+function getWhyLine(suggestion: NoteSuggestion): string | undefined {
+  const evidence = suggestion.evidence[0];
+  if (evidence?.source === 'rules' && evidence.ruleId) {
+    return `Rule: ${evidence.ruleId.replace(/^rule-/, '').replace(/-/g, ' ')}`;
+  }
+  return suggestion.description;
 }
 
 function getAppliedLine(suggestion: NoteSuggestion, fitCount?: number): string {
@@ -270,7 +275,7 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
         apply = () => { onNavigateToNote(suggestion.relatedNoteId!); applySuggestion(suggestion.id); };
       } else if (isSkill && !autoExecute) {
         // Skill: open SkillApprovalDialog
-        actionLabel = 'Preview & approve';
+        actionLabel = 'Review';
         apply = () => { requestSkillApproval(step); };
       } else if (isSkill && autoExecute) {
         // Skill with auto-execute
@@ -286,8 +291,8 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
           }
         };
       } else if (isCounterfactual) {
-        // Counterfactual: "Widen" action
-        actionLabel = 'Widen';
+        // Counterfactual: widen the constraint
+        actionLabel = 'Widen match';
         apply = () => { applySuggestion(suggestion.id); };
       } else {
         actionLabel = 'Apply';
@@ -298,7 +303,7 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
         id: suggestion.id,
         title: getVerbTitle(suggestion),
         evidence: getEvidenceLine(suggestion),
-        why: suggestion.description,
+        why: getWhyLine(suggestion),
         source,
         state: 'active',
         actionLabel,
@@ -332,7 +337,7 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
       let apply: () => void;
 
       if (isSkill && !autoExecute) {
-        actionLabel = 'Preview & approve';
+        actionLabel = 'Review';
         apply = () => { requestSkillApproval(step); };
       } else if (isSkill && autoExecute) {
         actionLabel = 'Run';
@@ -356,7 +361,7 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
         id: suggestion.id,
         title: getVerbTitle(suggestion),
         evidence: getEvidenceLine(suggestion),
-        why: suggestion.description,
+        why: getWhyLine(suggestion),
         source,
         state: 'stale',
         actionLabel,
@@ -378,7 +383,7 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
         id: suggestion.id,
         title: getVerbTitle(suggestion),
         evidence: getAppliedLine(suggestion, fitCount),
-        why: suggestion.description,
+        why: getWhyLine(suggestion),
         source,
         state: 'applied',
         actionLabel: 'Undo',

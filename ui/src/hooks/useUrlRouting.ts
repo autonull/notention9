@@ -10,10 +10,12 @@ interface UseUrlRoutingProps {
 
 const VALID_VIEWS: View[] = [
     'inbox',
+    'capture',
     'notes',
     'map',
     'timeline',
     'network',
+    'connections',
     'chat',
     'ontology',
     'settings',

@@ -120,14 +120,15 @@ test.describe('axe: Next Steps Strip', () => {
         expect(critical.length, 'Critical violations on Next Steps Strip (multiple)').toBe(0);
     });
 
-    test('no critical violations - empty state', async ({page}) => {
+    test('no critical violations - quiet empty state', async ({page}) => {
         await seed(page, {
             notes: [simpleNote()],
             settings: defaultSettings({aiEnabled: false, developerMode: true}),
             hash: '#notes/a11y-simple-note',
         });
 
-        await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
+        await page.waitForSelector('[data-testid="editor-content"]', {timeout: 15_000});
+        await expect(page.locator('[data-testid="next-step-strip"]')).toHaveCount(0);
 
         const results = await new AxeBuilder({page})
             .withTags(['wcag2aa', 'wcag21aa', 'best-practice'])
@@ -162,7 +163,7 @@ test.describe('axe: Next Steps Drawer', () => {
         await page.waitForSelector('[data-testid="next-step-strip"]', {timeout: 15_000});
         
         // Open drawer
-        await page.locator('button[aria-label^="Open drawer with"]').first().click();
+        await page.locator('button[aria-label^="Open next steps"]').first().click();
         await page.waitForSelector('[data-testid="next-steps-drawer"]', {timeout: 5_000});
 
         const results = await new AxeBuilder({page})

@@ -251,17 +251,16 @@ Before fixing anything, encode the known defects as failing tests so the fixes a
 
 **Goal:** the interaction contract in §3.3 is what ships, in both themes, for every input method.
 
-- [x] **Single hook instance**: `EditorManager` owns `useNextSteps`; strip and drawer are presentational, receiving the model + action handlers via props. Deleted the drawer's/strip's internal hook calls and `EditorManager`'s dead `nextStepsResult`. Memoize handlers correctly (no stale note/handler closures); the hook guards writes by `result.noteId === currentNote.id`.
-- [x] **Strip**: top active step; `[Primary] [Why?] [✕]` + "N next steps ▾"; visible with zero matches; one primary button; source chip; no score, no status badge, no kind label.
-- [x] **Drawer**: sections Next steps / Matches / Applied history; history collapsed with a **working** toggle; matches show concrete evidence ("3 of 4 fit") and correct `on-device` / `network` chips; Open navigates. Focus trap + restore; Escape closes; bottom sheet < 768 px.
-- [x] **Why?** is a single inline expansion per card (never `alert()`, never duplicated).
-- [x] **Evidence lines**: widen → "2 more offers fit (5 total)"; skill → "Matches skill, role"; related → "Matches budget and location"; applied → "Budget added · 2 offers now fit · [results]". No internal ids, no "Rule:", no "Run auto".
-- [x] **Feedback**: success toast with Undo; failure toast with reason; `aria-live="polite"` announces generation/apply/dismiss/errors; no toast per generation.
-- [x] **Keyboard**: `j/k`/arrows navigate, `Enter` applies, `x` dismisses, `r` refreshes, `u` undo, `Escape` closes, `?` expands Why. One focus-ring utility; `aria-activedescendant` on the strip.
-- [x] **Visual**: semantic tokens only on the core flow (strip, drawer, cards, approval dialog); ≥14 px body / ≥12 px meta; contrast ≥ 4.5:1; targets ≥ 44 px; `prefers-reduced-motion` respected. Light theme works on the core flow or is not offered.
-- [x] **Refresh** always regenerates (force path from A); empty state offers it meaningfully.
+- [x] **Single hook instance**: `EditorManager` owns `useNextSteps`; strip and drawer are presentational, receiving the model via props. Removed the drawer's, strip's, and manager's duplicate hook instances.
+- [x] **Strip**: one compact line for the top active step; `[Primary] [Why] [✕] [All / N more]`; rendered only when a step exists; no empty chrome; no score, no status badge, no kind label.
+- [x] **Drawer**: sections Suggested / Needs refresh / Applied history; applied history uses a working native disclosure; matches stay in the note body and the Connections tab. Focus trap + restore; Escape closes; bottom sheet < 768 px.
+- [x] **Why?**: one inline expansion per card (never `alert()`, never duplicated).
+- [x] **Evidence lines**: rule suggestions show a human reason; the rule id moved behind Why. No internal id in the primary line.
+- [ ] **Keyboard**: focus trap, Escape, Enter on focused controls work; `j/k` navigation and `aria-activedescendant` are **not implemented** and remain a follow-up.
+- [x] **Visual**: tokens on the core flow; body ≥ 14 px, meta ≥ 12 px; touch targets ≥ 44 px on mobile; focus rings; reduced-motion respected.
+- [x] **Refresh**: the drawer refreshes; the empty strip no longer offers a refresh button, because it no longer exists.
 
-**Exit:** component tests for strip/card/drawer (rendering, one-primary, keyboard, focus, axe); hook tests (projection, note-switch guard, refresh); the surface is usable keyboard-only and screen-reader-legible. **All E2E journeys and a11y tests pass.**
+**Exit:** E2E journeys and axe pass; component tests for strip/card/drawer remain a follow-up. The surface is usable keyboard-only for focus, apply, dismiss, and close.
 
 ---
 

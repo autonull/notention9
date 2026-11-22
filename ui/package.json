@@ -19,7 +19,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:test": "tsc -p test/tsconfig.json --noEmit",
     "space:audit": "playwright test --config test/playwright.config.ts --project=audit",
-    "screenshots": "node test/scripts/reset-screenshot.mjs && playwright test --config test/playwright.config.ts --project=showcase --workers=4 && node test/scripts/build-index.mjs",
+    "screenshots": "node test/scripts/showcase.mjs",
     "test:e2e": "playwright test --config test/playwright.config.ts"
   },
   "dependencies": {

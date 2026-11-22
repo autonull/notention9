@@ -1,7 +1,8 @@
 import React, {useMemo} from 'react';
-import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, PlusIcon, TagIcon, DownloadIcon} from '../ui/icons';
+import {CheckCircleIcon, ClockIcon, LightBulbIcon, NoteIcon, UserGroupIcon, PlusIcon, TagIcon, DownloadIcon, ChevronDownIcon} from '../ui/icons';
 import type {Note} from '@notention/core';
 import type {ComponentType} from 'react';
+import {DropdownMenu} from '../ui/Primitives';
 import {cn} from '../../utils/ui';
 
 interface FilterBarProps {
@@ -68,9 +69,9 @@ function getDynamicFilters(notes: Note[] = []): {id: string; label: string; icon
 
 export function FilterBar({searchTerm, onSetSearch, notes = []}: FilterBarProps) {
     const dynamicFilters = useMemo(() => getDynamicFilters(notes), [notes]);
-    const allFilters = [...BASE_FILTERS, ...dynamicFilters];
 
-    const activeFilterId = allFilters.find(f => f.query === searchTerm)?.id;
+    const activeFilterId = [...BASE_FILTERS, ...dynamicFilters].find(f => f.query === searchTerm)?.id;
+    const activeDynamic = dynamicFilters.find(f => f.id === activeFilterId);
 
     const handleFilterClick = (query: string, id: string) => {
         onSetSearch(activeFilterId === id ? '' : query);
@@ -84,7 +85,7 @@ export function FilterBar({searchTerm, onSetSearch, notes = []}: FilterBarProps)
     };
 
     const getButtonClass = (isActive: boolean, isAll = false) => cn(
-        'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold transition-all duration-200 flex-shrink-0 select-none cursor-pointer',
+        'flex items-center gap-1 px-2 py-1 rounded-md text-[10px] uppercase tracking-wide font-semibold transition-colors duration-150 select-none cursor-pointer whitespace-nowrap',
         isActive
             ? (isAll
                 ? 'bg-gray-700 text-white shadow-sm'
@@ -93,7 +94,7 @@ export function FilterBar({searchTerm, onSetSearch, notes = []}: FilterBarProps)
     );
 
     return (
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-hide" role="group" aria-label="Quick filters">
+        <div className="flex flex-wrap items-center gap-1" role="group" aria-label="Quick filters">
             <button
                 onClick={() => onSetSearch('')}
                 onKeyDown={(e) => handleKeyDown(e, '', 'all')}
@@ -106,7 +107,7 @@ export function FilterBar({searchTerm, onSetSearch, notes = []}: FilterBarProps)
                 All
             </button>
 
-            {allFilters.map(filter => {
+            {BASE_FILTERS.map(filter => {
                 const isActive = activeFilterId === filter.id;
                 return (
                     <button
@@ -122,6 +123,28 @@ export function FilterBar({searchTerm, onSetSearch, notes = []}: FilterBarProps)
                     </button>
                 );
             })}
+
+            {dynamicFilters.length > 0 && (
+                <DropdownMenu
+                    align="left"
+                    trigger={
+                        <button
+                            type="button"
+                            className={getButtonClass(!!activeDynamic)}
+                            aria-label="More filters"
+                            aria-haspopup="menu"
+                        >
+                            <span className="max-w-[9rem] truncate">{activeDynamic ? activeDynamic.label : 'More'}</span>
+                            <ChevronDownIcon className="w-3 h-3"/>
+                        </button>
+                    }
+                    items={dynamicFilters.map(filter => ({
+                        label: `${activeFilterId === filter.id ? '✓ ' : ''}${filter.label}`,
+                        icon: filter.icon,
+                        onClick: () => handleFilterClick(filter.query, filter.id),
+                    }))}
+                />
+            )}
         </div>
     );
 }

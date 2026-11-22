@@ -1,21 +1,20 @@
 import React from 'react';
 
 import {useView} from '../../hooks/useViewContext';
-import {useDirection} from '../../hooks/useI18n';
 import type {View} from '@notention/core';
 import {NavButton} from './NavButton';
 import {IconButton} from '../ui/Button';
-import {SearchIcon, SidebarIcon} from '../ui/icons';
+import {HelpIcon, SearchIcon, SidebarIcon} from '../ui/icons';
 import {ConnectionStatus} from './ConnectionStatus';
 import {ExtractionStatusBadge} from './ExtractionStatusBadge';
-import {PRIMARY_NAV, SETTINGS_VIEW} from '../../utils/navigation';
-import {modShortcut} from '../../utils/platform';
+import {PRIMARY_NAV, SETTINGS_VIEW, navTabFor} from '../../utils/navigation';
 
 interface HeaderProps {
     onToggleSidebar: () => void;
+    showSidebarToggle?: boolean;
 }
 
-export function Header({onToggleSidebar}: HeaderProps) {
+export function Header({onToggleSidebar, showSidebarToggle = true}: HeaderProps) {
     const {
         activeView,
         setActiveView,
@@ -24,17 +23,22 @@ export function Header({onToggleSidebar}: HeaderProps) {
         chatNotificationCount,
         selectedNoteId,
         setSelectedNoteId,
-        setIsPaletteOpen
+        setIsPaletteOpen,
+        setIsHelpOpen,
+        setNotesSection,
     } = useView();
-    const direction = useDirection();
-    const isRTL = direction === 'rtl';
 
     const handleNavClick = (view: View) => {
-        if (view === 'notes' && activeView === 'notes' && selectedNoteId) {
-            setSelectedNoteId(null);
-        } else {
-            setActiveView(view);
+        if (view === 'notes') {
+            if (activeView !== 'notes') {
+                setNotesSection('all');
+                setSelectedNoteId(null);
+            } else if (selectedNoteId) {
+                setSelectedNoteId(null);
+                return;
+            }
         }
+        setActiveView(view);
     };
 
     const getLabel = (view: View) => {
@@ -50,26 +54,31 @@ export function Header({onToggleSidebar}: HeaderProps) {
                 <h1 className="md:hidden text-sm font-semibold text-gray-200 truncate">
                     {getLabel(activeView)}
                 </h1>
-                <IconButton
-                    onClick={onToggleSidebar}
-                    tooltip={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
-                    tooltipPosition="bottom"
-                    icon={SidebarIcon}
-                    variant="ghost"
-                    size="lg"
-                    className="hidden md:flex"
-                    label={modShortcut('\\')}
-                />
+                {showSidebarToggle && (
+                    <IconButton
+                        onClick={onToggleSidebar}
+                        tooltip={isSidebarOpen ? "Close Sidebar" : "Open Sidebar"}
+                        tooltipPosition="bottom"
+                        icon={SidebarIcon}
+                        variant="ghost"
+                        size="lg"
+                        className="hidden md:flex"
+                    />
+                )}
+
+                <div className="hidden lg:flex items-center gap-2 min-w-0">
+                    <span className="h-2 w-2 rounded-full bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.7)]"/>
+                    <span className="text-sm font-semibold tracking-tight text-gray-100">Notention</span>
+                </div>
 
                 <IconButton
                     onClick={() => setIsPaletteOpen(true)}
-                    tooltip={`Search & Commands (${modShortcut('K')})`}
+                    tooltip="Search & Commands"
                     tooltipPosition="bottom"
                     icon={SearchIcon}
                     variant="ghost"
                     size="lg"
                     className="hidden md:flex"
-                    label={modShortcut('K')}
                 />
             </div>
 
@@ -85,9 +94,10 @@ export function Header({onToggleSidebar}: HeaderProps) {
                             icon={<item.icon/>}
                             label={item.label}
                             tooltip={item.shortcut ? `${item.label} (Alt+${item.shortcut})` : item.label}
-                            isActive={activeView === item.id}
+                            isActive={navTabFor(activeView) === item.id}
                             onClick={() => handleNavClick(item.id)}
                             badgeCount={badgeCount}
+                            showLabel
                         />
                     );
                 })}
@@ -95,15 +105,37 @@ export function Header({onToggleSidebar}: HeaderProps) {
 
             {/* Right Section */}
             <div className="flex items-center gap-2">
+                <IconButton
+                    onClick={() => setIsPaletteOpen(true)}
+                    tooltip="Search & Commands"
+                    tooltipPosition="bottom"
+                    icon={SearchIcon}
+                    variant="ghost"
+                    size="lg"
+                    className="md:hidden"
+                    aria-label="Search and commands"
+                />
+                <IconButton
+                    onClick={() => setIsHelpOpen(true)}
+                    tooltip="Help & Shortcuts"
+                    tooltipPosition="bottom"
+                    icon={HelpIcon}
+                    variant="ghost"
+                    size="lg"
+                    className="md:hidden"
+                    aria-label="Help and shortcuts"
+                />
                 <ConnectionStatus/>
                 <ExtractionStatusBadge/>
-                <NavButton
-                    icon={<SETTINGS_VIEW.icon/>}
-                    label={SETTINGS_VIEW.label}
-                    tooltip={SETTINGS_VIEW.label}
-                    isActive={activeView === SETTINGS_VIEW.id}
-                    onClick={() => setActiveView(SETTINGS_VIEW.id)}
-                />
+                <div className="hidden md:block">
+                    <NavButton
+                        icon={<SETTINGS_VIEW.icon/>}
+                        label={SETTINGS_VIEW.label}
+                        tooltip={SETTINGS_VIEW.label}
+                        isActive={activeView === SETTINGS_VIEW.id}
+                        onClick={() => setActiveView(SETTINGS_VIEW.id)}
+                    />
+                </div>
             </div>
         </header>
     );
