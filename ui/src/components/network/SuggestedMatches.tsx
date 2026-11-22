@@ -9,12 +9,12 @@ export function SuggestedMatches() {
     if (matches.length === 0) return null;
 
     return (
-        <div className="mb-8">
- <h2 className="text-sm font-semibold text-neutral-400 tracking-wider mb-3 flex items-center gap-2">
-                <SparklesIcon className="w-4 h-4 text-blue-400"/>
-                Suggested Opportunities
+        <section className="mb-3" aria-label="Suggested matches">
+            <h2 className="mb-1 flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-[0.08em] text-[var(--app-faint)]">
+                <SparklesIcon className="h-3.5 w-3.5"/>
+                Suggested matches
             </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-1 md:grid-cols-2">
                 {matches.slice(0, 4).map(match => (
                     <SuggestedMatchItem
                         key={`${match.localNoteId}-${match.event.id}`}
@@ -23,7 +23,6 @@ export function SuggestedMatches() {
                     />
                 ))}
             </div>
-            <div className="h-px bg-neutral-700 my-6"></div>
-        </div>
+        </section>
     );
 }

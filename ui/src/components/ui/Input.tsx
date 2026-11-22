@@ -12,6 +12,8 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
     icon?: React.ComponentType<{ className?: string }> | React.ReactNode;
     fullWidth?: boolean;
     touchTarget?: boolean;
+    /** Applied to the wrapper, so a labeled field can size itself inside a row. */
+    wrapperClassName?: string;
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(({
@@ -25,6 +27,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
     className = '',
     id,
     touchTarget = false,
+    wrapperClassName,
     ...props
 }, ref) => {
     const generatedId = `input-${Math.random().toString(36).slice(2)}`;
@@ -53,9 +56,10 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
     delete (domProps as any).hint;
     delete (domProps as any).fullWidth;
     delete (domProps as any).touchTarget;
+    delete (domProps as any).wrapperClassName;
 
     return (
-        <div className={cn('w-full', fullWidth && 'w-full')}>
+        <div className={cn(!wrapperClassName && fullWidth && 'w-full', wrapperClassName)}>
             {label && (
                 <label
                     htmlFor={inputId}

@@ -4,7 +4,6 @@ import {useView} from '../../hooks/useViewContext';
 import {ChatWindow} from '../chat/ChatWindow';
 import {ContactList} from '../chat/ContactList';
 import {ConnectIdentityPrompt} from '../network/ConnectIdentityPrompt';
-import {KeyIcon} from '../ui/icons';
 
 interface ChatPanelProps {
     initialPubkey?: string | null;
@@ -34,11 +33,12 @@ export function ChatPanel({initialPubkey, className}: ChatPanelProps) {
     if (!privkey || !pubkey) {
         return (
             <div className={className}>
-                <ConnectIdentityPrompt compact onNavigateToSettings={() => setActiveView('settings')}/>
-                <div className="px-4 py-6 text-center text-sm text-neutral-500">
-                    <KeyIcon className="mx-auto mb-3 h-8 w-8 text-neutral-600"/>
-                    Add an identity to send encrypted messages. Your key stays on this device.
+                <div className="px-3">
+                    <ConnectIdentityPrompt onNavigateToSettings={() => setActiveView('settings')}/>
                 </div>
+                <p className="px-4 py-6 text-center text-[11px] leading-5 text-[var(--app-faint)]">
+                    Add an identity to send encrypted messages. Your key stays on this device.
+                </p>
             </div>
         );
     }

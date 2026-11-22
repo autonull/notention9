@@ -8,7 +8,6 @@ import {ConnectIdentityPrompt} from '../network/ConnectIdentityPrompt';
 import {NetworkFeedHeader} from '../network/NetworkFeedHeader';
 import {SuggestedMatches} from '../network/SuggestedMatches';
 import {NetworkFeedList} from '../network/NetworkFeedList';
-import {RelayStatusBanner} from '../network/RelayStatusBanner';
 
 interface NetworkViewProps {
     matchAgainst?: Note | null;
@@ -46,38 +45,31 @@ export function NetworkView({matchAgainst}: NetworkViewProps) {
         const keysInBranch = getSubtreeKeys(selectedNode);
 
         return sortedEvents.filter(event => {
-            // Parse properties from content (since they might not be in tags)
-            // Optimization: Check for presence of key strings first before full parse?
-            // Full parse is safer.
             const props = parseProperties(event.content);
-
-            // Also check explicit tags if we store them there in future
-            // Check if any property key exists in the branch
             return props.some(p => keysInBranch.has(p.key));
         });
     }, [sortedEvents, activeFilterId, settings.ontology]);
 
     return (
-        <div className="h-full flex flex-col bg-neutral-800/50 rounded-lg overflow-hidden">
-            {pubkey ? (
-                <ProfileHeader
-                    settings={settings}
-                    pubkey={pubkey}
-                    profileCache={profiles}
-                />
-            ) : (
-                <div className="p-4 md:p-6 pb-0">
-                    <ConnectIdentityPrompt compact onNavigateToSettings={onNavigateToSettings} />
-                </div>
-            )}
-            <RelayStatusBanner relays={settings.nostr.relays} detailed={true}/>
-            <div className="p-4 md:p-6 flex-grow overflow-y-auto">
+        <div className="flex h-full min-h-0 flex-col">
+            <div className="shrink-0 border-b border-[var(--app-line)] px-4 md:px-6">
+                {pubkey ? (
+                    <ProfileHeader
+                        settings={settings}
+                        pubkey={pubkey}
+                        profileCache={profiles}
+                    />
+                ) : (
+                    <ConnectIdentityPrompt onNavigateToSettings={onNavigateToSettings}/>
+                )}
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3 md:px-6">
                 <NetworkFeedHeader
                     matchAgainstTitle={matchAgainst?.title}
                     onClearMatch={() => setMatchingNoteId(null)}
                     filter={filter}
                     setFilter={setFilter}
-                    sortedEvents={sortedEvents}
                     ontology={rootCategories}
                     activeFilterId={activeFilterId}
                     setActiveFilterId={setActiveFilterId}

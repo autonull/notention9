@@ -7,10 +7,13 @@ import {useToast} from '../../hooks/useToast';
 import {useSettings} from '../../hooks/useSettingsContext';
 import type {Contact, NostrEvent} from '@notention/core';
 import {formatNpub, hexToBytes, Logger, parseProperties, pool, resolveRelays} from '@notention/core';
-import {ArrowLeftIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../ui/icons';
+import {ArrowLeftIcon, ChatIcon, DocumentDuplicateIcon, SendIcon, SettingsIcon, TrashIcon} from '../ui/icons';
 import {Avatar} from '../ui/Avatar';
+import {Button} from '../ui/Button';
 import {IconButton} from '../ui/Button';
+import {Input} from '../ui/Input';
 import {Skeleton} from '../ui/Skeleton';
+import {cn} from '../../utils/ui';
 
 interface ChatWindowProps {
     privkey: string;
@@ -88,143 +91,129 @@ export function ChatWindow({
 
     if (!selectedContact) {
         return (
-            <div className="h-full flex flex-col bg-neutral-800/20 items-center justify-center text-center text-neutral-400">
-                <div className="bg-neutral-800 p-8 rounded-full mb-4">
-                    <span className="text-4xl">💬</span>
-                </div>
-                <p className="text-lg font-semibold text-neutral-400">Select a contact to start chatting</p>
-                <p className="text-sm">Your messages are end-to-end encrypted.</p>
+            <div className="flex h-full flex-col items-center justify-center gap-2 px-6 text-center">
+                <ChatIcon className="h-5 w-5 text-[var(--app-faint)]"/>
+                <p className="text-[13px] font-medium text-[var(--app-text-secondary)]">Select a contact to start chatting</p>
+                <p className="text-[11px] text-[var(--app-faint)]">Your messages are end-to-end encrypted.</p>
             </div>
         );
     }
 
     return (
-        <div className="h-full flex flex-col bg-neutral-900/30">
-            {/* Header */}
-            <div className="flex-shrink-0 p-3 border-b border-neutral-700/50 flex items-center gap-3 bg-neutral-900/50">
-                <div className="md:hidden -ml-1">
-                    <IconButton
-                        onClick={onBack}
-                        icon={ArrowLeftIcon}
-                        title="Back"
-                        variant="ghost"
-                    />
-                </div>
-                <div className="relative">
-                    <Avatar
-                        src={selectedProfile?.picture || selectedContact.picture}
-                        pubkey={selectedContact.pubkey}
-                        size="md"
-                        className="border border-neutral-600"
-                    />
-                    {/* Online status could go here */}
-                </div>
-
+        <div className="flex h-full min-h-0 flex-col">
+            <div className="flex shrink-0 items-center gap-2 border-b border-[var(--app-line)] px-3 py-2">
+                <IconButton
+                    onClick={onBack}
+                    icon={ArrowLeftIcon}
+                    title="Back to chats"
+                    aria-label="Back to chats"
+                    variant="ghost"
+                    size="sm"
+                    className="md:hidden"
+                />
+                <Avatar
+                    src={selectedProfile?.picture || selectedContact.picture}
+                    pubkey={selectedContact.pubkey}
+                    size="sm"
+                />
                 <div className="min-w-0">
-                    <p className="font-bold text-white truncate">
+                    <p className="truncate text-[13px] font-medium text-[var(--app-text)]">
                         {selectedContact.name || selectedProfile?.name || 'Anonymous'}
                     </p>
-                    {!selectedContact.isAgent && (
-                        <p
-                            className="text-xs text-neutral-400 font-mono truncate"
-                            title={nip19.npubEncode(selectedContact.pubkey)}
-                        >
-                            {formatNpub(nip19.npubEncode(selectedContact.pubkey))}
-                        </p>
-                    )}
-                    {selectedContact.isAgent && (
-                        <p className="text-xs text-blue-400 font-mono truncate">
-                            AI Agent
-                        </p>
-                    )}
+                    <p
+                        className={cn('truncate font-mono text-[11px]', selectedContact.isAgent ? 'text-[var(--app-accent-text)]' : 'text-[var(--app-faint)]')}
+                        title={selectedContact.isAgent ? 'AI agent' : nip19.npubEncode(selectedContact.pubkey)}
+                    >
+                        {selectedContact.isAgent ? 'Agent' : formatNpub(nip19.npubEncode(selectedContact.pubkey))}
+                    </p>
                 </div>
 
-                <div className="flex-1"/>
-
-                {onClearChat && (
-                    <IconButton
-                        onClick={() => {
-                            if (confirm('Clear chat history with this agent?')) {
-                                onClearChat();
-                            }
-                        }}
-                        icon={TrashIcon}
-                        title="Clear Chat"
-                        variant="danger"
-                    />
-                )}
-
-                {onOpenSettings && (
-                    <IconButton
-                        onClick={onOpenSettings}
-                        icon={SettingsIcon}
-                        title="Agent Settings"
-                        variant="ghost"
-                    />
-                )}
+                <div className="ml-auto flex shrink-0 items-center gap-1">
+                    {onClearChat && (
+                        <IconButton
+                            onClick={() => {
+                                if (confirm('Clear the conversation with this contact?')) {
+                                    onClearChat();
+                                }
+                            }}
+                            icon={TrashIcon}
+                            title="Clear chat"
+                            aria-label="Clear chat"
+                            variant="ghost"
+                            size="sm"
+                        />
+                    )}
+                    {onOpenSettings && (
+                        <IconButton
+                            onClick={onOpenSettings}
+                            icon={SettingsIcon}
+                            title="Agent settings"
+                            aria-label="Agent settings"
+                            variant="ghost"
+                            size="sm"
+                        />
+                    )}
+                </div>
             </div>
 
-            {/* Messages */}
-            <div className="flex-grow p-4 overflow-y-auto space-y-4">
+            <div className="min-h-0 flex-1 space-y-1.5 overflow-y-auto p-3">
                 {messages.length === 0 && !isLoading && (
-                    <div className="text-center text-neutral-400 py-10">
-                        <p>No messages yet.</p>
-                        <p className="text-xs">Say hello! 👋</p>
+                    <div className="py-8 text-center">
+                        <p className="text-[13px] text-[var(--app-text-secondary)]">No messages yet.</p>
+                        <p className="text-[11px] text-[var(--app-faint)]">Say hello.</p>
                     </div>
                 )}
                 {isLoading && (
-                    <div className="space-y-4">
-                        <Skeleton variant="rectangular" height={80} width="60%" className="rounded-2xl mx-auto"/>
-                        <Skeleton variant="rectangular" height={80} width="70%" className="rounded-2xl ml-auto"/>
-                        <Skeleton variant="rectangular" height={80} width="50%" className="rounded-2xl mx-auto"/>
+                    <div className="space-y-1.5" aria-busy="true" aria-label="Loading messages">
+                        <Skeleton variant="rectangular" height={40} width="60%" className="rounded-lg"/>
+                        <Skeleton variant="rectangular" height={40} width="70%" className="ml-auto rounded-lg"/>
+                        <Skeleton variant="rectangular" height={40} width="50%" className="rounded-lg"/>
                     </div>
                 )}
-                {!isLoading && messages.length > 0 && messages.map((msg, idx) => {
+                {!isLoading && messages.map((msg, idx) => {
                     const isMe = msg.pubkey === pubkey;
                     const showTime = idx === messages.length - 1 || (idx < messages.length - 1 && messages[idx + 1].pubkey !== msg.pubkey);
 
                     return (
                         <div
                             key={msg.id}
-                            className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} group`}
+                            className={cn('group flex flex-col', isMe ? 'items-end' : 'items-start')}
                         >
-                            <div className="flex items-center gap-2">
+                            <div className="flex max-w-[85%] items-center gap-1.5 sm:max-w-[70%]">
+                                <div
+                                    className={cn(
+                                        'min-w-0 whitespace-pre-wrap break-words rounded-lg border px-3 py-2 text-[13px] leading-6',
+                                        isMe
+                                            ? 'border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] text-[var(--app-text)]'
+                                            : 'border-[var(--app-line)] bg-[var(--app-raised)] text-[var(--app-text-secondary)]'
+                                    )}
+                                >
+                                    {msg.content}
+                                </div>
                                 {!isMe && (
                                     <IconButton
                                         onClick={() => {
-                                            const properties = parseProperties(msg.content);
                                             addNote({
-                                                title: 'Chat Note',
+                                                title: 'Chat note',
                                                 content: msg.content,
                                                 tags: [],
-                                                properties
+                                                properties: parseProperties(msg.content)
                                             });
-                                            addToast('Forked to Notes', 'success');
+                                            addToast('Forked to notes', 'success');
                                         }}
                                         icon={DocumentDuplicateIcon}
-                                        title="Fork to Notes"
+                                        title="Fork to notes"
+                                        aria-label="Fork to notes"
                                         variant="ghost"
                                         size="xs"
-                                        className="opacity-0 group-hover:opacity-100 transition-opacity"
+                                        className="md:opacity-0 md:transition-opacity md:group-hover:opacity-100"
                                     />
                                 )}
-                                <div
-                                    className={`
-                        max-w-[85%] sm:max-w-lg px-4 py-2 rounded-2xl text-sm leading-relaxed shadow-sm
-                        ${isMe
-                                        ? 'bg-blue-600 text-white rounded-tr-sm'
-                                        : 'bg-neutral-700 text-neutral-100 rounded-tl-sm border border-neutral-600'}
-                      `}
-                                >
-                                    <p className="whitespace-pre-wrap break-words">
-                                        {msg.content}
-                                    </p>
-                                </div>
                             </div>
                             {showTime && (
-                                <span className="text-xs text-neutral-400 mt-1 px-1">
-                        {new Date(msg.created_at * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
-                    </span>
+                                <span className="mt-0.5 px-1 text-[11px] tabular-nums text-[var(--app-faint)]">
+                                    {new Date(msg.created_at * 1000).toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
+                                </span>
                             )}
                         </div>
                     );
@@ -232,22 +221,24 @@ export function ChatWindow({
                 <div ref={messagesEndRef}/>
             </div>
 
-            {/* Input */}
-            <div className="flex-shrink-0 p-4 bg-neutral-900/50 border-t border-neutral-700/50">
-                <form onSubmit={handleSendMessage} className="flex gap-2 max-w-4xl mx-auto">
-                    <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Type a message..."
-                        className="flex-grow p-3 bg-neutral-800 border border-neutral-700 rounded-full text-white placeholder-neutral-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
-                    />
-                    <IconButton
+            <div className="shrink-0 border-t border-[var(--app-line)] p-2">
+                <form onSubmit={handleSendMessage} className="flex items-center gap-1.5">
+                    <div className="min-w-0 flex-1">
+                        <Input
+                            type="text"
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            placeholder="Write a message…"
+                            aria-label="Message"
+                        />
+                    </div>
+                    <Button
                         type="submit"
                         disabled={!newMessage.trim()}
-                        icon={SendIcon}
                         variant="primary"
-                        className="rounded-full shadow-lg p-3"
+                        size="sm"
+                        icon={SendIcon}
+                        aria-label="Send message"
                     />
                 </form>
             </div>

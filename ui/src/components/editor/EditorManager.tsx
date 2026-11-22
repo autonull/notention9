@@ -294,7 +294,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
 
                 {isContextOpen && (
                     <div
-                        className="flex max-h-[42dvh] min-h-0 shrink-0 flex-col border-t border-[var(--app-line)] bg-[var(--app-panel)] lg:max-h-none lg:w-[var(--context-share)] lg:flex-row lg:border-l lg:border-t-0"
+                        className="relative flex max-h-[42dvh] min-h-0 shrink-0 flex-col border-t border-[var(--app-line)] bg-[var(--app-panel)] lg:max-h-none lg:w-[var(--context-share)] lg:border-l lg:border-t-0"
                         style={{'--context-share': `${contextShare}%`} as React.CSSProperties}
                         data-testid="note-context-pane"
                     >
@@ -306,7 +306,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                             max={26}
                             defaultValue={20}
                             onChange={setContextShare}
-                            className="order-first border-t-0 lg:border-t"
+                            className="absolute inset-y-0 left-0 order-first border-t-0 lg:border-t"
                         />
                         <NoteContextRail
                             note={dirtyNote}

@@ -1,5 +1,8 @@
 import React from 'react';
 import {getTextFromHtml, type NostrEvent} from '@notention/core';
+import {SparklesIcon} from '../ui/icons';
+import {Chip} from '../ui/kit';
+import {FeedRow} from '../patterns/FeedRow';
 
 export interface SuggestionMatch {
     localNoteId: string;
@@ -13,18 +16,14 @@ interface SuggestedMatchItemProps {
 }
 
 export function SuggestedMatchItem({match, onSelect}: SuggestedMatchItemProps) {
+    const label = getTextFromHtml(match.event.content).slice(0, 60) || 'Untitled note';
+
     return (
-        <div
-            className="bg-neutral-700/50 p-3 rounded-lg border border-neutral-600/50 hover:bg-neutral-700 transition cursor-pointer"
-            onClick={() => onSelect(match.localNoteId)}
-        >
-            <div className="flex justify-between items-start mb-1">
-                <span className="text-xs font-mono text-blue-400">Match Score: {Math.round(match.score * 100)}%</span>
-                <span className="text-xs text-neutral-400">Your note: {match.localNoteId.slice(0, 6)}...</span>
-            </div>
-            <div className="text-white font-medium text-sm mb-1 line-clamp-1">
-                {getTextFromHtml(match.event.content).slice(0, 50)}...
-            </div>
-        </div>
+        <FeedRow
+            leading={<SparklesIcon className="mt-1 h-3.5 w-3.5 text-[var(--app-faint)]"/>}
+            title={label}
+            meta={<Chip tone="accent" size="xs">{Math.round(match.score * 100)}%</Chip>}
+            onSelect={() => onSelect(match.localNoteId)}
+        />
     );
-};
+}

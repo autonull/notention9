@@ -1,7 +1,7 @@
 # TODO.31 — The Note Is the Page
 
-**Status:** in progress. W31.0–W31.6 and W31.9 landed; W31.7 and
-part of W31.8 remain. Supersedes the previous `TODO31.md` draft
+**Status:** in progress. W31.0–W31.7 and W31.9 landed; W31.8 remains.
+Supersedes the previous `TODO31.md` draft
 (“Consolidation, Surface by Surface”).
 **Continues:** TODO.30 and the one-workspace pass.
 **Non-goals:** matching semantics, transports, AI models, persistence formats,
@@ -13,8 +13,8 @@ command. Do not add a surface to solve a crowded surface.
 
 ## Progress
 
-Last updated after the page/history/details pass. The gallery was regenerated
-at 47 scenes; `note/compose` replaces `capture/composer` and
+Last updated after the Explore/Search/Chat pass. The gallery still has 47
+scenes; `note/compose` replaces `capture/composer` and
 `editor/property-edit` replaces `editor/property-inspector`.
 
 | Workstream | State | Landed | Still open |
@@ -26,21 +26,24 @@ at 47 scenes; `note/compose` replaces `capture/composer` and
 | W31.4 Details in the page | **Done** | Floating inspector and bar `Details` removed; inline chips edit through `PropertyEditor`; page `+ Add detail` uses the same form; imported details with no inline node show in the page and edit in one popup; pointer-down opening keeps the popup stable after the first edit | None |
 | W31.5 One context rail | **Done** | Four top-level tabs (`Next`, `Matches`, `Replies`, `Chat`), nested toggle removed, rail closed when empty, auto-open when context exists, percentage share and resizer, `Context` control with count | Mobile uses a bottom pane, not a labelled bottom sheet with a drag handle |
 | W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing | Group section offers status/none; Timeline grouping is not wired |
-| W31.7 Explore, search, chat | **Not started** | None | Identity strip, one scope row, compact feed rows, chat contact rows and shared typography, read-only public-feed state |
+| W31.7 Explore, search, chat | **Done** | `IdentityStrip` / `FeedRow` patterns; relay health is a chip with a click-to-open panel; one filter row (domains + input, no label, no tag row); feed rows with one property line and one action row; read-only feed is one line; chat list uses `FeedRow`, conversation carries app typography and one composer; palette scopes come from `PALETTE_SCOPES`; `RelayStatusBanner` and `DiscoveredProperties` deleted | None |
 | W31.8 Settings, overlays, status | **Partial** | Settings tabs use one 15 px heading, token surfaces, no legacy `bg-neutral-800/900` or `text-xl`; duplicate help launcher deleted; one help surface | `SettingsDirectory` / `SettingsPanel` / `SettingsSection` split; `Field` and `Modal` adoption audit; one tone map for toast/banner/chip/status; one-primary-per-tab audit |
-| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page | No further CSS; watch legacy neutral classes in W31.7 surfaces |
+| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7 | No further CSS |
 
 ### Next order
 
-1. **W31.7** — the last second app. Search, Explore, and Chat still speak the
-   old neutral language. One identity strip, one scope row, compact feed rows,
-   and chat contact rows built from the history row pattern.
-2. **W31.8** — split the settings directory from its panel; replace remaining
-   hand-rolled overlays; audit tone and primary actions.
-3. **W31.2/W31.4 follow-ups** — pure `selectIndex` + tests, timeline grouping,
+1. **W31.8** — split `SettingsView` into `SettingsDirectory` +
+   `SettingsPanel` + `SettingsSection`; audit `Field`, `Modal`, and
+   `ConfirmationModal` adoption; one tone map for toast, banner, chip, and
+   status; one primary per tab.
+2. **W31.2/W31.4 follow-ups** — pure `selectIndex` + tests, timeline grouping,
    and the inline-chip DOM fallback.
-4. **W31.0 follow-ups** — extract `ListRow`, `Field`, `ContextPanel`, and
-   `SurfaceTabs` only where a second use exists; add `KitGallery`.
+3. **W31.0 follow-ups** — extract `ListRow`, `Field`, `ContextPanel`, and
+   `SurfaceTabs` only where a second use exists; add a `KitGallery` scene that
+   renders every primitive and pattern.
+4. **Overlay hygiene** — the relay chip opens a hand-rolled panel. Move it to
+   `Popover` once that primitive drops its legacy neutral surface, or keep the
+   inline panel if the chip remains the only user.
 
 ---
 
@@ -836,9 +839,16 @@ arrangement, and order after reload.
 
 ### W31.7 — Explore, search, and chat (P1)
 
+**Landed.** `IdentityStrip` and `FeedRow` exist and own the identity line and
+the row grammar. The overlay has one search field and one scope row fed from
+`PALETTE_SCOPES`. Explore is a strip (avatar, name, npub, relay chip, edit), a
+chip panel for relay detail, one filter row, and compact rows. The read-only
+state is one line. Chat has contact rows from `FeedRow`, one composer, and app
+typography. `RelayStatusBanner` and `DiscoveredProperties` are deleted.
+
 Files: `network/ProfileHeader.tsx`, `network/NetworkFeedHeader.tsx`,
-`network/RelayStatusBanner.tsx`, `network/NostrEventCard.tsx`,
-`command/CommandPalette.tsx`, `chat/*`, new `patterns/IdentityStrip.tsx`,
+`network/RelayStatusChip.tsx`, `network/NostrEventCard.tsx`,
+`command/CommandPalette.tsx`, `chat/*`, `patterns/IdentityStrip.tsx`,
 `patterns/FeedRow.tsx`.
 
 - Search overlay:
@@ -863,10 +873,30 @@ palette.
 
 ### W31.8 — Settings, overlays, and status (P2)
 
+**Remaining.** This is the last workstream. Start with the `SettingsView` split,
+because every other item in W31.8 depends on a tab no longer owning the
+directory.
+
+Order of work:
+
+1. add `patterns/SettingsDirectory.tsx` and `patterns/SettingsSection.tsx`;
+2. shrink `views/SettingsView.tsx` to directory + panel + the active tab;
+3. convert one tab, screenshot it, then convert the rest;
+4. audit `Field` usage: one label + hint + error row, no second form row;
+5. replace hand-rolled overlays (`HelpDialog`, `KeyboardShortcutsHelp`,
+   `ProfileHeader`'s modal already uses `Modal`) with `Modal` / `ConfirmDialog`;
+6. add one tone map and use it in `Toast`, `*Banner`, `Chip`, and status rows;
+7. audit one primary per tab.
+
 Files: `views/SettingsView.tsx`, `settings/*Tab.tsx`, `ui/Modal.tsx`,
 `ui/ConfirmationModal.tsx`, `ui/Toast.tsx`, `layout/*Banner.tsx`,
 `modals/HelpDialog.tsx`, `ui/KeyboardShortcutsHelp.tsx`, new
 `patterns/SettingsDirectory.tsx`, `patterns/SettingsSection.tsx`.
+
+**Also fixed in W31.7:** the context resizer sits outside the flex flow
+(`absolute`), so the note page no longer overflows the viewport, and `Input`
+accepts `wrapperClassName` so a field can size itself inside a row.
+
 
 - Split `SettingsView` into `SettingsDirectory` + `SettingsPanel` +
   `SettingsSection`. A tab renders a list of sections; it does not own the

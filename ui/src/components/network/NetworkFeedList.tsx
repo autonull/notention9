@@ -1,7 +1,6 @@
 import React from 'react';
 import type {NostrEvent, NostrProfile} from '@notention/core';
 import {NostrEventCard} from './NostrEventCard';
-import {SettingsIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 import {Skeleton} from '../ui/Skeleton';
 import {EmptyState, NetworkEmptyIllustration} from '../ui/Primitives';
@@ -26,9 +25,9 @@ export function NetworkFeedList({
 
     if (isLoading) {
         return (
-            <div className="space-y-4" aria-busy="true" aria-label="Loading network feed">
+            <div className="space-y-1" aria-busy="true" aria-label="Loading network feed">
                 {Array.from({length: 3}).map((_, index) => (
-                    <Skeleton key={index} variant="network-event" height={132} width="100%"/>
+                    <Skeleton key={index} variant="network-event" height={96} width="100%"/>
                 ))}
             </div>
         );
@@ -51,7 +50,7 @@ export function NetworkFeedList({
     }
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-1" role="feed" aria-label="Public notes">
             {sortedEvents.map((event) => (
                 <div key={event.id} data-testid="network-feed-item">
                     <NostrEventCard
@@ -64,4 +63,4 @@ export function NetworkFeedList({
             ))}
         </div>
     );
-};
+}

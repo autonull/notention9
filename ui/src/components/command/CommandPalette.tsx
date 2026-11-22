@@ -12,6 +12,7 @@ import { cn } from '../../utils/ui';
 import { NetworkView } from '../views/NetworkView';
 import { ChatPanel } from '../chat/ChatPanel';
 import { NotePreview } from './NotePreview';
+import { PALETTE_SCOPES } from '../../config/uiSurfaces';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -263,11 +264,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                 </div>
 
                 <div className="flex h-10 items-center gap-1 border-b border-[var(--app-line)] px-3">
-                    {[
-                        {id: 'search' as const, label: 'Search'},
-                        {id: 'explore' as const, label: 'Explore public notes'},
-                        {id: 'chat' as const, label: 'Chat'},
-                    ].map(item => (
+                    {PALETTE_SCOPES.map(item => (
                         <button
                             key={item.id}
                             type="button"
@@ -287,7 +284,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
 
                 {/* Results */}
                 {scope === 'explore' ? (
-                    <div className="max-h-[65vh] overflow-y-auto p-2">
+                    <div className="h-[60vh] p-2">
                         <NetworkView/>
                     </div>
                 ) : scope === 'chat' ? (

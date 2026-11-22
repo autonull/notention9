@@ -10,6 +10,7 @@ import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
 import {Skeleton} from '../ui/Skeleton';
 import {EmptyState} from '../ui/Primitives';
+import {FeedRow} from '../patterns/FeedRow';
 
 interface ContactListProps {
     privkey: string;
@@ -58,145 +59,116 @@ export function ContactList({
         try {
             const {type, data: newPubkey} = nip19.decode(newContactNpub.trim());
             if (type !== 'npub' || typeof newPubkey !== 'string')
-                throw new Error('Invalid npub format.');
+                throw new Error('Enter a valid npub.');
 
             if (contacts.some((c) => c.pubkey === newPubkey) || newPubkey === pubkey)
-                throw new Error('Contact already exists or is yourself.');
+                throw new Error('This contact already exists.');
 
             await onAddContact(newPubkey);
 
             setNewContactNpub('');
             setIsAddingContact(false);
         } catch (err) {
-            setError(err instanceof Error ? err.message : 'Failed to add contact.');
-            Logger.getInstance().error("Failed to add contact", err instanceof Error ? err : new Error(String(err)));
+            setError(err instanceof Error ? err.message : 'Could not add this contact.');
+            Logger.getInstance().error('Failed to add contact', err instanceof Error ? err : new Error(String(err)));
         }
     };
 
-    const renderContactItem = (contact: Contact) => {
+    const displayName = (contact: Contact) => {
         const profile = contactProfiles[contact.pubkey];
-        const isSelected = selectedContact?.pubkey === contact.pubkey;
-
-        return (
-            <div
-                key={contact.pubkey}
-                onClick={() => onSelectContact(contact)}
-                className={`
-            flex items-center gap-3 p-3 cursor-pointer transition-colors
-            ${isSelected ? 'bg-blue-900/20 border-r-2 border-blue-500' : 'hover:bg-neutral-800/50 border-r-2 border-transparent'}
-          `}
-            >
-                <div className="relative">
-                    <Avatar
-                        src={profile?.picture || contact.picture}
-                        pubkey={contact.pubkey}
-                        size="md"
-                    />
-                </div>
-                <div className="overflow-hidden flex-1 min-w-0">
-                    <div className="flex justify-between items-baseline">
-                        <p className={`font-semibold truncate text-sm ${isSelected ? 'text-white' : 'text-neutral-200'}`}>
-                            {contact.name || profile?.name || (
-                                (() => {
-                                    try {
-                                        return formatNpub(nip19.npubEncode(contact.pubkey));
-                                    } catch {
-                                        return contact.pubkey;
-                                    }
-                                })()
-                            )}
-                        </p>
-                    </div>
-                    <p className="text-xs text-neutral-400 truncate">
-                        {contact.about || profile?.about || 'No bio available'}
-                    </p>
-                </div>
-            </div>
-        );
+        if (contact.name || profile?.name) return contact.name || profile?.name;
+        try {
+            return formatNpub(nip19.npubEncode(contact.pubkey));
+        } catch {
+            return contact.pubkey;
+        }
     };
 
     return (
-        <div className="h-full flex flex-col border-r border-neutral-700/50 bg-neutral-900/50">
-            <div className="p-4 border-b border-neutral-700/50 space-y-3">
-                <h2 className="text-lg font-bold text-white flex justify-between items-center">
-                    Chats
-                    <div className="flex gap-1">
-                        <IconButton
-                            onClick={() => setIsAddingContact(!isAddingContact)}
-                            icon={UserPlusIcon}
-                            title="Add Contact"
-                            variant={isAddingContact ? 'primary' : 'secondary'}
-                            size="sm"
-                        />
-                    </div>
-                </h2>
-
-                {isAddingContact && (
-                    <div className="animate-fade-in bg-neutral-800/50 p-3 rounded-lg border border-neutral-700">
-                        <form onSubmit={handleAddContact} className="flex flex-col gap-2">
-                            <Input
-                                value={newContactNpub}
-                                onChange={(e) => setNewContactNpub(e.target.value)}
-                                placeholder="npub..."
-                                autoFocus
-                                className="text-sm"
-                            />
-                            <div className="flex justify-end gap-2">
-                                <Button
-                                    type="button"
-                                    onClick={() => setIsAddingContact(false)}
-                                    variant="ghost"
-                                    size="xs"
-                                >
-                                    Cancel
-                                </Button>
-                                <Button
-                                    type="submit"
-                                    variant="primary"
-                                    size="xs"
-                                >
-                                    Add
-                                </Button>
-                            </div>
-                        </form>
-                        {error && <p className="text-red-400 text-xs mt-2">{error}</p>}
-                    </div>
-                )}
-
-                <div className="relative">
-                    <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-neutral-400"/>
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Search..."
-                        className="w-full bg-neutral-800 border border-neutral-700 rounded-full py-1.5 pl-9 pr-4 text-sm text-neutral-300 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                    />
-                </div>
+        <div className="flex h-full min-h-0 flex-col border-r border-[var(--app-line)]">
+            <div className="flex shrink-0 items-center gap-2 border-b border-[var(--app-line)] px-3 py-2">
+                <h2 className="text-[13px] font-medium text-[var(--app-text)]">Chats</h2>
+                <IconButton
+                    onClick={() => setIsAddingContact(value => !value)}
+                    icon={UserPlusIcon}
+                    title="Add contact"
+                    aria-label="Add contact"
+                    variant="ghost"
+                    size="sm"
+                    className="ml-auto"
+                />
             </div>
 
-            <div className="flex-grow overflow-y-auto">
+            <div className="shrink-0 space-y-2 border-b border-[var(--app-line)] px-3 py-2">
+                {isAddingContact && (
+                    <form onSubmit={handleAddContact} className="space-y-1.5">
+                        <Input
+                            value={newContactNpub}
+                            onChange={(e) => setNewContactNpub(e.target.value)}
+                            placeholder="npub1…"
+                            aria-label="Contact npub"
+                            autoFocus
+                        />
+                        <div className="flex justify-end gap-1">
+                            <Button type="button" onClick={() => setIsAddingContact(false)} variant="ghost" size="xs">
+                                Cancel
+                            </Button>
+                            <Button type="submit" variant="primary" size="xs">
+                                Add
+                            </Button>
+                        </div>
+                        {error && <p className="text-[11px] text-red-300">{error}</p>}
+                    </form>
+                )}
+                <Input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Search contacts"
+                    aria-label="Search contacts"
+                    leftIcon={<SearchIcon className="h-4 w-4"/>}
+                />
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto p-2">
                 {isLoading && (
-                    <div className="p-4 space-y-3">
-                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
-                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
-                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
-                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
-                        <Skeleton variant="rectangular" height={56} width="100%" className="rounded-lg"/>
+                    <div className="space-y-1" aria-busy="true" aria-label="Loading contacts">
+                        {Array.from({length: 5}).map((_, index) => (
+                            <Skeleton key={index} variant="rectangular" height={48} width="100%" className="rounded-lg"/>
+                        ))}
                     </div>
                 )}
 
-                {!isLoading && filteredContacts.map(renderContactItem)}
+                {!isLoading && filteredContacts.map(contact => (
+                    <FeedRow
+                        key={contact.pubkey}
+                        leading={
+                            <Avatar
+                                src={contactProfiles[contact.pubkey]?.picture || contact.picture}
+                                pubkey={contact.pubkey}
+                                size="sm"
+                            />
+                        }
+                        title={displayName(contact)}
+                        body={
+                            <span className="line-clamp-1">
+                                {contact.about || contactProfiles[contact.pubkey]?.about || 'No bio yet'}
+                            </span>
+                        }
+                        onSelect={() => onSelectContact(contact)}
+                        selected={selectedContact?.pubkey === contact.pubkey}
+                    />
+                ))}
 
                 {!isLoading && contacts.length === 0 && (
                     <EmptyState
                         variant="minimal"
                         icon={UserPlusIcon}
                         title="No contacts yet"
-                        description="Add someone by npub above to start chatting."
+                        description="Add someone by npub to start chatting."
                     />
                 )}
             </div>
         </div>
     );
-};
+}

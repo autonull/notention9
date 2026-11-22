@@ -10,6 +10,8 @@ import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
 import {Textarea} from '../ui/Textarea';
 import {Modal} from '../ui/Modal';
+import {IdentityStrip} from '../patterns/IdentityStrip';
+import {RelayStatusChip} from './RelayStatusChip';
 
 interface ProfileEditorModalProps {
     isOpen: boolean;
@@ -37,11 +39,11 @@ function ProfileEditorModal({
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Edit Profile">
-            <form onSubmit={handleSubmit} className="space-y-4">
+        <Modal isOpen={isOpen} onClose={onClose} title="Edit profile">
+            <form onSubmit={handleSubmit} className="space-y-3">
                 <Input
-                    label="Display Name"
-                    placeholder="Display Name"
+                    label="Display name"
+                    placeholder="Display name"
                     value={profile.name || ''}
                     onChange={(e) =>
                         setProfile((p) => ({...p, name: e.target.value}))
@@ -64,7 +66,7 @@ function ProfileEditorModal({
                     }
                     className="h-24"
                 />
-                <div className="flex justify-end gap-4 mt-6">
+                <div className="flex justify-end gap-2 pt-3">
                     <Button
                         type="button"
                         onClick={onClose}
@@ -124,39 +126,39 @@ export function ProfileHeader({
         }
     };
 
-    const handleCopy = () => navigator.clipboard.writeText(npub);
-
     return (
         <>
-            <div className="flex-shrink-0 p-4 border-b border-neutral-700/50 flex items-center gap-4 bg-neutral-900/50">
-                <Avatar
-                    src={myProfile?.picture}
-                    pubkey={pubkey}
-                    size="xl"
-                    className="border-2 border-neutral-600"
-                />
-                <div className="flex-grow">
-                    <h2 className="text-xl font-bold text-white">
-                        {myProfile?.name || 'Anonymous'}
-                    </h2>
-                    <p
-                        className="text-sm text-neutral-400 font-mono cursor-pointer hover:text-blue-400"
-                        onClick={handleCopy}
-                        title="Click to copy"
+            <IdentityStrip
+                avatar={
+                    <Avatar
+                        src={myProfile?.picture}
+                        pubkey={pubkey}
+                        size="md"
+                        className="border border-[var(--app-line)]"
+                    />
+                }
+                name={myProfile?.name || 'Anonymous'}
+                handle={
+                    <button
+                        type="button"
+                        onClick={() => navigator.clipboard.writeText(npub)}
+                        title="Copy npub"
+                        className="min-w-0 max-w-[16rem] truncate font-mono text-[11px] text-[var(--app-faint)] transition-colors hover:text-[var(--app-text-secondary)]"
                     >
                         {formatNpub(npub)}
-                    </p>
-                    {myProfile?.about && (
-                        <p className="text-sm text-neutral-300 mt-1">{myProfile.about}</p>
-                    )}
-                </div>
-                <IconButton
-                    onClick={() => setIsModalOpen(true)}
-                    icon={EditIcon}
-                    title="Edit Profile"
-                    variant="secondary"
-                />
-            </div>
+                    </button>
+                }
+                chips={<RelayStatusChip relays={settings.nostr.relays}/>}
+                actions={
+                    <IconButton
+                        onClick={() => setIsModalOpen(true)}
+                        icon={EditIcon}
+                        title="Edit profile"
+                        variant="ghost"
+                        size="sm"
+                    />
+                }
+            />
             <ProfileEditorModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
