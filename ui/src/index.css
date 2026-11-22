@@ -22,6 +22,7 @@
     outline: none;
     height: 100%;
     width: 100%;
+    max-width: 72ch;
     flex: 1 1 auto;
     min-height: 100%;
     padding: 1.5rem;

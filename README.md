@@ -91,7 +91,7 @@ The practical distinction is between the **real** and the **imaginary**: definit
 
 ### 🗂️ User interface
 
-- Notes, dashboard and quick capture, map, timeline, network, chat, and settings views.
+- Notes workspace with the one omnibox, capture composer, and Canvas / List / Board / Map / Timeline modes; matches, replies, chat, and publishing live in the open note's rail; search and public notes live in one overlay; settings.
 - Search and sort across text, tags, properties, dates, distance, relevance, and recency.
 - Geographic notes appear on a map; temporal notes appear on a calendar with location-radius filtering.
 - Nostr direct messages use encrypted events, with the same identity used for publishing.

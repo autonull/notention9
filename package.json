@@ -27,7 +27,7 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test && pnpm --filter @notention/simulator test",
     "test:ui": "tsx scripts/test-ui-batched.ts",
-    "check:ui": "pnpm --filter @notention/ui typecheck && pnpm --filter @notention/ui exec playwright test --config test/playwright.config.ts --project=journeys journeys/golden-path.spec.ts journeys/axe-audit.spec.ts",
+    "check:ui": "pnpm lint:type && pnpm --filter @notention/ui typecheck && pnpm --filter @notention/ui exec playwright test --config test/playwright.config.ts --project=journeys journeys/golden-path.spec.ts journeys/axe-audit.spec.ts",
     "lint:type": "node scripts/check-type-scale.mjs",
     "test:ui:one": "pnpm --filter @notention/ui exec vitest run",
     "verify": "tsx scripts/verify.ts",

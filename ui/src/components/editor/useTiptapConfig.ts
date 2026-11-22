@@ -79,7 +79,7 @@ export const useTiptapConfig = ({
         content: sanitizeHTML(content),
         editorProps: {
             attributes: {
-                class: `prose prose-invert focus:outline-none h-full max-w-none w-full ${minimal ? 'p-2 text-sm prose-sm' : 'prose-lg sm:prose-xl lg:prose-2xl p-6'}`,
+                class: `prose prose-invert focus:outline-none h-full w-full ${minimal ? 'p-2 text-sm prose-sm' : 'text-body-lg p-6'}`,
             },
         },
         onUpdate: ({editor}) => onUpdateRef.current(editor.getHTML()),

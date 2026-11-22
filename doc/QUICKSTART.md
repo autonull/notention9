@@ -49,18 +49,18 @@ export LLAMA_GPU_LAYERS=0
 pnpm run dev:server
 ```
 
-Open `http://localhost:5173` (or the printed URL). You'll see the Inbox view with Quick Capture at the top.
+Open `http://localhost:5173` (or the printed URL). You'll see the Notes workspace with the omnibox at the top.
 
 ---
 
 ## 4. Capture a Request Note (2 min)
 
-1. Click the **Quick Capture** input at the top of Inbox
+1. Click the **omnibox** at the top of Notes
 2. Type a need in natural language:
    ```
    I need a wheelchair ramp before Friday, budget under $900
    ```
-3. Press **Cmd+Enter** (or Ctrl+Enter) to save
+3. Press **Enter** to keep the note
 4. The note appears with extracted properties:
    - `deadline` → `before` → `Friday`
    - `budget` → `less than` → `900 USD`
@@ -73,12 +73,12 @@ Open `http://localhost:5173` (or the printed URL). You'll see the Inbox view wit
 
 ## 5. Capture an Offer Note (2 min)
 
-1. Click Quick Capture again
+1. Use the omnibox again
 2. Type an offer:
    ```
    Offering wheelchair ramp installation, available this week, $750
    ```
-3. Press **Cmd+Enter** to save
+3. Press **Enter** to keep the note
 4. Properties extracted:
    - `role` → `contains` → `accessibility`
    - `service` → `contains` → `wheelchair ramp installation`
@@ -89,15 +89,14 @@ Open `http://localhost:5173` (or the printed URL). You'll see the Inbox view wit
 
 ## 6. See the Match (1 min)
 
-1. The **Local Match** panel in Inbox shows the match automatically
-2. Click the match card to open the **Why this match** panel
-3. You'll see:
+1. Open the request note; its **Matches** tab in the context rail shows the offer
+2. The match card shows the matched details, conflicts, missing properties, and score:
    - ✅ **Matched**: role (accessibility), service (wheelchair ramp)
    - ⚠️ **Conflicts**: none
    - ⚠️ **Missing**: deadline (offer doesn't specify when)
    - **Score**: e.g., 0.72 (72% compatibility)
 
-> **Keyboard**: `Alt+1` = Inbox, `Alt+2` = Notes, `Alt+3` = Actions
+> **Keyboard**: `Alt+1` = Notes, `Alt+2` = Settings, `Cmd+K` = search, `Cmd+N` = composer
 
 ---
 
@@ -149,14 +148,14 @@ Open `http://localhost:5173` (or the printed URL). You'll see the Inbox view wit
 
 | Shortcut | Action |
 |----------|--------|
-| `Cmd/Ctrl+N` | New note (Quick Capture focus) |
-| `Cmd/Ctrl+Enter` | Save note |
-| `Cmd/Ctrl+K` | Command palette |
-| `Cmd/Ctrl+V` | Paste clipboard into Quick Capture |
-| `Alt+1/2/3/...` | Navigate views |
+| `Cmd/Ctrl+N` | Open the composer for a new note |
+| `Cmd/Ctrl+Enter` | Save the note (composer or editor) |
+| `Cmd/Ctrl+K` | One search overlay: notes, details, tags, public notes, commands |
+| `Cmd/Ctrl+V` | Paste clipboard into the omnibox |
+| `Alt+1` / `Alt+2` | Notes / Settings |
 | `Alt+,` | Settings |
 | `Ctrl+Z / Ctrl+Shift+Z` | Undo/Redo in editor |
 
 ---
 
-*Last updated: 2026-11-17 — Notention TODO.25 W9.1*
+*Last updated: 2026-11-22 — TODO.30 W30.8*

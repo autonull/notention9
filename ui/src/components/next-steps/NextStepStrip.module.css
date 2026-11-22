@@ -153,12 +153,25 @@
 }
 
 @container (max-width: 32rem) {
+  .hint {
+    flex-wrap: wrap;
+    row-gap: 6px;
+    align-items: flex-start;
+  }
+
   .evidence {
     display: none;
   }
 
   .title {
+    flex: 1 1 0;
     white-space: normal;
+  }
+
+  .actions {
+    flex-basis: 100%;
+    margin-left: 0;
+    justify-content: flex-end;
   }
 }
 

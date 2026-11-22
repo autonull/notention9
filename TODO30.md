@@ -48,19 +48,23 @@ No capability is removed. Only the false destinations are.
 
 | Workstream | Status | Evidence |
 |---|---|---|
-| W30.0 Guardrails | Done | `golden-path.spec.ts` (8 journeys), `axe-audit.spec.ts` (4 surfaces), 47-scene gallery (`gallery.scene.ts` plus restored capability scenes), old gallery archived. |
+| W30.0 Guardrails | Done | `golden-path.spec.ts` (10 journeys), `axe-audit.spec.ts` (4 surfaces, 8 dual-theme tests), 47-scene gallery (`gallery.scene.ts` plus restored capability scenes), old gallery archived. |
 | W30.1 IA collapse | Done | `View = notes \| settings`, `parseRoute`/`routeToHash`, legacy redirects, sidebar and bottom nav removed. |
-| W30.2 Full-bleed workspace | Done | Omnibox hero, filter chips, Canvas/List/Board/Map/Timeline switcher, responsive grid, scroll restore. |
-| W30.3 Note detail and rail | Done | `NoteContextRail` with Next steps / Matches / Replies / Chat / Share; tags are a sticky row inside the note body; the text editor fills the remaining height; one publish in the note header. |
-| W30.4 Type and colour | Done | `type.css`, `palette.css`, neutral chrome, no uppercase sentence labels, compact note cards, one accent edge on note detail, light theme on the core path. Axe is green in dark and light on Notes, Note, Settings, and Skills. |
+| W30.2 Full-bleed workspace | Done | Omnibox hero, filter chips, Canvas/List/Board/Map/Timeline switcher, responsive grid, scroll restore, no width cap. |
+| W30.3 Note detail and rail | Done | `NoteContextRail` with Next steps / Matches / Replies / Chat / Share; the top step wraps its actions below the title at rail width; tags are a sticky row inside the note body; the text editor fills the remaining height; one publish in the note header. |
+| W30.4 Type and colour | Done | `type.css`, `palette.css`, neutral chrome, no uppercase sentence labels, compact note cards, one accent edge on note detail, light theme on the core path. Settings uses `text-h1` (40/48), `text-meta` group labels (13/18), and `text-ui` tabs (15/22). Prose stops at `72ch`; the panel stays full width. `pnpm lint:type` guards 9px/10px and runs inside `pnpm check:ui`. Axe is green in dark and light on Notes, Note, Settings, and Skills. |
 | W30.5 Capture, search, commands | Done | One omnibox, `Cmd+N` composer, one `Cmd+K` overlay with Search / Explore public notes / Chat scopes. `→` previews a note in the same overlay; `Enter` opens it. |
 | W30.6 Settings | Done | Full-screen, five groups, one open, `#/settings/:tab` deep links. One row per network, one switch, one status sentence, no duplicate private-mode sentence. |
 | W30.7 Mobile | Done | No bottom nav, floating `+`, single-column grid, full-screen note, bottom-sheet rail, 18px capture, mobile tests green. |
-| W30.8 Evidence and loop | Done | 47 scenes regenerated for this milestone. Relay scenes clear the local relay before publishing; the runner uses one worker so public feeds cannot read another scene. `pnpm check:ui` covers typecheck, 8 dual-theme axe views, and 10 golden-path journeys, and runs in CI with Chromium installed. `waitForTimeout` is gone from journeys; only the deterministic audit settle remains. |
+| W30.8 Evidence and loop | Done | 47 scenes regenerated for this milestone in 3.4 min; `pnpm screenshot <group>` refreshes a group. Relay scenes clear the local relay before publishing; the runner uses one worker so public feeds cannot read another scene. `pnpm check:ui` covers `lint:type`, typecheck, 8 dual-theme axe views, and 10 golden-path journeys, and runs in CI with Chromium installed. `waitForTimeout` is gone from journeys; only the deterministic audit settle remains. `pnpm test:ui` passes all 42 files. |
 
 ### Remaining work
 
-None for W30.0–W30.8. Keep the gallery out of per-commit checks and regenerate it once per milestone.
+No W30.0–W30.8 code work remains. Maintenance only:
+
+- Regenerate the full gallery with `pnpm screenshots` after visual changes; it takes about 3–4 min because the single worker keeps the shared relay isolated.
+- Run `pnpm check:ui` and `pnpm test:ui` before merge.
+- Keep the gallery out of per-commit checks.
 
 Do not re-open W30.1–W30.6 unless a golden-path or axe test fails.
 
@@ -323,8 +327,8 @@ Priority order, top to bottom:
 
 ## 5. Workstreams
 
-Each workstream is one commit (or a small commit pair) and must leave `typecheck`, the two
-axe views, and the golden-path journeys green.
+Each workstream is one commit (or a small commit pair) and must leave `typecheck`, the
+dual-theme axe views, and the golden-path journeys green.
 
 ### W30.0 — Guardrails first
 
@@ -332,7 +336,7 @@ axe views, and the golden-path journeys green.
   `#/notes?capture=1`; one primary per view; body ≥16px; axe on Notes and Settings.
 - Replace the 54-journey suite with one **golden path** spec:
   capture → note → next step → respond → done.
-- Reduce the screenshot gallery to 12 intentional scenes:
+- Start with 12 named scenes; the final gallery grows to 47 so every old destination keeps an image. The minimum named set:
   `notes-empty`, `notes-grid`, `note-detail`, `note-context`, `capture`, `search`,
   `settings-general`, `settings-network`, `settings-skills`, `board`, `map`, `timeline`.
 - Freeze the old gallery under `doc/screenshot/archive/` until the new one is complete.
@@ -438,9 +442,9 @@ axe views, and the golden-path journeys green.
 
 ### W30.8 — Evidence and developer loop
 
-- One screenshot implementation, 12 scenes; `pnpm screenshot <scene>` refreshes one image.
-- `pnpm check:ui` = typecheck + axe Notes/Settings + 6 golden-path journeys.
-- One full gallery per milestone, not per commit; keep `pnpm screenshots:all` optional.
+- One screenshot runner, 47 capability scenes; `pnpm screenshot <group>` refreshes one area.
+- `pnpm check:ui` = `lint:type` + typecheck + axe Notes/Note/Settings/Skills in both themes + 10 golden-path journeys.
+- One full gallery per milestone, not per commit; keep `pnpm screenshots` optional.
 - Remove `waitForTimeout` from journeys except one deterministic settle; use locators.
 - Run the local relay per screenshot worker or clear it before the gallery, so the public feed
   cannot leak notes from other tests.
@@ -466,7 +470,7 @@ axe views, and the golden-path journeys green.
 - [x] Settings is full-screen with no note sidebar, and `#/settings/:tab` works.
 - [x] Mobile has no bottom nav, one composer, one context sheet, ≥44px targets.
 - [x] `pnpm typecheck`, `pnpm test:ui`, `pnpm check:ui`, and axe pass.
-- [x] 47 gallery scenes regenerate; full gallery < 2 min on the machine default.
+- [x] 47 gallery scenes regenerate in about 3–4 min with the isolated single relay worker.
 
 ---
 

@@ -232,7 +232,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                 title={initialModalData ? "Edit detail" : "Add detail"}
             />
             <div className="flex-grow min-h-0 overflow-y-auto flex flex-col" onClick={handleEditorClick}>
-                <div className="max-w-[42rem] w-full flex flex-1 flex-col">
+                <div className="flex w-full flex-1 flex-col">
                     {topContent}
                     {viewMode === 'rich' ? (
                         <>

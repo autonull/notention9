@@ -144,7 +144,7 @@ function NotesWorkspace({notes}: {notes: Note[]}) {
 
     return (
         <div ref={scrollRef} className="h-full overflow-y-auto custom-scrollbar">
-            <div className="mx-auto w-full max-w-[1600px] px-4 pb-24 pt-5 md:px-6 md:pt-6">
+            <div className="w-full px-4 pb-24 pt-5 md:px-6 md:pt-6">
                 <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
                     <div>
                         <h2 className="text-2xl font-semibold tracking-tight text-neutral-100">Notes</h2>

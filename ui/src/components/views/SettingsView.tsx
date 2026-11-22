@@ -155,7 +155,7 @@ export function SettingsView() {
     return (
         <div className="flex h-full flex-col overflow-hidden bg-neutral-950">
             <header className="shrink-0 px-4 pb-4 pt-5 md:px-6">
-                <h1 className="text-3xl font-semibold tracking-tight text-neutral-100 md:text-4xl">Settings</h1>
+                <h1 className="text-h1 text-neutral-100">Settings</h1>
                 <p className="mt-1 text-base text-neutral-400">Preferences and network data.</p>
             </header>
 
@@ -188,7 +188,7 @@ export function SettingsView() {
                                         aria-expanded={open}
                                         onClick={() => setOpenGroup(open ? '' : group.id)}
                                         className={cn(
-                                            'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-neutral-300 hover:bg-neutral-900',
+                                            'flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-meta font-medium text-neutral-300 hover:bg-neutral-900',
                                             isRTL ? 'text-right' : 'text-left'
                                         )}
                                     >
@@ -212,7 +212,7 @@ export function SettingsView() {
                                                     tabIndex={settingsTab === tab.id ? 0 : -1}
                                                     onClick={() => selectTab(tab.id)}
                                                     className={cn(
-                                                        'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm transition-colors',
+                                                        'flex w-full items-center gap-2 rounded-lg px-3 py-2 text-ui transition-colors',
                                                         isRTL ? 'text-right' : 'text-left',
                                                         settingsTab === tab.id
                                                             ? 'bg-neutral-800 text-neutral-100'
