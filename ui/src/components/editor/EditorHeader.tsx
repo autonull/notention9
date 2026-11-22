@@ -63,51 +63,25 @@ export function EditorHeader({
     propertyCount = 0,
 }: EditorHeaderProps) {
     return (
-        <header className="flex-shrink-0 bg-neutral-950/80 backdrop-blur border-b border-neutral-800/80 sticky top-0 z-40">
-            {/* Row 1: Back, Title, Privacy, Core Actions */}
-            <div className="flex flex-wrap md:flex-nowrap items-center gap-2 px-4 py-2.5">
+        <header className="shrink-0 border-b border-[var(--app-line)] bg-[var(--app-bg)]">
+            <div className="flex flex-wrap items-center gap-2 px-2 py-1.5 md:h-14 md:flex-nowrap md:px-4 md:py-0">
                 {onBack && (
                     <IconButton
                         onClick={onBack}
-                        tooltip="Back to List"
+                        tooltip="Back to notes"
+                        tooltipPosition="bottom"
                         icon={ArrowLeftIcon}
-                        variant="secondary"
+                        variant="ghost"
                         size="sm"
-                        className=""
+                        aria-label="Back to notes"
+                        className="order-1"
                     />
                 )}
 
-                <div className="flex-grow min-w-0 flex items-center mr-2 basis-[calc(100%-3.5rem)] md:basis-auto">
-                    <div className="relative w-full">
-                        <input
-                            id="note-title-input"
-                            type="text"
-                            value={title || ''}
-                            onChange={onTitleChange}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    e.preventDefault();
-                                    document.querySelector<HTMLElement>('.ProseMirror')?.focus();
-                                }
-                            }}
-                            placeholder="Untitled Note"
-                            autoFocus={!title && !readOnly}
-                            readOnly={readOnly}
-                            disabled={readOnly}
-                            className="w-full bg-transparent border-0 text-h1 text-neutral-100 placeholder-neutral-600 px-1 py-0.5 rounded hover:bg-white/5 focus:outline-none focus:ring-0 focus:bg-white/5"
-                        />
-                    </div>
-                    {readOnly && <LockIcon className="h-4 w-4 text-neutral-400 ml-2 flex-shrink-0"/>}
-                </div>
-
-                <div className="flex items-center gap-2 basis-full justify-end md:basis-auto">
+                <div className="order-2 ml-auto flex min-w-0 items-center gap-1.5 md:order-3">
+                    {readOnly && <LockIcon className="hidden h-3.5 w-3.5 text-[var(--app-faint)] sm:block"/>}
                     {id && <SkillExecutionIndicator noteId={id}/>}
-
-                    {/* Privacy Control Inline */}
-                    <div className="flex-shrink-0">
-                        <PrivacyControl note={note} onUpdate={onUpdateNote}/>
-                    </div>
-
+                    <PrivacyControl note={note} onUpdate={onUpdateNote}/>
                     <EditorControls
                         onPublish={onPublish}
                         isPublishing={isPublishing}
@@ -127,7 +101,25 @@ export function EditorHeader({
                         propertyCount={propertyCount}
                     />
                 </div>
+
+                <input
+                    id="note-title-input"
+                    type="text"
+                    value={title || ''}
+                    onChange={onTitleChange}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            document.querySelector<HTMLElement>('.ProseMirror')?.focus();
+                        }
+                    }}
+                    placeholder="Untitled note"
+                    autoFocus={!title && !readOnly}
+                    readOnly={readOnly}
+                    disabled={readOnly}
+                    className="order-3 w-full min-w-0 basis-full rounded-md border-0 bg-transparent px-5 py-0.5 text-[20px] font-semibold leading-[1.2] tracking-[-0.025em] text-[var(--app-text)] placeholder:text-[var(--app-faint)] focus:outline-none md:order-2 md:w-auto md:flex-1 md:basis-auto md:px-0 md:text-[20px]"
+                />
             </div>
         </header>
     );
-};
+}

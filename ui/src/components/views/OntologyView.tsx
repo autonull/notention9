@@ -103,13 +103,13 @@ export function OntologyView() {
     const safeActiveTab = activeTab === 'simulator' ? 'graph' : activeTab;
 
     return (
-        <div className="p-4 md:p-6 h-full overflow-y-auto bg-neutral-900 text-white custom-scrollbar">
-            <div className="flex flex-col gap-3 mb-4 border-b border-neutral-700/50 pb-4">
+        <div className="space-y-5 animate-fade-in">
+            <div className="flex flex-col gap-4 border-b border-[var(--app-line)] pb-4">
 
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <h2 className="text-xl font-bold text-white">Ontology</h2>
-                        <p className="text-sm text-neutral-400">
+                        <h2 className="text-[18px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">Ontology</h2>
+                        <p className="text-[12px] text-[var(--app-muted)]">
                             The shared vocabulary of your network, built from the details in your notes.
                         </p>
                     </div>
@@ -117,7 +117,7 @@ export function OntologyView() {
                     <div className="flex items-center gap-2">
                         {safeActiveTab === 'graph' && (
                             <div className="flex items-center gap-2 mr-2">
-                                <span className="text-xs text-neutral-400 hidden sm:inline">Edit Mode</span>
+                                <span className="hidden text-[11px] text-[var(--app-muted)] sm:inline">Edit mode</span>
                                 <Toggle checked={isEditing} onChange={() => setIsEditing(p => !p)}/>
                             </div>
                         )}
@@ -163,18 +163,18 @@ export function OntologyView() {
                     <OntologyConflicts conflicts={conflicts} onSelectNote={handleSelectNote}/>
                 ) : safeActiveTab === 'suggestions' ? (
                     <div className="space-y-4">
-                        <div className="bg-purple-900/20 border border-purple-900/50 p-4 rounded-lg flex gap-3">
-                            <SparklesIcon className="text-purple-400 w-6 h-6 flex-shrink-0" />
+                        <div className="flex gap-3 rounded-lg border border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] p-3">
+                            <SparklesIcon className="h-4 w-4 shrink-0 text-[var(--app-accent-text)]" />
                             <div>
-                                <h3 className="font-semibold text-purple-100">Learned Attributes</h3>
-                                <p className="text-sm text-purple-300">
+                                <h3 className="text-[13px] font-medium text-[var(--app-text)]">Learned attributes</h3>
+                                <p className="text-[12px] leading-5 text-[var(--app-muted)]">
                                     The system observes your usage and suggests new attributes to add to the ontology.
                                 </p>
                             </div>
                         </div>
 
                         {suggestions.length === 0 ? (
-                            <div className="text-center text-neutral-400 py-12">
+                            <div className="py-10 text-center text-[12px] text-[var(--app-muted)]">
                                 No suggestions yet. Start using new properties in your notes!
                             </div>
                         ) : (

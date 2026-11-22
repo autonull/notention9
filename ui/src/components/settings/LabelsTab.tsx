@@ -97,20 +97,20 @@ export function LabelsTab() {
     };
 
     return (
-        <div className="bg-neutral-900/70 p-4 md:p-6 rounded-lg animate-fade-in lg:flex-1 lg:min-h-0 lg:flex lg:flex-col">
+        <div className="space-y-5 animate-fade-in">
             <div className="flex flex-col gap-2 shrink-0">
-                <h2 className="text-xl font-semibold text-neutral-100 flex items-center gap-3">
-                    <TagIcon className="h-6 w-6 text-emerald-400"/>
+                <h2 className="flex items-center gap-2 text-[18px] font-semibold tracking-[-0.01em] text-[var(--app-text)]">
+                    <TagIcon className="h-4 w-4 text-[var(--app-accent-text)]"/>
                     Labels
                 </h2>
-                <p className="text-sm text-neutral-400">
-                    Manage tags across all your notes. Rename, merge, or delete labels.
+                <p className="text-[12px] text-[var(--app-muted)]">
+                    Rename, merge, or delete the tags that connect your notes.
                 </p>
             </div>
 
-            <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:flex-1 lg:min-h-0">
+            <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
                 <div className="flex flex-col gap-4">
-                    <div className="p-4 bg-neutral-800 rounded-lg border border-neutral-700">
+                    <div className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
                         <div className="flex gap-2 items-center mb-4">
                             <div className="flex-1">
                                 <Input
@@ -126,18 +126,18 @@ export function LabelsTab() {
                             </Button>
                         </div>
 
-                        <p className="text-xs text-neutral-400">
+                        <p className="text-[11px] text-[var(--app-faint)]">
                             {sortedTags.length} label{sortedTags.length !== 1 ? 's' : ''} in use across {notes.length} note{notes.length !== 1 ? 's' : ''}
                         </p>
                     </div>
 
-                    <div className="bg-neutral-900/30 p-4 rounded-lg border border-neutral-700/30 lg:mt-auto">
-                        <h3 className="text-sm font-semibold text-neutral-300 mb-2">Advanced</h3>
-                        <p className="text-xs text-neutral-400 leading-relaxed">
+                    <div className="rounded-lg border border-dashed border-[var(--app-line)] p-3">
+                        <h3 className="mb-1 text-[12px] font-medium text-[var(--app-text-secondary)]">Advanced</h3>
+                        <p className="text-[11px] leading-5 text-[var(--app-muted)]">
                             For full ontology editing (custom attributes, types, relationships), use the{' '}
                             <button
                                 onClick={() => setSettings(prev => ({...prev, activeView: 'ontology'}))}
-                                className="text-blue-400 hover:underline"
+                                className="text-[var(--app-accent-text)] hover:underline"
                             >
                                 Ontology Editor
                             </button>
@@ -152,12 +152,12 @@ export function LabelsTab() {
                             variant="minimal"
                             icon={TagIcon}
                             title="No labels yet"
-                            description={<>Create one, or add a tag inline with <code className="text-blue-400">#tag</code> in a note.</>}
+                            description={<>Create one, or add a tag inline with <code className="text-[var(--app-accent-text)]">#tag</code> in a note.</>}
                         />
                     ) : (
                         <div className="space-y-1.5">
                             {sortedTags.map(({tag, count}) => (
-                                <div key={tag} className="flex items-center justify-between p-2 md:p-3 bg-neutral-900/50 rounded-lg border border-neutral-700/30">
+                                <div key={tag} className="flex items-center justify-between rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] px-3 py-2">
                                     {editingTag === tag ? (
                                         <div className="flex-1 flex items-center gap-2">
                                             <input
@@ -167,7 +167,7 @@ export function LabelsTab() {
                                                 onBlur={() => handleRenameTag(tag, editValue)}
                                                 onKeyDown={(e) => handleKeyDown(e, tag)}
                                                 autoFocus
-                                                className="flex-1 bg-neutral-800 border border-neutral-600 rounded px-2 py-1 text-white text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                                className="h-8 flex-1 rounded-md border border-[var(--app-line)] bg-[var(--app-surface)] px-2 text-[13px] text-[var(--app-text)] focus:border-[var(--app-accent-line)] focus:outline-none"
                                             />
                                             <Button variant="ghost" size="sm" onClick={() => handleRenameTag(tag, editValue)} icon={CheckIcon} aria-label="Save"/>
                                             <Button variant="ghost" size="sm" onClick={handleCancelEdit} icon={XIcon} aria-label="Cancel"/>
@@ -175,9 +175,9 @@ export function LabelsTab() {
                                     ) : (
                                         <>
                                             <div className="flex items-center gap-3 flex-1 min-w-0">
-                                                <TagIcon className="w-5 h-5 text-emerald-400 flex-shrink-0"/>
-                                                <span className="font-medium text-white truncate">#{tag}</span>
-                                                <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-emerald-500/20 text-emerald-300">
+                                                <TagIcon className="h-3.5 w-3.5 shrink-0 text-[var(--app-faint)]"/>
+                                                <span className="truncate text-[13px] font-medium text-[var(--app-text-secondary)]">#{tag}</span>
+                                                <span className="rounded-md border border-[var(--app-line)] bg-[var(--app-raised)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--app-muted)]">
                                                     {count} note{count !== 1 ? 's' : ''}
                                                 </span>
                                             </div>
@@ -187,7 +187,7 @@ export function LabelsTab() {
                                                     size="sm"
                                                     onClick={() => handleStartEdit(tag)}
                                                     aria-label={`Rename ${tag}`}
-                                                    className="text-neutral-400 hover:text-white hover:bg-neutral-700/50"
+                                                    className="text-[var(--app-muted)]"
                                                 >
                                                     <PencilIcon className="w-4 h-4"/>
                                                 </Button>
@@ -196,7 +196,7 @@ export function LabelsTab() {
                                                     size="sm"
                                                     onClick={() => handleDeleteTag(tag)}
                                                     aria-label={`Delete ${tag}`}
-                                                    className="text-neutral-400 hover:text-red-400 hover:bg-red-500/10"
+                                                    className="text-[var(--app-muted)] hover:text-red-400"
                                                 >
                                                     <TrashIcon className="w-4 h-4"/>
                                                 </Button>

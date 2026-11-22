@@ -13,35 +13,28 @@ export function EditorStatusBar({editor, saveStatus}: EditorStatusBarProps) {
 
     const text = editor.getText();
     const wordCount = text.split(/\s+/).filter((w) => w.length > 0).length;
-    const charCount = text.length;
 
     return (
-        <div
-            className="flex-shrink-0 px-4 py-1 bg-neutral-900 border-t border-neutral-700/50 text-xs text-neutral-400 flex items-center justify-between font-mono animate-fade-in">
-            <div className="flex items-center gap-2">
-                {saveStatus === 'saving' && (
-                    <div className="flex items-center gap-1.5 text-blue-400">
-                        <LoadingSpinner className="w-3 h-3"/>
-                        <span>Saving...</span>
-                    </div>
-                )}
-                {saveStatus === 'saved' && (
-                    <div className="flex items-center gap-1.5 text-green-500/80 transition-opacity duration-1000">
-                        <CheckCircleIcon className="w-3.5 h-3.5"/>
-                        <span>Saved</span>
-                    </div>
-                )}
-                {saveStatus === 'error' && (
-                    <div className="flex items-center gap-1.5 text-red-400">
-                        <ExclamationTriangleIcon className="w-3.5 h-3.5"/>
-                        <span>Save Failed</span>
-                    </div>
-                )}
-            </div>
-            <div className="flex gap-4">
-                <span>{wordCount} words</span>
-                <span>{charCount} characters</span>
-            </div>
+        <div className="flex shrink-0 items-center gap-3 text-[11px] tabular-nums text-[var(--app-faint)]">
+            {saveStatus === 'saving' && (
+                <span className="flex items-center gap-1.5 text-[var(--app-muted)]">
+                    <LoadingSpinner className="h-3 w-3"/>
+                    Saving
+                </span>
+            )}
+            {saveStatus === 'saved' && (
+                <span className="flex items-center gap-1.5 text-[var(--app-muted)]">
+                    <CheckCircleIcon className="h-3 w-3 text-emerald-400/80"/>
+                    Saved
+                </span>
+            )}
+            {saveStatus === 'error' && (
+                <span className="flex items-center gap-1.5 text-red-400">
+                    <ExclamationTriangleIcon className="h-3 w-3"/>
+                    Not saved
+                </span>
+            )}
+            <span className="hidden sm:inline">{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
         </div>
     );
-};
+}

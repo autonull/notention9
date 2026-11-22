@@ -38,9 +38,9 @@ describe('ProfileSettings', () => {
             </StrategyProvider>
         );
 
-        expect(screen.getByText('Profile & Strategy Settings')).toBeInTheDocument();
-        expect(screen.getByText('Manual Profile Selection')).toBeInTheDocument();
-        expect(screen.getByText('Active Profile')).toBeInTheDocument();
+        expect(screen.getByRole('heading', {name: 'Profile & strategy'})).toBeInTheDocument();
+        expect(screen.getByText('Manual profile selection')).toBeInTheDocument();
+        expect(screen.getByText('Active profile')).toBeInTheDocument();
     });
 
     it('shows available profiles', () => {
@@ -63,7 +63,7 @@ describe('ProfileSettings', () => {
             </StrategyProvider>
         );
 
-        expect(screen.getByText('Strategy Overrides')).toBeInTheDocument();
+        expect(screen.getByText('Strategy overrides')).toBeInTheDocument();
     });
 
     it('shows available profiles in details', () => {

@@ -37,92 +37,69 @@ export function MatchItem({
     const { note, result, direction } = match;
     const score = Math.round(result.score * 100);
 
-    const getScoreColor = (s: number) => {
-        if (s >= 80) return 'text-green-400';
-        if (s >= 50) return 'text-blue-400';
-        return 'text-yellow-400';
-    };
-
     return (
         <div
             onClick={onClick}
             className={`
-                group relative flex flex-col gap-2 p-3 rounded-lg border border-neutral-800 bg-neutral-900/50
-                hover:border-neutral-700 hover:bg-neutral-800/50 transition-all duration-200
+                group relative flex flex-col gap-2 rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2.5 transition-colors
+                hover:border-[var(--app-line-strong)]
                 ${isLocal ? 'cursor-pointer' : ''}
             `}
             data-testid="match-item"
         >
-            {/* Header: Score, Direction, Author */}
-            <div className="flex justify-between items-start">
-                <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2">
-                        <span className={`text-sm font-bold ${getScoreColor(score)}`}>
-                            {score}% Match
-                        </span>
-                        {direction && (
- <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium tracking-wide ${
-                                direction === 'outgoing'
-                                    ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50'
-                                    : 'bg-purple-900/30 text-purple-300 border border-purple-800/50'
-                            }`}>
-                                {direction === 'outgoing' ? 'Outgoing' : 'Incoming'}
-                            </span>
-                        )}
-                    </div>
-                </div>
-
+            <div className="flex items-center gap-2">
+                <span className="text-[12px] font-semibold tabular-nums text-[var(--app-text-secondary)]">
+                    {score}%
+                </span>
+                <span className="text-[11px] text-[var(--app-faint)]">match</span>
+                {direction && (
+                    <span className="text-[11px] text-[var(--app-faint)]">
+                        {direction === 'outgoing' ? 'outgoing' : 'incoming'}
+                    </span>
+                )}
                 {note.author && !isLocal && (
-                    <div className="flex items-center gap-1.5 text-xs text-neutral-400 font-mono bg-neutral-950 px-1.5 py-0.5 rounded border border-neutral-800">
-                        <NetworkIcon className="w-3 h-3 text-neutral-400" />
-                        {note.author.slice(0, 8)}...
-                    </div>
+                    <span className="ml-auto flex max-w-[9rem] items-center gap-1 truncate font-mono text-[11px] text-[var(--app-faint)]">
+                        <NetworkIcon className="h-3 w-3 shrink-0" />
+                        {note.author.slice(0, 8)}…
+                    </span>
                 )}
             </div>
 
-            {/* Content Preview */}
-            <div className="pl-2 border-l-2 border-neutral-800 group-hover:border-neutral-600 transition-colors">
-                <p className="text-xs text-neutral-300 line-clamp-2 font-medium">
+            <div className="min-w-0">
+                <p className="line-clamp-2 text-[12px] font-medium leading-4 text-[var(--app-text-secondary)]">
                     {note.title || note.content}
                 </p>
-                {!note.title && note.content.length > 100 && (
-                     <span className="text-xs text-neutral-400 italic">...more</span>
-                )}
             </div>
 
-            {/* Semantic Matches (Badges) */}
-            <div className="flex flex-wrap gap-1.5 mt-1">
+            <div className="flex flex-wrap gap-1">
                 {result.matches.map((m, i) => (
                     <MatchBadge key={`match-${i}`} match={m} />
                 ))}
 
-                {/* Conflicts */}
                 {result.conflicts?.map((m, i) => (
                     <span
                         key={`conflict-${i}`}
-                        className="text-xs px-1.5 py-0.5 rounded border flex items-center gap-1 bg-red-900/20 text-red-300 border-red-900/30"
+                        className="inline-flex items-center gap-1 rounded border border-[var(--app-line)] bg-[var(--app-raised)] px-1.5 py-0.5 text-[11px] text-[var(--app-muted)]"
                         title={m.reason}
                     >
-                        <XMarkIcon className="w-3 h-3" />
+                        <XMarkIcon className="h-2.5 w-2.5 text-red-400/80" />
                         {m.reason}
                     </span>
                 ))}
 
-                {/* Missing */}
                 {result.missing?.map((p, i) => (
                     <span
                         key={`missing-${i}`}
-                        className="text-xs px-1.5 py-0.5 rounded border border-dashed flex items-center gap-1 bg-neutral-800/30 text-neutral-400 border-neutral-700"
+                        className="inline-flex items-center gap-1 rounded border border-dashed border-[var(--app-line-strong)] px-1.5 py-0.5 text-[11px] text-[var(--app-faint)]"
                         title={`Missing property: ${p.key}`}
                     >
-                        <QuestionMarkCircleIcon className="w-3 h-3" />
+                        <QuestionMarkCircleIcon className="h-2.5 w-2.5" />
                         Missing: {p.key}
                     </span>
                 ))}
             </div>
 
-            {/* Actions */}
-            <div className="mt-2 pt-2 border-t border-neutral-800 flex gap-2">
+            <div className="flex gap-1.5">
                 {isLocal ? (
                     <Button
                         size="xs"
@@ -145,7 +122,7 @@ export function MatchItem({
                 ) : (
                     <Button
                         size="xs"
-                        variant="primary"
+                        variant="secondary"
                         onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
                         icon={UserPlusIcon}
                     >
@@ -160,59 +137,42 @@ export function MatchItem({
 const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
     const type = match.details?.type || 'unknown';
     const details = match.details;
-
-    let badgeClass = 'bg-neutral-800 text-neutral-400 border-neutral-700';
-    let icon = null;
+    let icon: React.ReactNode = null;
     let text = match.reason;
 
     switch (type) {
         case 'alias':
-            badgeClass = 'bg-purple-900/20 text-purple-300 border-purple-900/30';
-            icon = <TagIcon className="w-3 h-3" />;
-            text = `Alias: ${details?.aliasUsed} ≈ ${match.requestProp.key}`;
+            icon = <TagIcon className="h-2.5 w-2.5" />;
+            text = `alias ${details?.aliasUsed} ≈ ${match.requestProp.key}`;
             break;
         case 'fuzzy':
-            badgeClass = 'bg-orange-900/20 text-orange-300 border-orange-900/30';
-            icon = <SparklesIcon className="w-3 h-3" />;
+            icon = <SparklesIcon className="h-2.5 w-2.5" />;
             text = `~ ${match.offerProp.values[0]}`;
             break;
         case 'range':
-            badgeClass = 'bg-blue-900/20 text-blue-300 border-blue-900/30';
-            if (details?.valueMatch === 'in') {
-                text = `In range: ${match.offerProp.values[0]}`;
-            } else if (details?.valueMatch === 'out') {
-                badgeClass = 'bg-red-900/20 text-red-300 border-red-900/30';
-                text = `Out of range: ${match.offerProp.values[0]}`;
-            }
-            break;
-        case 'geo':
-            badgeClass = 'bg-teal-900/20 text-teal-300 border-teal-900/30';
+            text = details?.valueMatch === 'out'
+                ? `out of range: ${match.offerProp.values[0]}`
+                : `in range: ${match.offerProp.values[0]}`;
             break;
         case 'date':
-            badgeClass = 'bg-cyan-900/20 text-cyan-300 border-cyan-900/30';
-            icon = <ClockIcon className="w-3 h-3" />;
+            icon = <ClockIcon className="h-2.5 w-2.5" />;
             break;
         case 'partial':
-            badgeClass = 'bg-yellow-900/20 text-yellow-300 border-yellow-900/30';
-            icon = <ExclamationTriangleIcon className="w-3 h-3" />;
+            icon = <ExclamationTriangleIcon className="h-2.5 w-2.5" />;
             break;
         case 'exact':
-            badgeClass = 'bg-green-900/20 text-green-300 border-green-900/30';
-            icon = <CheckCircleIcon className="w-3 h-3" />;
+            icon = <CheckCircleIcon className="h-2.5 w-2.5" />;
             text = `${match.requestProp.key}: ${match.offerProp.values[0]}`;
             break;
     }
 
     return (
         <span
-            className={`
-                text-xs px-1.5 py-0.5 rounded border flex items-center gap-1
-                ${badgeClass}
-            `}
+            className="inline-flex items-center gap-1 rounded border border-[var(--app-line)] bg-[var(--app-raised)] px-1.5 py-0.5 text-[11px] text-[var(--app-muted)]"
             title={match.reason}
         >
             {icon}
-            {text}
+            <span className="truncate">{text}</span>
         </span>
     );
 };

@@ -1,216 +1,173 @@
 import React from 'react';
 import { useSettings } from '../../hooks/useSettingsContext';
-import { Toggle } from '../ui/Toggle';
-import { PaletteIcon, MinimizeIcon, MaximizeIcon, SunIcon, MoonIcon, MonitorIcon } from '../../components/ui/icons';
+import { Button } from '../ui/Button';
+import { Input } from '../ui/Input';
+import { Select } from '../ui/Select';
+import { ChoiceGrid, SectionHeader } from '../ui/kit';
+import { SunIcon, MoonIcon, MonitorIcon, MinimizeIcon, MaximizeIcon } from '../../components/ui/icons';
 import { cn } from '../../utils/ui';
 
 const ACCENT_COLORS = [
-    { name: 'Blue', value: '#404040' },
-    { name: 'Violet', value: '#7c3aed' },
+    { name: 'Violet', value: '#6366f1' },
+    { name: 'Blue', value: '#2563eb' },
+    { name: 'Teal', value: '#0d9488' },
     { name: 'Green', value: '#16a34a' },
-    { name: 'Orange', value: '#ea580c' },
-    { name: 'Red', value: '#dc2626' },
-    { name: 'Cyan', value: '#0891b2' },
-    { name: 'Pink', value: '#db2777' },
     { name: 'Amber', value: '#d97706' },
+    { name: 'Orange', value: '#ea580c' },
+    { name: 'Rose', value: '#e11d48' },
+    { name: 'Pink', value: '#db2777' },
+];
+
+const THEMES = [
+    { id: 'light' as const, label: 'Light', icon: SunIcon },
+    { id: 'dark' as const, label: 'Dark', icon: MoonIcon },
+    { id: 'system' as const, label: 'System', icon: MonitorIcon },
+];
+
+const DENSITIES = [
+    { id: 'comfortable' as const, label: 'Comfortable', description: 'More breathing room', icon: MaximizeIcon },
+    { id: 'compact' as const, label: 'Compact', description: 'Fit more on screen', icon: MinimizeIcon },
 ];
 
 export function AppearanceTab() {
     const { settings, setSettings } = useSettings();
-
     const theme = settings.theme ?? 'system';
     const density = settings.density ?? 'comfortable';
-    const accentColor = settings.accentColor ?? '#404040';
+    const accentColor = settings.accentColor ?? '#6366f1';
 
-    const handleThemeChange = (newTheme: 'light' | 'dark' | 'system') => {
-        setSettings({ ...settings, theme: newTheme });
-    };
-
-    const handleDensityChange = (newDensity: 'compact' | 'comfortable') => {
-        setSettings({ ...settings, density: newDensity });
-    };
-
-    const handleAccentColorChange = (newAccentColor: string) => {
-        setSettings({ ...settings, accentColor: newAccentColor });
-    };
+    const set = (patch: Partial<typeof settings>) => setSettings({ ...settings, ...patch });
 
     return (
-        <div className="space-y-6">
-            <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Theme</h3>
-                <p className="text-neutral-400 text-sm mb-4">
-                    Choose your preferred color scheme. System follows your OS setting.
+        <div className="space-y-8">
+            <section className="space-y-3">
+                <SectionHeader
+                    title="Theme"
+                    description="System follows your operating system setting."
+                />
+                <ChoiceGrid
+                    options={THEMES}
+                    value={theme}
+                    onChange={(value) => set({ theme: value })}
+                    columns={3}
+                    label="Theme"
+                />
+                <p className="text-[11px] text-[var(--app-faint)]">
+                    System preference:{' '}
+                    <span className="font-medium text-[var(--app-muted)]">
+                        {window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light'}
+                    </span>
+                    {theme === 'system' && ' · active'}
                 </p>
-                <div className="grid grid-cols-3 gap-3">
-                    {[
-                        { id: 'light', label: 'Light', icon: <SunIcon className="w-5 h-5" /> },
-                        { id: 'dark', label: 'Dark', icon: <MoonIcon className="w-5 h-5" /> },
-                        { id: 'system', label: 'System', icon: <MonitorIcon className="w-5 h-5" /> },
-                    ].map((option) => (
-                        <button
-                            key={option.id}
-                            onClick={() => handleThemeChange(option.id as 'light' | 'dark' | 'system')}
-                            className={cn(
-                                'p-4 rounded-lg border-2 transition-all duration-150 flex flex-col items-center gap-2',
-                                theme === option.id
-                                    ? 'border-blue-500 bg-blue-900/30 text-blue-400'
-                                    : 'border-neutral-700 bg-neutral-800/50 text-white hover:border-neutral-600 hover:bg-neutral-800'
-                            )}
-                            aria-pressed={theme === option.id}
-                        >
-                            <span className="text-neutral-400">{option.icon}</span>
-                            <span className="font-medium">{option.label}</span>
-                        </button>
-                    ))}
-                </div>
+            </section>
 
-                {/* System preference indicator */}
-                <div className="mt-3 p-3 bg-neutral-800/30 rounded-lg border border-neutral-700/30">
-                    <div className="flex items-center gap-2 text-xs text-neutral-400">
-                        <span>
-                            System preference: <strong className="text-white">
-                                {window.matchMedia('(prefers-color-scheme: dark)').matches ? 'Dark' : 'Light'}
-                            </strong>
-                            {theme === 'system' && ' (active)'}
-                        </span>
-                    </div>
-                </div>
-            </div>
+            <section className="space-y-3">
+                <SectionHeader
+                    title="Density"
+                    description="Adjust spacing and control size across the workspace."
+                />
+                <ChoiceGrid
+                    options={DENSITIES}
+                    value={density}
+                    onChange={(value) => set({ density: value })}
+                    label="Density"
+                />
+            </section>
 
-            <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Density</h3>
-                <p className="text-neutral-400 text-sm mb-4">
-                    Adjust the spacing and size of UI elements.
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                    {[
-                        { id: 'comfortable', label: 'Comfortable', icon: <MaximizeIcon className="w-5 h-5" />, description: 'More breathing room' },
-                        { id: 'compact', label: 'Compact', icon: <MinimizeIcon className="w-5 h-5" />, description: 'Fit more on screen' },
-                    ].map((option) => (
-                        <button
-                            key={option.id}
-                            onClick={() => handleDensityChange(option.id as 'compact' | 'comfortable')}
-                            className={cn(
-                                'p-4 rounded-lg border-2 transition-all duration-150 flex flex-col items-center gap-2 text-left',
-                                density === option.id
-                                    ? 'border-blue-500 bg-blue-900/30 text-blue-400'
-                                    : 'border-neutral-700 bg-neutral-800/50 text-white hover:border-neutral-600 hover:bg-neutral-800'
-                            )}
-                            aria-pressed={density === option.id}
-                        >
-                            <div className="flex items-center gap-2 w-full">
-                                <span className="text-neutral-400">{option.icon}</span>
-                                <span className="font-medium">{option.label}</span>
-                            </div>
-                            <span className="text-xs text-neutral-400 self-start ml-7">{option.description}</span>
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Accent Color</h3>
-                <p className="text-neutral-400 text-sm mb-4">
-                    Choose the primary color used for buttons, links, and highlights.
-                </p>
-                <div className="flex flex-wrap gap-3">
-                    {ACCENT_COLORS.map((color) => (
-                        <button
-                            key={color.value}
-                            onClick={() => handleAccentColorChange(color.value)}
-                            className={cn(
-                                'w-10 h-10 rounded-full border-2 transition-all duration-150 relative',
-                                accentColor === color.value
-                                    ? 'border-white scale-110 shadow-lg'
-                                    : 'border-neutral-700 hover:border-neutral-500 hover:scale-105'
-                            )}
-                            style={{ backgroundColor: color.value }}
-                            aria-label={color.name}
-                            aria-pressed={accentColor === color.value}
-                        >
-                            {accentColor === color.value && (
-                                <span className="absolute inset-0 flex items-center justify-center">
-                                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <section className="space-y-3">
+                <SectionHeader
+                    title="Accent"
+                    description="Used for selection, primary actions, and focus."
+                />
+                <div className="flex flex-wrap items-center gap-2">
+                    {ACCENT_COLORS.map(color => {
+                        const selected = accentColor.toLowerCase() === color.value.toLowerCase();
+                        return (
+                            <button
+                                key={color.value}
+                                type="button"
+                                onClick={() => set({ accentColor: color.value })}
+                                title={color.name}
+                                aria-label={color.name}
+                                aria-pressed={selected}
+                                className={cn(
+                                    'grid h-8 w-8 place-items-center rounded-full border-2 transition-transform',
+                                    selected
+                                        ? 'scale-105 border-[var(--app-text)]'
+                                        : 'border-transparent hover:scale-105'
+                                )}
+                                style={{ backgroundColor: color.value }}
+                            >
+                                {selected && (
+                                    <svg className="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                                     </svg>
-                                </span>
-                            )}
-                        </button>
-                    ))}
+                                )}
+                            </button>
+                        );
+                    })}
                 </div>
-
-                {/* Custom color picker */}
-                <div className="mt-4 flex items-center gap-3">
-                    <label htmlFor="custom-accent" className="text-sm text-neutral-400">Custom:</label>
+                <div className="flex items-center gap-2">
+                    <label htmlFor="custom-accent" className="text-[12px] text-[var(--app-muted)]">Custom</label>
                     <input
                         id="custom-accent"
                         type="color"
                         value={accentColor}
-                        onChange={(e) => handleAccentColorChange(e.target.value)}
-                        className="w-10 h-10 rounded-lg border border-neutral-700 bg-transparent cursor-pointer"
+                        onChange={(event) => set({ accentColor: event.target.value })}
+                        className="h-8 w-8 cursor-pointer rounded-md border border-[var(--app-line)] bg-transparent"
                         aria-label="Custom accent color"
                     />
                     <input
                         type="text"
                         value={accentColor}
-                        onChange={(e) => {
-                            const value = e.target.value;
-                            if (/^#[0-9a-fA-F]{6}$/.test(value)) {
-                                handleAccentColorChange(value);
+                        onChange={(event) => {
+                            const value = event.target.value;
+                            if (/^#[0-9a-fA-F]{6}$/.test(value)) set({ accentColor: value });
+                        }}
+                        onBlur={(event) => {
+                            if (!/^#[0-9a-fA-F]{6}$/.test(event.target.value)) {
+                                event.target.value = accentColor;
                             }
                         }}
-                        onBlur={(e) => {
-                            const value = e.target.value;
-                            if (!/^#[0-9a-fA-F]{6}$/.test(value)) {
-                                e.target.value = accentColor;
-                            }
-                        }}
-                        className="w-24 px-2 py-1.5 bg-neutral-800 border border-neutral-700 rounded-lg text-sm text-white font-mono"
+                        className="h-8 w-24 rounded-md border border-[var(--app-line)] bg-[var(--app-surface)] px-2 font-mono text-[12px] text-[var(--app-text-secondary)] focus:border-[var(--app-accent-line)] focus:outline-none"
                         placeholder="#RRGGBB"
                         aria-label="Custom accent color hex"
                     />
                 </div>
-            </div>
+            </section>
 
-            <div>
-                <h3 className="text-lg font-semibold text-white mb-2">Preview</h3>
-                <p className="text-neutral-400 text-sm mb-4">Live preview of your theme settings.</p>
-                <div className="p-4 bg-neutral-800/50 rounded-lg border border-neutral-700/50 space-y-3">
-                    <div className="flex items-center gap-3 flex-wrap">
-                        <button className="btn btn-primary">Primary Button</button>
-                        <button className="btn btn-secondary">Secondary Button</button>
-                        <button className="btn btn-ghost">Ghost Button</button>
-                        <button className="btn btn-primary" disabled>Disabled</button>
+            <section className="space-y-3">
+                <SectionHeader title="Preview" description="Live examples using the current settings." />
+                <div className="space-y-4 rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Button size="sm">Primary</Button>
+                        <Button size="sm" variant="secondary">Secondary</Button>
+                        <Button size="sm" variant="ghost">Ghost</Button>
+                        <Button size="sm" disabled>Disabled</Button>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <input type="text" placeholder="Text input" className="flex-1 px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white placeholder-neutral-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500" />
-                        <select className="px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-lg text-white focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500">
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Input placeholder="Text input" className="w-48" />
+                        <Select className="w-40">
                             <option>Select option</option>
                             <option>Option 1</option>
                             <option>Option 2</option>
-                        </select>
+                        </Select>
                     </div>
-                    <div className="flex items-center gap-3">
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" className="w-4 h-4 accent-blue-600" defaultChecked />
-                            <span className="text-white">Checkbox</span>
+                    <div className="flex flex-wrap items-center gap-4">
+                        <label className="flex items-center gap-2 text-[12px] text-[var(--app-text-secondary)]">
+                            <input type="checkbox" className="h-3.5 w-3.5 accent-[var(--app-accent)]" defaultChecked />
+                            Checkbox
                         </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="radio" className="w-4 h-4 accent-blue-600" defaultChecked />
-                            <span className="text-white">Radio</span>
+                        <label className="flex items-center gap-2 text-[12px] text-[var(--app-text-secondary)]">
+                            <input type="radio" className="h-3.5 w-3.5 accent-[var(--app-accent)]" defaultChecked />
+                            Radio
                         </label>
-                        <label className="flex items-center gap-2 cursor-pointer">
-                            <input type="checkbox" className="w-4 h-4 accent-blue-600" role="switch" />
-                            <span className="text-white">Toggle</span>
+                        <label className="flex items-center gap-2 text-[12px] text-[var(--app-text-secondary)]">
+                            <input type="checkbox" role="switch" className="h-3.5 w-3.5 accent-[var(--app-accent)]" />
+                            Toggle
                         </label>
-                    </div>
-                    <div className="p-3 bg-neutral-900/50 rounded-lg border border-neutral-700">
-                        <p className="text-white">Card with elevated background</p>
-                        <p className="text-neutral-400 text-sm mt-1">Secondary text color</p>
-                        <p className="text-neutral-400 text-xs mt-1">Muted text color</p>
                     </div>
                 </div>
-            </div>
+            </section>
         </div>
     );
 }

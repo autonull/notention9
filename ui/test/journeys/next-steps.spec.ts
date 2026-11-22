@@ -196,25 +196,27 @@ test.describe('Next Steps E2E', () => {
         await expect(page.getByText('Add detail')).toBeVisible();
     });
 
-    test('layout: the next step stays a single line above the note', async ({page}) => {
+    test('layout: the next step lives in the note context rail', async ({page}) => {
         await seed(page, {
             notes: [jobRequestNote()],
             settings: defaultSettings({aiEnabled: false, developerMode: true}),
             hash: '#notes/journey-job-request',
         });
 
-        const strip = page.locator('[data-testid="next-step-strip"]');
+        const rail = page.getByRole('complementary', {name: 'Note context'});
+        await expect(rail).toBeVisible();
+        const strip = rail.locator('[data-testid="next-step-strip"]');
         await strip.waitFor({timeout: 15_000});
-        await expect(page.locator('[data-testid^="next-step-card-"]').first()).toBeVisible();
+        await expect(rail.locator('[data-testid^="next-step-card-"]').first()).toBeVisible();
 
         const body = page.locator('.ProseMirror');
         await expect(body).toBeVisible();
 
-        const stripBox = await strip.boundingBox();
         const bodyBox = await body.boundingBox();
-        expect(stripBox?.height ?? 0).toBeLessThan(64);
-        expect(bodyBox?.y ?? 0).toBeLessThan(420);
+        const railBox = await rail.boundingBox();
         expect(bodyBox?.width ?? 0).toBeGreaterThan(300);
+        expect(bodyBox?.width ?? 0).toBeLessThan(900);
+        expect(railBox?.x ?? 0).toBeGreaterThan((bodyBox?.x ?? 0) + (bodyBox?.width ?? 0));
     });
 
     test('focus visible and live region announces results', async ({page}) => {

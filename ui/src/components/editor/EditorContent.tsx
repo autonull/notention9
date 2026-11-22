@@ -80,15 +80,13 @@ export function EditorContent({
                     </>
                 }
             >
-                <div className="sticky bottom-0 z-10 border-t border-neutral-800/70 bg-neutral-900/95 px-4 py-2 backdrop-blur">
-                    <TagInput
-                        tags={dirtyNote.tags}
-                        onChange={onTagsChange}
-                        onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
-                        isAutoTagging={isAutoTagging}
-                        autoFocus={false}
-                    />
-                </div>
+                <TagInput
+                    tags={dirtyNote.tags}
+                    onChange={onTagsChange}
+                    onAutoTag={isApiKeyAvailable ? onAutoTag : undefined}
+                    isAutoTagging={isAutoTagging}
+                    autoFocus={false}
+                />
             </HybridEditor>
 
             {isTemplateSelectorOpen && (

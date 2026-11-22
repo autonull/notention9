@@ -20,8 +20,6 @@ import {MobileBackdrop} from './MobileBackdrop';
 import {NextStepsDrawer} from '../next-steps';
 import {NoteContextRail} from '../note/NoteContextRail';
 import {SkillApprovalDialog} from '../skills/SkillApprovalDialog';
-import {noteAccentClass} from '../../utils/noteAccent';
-import {cn} from '../../utils/ui';
 
 interface EditorManagerProps {
     note: Note;
@@ -224,11 +222,10 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     });
 
     return (
-        <div className={cn(
-            'relative flex h-full flex-col',
-            'before:pointer-events-none before:absolute before:inset-y-0 before:left-0 before:z-20 before:w-1 before:bg-[var(--note-accent)]',
-            noteAccentClass(dirtyNote)
-        )}>
+        <div className="relative flex h-full flex-col bg-[var(--app-bg)]">
+            <div className="relative flex min-h-0 flex-1 flex-col lg:flex-row">
+                <div className="flex min-w-0 flex-1 flex-col">
+
             <EditorHeader
                 key={note.id}
                 note={dirtyNote}
@@ -263,8 +260,6 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 <PublishErrorBanner error={publishError} onRetry={handlePublish} />
             )}
 
-            <div className="relative flex min-h-0 flex-1">
-                <div className="flex min-w-0 flex-1 flex-col">
                     <EditorContent
                         editorRef={editorRef}
                         dirtyNote={dirtyNote}

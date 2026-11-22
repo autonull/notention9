@@ -27,9 +27,9 @@ export function MapView() {
     }, [onDropPin]);
 
     return (
-        <div className="h-full w-full bg-neutral-800/50 rounded-lg p-4 flex flex-col gap-4 relative">
+        <div className="relative flex h-[calc(100dvh-15rem)] min-h-[520px] w-full flex-col gap-3 overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2">
             {!hasPoints && (
-                <div className="absolute inset-0 z-10 flex items-center justify-center bg-neutral-900/80 backdrop-blur-sm">
+                <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--app-bg)]/85 backdrop-blur-sm">
                     <EmptyState
                         icon={MapPinIcon}
                         title="No Location Notes"
@@ -48,12 +48,13 @@ export function MapView() {
                     mapContainerRef.current = el;
                     mapRef.current = el ? (mapRef.current || null) : null;
                 }} 
-                className="flex-grow w-full"
+                className="min-h-0 flex-grow w-full"
             />
-            <div className="absolute bottom-4 left-4 z-20">
+            {hasPoints && (
+            <div className="absolute right-3 top-3 z-20">
                 <Button
                     variant="primary"
-                    size="lg"
+                    size="sm"
                     className="shadow-lg touch-target-48"
                     onClick={() => window.dispatchEvent(new CustomEvent('drop-pin', {detail: {lat: 0, lng: 0}}))}
                     aria-label="Drop a pin to capture a location"
@@ -61,6 +62,7 @@ export function MapView() {
                     <MapPinIcon className="w-5 h-5"/> Drop Pin
                 </Button>
             </div>
+            )}
         </div>
     );
 }

@@ -249,10 +249,14 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                             placeholder="Enter HTML..."
                         />
                     )}
-                    {children}
                 </div>
             </div>
-            {!minimal && <EditorStatusBar editor={editor} saveStatus={saveStatus}/>}
+            {!minimal && (
+                <div className="flex shrink-0 items-center gap-3 border-t border-[var(--app-line)] bg-[var(--app-bg)] px-3 py-1.5">
+                    <div className="min-w-0 flex-1">{children}</div>
+                    <EditorStatusBar editor={editor} saveStatus={saveStatus}/>
+                </div>
+            )}
         </div>
     );
 });

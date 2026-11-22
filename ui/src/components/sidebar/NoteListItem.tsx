@@ -1,10 +1,11 @@
-import React, {useRef, useMemo, useState, useEffect, useCallback} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import type {Note} from '@notention/core';
 import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {cn} from '../../utils/ui';
 import {useSwipeActions, type SwipeActionItem} from '../../hooks/useTouchGestures';
 import {useNoteDisplay, useHighlightedText, useHighlightedPreview, getNoteItemClasses, getPropertyBadgeClasses, getRelativeTimeClasses, formatPropertyChip} from './useNoteDisplay';
+import {noteAccentClass} from '../../utils/noteAccent';
 
 interface NoteListItemProps {
     note: Note;
@@ -53,7 +54,6 @@ export const NoteListItem = React.memo(({
         ? displayProperties.map(formatPropertyChip)
         : note.tags.slice(0, 1).map(tag => `#${tag}`);
 
-    // Swipe actions for mobile
     const swipeActions: SwipeActionItem[] = isMobile ? [
         ...(!isTrash && onPin ? [{
             id: 'pin',
@@ -95,7 +95,6 @@ export const NoteListItem = React.memo(({
         threshold: 80,
     });
 
-    // Cast ref and handlers to correct types
     const divRef = swipeRef as React.LegacyRef<HTMLDivElement>;
     const onTouchStart = (e: React.TouchEvent<HTMLDivElement>) => handleTouchStart(e as unknown as TouchEvent);
     const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => handleTouchMove(e as unknown as TouchEvent);
@@ -137,110 +136,96 @@ export const NoteListItem = React.memo(({
             tabIndex={0}
             onClick={onSelect}
             onKeyDown={handleKeyDown}
-            className={itemClasses}
+            className={cn(itemClasses, noteAccentClass(note))}
         >
-            {/* Selected Indicator */}
-            {isSelected && (
-                <div className="absolute left-0 top-2 bottom-2 w-0.5 bg-blue-500 rounded-r-full"></div>
-            )}
+            <span
+                aria-hidden="true"
+                className="mt-0.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[var(--note-accent)]"
+            />
 
-            {/* Header */}
-            <div className="flex justify-between items-center mb-1 gap-2 relative z-10 pl-1">
-                <h3 className={cn('font-semibold text-sm leading-tight truncate flex-1 transition-colors', isSelected ? 'text-blue-50' : 'text-neutral-300 group-hover:text-white')}>
-                    {highlightedTitle}
-                </h3>
-                {isPinned && (
-                    <PinIcon className="h-3 w-3 text-blue-400 flex-shrink-0"/>
-                )}
-            </div>
-
-            {/* Preview */}
-            <p className={cn('text-xs pl-1 mb-2 line-clamp-1 leading-relaxed transition-colors', isSelected ? 'text-blue-200/60' : 'text-neutral-400 group-hover:text-neutral-400')}>
-                {highlightedPreview}
-            </p>
-
-            {/* Properties & Meta */}
-            <div className="flex items-center justify-between pl-1 relative z-10">
-                <div className="flex items-center gap-1.5 overflow-hidden">
-                    <span className={getRelativeTimeClasses(isSelected)}>
-                        {relativeTime}
-                    </span>
+            <div className="min-w-0 flex-1">
+                <div className="flex min-w-0 items-center gap-2">
+                    <h3 className={cn(
+                        'truncate text-[13px] font-medium leading-5 transition-colors',
+                        isSelected ? 'text-[var(--app-text)]' : 'text-[var(--app-text-secondary)]'
+                    )}>
+                        {highlightedTitle}
+                    </h3>
+                    {isPinned && <PinIcon className="h-3 w-3 shrink-0 text-[var(--app-accent-text)]"/>}
                     {metaChips.length > 0 && (
-                        <div className="flex items-center gap-1 flex-shrink-0">
+                        <span className="hidden shrink-0 items-center gap-1 md:flex">
                             {metaChips.map((label, i) => (
-                                <span
-                                    key={`${label}-${i}`}
-                                    className={getPropertyBadgeClasses(isSelected)}
-                                    title={displayProperties[i]
-                                        ? `${displayProperties[i].key} ${displayProperties[i].operator} ${displayProperties[i].values.join(', ')}`
-                                        : label}
-                                >
+                                <span key={`${label}-${i}`} className={getPropertyBadgeClasses(isSelected)}>
                                     {label}
                                 </span>
                             ))}
-                        </div>
+                        </span>
                     )}
+                    <span className={cn('ml-auto shrink-0', getRelativeTimeClasses(isSelected))}>
+                        {relativeTime}
+                    </span>
                 </div>
-
-                {/* Hover Actions - Desktop */}
-                {!isMobile && (
-                    <div className={cn(
-                        'flex items-center gap-0.5 transition-all duration-200',
-                        isTrash || isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                    )}>
-                        {isTrash && onRestore && (
-                            <IconButton
-                                onClick={(e) => { e.stopPropagation(); onRestore(); }}
-                                tabIndex={-1}
-                                className="text-neutral-400 hover:text-green-400 p-0.5"
-                                icon={() => <DocumentDuplicateIcon className="h-3 w-3 transform rotate-180"/>}
-                                size="sm"
-                                variant="ghost"
-                                aria-label="Restore note"
-                            />
-                        )}
-                        {onPin && !isTrash && (
-                            <IconButton
-                                onClick={(e) => { e.stopPropagation(); onPin(); }}
-                                tabIndex={-1}
-                                className={cn(isPinned ? 'text-blue-400' : 'text-neutral-400 hover:text-white p-0.5', isPinned && 'animate-pulse-subtle')}
-                                icon={PinIcon}
-                                size="sm"
-                                variant="ghost"
-                                aria-label={isPinned ? 'Unpin note' : 'Pin note'}
-                            />
-                        )}
-                        <IconButton
-                            onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-                            tabIndex={-1}
-                            className="text-neutral-400 hover:text-red-400 p-0.5"
-                            icon={TrashIcon}
-                            size="sm"
-                            variant="ghost"
-                            aria-label={isTrash ? 'Delete permanently' : 'Move to trash'}
-                        />
-                    </div>
-                )}
-
-                {/* Swipe Action Indicators - Mobile */}
-                {isMobile && activeSide && (
-                    <div className="absolute inset-0 flex items-center justify-end pr-4 pointer-events-none" aria-hidden="true">
-                        {swipeActions.slice(-3).map((action, idx) => (
-                            <div
-                                key={action.id}
-                                className="flex items-center justify-center w-12 h-12 rounded-lg mr-1 text-white font-medium text-xs transition-opacity"
-                                style={{
-                                    backgroundColor: action.backgroundColor,
-                                    opacity: Math.min(Math.abs(offset) / 180, 1),
-                                    transform: `translateX(${offset > 0 ? 0 : Math.min(Math.abs(offset) - idx * 60, 60)}px)`
-                                }}
-                            >
-                                {action.icon}
-                            </div>
-                        ))}
-                    </div>
-                )}
+                <p className="mt-0.5 truncate text-[12px] leading-5 text-[var(--app-muted)]">
+                    {highlightedPreview}
+                </p>
             </div>
+
+            {!isMobile && (
+                <div className={cn(
+                    'flex shrink-0 items-center gap-0.5 transition-opacity',
+                    isTrash ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+                )}>
+                    {isTrash && onRestore && (
+                        <IconButton
+                            onClick={(e) => { e.stopPropagation(); onRestore(); }}
+                            tabIndex={-1}
+                            className="p-1"
+                            icon={() => <DocumentDuplicateIcon className="h-3.5 w-3.5 transform rotate-180"/>}
+                            size="xs"
+                            variant="ghost"
+                            aria-label="Restore note"
+                        />
+                    )}
+                    {onPin && !isTrash && (
+                        <IconButton
+                            onClick={(e) => { e.stopPropagation(); onPin(); }}
+                            tabIndex={-1}
+                            className={cn('p-1', isPinned ? 'text-[var(--app-accent-text)]' : undefined)}
+                            icon={PinIcon}
+                            size="xs"
+                            variant="ghost"
+                            aria-label={isPinned ? 'Unpin note' : 'Pin note'}
+                        />
+                    )}
+                    <IconButton
+                        onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
+                        tabIndex={-1}
+                        className="p-1 hover:text-red-400"
+                        icon={TrashIcon}
+                        size="xs"
+                        variant="ghost"
+                        aria-label={isTrash ? 'Delete permanently' : 'Move to trash'}
+                    />
+                </div>
+            )}
+
+            {isMobile && activeSide && (
+                <div className="pointer-events-none absolute inset-0 flex items-center justify-end pr-4" aria-hidden="true">
+                    {swipeActions.slice(-3).map((action, idx) => (
+                        <div
+                            key={action.id}
+                            className="mr-1 flex h-10 w-10 items-center justify-center rounded-lg text-xs font-medium text-white transition-opacity"
+                            style={{
+                                backgroundColor: action.backgroundColor,
+                                opacity: Math.min(Math.abs(offset) / 180, 1),
+                                transform: `translateX(${offset > 0 ? 0 : Math.min(Math.abs(offset) - idx * 60, 60)}px)`
+                            }}
+                        >
+                            {action.icon}
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 });

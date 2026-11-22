@@ -7,7 +7,8 @@ test.describe('Keyboard Navigation', () => {
     });
 
     test('Skip link works and focuses main content', async ({page}) => {
-        // Tab to skip link
+        // Start from the document, not the auto-focused capture field.
+        await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
         await page.keyboard.press('Tab');
         const skipLink = page.locator('.skip-link:focus');
         await expect(skipLink).toBeVisible();

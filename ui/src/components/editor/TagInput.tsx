@@ -19,7 +19,7 @@ export function TagInput({
                               className = "",
                           }: TagInputProps) {
     const [input, setInput] = useState('');
-    const [isExpanded, setIsExpanded] = useState(tags.length > 0);
+    const [isExpanded, setIsExpanded] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
@@ -49,10 +49,6 @@ export function TagInput({
         onChange(tags.filter((tag) => tag !== tagToRemove));
     };
 
-    const handleAddTagClick = () => {
-        setIsExpanded(true);
-    };
-
     const handleBlur = () => {
         if (!input.trim()) {
             setIsExpanded(false);
@@ -60,17 +56,17 @@ export function TagInput({
     };
 
     return (
-        <div className={`flex flex-wrap items-center gap-2 ${className}`}>
-            <TagIcon className="h-4 w-4 text-neutral-400 flex-shrink-0"/>
+        <div className={`flex min-w-0 flex-wrap items-center gap-1.5 ${className}`}>
+            <TagIcon className="h-3.5 w-3.5 shrink-0 text-[var(--app-faint)]"/>
             {tags.map((tag) => (
                 <span
                     key={tag}
-                    className="flex items-center gap-1 px-2 py-0.5 bg-blue-900/50 text-blue-200 text-xs rounded-full border border-blue-800 flex-shrink-0"
+                    className="flex shrink-0 items-center gap-1 rounded-md border border-[var(--app-line)] bg-[var(--app-raised)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--app-muted)]"
                 >
                     {tag}
                     <button
                         onClick={() => removeTag(tag)}
-                        className="hover:text-white focus:outline-none p-0.5"
+                        className="text-[var(--app-faint)] transition-colors hover:text-[var(--app-text)]"
                         aria-label={`Remove tag ${tag}`}
                     >
                         <XCircleIcon className="h-3 w-3"/>
@@ -78,7 +74,7 @@ export function TagInput({
                 </span>
             ))}
             {isExpanded ? (
-                <div className="flex items-center gap-1 flex-grow min-w-[120px]">
+                <div className="flex min-w-[120px] flex-grow items-center gap-1">
                     <input
                         ref={inputRef}
                         type="text"
@@ -86,30 +82,45 @@ export function TagInput({
                         onChange={(e) => setInput(e.target.value)}
                         onKeyDown={handleKeyDown}
                         onBlur={handleBlur}
-                        placeholder="Add tags..."
-                        className="flex-grow min-w-[80px] bg-transparent text-sm text-neutral-300 focus:outline-none placeholder-neutral-600"
+                        placeholder="Add tags…"
+                        className="min-w-[80px] flex-grow bg-transparent text-[12px] text-[var(--app-text-secondary)] placeholder:text-[var(--app-faint)] focus:outline-none"
                     />
                     {onAutoTag && (
                         <button
                             onClick={onAutoTag}
                             disabled={isAutoTagging}
-                            className="p-1 text-purple-400 hover:text-purple-300 transition-colors disabled:opacity-50 flex-shrink-0"
-                            title="Auto-suggest tags with AI"
+                            className="shrink-0 rounded p-0.5 text-[var(--app-muted)] transition-colors hover:text-[var(--app-accent-text)] disabled:opacity-50"
+                            title="Suggest tags with AI"
                         >
-                            {isAutoTagging ? <LoadingSpinner className="h-4 w-4"/> : <SparklesIcon className="h-4 w-4"/>}
+                            {isAutoTagging ? <LoadingSpinner className="h-3.5 w-3.5"/> : <SparklesIcon className="h-3.5 w-3.5"/>}
                         </button>
                     )}
                 </div>
             ) : (
                 <button
                     type="button"
-                    onClick={handleAddTagClick}
- className="btn btn-ghost btn-xs px-2 py-0.5 text-xs tracking-wider bg-neutral-800 text-neutral-400 border border-neutral-700 hover:bg-neutral-700 hover:text-neutral-200 active:scale-95 touch-target flex-shrink-0"
+                    onClick={() => {
+                        setIsExpanded(true);
+                        requestAnimationFrame(() => inputRef.current?.focus());
+                    }}
+                    className="inline-flex h-6 shrink-0 items-center gap-1 rounded-md px-1.5 text-[11px] font-medium text-[var(--app-faint)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-muted)]"
                 >
-                    <PlusIcon className="w-3 h-3 mr-1" />
+                    <PlusIcon className="h-3 w-3"/>
                     tag
+                </button>
+            )}
+            {onAutoTag && !isExpanded && (
+                <button
+                    type="button"
+                    onClick={onAutoTag}
+                    disabled={isAutoTagging}
+                    className="grid h-6 w-6 shrink-0 place-items-center rounded-md text-[var(--app-faint)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-accent-text)] disabled:opacity-50"
+                    title="Suggest tags with AI"
+                    aria-label="Suggest tags"
+                >
+                    {isAutoTagging ? <LoadingSpinner className="h-3.5 w-3.5"/> : <SparklesIcon className="h-3.5 w-3.5"/>}
                 </button>
             )}
         </div>
     );
-};
+}

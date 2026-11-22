@@ -144,52 +144,42 @@ export function getNoteItemClasses(
     isSelected: boolean,
     displayState: NoteDisplayState,
     isMobile: boolean,
-    variant: 'list' | 'grid' = 'list'
+    variant: "list" | "grid" = "list"
 ): string {
-    if (variant === 'grid') {
+    if (variant === "grid") {
         return `
-            relative aspect-square flex flex-col items-center justify-center p-2 rounded-lg cursor-pointer transition-all border focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50
-            ${isSelected
-                ? 'bg-blue-900/30 border-blue-500/50 text-blue-100 shadow-md shadow-blue-900/20'
-                : 'bg-neutral-800/50 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200'
-            }
-            ${!isSelected && displayState.isPublic ? 'border-green-800/50' : ''}
-            ${!isSelected && !displayState.isPublic && !displayState.isVeryLowPriority ? 'border-neutral-700/50' : ''}
-            ${!isSelected && displayState.isVeryLowPriority ? 'border-neutral-700/50 border-dashed' : ''}
-            ${displayState.isLowPriority ? 'opacity-50' : ''}
+            relative flex min-h-[116px] cursor-pointer flex-col rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)] p-3.5 transition-colors
+            hover:border-[var(--app-line-strong)] hover:bg-[var(--app-panel)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent)]/40
+            ${isSelected ? "border-[var(--app-accent-line)] bg-[var(--app-panel)]" : ""}
+            ${!isSelected && displayState.isVeryLowPriority ? "border-dashed" : ""}
+            ${displayState.isLowPriority ? "opacity-65" : ""}
         `.trim();
     }
 
-    // List variant
     return `
-        note-list-item group relative flex flex-col p-3 rounded-lg cursor-pointer transition-all duration-200 overflow-hidden pressable
+        group relative flex items-center gap-3 rounded-lg border px-3 py-2.5 transition-colors
         ${isSelected
-            ? 'bg-blue-900/20 shadow-sm ring-1 ring-blue-500/30'
-            : 'bg-transparent hover:bg-neutral-800/60 active:bg-neutral-700/50'
+            ? "border-[var(--app-line)] bg-[var(--app-raised)]"
+            : "border-transparent hover:bg-[var(--app-hover)]"
         }
-        focus:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/50 focus-visible:ring-offset-2 focus-visible:ring-offset-neutral-900
+        focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--app-accent)]/40
+        ${displayState.isLowPriority ? "opacity-70" : ""}
     `.trim();
 }
 
-/**
- * Returns the CSS classes for property badges based on selection state.
- */
 export function getPropertyBadgeClasses(isSelected: boolean): string {
     return `
-        inline-block max-w-[150px] truncate align-bottom text-xs tracking-normal font-medium whitespace-nowrap transition-colors px-1.5 py-0.5 rounded border
+        inline-block max-w-[150px] truncate whitespace-nowrap rounded border px-1.5 py-0.5 text-[11px] font-medium transition-colors
         ${isSelected
-            ? 'text-blue-200/70 border-blue-800/50 bg-blue-900/20'
-            : 'text-neutral-400 border-neutral-700/60 bg-neutral-800/40 group-hover:text-neutral-300'
+            ? "border-[var(--app-line-strong)] bg-[var(--app-raised)] text-[var(--app-text-secondary)]"
+            : "border-[var(--app-line)] bg-[var(--app-raised)] text-[var(--app-muted)] group-hover:text-[var(--app-text-secondary)]"
         }
     `.trim();
 }
 
-/**
- * Returns the CSS classes for the relative time text based on selection state.
- */
 export function getRelativeTimeClasses(isSelected: boolean): string {
     return `
-        text-[11px] whitespace-nowrap transition-colors
-        ${isSelected ? 'text-blue-300/60' : 'text-neutral-400 group-hover:text-neutral-400'}
+        text-[11px] tabular-nums whitespace-nowrap transition-colors
+        ${isSelected ? "text-[var(--app-muted)]" : "text-[var(--app-faint)] group-hover:text-[var(--app-muted)]"}
     `.trim();
 }

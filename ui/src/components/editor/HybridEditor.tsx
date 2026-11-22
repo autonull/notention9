@@ -47,7 +47,7 @@ export const HybridEditor = forwardRef<TiptapEditorRef, HybridEditorProps>((prop
 
     return (
         <SelectorRegistryProvider initialSelectors={builtInSelectors}>
-            <div className="flex h-full bg-neutral-900 text-white overflow-hidden" onKeyDownCapture={e => {
+            <div className="flex h-full overflow-hidden bg-[var(--app-bg)] text-[var(--app-text)]" onKeyDownCapture={e => {
                 // Capture phase to potentially intercept
             }}>
                 {/* Main Editor Area */}

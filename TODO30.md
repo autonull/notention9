@@ -60,7 +60,11 @@ No capability is removed. Only the false destinations are.
 
 ### Remaining work
 
-No W30.0–W30.8 code work remains. Maintenance only:
+No W30.0–W30.8 code work remains. The next UI consolidation pass is planned in
+`TODO31.md`: note rail, details entry points, settings tabs, explore/chat, overlays,
+and legacy CSS retirement.
+
+Maintenance only:
 
 - Regenerate the full gallery with `pnpm screenshots` after visual changes; it takes about 3–4 min because the single worker keeps the shared relay isolated.
 - Run `pnpm check:ui` and `pnpm test:ui` before merge.

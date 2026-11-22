@@ -143,7 +143,7 @@ export function TimelineView() {
 
     if (loading) {
         return (
-            <div className="h-full bg-neutral-900 p-4 flex flex-col overflow-hidden">
+            <div className="flex h-[calc(100dvh-15rem)] min-h-[520px] flex-col overflow-hidden">
                 <div className="flex flex-wrap items-center gap-4 mb-4 bg-neutral-800 p-2 rounded-lg border border-neutral-700">
                     <Skeleton variant="rectangular" height={40} width={120} className="rounded-lg"/>
                     <Skeleton variant="rectangular" height={40} width={160} className="rounded-lg"/>
@@ -161,16 +161,16 @@ export function TimelineView() {
     }
 
     return (
-        <div className="h-full bg-neutral-950 p-4 flex flex-col overflow-hidden">
-            <div className="flex-none flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 text-sm text-neutral-400">
+        <div className="flex h-[calc(100dvh-15rem)] min-h-[520px] flex-col overflow-hidden">
+            <div className="mb-3 flex flex-none flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-[var(--app-muted)]">
                 <div
-                    className="flex items-center gap-1.5 rounded-lg border border-neutral-800 bg-neutral-900/60 pl-2 pr-1"
+                    className="flex items-center gap-1.5 rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] pl-2 pr-1"
                     title="Filter events by proximity to a location note"
                 >
-                    <MapPinIcon className="w-4 h-4 text-blue-400"/>
+                    <MapPinIcon className="h-3.5 w-3.5 text-[var(--app-accent-text)]"/>
                     <select
                         aria-label="Filter by location"
-                        className="bg-transparent py-1 text-sm text-neutral-200 focus:outline-none max-w-[14rem]"
+                        className="max-w-[14rem] bg-transparent py-1 text-[12px] text-[var(--app-text-secondary)] focus:outline-none"
                         value={locationFilterId}
                         onChange={(e) => setLocationFilterId(e.target.value)}
                     >
@@ -189,16 +189,16 @@ export function TimelineView() {
                             aria-label="Radius in kilometres"
                             value={filterRadius}
                             onChange={(e) => setFilterRadius(Number(e.target.value))}
-                            className="w-14 bg-transparent border-b border-neutral-700 px-1 py-0.5 text-sm text-white focus:outline-none focus:border-blue-500"
+                            className="w-14 border-b border-[var(--app-line)] bg-transparent px-1 py-0.5 text-[12px] text-[var(--app-text)] focus:border-[var(--app-accent-line)] focus:outline-none"
                             min="1"
                         />
-                        <span className="text-xs text-neutral-400">km</span>
+                        <span className="text-[11px] text-[var(--app-faint)]">km</span>
                     </label>
                 )}
 
                 {events.length > 0 && (
                     <>
-                        <span aria-hidden="true" className="text-neutral-700">·</span>
+                        <span aria-hidden="true" className="text-[var(--app-line-strong)]">·</span>
                         <span>
                             {events.length} dated note{events.length === 1 ? '' : 's'}
                         </span>
@@ -226,7 +226,7 @@ export function TimelineView() {
                     action={<Button variant="primary" onClick={() => setActiveView('notes')}>Go to capture</Button>}
                 />
             ) : (
-                <div className="flex-1 min-h-0 overflow-hidden">
+                <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2">
                     <Calendar
                         localizer={localizer}
                         events={events}

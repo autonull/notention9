@@ -84,7 +84,8 @@ export function useKeyboardShortcuts({
 				// Allow save, property palette, and command palette while editing
 				if ((isMeta && e.key.toLowerCase() === 's') ||
 					(isMeta && e.key === 'Enter') ||
-					(isMeta && isShift && e.key.toLowerCase() === 'p')) {
+					(isMeta && isShift && e.key.toLowerCase() === 'p') ||
+					(isMeta && e.key.toLowerCase() === 'n')) {
 				} else if (isMeta && e.key.toLowerCase() === 'k') {
 					// Allow command palette in inputs too
 				} else if (!isMeta && !isAlt && e.key === '?') {

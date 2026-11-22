@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import './styles/palette.css';
 @import './styles/type.css';
-@import './styles/design-system.css';
+@import './styles/theme.css';
 @import './styles/property-blocks.css';
 
 @source "../index.html";
@@ -17,157 +17,137 @@
     :root:not([data-theme='dark']) { color-scheme: light; }
 }
 
-/* General Editor Styles */
+/* The document is the page: one centered measure, no chrome inside it. */
 .ProseMirror {
-    outline: none;
-    height: 100%;
     width: 100%;
-    max-width: 72ch;
+    max-width: 40rem;
+    margin: 0 auto;
     flex: 1 1 auto;
     min-height: 100%;
-    padding: 1.5rem;
-    color: #d4d4d4;
-    /* text-neutral-300 */
-    line-height: 1.7;
+    padding: 2rem 1.25rem 4rem;
+    border-inline: 1px solid var(--app-line);
+    background: var(--app-surface);
+    box-sizing: border-box;
+    color: var(--app-text-secondary);
+    font-size: 0.97rem;
+    line-height: 1.75;
+    letter-spacing: -0.002em;
     white-space: pre-wrap;
     word-wrap: break-word;
+    outline: none;
 }
 
 .ProseMirror:focus {
     outline: none;
 }
 
-.ProseMirror[contenteditable='true']:empty:before {
+.ProseMirror[contenteditable=true]:empty:before {
     content: attr(data-placeholder);
     float: left;
-    color: #737373;
-    /* text-neutral-400 */
+    color: var(--app-faint);
     pointer-events: none;
     height: 0;
 }
 
-:root[data-theme='light'] .ProseMirror {
-    color: #262626;
-}
-
-:root[data-theme='light'] .ProseMirror[contenteditable='true']:empty:before {
-    color: #737373;
-}
-
-:root[data-theme='light'] .note-content a,
-:root[data-theme='light'] .suggestion-note {
-    color: #1d4ed8;
-}
-
-:root[data-theme='light'] .note-content a:hover,
-:root[data-theme='light'] .suggestion-note:hover {
-    color: #1e40af;
-}
-
-/* Rich-Text Content Styles */
-.note-content a,
+.ProseMirror a,
 .suggestion-note {
-    color: #60a5fa;
-    /* blue-400 */
+    color: var(--app-accent);
     text-decoration: underline;
+    text-underline-offset: 2px;
     cursor: pointer;
 }
 
-.note-content a:hover,
+.ProseMirror a:hover,
 .suggestion-note:hover {
-    color: #93c5fd;
-    /* blue-300 */
+    color: color-mix(in srgb, var(--app-accent) 78%, white);
 }
 
-.note-content p {
-    margin-bottom: 0.75rem;
+.ProseMirror p {
+    margin-bottom: 0.7rem;
 }
 
-.note-content h1,
-.note-content h2,
-.note-content h3 {
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3 {
     font-weight: 600;
-    color: #f3f4f6;
-    /* text-neutral-100 */
-    margin-bottom: 0.5rem;
+    color: var(--app-text);
+    letter-spacing: -0.02em;
     margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
 }
 
-.note-content h1 {
-    font-size: 1.875rem;
-    line-height: 2.25rem;
-}
-
-.note-content h2 {
+.ProseMirror h1 {
     font-size: 1.5rem;
-    line-height: 2rem;
+    line-height: 1.25;
 }
 
-.note-content h3 {
-    font-size: 1.25rem;
-    line-height: 1.75rem;
+.ProseMirror h2 {
+    font-size: 1.2rem;
+    line-height: 1.3;
 }
 
-.note-content ul,
-.note-content ol {
-    padding-left: 1.5rem;
-    margin-bottom: 1rem;
+.ProseMirror h3 {
+    font-size: 1.05rem;
+    line-height: 1.35;
 }
 
-.note-content ul {
+.ProseMirror ul,
+.ProseMirror ol {
+    padding-left: 1.35rem;
+    margin-bottom: 0.9rem;
+}
+
+.ProseMirror ul {
     list-style-type: disc;
 }
 
-.note-content ol {
+.ProseMirror ol {
     list-style-type: decimal;
 }
 
-.note-content li > p {
-    margin-bottom: 0.25rem;
+.ProseMirror li > p {
+    margin-bottom: 0.2rem;
 }
 
-.note-content blockquote {
-    border-left: 3px solid #525252;
-    /* neutral-600 */
-    padding-left: 1rem;
-    color: #a3a3a3;
-    /* neutral-400 */
-    margin-left: 0.5rem;
+.ProseMirror blockquote {
+    border-left: 2px solid var(--app-line-strong);
+    padding-left: 0.9rem;
+    color: var(--app-muted);
+    margin: 0.75rem 0;
 }
 
-.note-content code {
-    background-color: #262626;
-    /* neutral-800 */
-    color: #e5e5e5;
-    /* neutral-200 */
+.ProseMirror code {
+    background: var(--app-raised);
+    color: var(--app-text);
     padding: 0.1rem 0.3rem;
-    border-radius: 0.25rem;
-    font-family: monospace;
+    border-radius: 0.3rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.88em;
 }
 
-.note-content pre {
-    background-color: #171717;
-    /* neutral-900 */
-    color: #e5e5e5;
-    /* neutral-200 */
-    padding: 0.75rem 1rem;
-    border-radius: 0.5rem;
+.ProseMirror pre {
+    background: var(--app-surface);
+    border: 1px solid var(--app-line);
+    color: var(--app-text-secondary);
+    padding: 0.85rem 1rem;
+    border-radius: 0.6rem;
     overflow-x: auto;
 }
 
-.note-content pre code {
+.ProseMirror pre code {
     padding: 0;
     background: none;
 }
 
-.note-content hr {
-    border-top: 1px solid #404040;
-    /* neutral-700 */
-    margin: 1.5rem 0;
+.ProseMirror hr {
+    border: 0;
+    border-top: 1px solid var(--app-line);
+    margin: 1.75rem 0;
 }
 
-.note-content u {
+.ProseMirror u {
     text-decoration: underline;
+    text-underline-offset: 2px;
 }
 
 /* Semantic Element & Widget Styles */
@@ -300,79 +280,7 @@
    FOCUS VISIBLE & ACCESSIBILITY IMPROVEMENTS
    ============================================ */
 
-/* Global focus-visible styles for consistent keyboard navigation */
-:focus-visible {
-    outline: 2px solid #60a5fa;
-    outline-offset: 2px;
-}
-
-/* Skip link for keyboard users */
-.skip-link {
-    position: absolute;
-    top: -100%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1000;
-    padding: 0.75rem 1.5rem;
-    background: #404040;
-    color: white;
-    font-weight: 600;
-    border-radius: 0.5rem;
-    transition: top 0.2s ease;
-}
-
-.skip-link:focus {
-    top: 1rem;
-}
-
-/* Enhanced focus styles for interactive elements */
-button:focus-visible,
-a:focus-visible,
-[role="button"]:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-[tabindex="0"]:focus-visible {
-    outline: 2px solid #60a5fa;
-    outline-offset: 2px;
-}
-
-/* Focus ring utility classes */
-.focus-ring {
-    outline: none;
-}
-
-.focus-ring:focus-visible {
-    outline: none;
-    ring-width: 2px;
-    ring-color: #60a5fa;
-    ring-offset-width: 2px;
-    ring-offset-color: #050505;
-}
-
-.focus-ring-inset {
-    outline: none;
-}
-
-.focus-ring-inset:focus-visible {
-    outline: none;
-    ring-width: 2px;
-    ring-color: #60a5fa;
-    ring-inset: true;
-}
-
-/* High contrast focus for dark backgrounds */
-.focus-ring-high-contrast {
-    outline: none;
-}
-
-.focus-ring-high-contrast:focus-visible {
-    outline: none;
-    ring-width: 2px;
-    ring-color: #93c5fd;
-    ring-offset-width: 2px;
-    ring-offset-color: #171717;
-}
+/* Focus styles live in theme.css so utilities can override them. */
 
 /* Reduced motion preference - media query */
 @media (prefers-reduced-motion: reduce) {
@@ -993,10 +901,6 @@ html.high-contrast [class*="border-"] {
     direction: rtl;
 }
 
-[dir="rtl"] .skip-link {
-    left: auto;
-    right: 0;
-}
 
 [dir="rtl"] .tooltip {
     text-align: right;
@@ -1226,110 +1130,101 @@ html.high-contrast [class*="border-"] {
     animation: slide-down 0.2s ease-out;
 }
 
-/* React Big Calendar Overrides */
+/* React Big Calendar follows the same surface tokens as the rest of the UI. */
 .rbc-calendar {
-    color: #e5e5e5;
-    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    color: var(--app-text-secondary);
+    font-family: inherit;
+    font-size: 12px;
 }
 
 .rbc-calendar .rbc-toolbar {
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.5rem;
+    gap: 0.25rem;
 }
 
 .rbc-calendar .rbc-toolbar button {
-    color: #d4d4d4;
-    background-color: transparent;
-    border-color: #262626;
+    padding: 4px 8px;
+    border: 1px solid var(--app-line);
     border-radius: 6px;
-    padding: 0.25rem 0.6rem;
-    font-size: 0.8125rem;
+    background: transparent;
+    color: var(--app-muted);
+    font-size: 11px;
 }
 
 .rbc-calendar .rbc-toolbar button:hover {
-    background-color: #262626;
-    border-color: #404040;
-    color: #fafafa;
+    border-color: var(--app-line-strong);
+    background: var(--app-hover);
+    color: var(--app-text);
 }
 
 .rbc-calendar .rbc-toolbar button:active,
 .rbc-calendar .rbc-toolbar button.rbc-active,
 .rbc-calendar .rbc-toolbar button.rbc-active:hover {
-    background-color: #312e81;
-    color: #e0e7ff;
-    border-color: #3730a3;
+    border-color: var(--app-accent-line);
+    background: var(--app-accent-soft);
+    color: var(--app-accent-text);
     box-shadow: none;
 }
 
 .rbc-calendar .rbc-toolbar .rbc-toolbar-label {
+    color: var(--app-text);
+    font-size: 13px;
     font-weight: 600;
-    color: #e5e5e5;
 }
 
 .rbc-calendar .rbc-off-range-bg {
-    background: #0b1220;
+    background: var(--app-bg);
 }
 
 .rbc-calendar .rbc-today {
-    background: #262626;
+    background: var(--app-accent-soft);
 }
 
 .rbc-calendar .rbc-date-cell {
-    color: #a3a3a3;
+    padding: 2px 4px;
+    color: var(--app-muted);
+    font-size: 11px;
 }
 
 .rbc-calendar .rbc-button-link {
-    color: #d4d4d4;
+    color: var(--app-text-secondary);
 }
 
 .rbc-calendar .rbc-button-link:hover {
-    color: #fafafa;
+    color: var(--app-text);
 }
 
 .rbc-calendar .rbc-off-range {
-    color: #525252;
+    color: var(--app-faint);
 }
 
 .rbc-calendar .rbc-event {
-    background-color: #404040;
     border-radius: 4px;
+    background-color: var(--app-accent);
+    font-size: 11px;
 }
 
 .rbc-calendar .rbc-time-view,
 .rbc-calendar .rbc-month-view {
-    border-color: #404040;
-    background: #171717;
+    border-color: var(--app-line);
+    background: var(--app-surface);
 }
 
-.rbc-calendar .rbc-day-bg + .rbc-day-bg {
-    border-left-color: #404040;
-}
-
-.rbc-calendar .rbc-time-header-content {
-    border-left-color: #404040;
+.rbc-calendar .rbc-day-bg + .rbc-day-bg,
+.rbc-calendar .rbc-time-header-content,
+.rbc-calendar .rbc-time-content > * + * > *,
+.rbc-calendar .rbc-day-bg {
+    border-left-color: var(--app-line);
 }
 
 .rbc-calendar .rbc-time-content {
-    border-top-color: #404040;
+    border-top-color: var(--app-line);
 }
 
-.rbc-calendar .rbc-timeslot-group {
-    border-bottom-color: #404040;
-}
-
-.rbc-calendar .rbc-time-content > * + * > * {
-    border-left-color: #404040;
-}
-
-.rbc-calendar .rbc-header {
-    border-bottom-color: #404040;
-}
-
+.rbc-calendar .rbc-timeslot-group,
+.rbc-calendar .rbc-header,
 .rbc-calendar .rbc-month-row + .rbc-month-row {
-    border-top-color: #404040;
-}
-
-.rbc-calendar .rbc-day-bg {
-    border-left-color: #404040;
+    border-color: var(--app-line);
 }
 
 /* Leaflet chrome should recede behind the map content */

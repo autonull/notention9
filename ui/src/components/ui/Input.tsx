@@ -76,8 +76,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(({
                     className={cn(
                         tokens.base,
                         tokens.padding,
-                        leftIcon ? 'pl-10' : undefined,
-                        rightIcon ? 'pr-10' : undefined,
+                        resolvedLeftIcon ? 'pl-9' : undefined,
+                        rightIcon ? 'pr-9' : undefined,
                         error ? tokens.error : undefined,
                         touchTarget ? 'py-3 text-base' : undefined,
                         className

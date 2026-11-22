@@ -6,7 +6,7 @@ import { Button } from '../ui/Button';
 import { Select } from '../ui/Select';
 import { Toggle } from '../ui/Toggle';
 import { useState, useMemo } from 'react';
-import { UserGroupIcon, SettingsIcon, ChevronDownIcon, ChevronUpIcon } from '../ui/icons';
+import { UserGroupIcon, ChevronDownIcon, ChevronUpIcon } from '../ui/icons';
 
 export function ProfileSettings() {
     const {
@@ -54,37 +54,40 @@ export function ProfileSettings() {
     };
 
     return (
-        <div className="space-y-6 p-4 border border-neutral-700 rounded-xl bg-neutral-900/50">
-            <h2 className="text-lg font-semibold flex items-center gap-2">
-                <SettingsIcon className="w-5 h-5" />
-                Profile & Strategy Settings
-            </h2>
+        <div className="divide-y divide-[var(--app-line)]">
+            <section className="pb-6">
+                <h2 className="text-[15px] font-semibold text-[var(--app-text)]">Profile & strategy</h2>
+                <p className="mt-0.5 text-[12px] text-[var(--app-muted)]">
+                    Choose how capture, matching, and layout strategies are resolved.
+                </p>
+            </section>
 
+            <div className="space-y-6 py-6">
             {/* Manual Mode Toggle */}
             <div className="flex items-center justify-between">
                 <div>
-                    <p className="font-medium">Manual Profile Selection</p>
-                    <p className="text-sm text-neutral-400">Disable automatic profile switching based on context</p>
+                    <p className="text-[13px] font-medium">Manual profile selection</p>
+                    <p className="text-[12px] text-[var(--app-muted)]">Disable automatic profile switching based on context</p>
                 </div>
                 <Toggle checked={isManualMode} onChange={() => setManualMode(!isManualMode)} aria-label="Manual profile selection" />
             </div>
 
             {/* Profile Selector */}
             <div className="space-y-2">
-                <label className="block text-sm font-medium">Active Profile</label>
+                <label className="block text-[12px] font-medium text-[var(--app-muted)]">Active profile</label>
                 <Select
                     value={activeProfileId}
                     onChange={(e) => setActiveProfile(e.target.value)}
                     disabled={!isManualMode}
                     options={profiles.map(p => ({ value: p.id, label: `${p.name} — ${p.description}` }))}
                 />
-                {activeProfile && <p className="text-sm text-neutral-400 ml-2">{activeProfile.description}</p>}
+                {activeProfile && <p className="ml-0.5 text-[12px] text-[var(--app-faint)]">{activeProfile.description}</p>}
             </div>
 
             {/* Strategy Overrides */}
             <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                    <label className="block text-sm font-medium">Strategy Overrides</label>
+                    <label className="block text-[12px] font-medium text-[var(--app-muted)]">Strategy overrides</label>
                     <Button variant="ghost" size="sm" onClick={() => setShowOverrides(!showOverrides)}>
                         {showOverrides ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
                     </Button>
@@ -189,6 +192,7 @@ export function ProfileSettings() {
                     ))}
                 </div>
             </details>
+            </div>
         </div>
     );
 }

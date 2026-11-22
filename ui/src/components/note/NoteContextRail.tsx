@@ -34,9 +34,6 @@ export function NoteContextRail({
     note,
     model,
     onOpenDrawer,
-    onPublish,
-    isPublished,
-    isPublishing = false,
     onNavigateToNote,
     onRespond,
 }: NoteContextRailProps) {
@@ -80,40 +77,43 @@ export function NoteContextRail({
     return (
         <aside
             className={cn(
-                'z-30 flex flex-col border-neutral-800 bg-neutral-950',
-                'fixed inset-x-0 bottom-0 max-h-[50dvh] rounded-t-2xl border-t shadow-2xl',
-                'lg:static lg:max-h-none lg:w-[22rem] lg:shrink-0 lg:rounded-none lg:border-l lg:border-t-0 lg:shadow-none'
+                'flex max-h-[42dvh] shrink-0 flex-col border-t border-[var(--app-line)] bg-[var(--app-panel)]',
+                'lg:max-h-none lg:w-[20rem] lg:border-l lg:border-t-0'
             )}
             aria-label="Note context"
         >
-            <div className="flex items-center justify-center py-1.5 lg:hidden">
-                <span className="h-1 w-10 rounded-full bg-neutral-700" aria-hidden="true"/>
+            <div className="hidden">
+                <span className="h-1 w-9 rounded-full bg-[var(--app-line-strong)]" aria-hidden="true"/>
             </div>
 
-            <div className="flex shrink-0 items-center gap-1 border-b border-neutral-800 px-2 py-1.5" role="tablist" aria-label="Note context">
-                {TABS.map(tab => (
-                    <button
-                        key={tab.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={noteTab === tab.id}
-                        onClick={() => setNoteTab(tab.id)}
-                        className={cn(
-                            'h-9 flex-1 rounded-lg text-sm font-medium transition-colors',
-                            noteTab === tab.id
-                                ? 'bg-neutral-800 text-neutral-100'
-                                : 'text-neutral-400 hover:text-neutral-300'
-                        )}
-                    >
-                        {tab.label}
-                        {tab.id === 'matches' && matches.length > 0 && (
-                            <span className="ml-1.5 text-xs tabular-nums text-neutral-400">{matches.length}</span>
-                        )}
-                        {tab.id === 'replies' && replies.length > 0 && (
-                            <span className="ml-1.5 text-xs tabular-nums text-neutral-400">{replies.length}</span>
-                        )}
-                    </button>
-                ))}
+            <div
+                className="flex h-11 shrink-0 items-center border-b border-[var(--app-line)] px-2"
+                role="tablist"
+                aria-label="Note context"
+            >
+                {TABS.map(tab => {
+                    const count = tab.id === 'matches' ? matches.length : tab.id === 'replies' ? replies.length : 0;
+                    return (
+                        <button
+                            key={tab.id}
+                            type="button"
+                            role="tab"
+                            aria-selected={noteTab === tab.id}
+                            onClick={() => setNoteTab(tab.id)}
+                            className={cn(
+                                'relative flex h-full flex-1 items-center justify-center gap-1.5 border-b-2 text-[12px] font-medium transition-colors',
+                                noteTab === tab.id
+                                    ? 'border-[var(--app-accent)] text-[var(--app-text)]'
+                                    : 'border-transparent text-[var(--app-muted)] hover:text-[var(--app-text-secondary)]'
+                            )}
+                        >
+                            {tab.label}
+                            {count > 0 && (
+                                <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{count}</span>
+                            )}
+                        </button>
+                    );
+                })}
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto p-3 custom-scrollbar">
@@ -121,7 +121,9 @@ export function NoteContextRail({
                     <div className="space-y-3">
                         <NextStepStrip note={note} model={model} onOpenDrawer={onOpenDrawer}/>
                         {!model.topNextStep && (
-                            <p className="px-1 text-sm text-neutral-400">No next step yet. Add a detail to the note.</p>
+                            <p className="px-1 py-2 text-[12px] leading-5 text-[var(--app-muted)]">
+                                No next step yet. Add a detail to the note.
+                            </p>
                         )}
                     </div>
                 )}
@@ -129,8 +131,8 @@ export function NoteContextRail({
                 {noteTab === 'matches' && (
                     <div className="space-y-2" data-testid="note-matches">
                         {matches.length === 0 ? (
-                            <div className="flex items-start gap-2 px-1 py-3 text-sm text-neutral-400">
-                                <SparklesIcon className="mt-0.5 h-4 w-4 shrink-0"/>
+                            <div className="flex items-start gap-2 px-1 py-3 text-[12px] leading-5 text-[var(--app-muted)]">
+                                <SparklesIcon className="mt-0.5 h-3.5 w-3.5 shrink-0"/>
                                 <span>No matches yet. Add what you need or offer as a detail.</span>
                             </div>
                         ) : matches.slice(0, 4).map(match => (
@@ -146,15 +148,15 @@ export function NoteContextRail({
                 )}
 
                 {noteTab === 'replies' && (
-                    <div className="flex h-full flex-col gap-2" data-testid="note-replies">
-                        <div className="flex shrink-0 items-center gap-1 rounded-lg border border-neutral-800 bg-neutral-900/60 p-1">
+                    <div className="flex h-full flex-col gap-3" data-testid="note-replies">
+                        <div className="flex shrink-0 items-center gap-3 text-[11px]">
                             <button
                                 type="button"
                                 onClick={() => setReplySurface('replies')}
                                 aria-pressed={replySurface === 'replies'}
                                 className={cn(
-                                    'h-8 flex-1 rounded-md text-xs font-medium',
-                                    replySurface === 'replies' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'
+                                    'font-medium transition-colors',
+                                    replySurface === 'replies' ? 'text-[var(--app-text)]' : 'text-[var(--app-faint)] hover:text-[var(--app-muted)]'
                                 )}
                             >
                                 Replies
@@ -164,8 +166,8 @@ export function NoteContextRail({
                                 onClick={() => setReplySurface('chat')}
                                 aria-pressed={replySurface === 'chat'}
                                 className={cn(
-                                    'h-8 flex-1 rounded-md text-xs font-medium',
-                                    replySurface === 'chat' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'
+                                    'font-medium transition-colors',
+                                    replySurface === 'chat' ? 'text-[var(--app-text)]' : 'text-[var(--app-faint)] hover:text-[var(--app-muted)]'
                                 )}
                             >
                                 Chat
@@ -173,29 +175,29 @@ export function NoteContextRail({
                         </div>
 
                         {replySurface === 'chat' ? (
-                            <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-neutral-800">
+                            <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-[var(--app-line)]">
                                 <ChatPanel initialPubkey={noteContact} className="h-full"/>
                             </div>
                         ) : (
                             <div className="flex min-h-0 flex-1 flex-col gap-3">
                                 <div className="min-h-0 flex-1 space-y-2 overflow-y-auto">
                                     {replies.length === 0 ? (
-                                        <p className="px-1 py-2 text-sm text-neutral-400">No replies yet.</p>
+                                        <p className="px-1 py-2 text-[12px] text-[var(--app-muted)]">No replies yet.</p>
                                     ) : replies.map(item => (
                                         <button
                                             key={item.id}
                                             type="button"
                                             onClick={() => onNavigateToNote(item.id)}
-                                            className="w-full rounded-xl border border-neutral-800 bg-neutral-900/60 p-3 text-left hover:border-neutral-700"
+                                            className="w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2.5 text-left transition-colors hover:border-[var(--app-line-strong)]"
                                         >
-                                            <span className="block truncate text-sm font-medium text-neutral-200">{item.title || 'Untitled reply'}</span>
-                                            <span className="mt-1 block line-clamp-2 text-sm text-neutral-400">{getTextFromHtml(item.content)}</span>
+                                            <span className="block truncate text-[12px] font-medium text-[var(--app-text-secondary)]">{item.title || 'Untitled reply'}</span>
+                                            <span className="mt-0.5 block line-clamp-2 text-[11px] leading-4 text-[var(--app-muted)]">{getTextFromHtml(item.content)}</span>
                                         </button>
                                     ))}
                                 </div>
                                 <div className="shrink-0">
                                     <label className="sr-only" htmlFor="note-reply-input">Write a reply</label>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5">
                                         <Input
                                             id="note-reply-input"
                                             value={reply}
@@ -211,12 +213,12 @@ export function NoteContextRail({
                                         />
                                         <Button
                                             variant="primary"
-                                            size="lg"
+                                            size="sm"
                                             onClick={sendReply}
                                             disabled={!reply.trim()}
                                             aria-label="Send reply"
                                         >
-                                            <SendIcon className="h-4 w-4"/>
+                                            <SendIcon className="h-3.5 w-3.5"/>
                                         </Button>
                                     </div>
                                 </div>
@@ -224,18 +226,6 @@ export function NoteContextRail({
                         )}
                     </div>
                 )}
-            </div>
-
-            <div className="shrink-0 border-t border-neutral-800 p-3">
-                <Button
-                    variant="secondary"
-                    size="lg"
-                    className="w-full"
-                    onClick={onPublish}
-                    disabled={isPublishing || isPublished}
-                >
-                    {isPublished ? 'Published' : isPublishing ? 'Sharing…' : 'Share'}
-                </Button>
             </div>
         </aside>
     );

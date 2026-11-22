@@ -125,17 +125,19 @@ export function IconButton({
     touchTarget = true,
     ...props
 }: IconButtonProps) {
-    const tokens = componentTokens.button;
-    const activeVariant = isActive && variant === 'ghost' ? 'primary' : variant;
+    const tokens = componentTokens.iconButton;
+    const activeVariant = variant;
 
     const buttonClasses = cn(
         tokens.base,
         tokens.sizes[size],
         tokens.variants[activeVariant],
+        label && 'w-auto px-2',
         touchTarget && 'touch-target-48',
         'focus-ring-high-contrast',
         disabled && tokens.disabled,
-        'active:scale-[0.95] transition-transform duration-50',
+        isActive && variant === 'ghost' && 'bg-[var(--app-raised)] text-[var(--app-text)]',
+        'transition-colors duration-150',
         className
     );
 

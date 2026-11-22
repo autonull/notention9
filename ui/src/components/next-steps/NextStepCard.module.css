@@ -1,84 +1,80 @@
 .card {
-  background: var(--color-surface-raised, #1e1e1e);
-  border: 1px solid var(--color-border, #333);
-  border-left: 3px solid var(--color-accent, #3b82f6);
-  border-radius: 10px;
-  padding: 12px 14px;
   display: flex;
   flex-direction: column;
   gap: 6px;
+  padding: 12px;
+  border: 1px solid var(--app-line, #23272f);
+  border-radius: 9px;
+  background: var(--app-surface, #101216);
 }
 
 .card:hover {
-  border-color: var(--color-border-hover, #444);
-  border-left-color: var(--color-accent, #3b82f6);
+  border-color: var(--app-line-strong, #343a45);
 }
 
 .card.stale {
-  border-left-color: var(--color-warning, #f59e0b);
-  opacity: 0.9;
+  border-style: dashed;
 }
 
 .card.applied {
-  border-left-color: var(--color-success, #10b981);
-  opacity: 0.85;
+  opacity: 0.8;
 }
 
 .header {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
 }
 
 .content {
-  flex: 1;
-  min-width: 0;
   display: flex;
+  min-width: 0;
+  flex: 1;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .title {
   margin: 0;
-  font-size: 14px;
+  color: var(--app-text, #edeef2);
+  font-size: 13px;
   font-weight: 600;
   line-height: 1.35;
-  color: var(--color-text, #e8e8e8);
 }
 
 .evidence {
   margin: 0;
+  color: var(--app-muted, #9aa0ad);
   font-size: 12px;
-  line-height: 1.4;
-  color: var(--color-text-muted, #a3a3a3);
+  line-height: 1.45;
 }
 
 .dismissButton {
-  width: 32px;
-  height: 32px;
   display: flex;
+  width: 26px;
+  height: 26px;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
-  background: transparent;
   border: none;
-  border-radius: 6px;
-  color: var(--color-text-muted, #a3a3a3);
+  border-radius: 5px;
+  background: transparent;
+  color: var(--app-faint, #828896);
   cursor: pointer;
 }
 
 .dismissButton:hover {
-  background: var(--color-error-bg, #7f1d1d);
-  color: var(--color-error, #ef4444);
+  background: var(--app-hover, #20242c);
+  color: var(--app-text, #edeef2);
 }
 
 .whyButton {
   align-self: flex-start;
   padding: 0;
-  background: none;
   border: none;
+  background: none;
+  color: var(--app-faint, #828896);
   font-size: 11px;
-  color: var(--color-text-muted, #a3a3a3);
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: transparent;
@@ -86,15 +82,15 @@
 }
 
 .whyButton:hover {
-  color: var(--color-text, #e8e8e8);
+  color: var(--app-muted, #9aa0ad);
   text-decoration-color: currentColor;
 }
 
 .why {
   margin: 0;
+  color: var(--app-muted, #9aa0ad);
   font-size: 12px;
   line-height: 1.5;
-  color: var(--color-text-muted, #a3a3a3);
 }
 
 .footer {
@@ -106,96 +102,75 @@
 }
 
 .sourceChip {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--color-text-muted, #a3a3a3);
+  color: var(--app-faint, #828896);
+  font-size: 10px;
 }
 
 .primaryAction,
 .undoAction {
   display: inline-flex;
+  min-height: 28px;
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 32px;
-  padding: 5px 12px;
-  border: none;
-  border-radius: 7px;
-  font-size: 13px;
-  font-weight: 600;
+  padding: 4px 10px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
   cursor: pointer;
 }
 
 .primaryAction {
-  background: var(--color-accent, #3b82f6);
-  color: white;
+  background: var(--app-accent, #6366f1);
+  color: #fff;
 }
 
 .primaryAction:hover:not(:disabled) {
-  background: var(--color-accent-hover, #404040);
+  background: color-mix(in srgb, var(--app-accent, #6366f1) 88%, black);
 }
 
 .primaryAction.refreshAction {
-  background: var(--color-warning, #f59e0b);
+  border-color: rgb(230 192 123 / 0.3);
+  background: rgb(230 192 123 / 0.1);
+  color: #e6c07b;
 }
 
 .primaryAction.refreshAction:hover:not(:disabled) {
-  background: var(--color-warning-hover, #d97706);
+  background: rgb(230 192 123 / 0.16);
 }
 
 .primaryAction:disabled {
-  opacity: 0.5;
   cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .undoAction {
-  background: var(--color-surface-hover, #2a2a2a);
-  color: var(--color-text, #e8e8e8);
-  border: 1px solid var(--color-border, #333);
+  border-color: var(--app-line, #23272f);
+  background: var(--app-raised, #191c22);
+  color: var(--app-text-secondary, #c2c6cf);
 }
 
 .undoAction:hover {
-  border-color: var(--color-border-hover, #444);
+  border-color: var(--app-line-strong, #343a45);
 }
 
 .dismissButton:focus-visible,
 .whyButton:focus-visible,
 .primaryAction:focus-visible,
 .undoAction:focus-visible {
-  outline: 2px solid var(--color-accent, #3b82f6);
+  outline: 2px solid var(--app-accent, #6366f1);
   outline-offset: 2px;
 }
 
-@media (max-width: 640px) {
+@media (pointer: coarse) {
   .primaryAction,
   .undoAction {
-    min-height: 44px;
+    min-height: 40px;
   }
 
   .dismissButton {
-    width: 44px;
-    height: 44px;
-  }
-}
-
-@media (prefers-color-scheme: light) {
-  .card {
-    background: var(--color-surface-raised, #fafafa);
-    border-color: var(--color-border, #e0e0e0);
-  }
-
-  .title {
-    color: var(--color-text, #111);
-  }
-
-  .evidence,
-  .why,
-  .sourceChip,
-  .whyButton {
-    color: var(--color-text-muted, #737373);
-  }
-
-  .whyButton:hover {
-    color: var(--color-text, #111);
+    width: 36px;
+    height: 36px;
   }
 }

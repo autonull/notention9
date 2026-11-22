@@ -22,35 +22,35 @@ export interface EmptyStateProps {
 }
 
 const variantStyles = {
-    default: 'flex flex-col items-center justify-center py-8 px-4 text-center',
-    card: 'empty-state p-8',
-    minimal: 'flex flex-col items-center justify-center py-6 px-4 text-center',
-    illustrated: 'flex flex-col items-center justify-center py-4 px-6 text-center max-w-md mx-auto',
-    actionable: 'empty-state-actionable',
+    default: 'flex flex-col items-center justify-center px-4 py-8 text-center',
+    card: 'flex flex-col items-center justify-center rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] px-6 py-8 text-center',
+    minimal: 'flex flex-col items-center justify-center px-4 py-6 text-center',
+    illustrated: 'mx-auto flex max-w-md flex-col items-center justify-center px-6 py-4 text-center',
+    actionable: 'flex flex-col items-center justify-center px-4 py-8 text-center',
 };
 
 const iconContainerStyles = {
-    default: 'flex items-center justify-center rounded-full mb-3 bg-neutral-800 p-3',
-    card: 'empty-state-icon',
-    minimal: 'flex items-center justify-center rounded-full mb-3 bg-neutral-800 p-3',
-    illustrated: 'flex items-center justify-center rounded-full mb-6 w-20 h-20 bg-gradient-to-br from-blue-500/20 to-purple-500/20 border border-blue-500/30',
-    actionable: 'empty-state-icon',
+    default: 'mb-3 flex items-center justify-center rounded-full border border-[var(--app-line)] bg-[var(--app-raised)] p-3',
+    card: 'mb-3 flex items-center justify-center rounded-full border border-[var(--app-line)] bg-[var(--app-raised)] p-3',
+    minimal: 'mb-3 flex items-center justify-center rounded-full border border-[var(--app-line)] bg-[var(--app-raised)] p-3',
+    illustrated: 'mb-5 flex h-20 w-20 items-center justify-center rounded-full border border-[var(--app-accent-line)] bg-[var(--app-accent-soft)]',
+    actionable: 'mb-3 flex items-center justify-center rounded-full border border-[var(--app-line)] bg-[var(--app-raised)] p-3',
 };
 
 const titleStyles = {
-    default: 'font-medium text-neutral-300 text-lg mb-2',
-    card: 'empty-state-title text-lg',
-    minimal: 'font-medium text-neutral-300 text-base mb-1',
-    illustrated: 'font-semibold text-white text-xl mb-3',
-    actionable: 'empty-state-title',
+    default: 'mb-2 text-[15px] font-medium text-[var(--app-text)]',
+    card: 'mb-2 text-[15px] font-medium text-[var(--app-text)]',
+    minimal: 'mb-1 text-[14px] font-medium text-[var(--app-text)]',
+    illustrated: 'mb-2 text-[18px] font-semibold tracking-[-0.01em] text-[var(--app-text)]',
+    actionable: 'mb-2 text-[15px] font-medium text-[var(--app-text)]',
 };
 
 const descriptionStyles = {
-    default: 'text-sm max-w-xs text-neutral-300 mb-4',
-    card: 'empty-state-description text-neutral-300',
-    minimal: 'text-sm max-w-xs text-neutral-300 mb-4',
-    illustrated: 'text-base max-w-md text-neutral-300 mb-4 leading-relaxed',
-    actionable: 'empty-state-description',
+    default: 'mb-4 max-w-sm text-[12px] leading-5 text-[var(--app-muted)]',
+    card: 'mb-4 max-w-sm text-[12px] leading-5 text-[var(--app-muted)]',
+    minimal: 'mb-4 max-w-sm text-[12px] leading-5 text-[var(--app-muted)]',
+    illustrated: 'mb-4 max-w-sm text-[12px] leading-5 text-[var(--app-muted)]',
+    actionable: 'mb-4 max-w-sm text-[12px] leading-5 text-[var(--app-muted)]',
 };
 
 const shortcutContexts: Record<string, {keys: string; label: string}[]> = {
@@ -121,8 +121,8 @@ export function EmptyState({
                     <code className="text-sm text-blue-400 font-mono">{searchTerm}</code>
                 </div>
             )}
-            {action && <div className="empty-state-actions">{action}</div>}
-            {secondaryAction && <div className="empty-state-actions">{secondaryAction}</div>}
+            {action && <div className="flex flex-wrap items-center justify-center gap-2">{action}</div>}
+            {secondaryAction && <div className="mt-2 flex flex-wrap items-center justify-center gap-2">{secondaryAction}</div>}
             {showShortcuts && contextShortcuts.length > 0 && (
                 <div className="mt-6 pt-6 border-t border-neutral-700/50 w-full max-w-xs animate-fade-in-up">
                     <p className="text-xs text-neutral-400 mb-2 flex items-center gap-1">

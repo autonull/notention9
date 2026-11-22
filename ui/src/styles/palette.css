@@ -5,12 +5,12 @@
     --line: #2b2b2b;
     --text: #f5f5f5;
     --text-muted: #a3a3a3;
-    --accent-request: #ff6b6b;
-    --accent-offer: #34d399;
-    --accent-event: #c084fc;
-    --accent-task: #fbbf24;
-    --accent-person: #60a5fa;
-    --accent-neutral: #d4d4d4;
+    --accent-request: #f0a3a3;
+    --accent-offer: #7fc8a9;
+    --accent-event: #b9a3f5;
+    --accent-task: #e6c07b;
+    --accent-person: #86b4e8;
+    --accent-neutral: #9aa0ad;
     --success: #34d399;
     --danger: #ff5c7a;
     --note-accent: var(--accent-neutral);

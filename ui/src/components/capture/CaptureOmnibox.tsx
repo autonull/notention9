@@ -5,8 +5,6 @@ import {useHeuristicExtraction} from '../../hooks/useExtraction';
 import {useToast} from '../../hooks/useToast';
 import {useDemoWorkspace} from '../../hooks/useDemoWorkspace';
 import {useNotes} from '../../hooks/useNotes';
-import {Button} from '../ui/Button';
-import {Badge} from '../ui/Badge';
 import {ArrowRightIcon, SparklesIcon, TagIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 import {deriveCaptureTags, useCaptureNote} from './useCaptureNote';
@@ -76,6 +74,7 @@ export function CaptureOmnibox({autoFocus = false, className, showSample = true}
     }, [captureNote, value, properties, addToast]);
 
     const tags = deriveCaptureTags(value);
+    const canSubmit = !!value.trim();
 
     return (
         <div className={cn('w-full', className)} data-testid="capture-omnibox">
@@ -89,44 +88,55 @@ export function CaptureOmnibox({autoFocus = false, className, showSample = true}
                     onChange={event => setValue(event.target.value)}
                     placeholder="What's on your mind? Write what you need, or what you can offer."
                     autoComplete="off"
-                    className="w-full h-14 md:h-16 pl-5 pr-16 rounded-2xl border border-neutral-800 bg-neutral-900/80 text-lg text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:border-neutral-600 focus:ring-2 focus:ring-neutral-500/30"
+                    className="h-12 w-full rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)] pl-4 pr-14 text-lg text-[var(--app-text)] placeholder:text-[var(--app-faint)] transition-colors focus:border-[var(--app-accent-line)] focus:outline-none focus:ring-[3px] focus:ring-[var(--app-accent-soft)] md:h-11 md:text-[15px]"
                 />
-                <Button
+                <button
                     type="submit"
-                    variant="primary"
-                    size="lg"
-                    className="absolute right-2 top-1/2 -translate-y-1/2 h-11 w-11 rounded-xl p-0"
+                    disabled={!canSubmit}
                     aria-label="Keep note"
-                    disabled={!value.trim()}
+                    className={cn(
+                        'absolute right-1.5 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-lg transition-colors',
+                        canSubmit
+                            ? 'bg-[var(--app-accent)] text-[#ffffff] hover:bg-[color-mix(in_srgb,var(--app-accent)_88%,black)]'
+                            : 'text-[var(--app-faint)]'
+                    )}
                 >
-                    <ArrowRightIcon className="w-5 h-5"/>
-                </Button>
+                    <ArrowRightIcon className="h-4 w-4"/>
+                </button>
             </form>
 
             {(properties.length > 0 || tags.length > 0) && (
-                <div className="mt-2 flex flex-wrap items-center gap-2">
+                <div className="mt-2 flex flex-wrap items-center gap-1.5">
                     {properties.map((prop, index) => (
-                        <Badge key={`${prop.key}-${index}`} variant="purple" size="sm" pill icon={<SparklesIcon className="w-3 h-3"/>}>
+                        <span
+                            key={`${prop.key}-${index}`}
+                            className="inline-flex items-center gap-1.5 rounded-md border border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] px-2 py-1 text-[11px] font-medium text-[var(--app-accent-text)]"
+                        >
+                            <SparklesIcon className="h-3 w-3"/>
                             {prop.key}: {prop.values.join(', ')}
-                        </Badge>
+                        </span>
                     ))}
                     {tags.map(tag => (
-                        <Badge key={tag} variant="info" size="sm" pill icon={<TagIcon className="w-3 h-3"/>}>
-                            #{tag}
-                        </Badge>
+                        <span
+                            key={tag}
+                            className="inline-flex items-center gap-1 rounded-md border border-[var(--app-line)] bg-[var(--app-raised)] px-2 py-1 text-[11px] font-medium text-[var(--app-muted)]"
+                        >
+                            <TagIcon className="h-3 w-3"/>
+                            {tag}
+                        </span>
                     ))}
                 </div>
             )}
 
-            <p className="mt-2 px-1 text-sm text-neutral-400">
-                Enter keeps the note. Add <span className="text-neutral-300">#tags</span> or <span className="text-neutral-300">key: value</span> inline.
+            <p className="mt-2 px-0.5 text-[11px] text-[var(--app-faint)]">
+                Enter keeps the note · <span className="text-[var(--app-muted)]">#tags</span> or <span className="text-[var(--app-muted)]">key: value</span> add structure
             </p>
 
             {showSample && notes.length === 0 && (
                 <button
                     type="button"
                     onClick={loadSampleWorkspace}
-                    className="mt-3 px-1 text-sm text-neutral-400 underline decoration-neutral-700 underline-offset-4 hover:text-neutral-300"
+                    className="mt-2 px-0.5 text-[12px] text-[var(--app-muted)] underline decoration-[var(--app-line-strong)] underline-offset-4 hover:text-[var(--app-text-secondary)]"
                 >
                     Or load a sample workspace
                 </button>

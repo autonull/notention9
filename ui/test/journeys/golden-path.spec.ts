@@ -75,7 +75,7 @@ test('light theme applies to the workspace', async ({page}) => {
 
     await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
     await expect.poll(() => page.locator('[data-ready]').evaluate(element => getComputedStyle(element).backgroundColor))
-        .toBe('rgb(250, 250, 250)');
+        .toBe('rgb(246, 246, 243)');
 });
 
 test('the top bar has one entry and no Inbox or Connections tabs', async ({page}) => {

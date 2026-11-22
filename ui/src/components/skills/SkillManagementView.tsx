@@ -4,11 +4,9 @@ import { useToast } from '../../hooks/useToast';
 import { SkillExecutor, SkillExecutionRecord } from '@notention/core';
 import { SkillApprovalDialog } from './SkillApprovalDialog';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
-import { Badge } from '../ui/Badge';
+import { Chip, SectionHeader } from '../ui/kit';
 import { Toggle } from '../ui/Primitives';
-import { SettingsIcon, PlayIcon, ShieldIcon, XCircleIcon, TrashIcon, ClockIcon, CheckCircleIcon, ExclamationTriangleIcon } from '../ui/icons';
-import { cn } from '../../utils/ui';
+import { PlayIcon, ShieldIcon, XCircleIcon, ClockIcon, CheckCircleIcon, ExclamationTriangleIcon } from '../ui/icons';
 import { IndeedSkill, GitHubSkill, CraigslistSkill, ReminderSkill } from '@notention/core';
 
 interface SkillDisplay {
@@ -180,21 +178,18 @@ export function SkillManagementView() {
     };
 
     return (
-        <div className="h-full bg-neutral-900 p-4 flex flex-col overflow-y-auto text-neutral-200">
-            <div className="flex justify-between items-center mb-6">
-                <h1 className="text-2xl font-bold flex items-center gap-2">
-                    <ShieldIcon className="h-6 w-6 text-blue-400" />
-                    Skill Approvals & Management
-                </h1>
-            </div>
+        <div className="space-y-6">
+            <SectionHeader
+                title="Skills"
+                description="Declarative translators that can act outside the workspace. Test them here and require approval before external actions."
+            />
 
-            <div className="mb-6 p-4 bg-neutral-800 rounded-lg border border-neutral-700">
-                <h3 className="font-medium text-neutral-300 mb-3">Approval Settings</h3>
-                <div className="flex items-center justify-between">
+            <section className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
+                <div className="flex items-start justify-between gap-4">
                     <div>
-                        <label className="font-medium text-neutral-300">Require approval for skill execution</label>
-                        <p className="text-sm text-neutral-400 mt-1">
-                            When enabled, skills will request approval before executing external actions.
+                        <p className="text-[13px] font-medium text-[var(--app-text)]">Require approval</p>
+                        <p className="mt-0.5 text-[12px] text-[var(--app-muted)]">
+                            Skills request approval before executing an external action.
                         </p>
                     </div>
                     <Toggle
@@ -203,145 +198,126 @@ export function SkillManagementView() {
                         ariaLabel="Require approval"
                     />
                 </div>
-            </div>
+            </section>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
                 {skills.map(skill => (
-                    <Card key={skill.id} className="p-4">
-                        <div className="flex flex-wrap items-start justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-3 mb-2">
-                                    <h3 className="font-semibold text-white">{skill.name}</h3>
-                                    <Badge variant={skill.approved ? 'success' : 'outline'} size="sm">
-                                        {skill.approved ? 'Auto-execute' : 'Requires approval'}
-                                    </Badge>
-                                    <Badge variant="outline" size="sm">v{skill.version}</Badge>
+                    <div key={skill.id} className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)]">
+                        <div className="flex flex-wrap items-start justify-between gap-3 p-4">
+                            <div className="min-w-0 flex-1">
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <h3 className="text-[13px] font-semibold text-[var(--app-text)]">{skill.name}</h3>
+                                    <Chip tone={skill.approved ? 'success' : 'neutral'} size="xs">
+                                        {skill.approved ? 'Auto-execute' : 'Needs approval'}
+                                    </Chip>
+                                    <Chip size="xs">v{skill.version}</Chip>
                                 </div>
-                                <p className="text-sm text-neutral-400 mb-3">{skill.description}</p>
-                                
-                                <div className="flex flex-wrap gap-4 text-sm text-neutral-400">
-                                    <div className="flex items-center gap-1">
-                                        <ClockIcon className="w-4 h-4" />
-                                        <span>Last run: {formatTime(skill.lastExecuted)}</span>
-                                    </div>
-                                    <div className="flex items-center gap-1">
-                                        <CheckCircleIcon className="w-4 h-4" />
-                                        <span>{skill.successCount}/{skill.executionCount} successful</span>
-                                    </div>
+                                <p className="mt-1 text-[12px] leading-5 text-[var(--app-muted)]">{skill.description}</p>
+                                <div className="mt-2 flex flex-wrap gap-3 text-[11px] text-[var(--app-faint)]">
+                                    <span className="flex items-center gap-1">
+                                        <ClockIcon className="h-3 w-3"/>
+                                        Last run {formatTime(skill.lastExecuted)}
+                                    </span>
+                                    <span className="flex items-center gap-1">
+                                        <CheckCircleIcon className="h-3 w-3"/>
+                                        {skill.successCount}/{skill.executionCount} successful
+                                    </span>
                                 </div>
                             </div>
 
-                            <div className="flex flex-wrap gap-2">
-                                <Button
-                                    variant="secondary"
-                                    size="sm"
-                                    onClick={() => handleTestSkill(skill.id)}
-                                >
-                                    <PlayIcon className="w-4 h-4 mr-1" />
-                                    Test Run
+                            <div className="flex flex-wrap gap-1.5">
+                                <Button variant="secondary" size="xs" onClick={() => handleTestSkill(skill.id)}>
+                                    <PlayIcon className="mr-1 h-3 w-3"/>
+                                    Test run
                                 </Button>
                                 {skill.approved && (
                                     <Button
                                         variant="ghost"
-                                        size="sm"
+                                        size="xs"
                                         onClick={() => handleRevokeApproval(skill.id)}
                                         className="text-red-400 hover:text-red-300"
                                     >
-                                        <XCircleIcon className="w-4 h-4 mr-1" />
+                                        <XCircleIcon className="mr-1 h-3 w-3"/>
                                         Revoke
                                     </Button>
                                 )}
                             </div>
                         </div>
 
-                        <div className="mt-4 pt-4 border-t border-neutral-700 grid gap-3 sm:grid-cols-3">
-                            <div className="p-3 bg-neutral-800 rounded-lg">
-                                <div className="text-xs text-neutral-400 mb-1">External Domains</div>
-                                <div className="text-sm text-neutral-300">
+                        <div className="grid gap-2 border-t border-[var(--app-line)] p-3 sm:grid-cols-3">
+                            <div className="rounded-md bg-[var(--app-raised)] p-2.5">
+                                <div className="text-[11px] text-[var(--app-faint)]">External domains</div>
+                                <div className="mt-1 text-[12px] text-[var(--app-text-secondary)]">
                                     {skill.domains.length > 0 ? (
                                         skill.domains.map(d => (
-                                            <span key={d} className="inline-block px-2 py-0.5 mr-1 mb-1 text-xs bg-purple-900/30 text-purple-300 rounded">{d}</span>
+                                            <span key={d} className="mr-1 inline-block rounded border border-[var(--app-line)] px-1.5 py-0.5 text-[11px]">{d}</span>
                                         ))
                                     ) : (
-                                        <span className="text-neutral-400">None (local only)</span>
+                                        <span className="text-[var(--app-faint)]">None (local only)</span>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-neutral-800 rounded-lg">
-                                <div className="text-xs text-neutral-400 mb-1">Authentication</div>
-                                <div className="text-sm">
+                            <div className="rounded-md bg-[var(--app-raised)] p-2.5">
+                                <div className="text-[11px] text-[var(--app-faint)]">Authentication</div>
+                                <div className="mt-1 text-[12px]">
                                     {skill.requiresAuth ? (
-                                        <span className="text-yellow-400">Required</span>
+                                        <span className="text-amber-300">Required</span>
                                     ) : (
-                                        <span className="text-green-400">Not required</span>
+                                        <span className="text-[var(--app-muted)]">Not required</span>
                                     )}
                                 </div>
                             </div>
 
-                            <div className="p-3 bg-neutral-800 rounded-lg">
-                                <div className="text-xs text-neutral-400 mb-1">Status</div>
-                                <div className="text-sm">
+                            <div className="rounded-md bg-[var(--app-raised)] p-2.5">
+                                <div className="text-[11px] text-[var(--app-faint)]">Status</div>
+                                <div className="mt-1 text-[12px]">
                                     {skill.approved ? (
-                                        <span className="text-green-400 flex items-center gap-1">
-                                            <CheckCircleIcon className="w-3 h-3" /> Auto-approved
+                                        <span className="flex items-center gap-1 text-emerald-300">
+                                            <CheckCircleIcon className="h-3 w-3"/> Auto-approved
                                         </span>
                                     ) : (
-                                        <span className="text-yellow-400 flex items-center gap-1">
-                                            <ExclamationTriangleIcon className="w-3 h-3" /> Awaits approval
+                                        <span className="flex items-center gap-1 text-[var(--app-muted)]">
+                                            <ExclamationTriangleIcon className="h-3 w-3"/> Awaits approval
                                         </span>
                                     )}
                                 </div>
                             </div>
                         </div>
-                    </Card>
+                    </div>
                 ))}
 
                 {skills.length === 0 && (
-                    <Card className="p-8 text-center">
-                        <ShieldIcon className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-neutral-300 mb-2">No skills registered</h3>
-                        <p className="text-neutral-400">Skills will appear here when registered.</p>
-                    </Card>
+                    <div className="rounded-lg border border-dashed border-[var(--app-line-strong)] p-8 text-center">
+                        <ShieldIcon className="mx-auto mb-3 h-6 w-6 text-[var(--app-faint)]"/>
+                        <p className="text-[13px] font-medium text-[var(--app-text-secondary)]">No skills registered</p>
+                        <p className="mt-1 text-[12px] text-[var(--app-muted)]">Skills appear here when they are available.</p>
+                    </div>
                 )}
             </div>
 
-            <div className="mt-6">
-                <h3 className="font-medium text-neutral-300 mb-3">Execution History</h3>
-                <div className="max-h-64 overflow-y-auto">
-                    {history.length === 0 ? (
-                        <Card className="p-8 text-center">
-                            <ClockIcon className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-                            <p className="text-neutral-400">No execution history yet</p>
-                        </Card>
-                    ) : (
-                        <div className="space-y-2">
-                            {history.slice(-20).reverse().map((record, index) => (
-                                <Card key={index} className="p-3">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3">
-                                            <Badge 
-                                                variant={record.success ? 'success' : 'danger'}
-                                                size="sm"
-                                            >
-                                                {record.success ? 'Success' : 'Failed'}
-                                            </Badge>
-                                            <span className="font-mono text-sm text-neutral-300">{record.skillId}</span>
-                                            <span className="text-xs text-neutral-400">Note: {record.noteId.slice(0, 8)}...</span>
-                                        </div>
-                                        <span className="text-xs text-neutral-400">
-                                            {formatTime(record.timestamp)}
-                                        </span>
-                                    </div>
-                                    {record.error && (
-                                        <div className="mt-1 text-sm text-red-400">{record.error}</div>
-                                    )}
-                                </Card>
-                            ))}
-                        </div>
-                    )}
-                </div>
-            </div>
+            <section className="space-y-3">
+                <SectionHeader title="Execution history" />
+                {history.length === 0 ? (
+                    <p className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-4 text-[12px] text-[var(--app-muted)]">
+                        No executions yet.
+                    </p>
+                ) : (
+                    <div className="divide-y divide-[var(--app-line)] overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)]">
+                        {history.slice(-20).reverse().map((record, index) => (
+                            <div key={index} className="flex flex-wrap items-center gap-3 px-3 py-2.5">
+                                <Chip tone={record.success ? 'success' : 'danger'} size="xs">
+                                    {record.success ? 'Success' : 'Failed'}
+                                </Chip>
+                                <span className="font-mono text-[11px] text-[var(--app-text-secondary)]">{record.skillId}</span>
+                                <span className="text-[11px] text-[var(--app-faint)]">note {record.noteId.slice(0, 8)}…</span>
+                                <span className="ml-auto text-[11px] text-[var(--app-faint)]">{formatTime(record.timestamp)}</span>
+                                {record.error && <div className="w-full text-[11px] text-red-400">{record.error}</div>}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </section>
 
             <SkillApprovalDialog
                 isOpen={approvalDialog.isOpen}

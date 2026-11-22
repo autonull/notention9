@@ -1,7 +1,5 @@
 import React from 'react';
 import {
-    ChevronDownIcon,
-    ChevronUpIcon,
     DocumentDuplicateIcon,
     EditIcon,
     SparklesIcon,
@@ -58,22 +56,22 @@ export function EditorControls({
 }: EditorControlsProps) {
     const menuItems: DropdownMenuItem[] = [
         ...(onSaveTemplate ? [{
-            label: "Save as Template",
+            label: "Save as template",
             icon: DocumentDuplicateIcon,
             onClick: onSaveTemplate,
         }] : []),
         ...(onCopyContent ? [{
-            label: "Copy Content",
+            label: "Copy content",
             icon: EditIcon,
             onClick: onCopyContent,
         }] : []),
         ...(onExport ? [{
-            label: "Export Note",
+            label: "Export note",
             icon: ArrowUpTrayIcon,
             onClick: onExport,
         }] : []),
         ...(onAutoTag ? [{
-            label: isAutoTagging ? "Auto-tagging…" : "Auto-suggest tags",
+            label: isAutoTagging ? "Auto-tagging…" : "Suggest tags",
             icon: SparklesIcon,
             onClick: onAutoTag,
             disabled: isAutoTagging,
@@ -92,8 +90,26 @@ export function EditorControls({
     ].flat().filter(Boolean) as DropdownMenuItem[];
 
     return (
-        <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Contextual details: metadata, related notes, typed values */}
+        <div className="flex min-w-0 items-center gap-1.5">
+            {missingProperties.length > 0 && onAddProperty && (
+                <div className="hidden items-center gap-1 xl:flex">
+                    {missingProperties.slice(0, 2).map(prop => (
+                        <button
+                            key={prop}
+                            type="button"
+                            onClick={(event) => {
+                                event.preventDefault();
+                                onAddProperty(prop);
+                            }}
+                            title={`Add ${prop} detail`}
+                            className="inline-flex h-7 items-center gap-1 rounded-md border border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] px-2 text-[11px] font-medium text-[var(--app-accent-text)] transition-colors hover:bg-[color-mix(in_srgb,var(--app-accent)_18%,transparent)]"
+                        >
+                            + {prop}
+                        </button>
+                    ))}
+                </div>
+            )}
+
             {onToggleInspector && (
                 <button
                     type="button"
@@ -101,62 +117,40 @@ export function EditorControls({
                     aria-pressed={isInspectorOpen}
                     aria-label={`Structured details (${propertyCount})`}
                     title="Structured details"
-                    className={`flex items-center gap-1.5 h-9 px-2.5 rounded-lg text-xs font-medium transition-colors ${
+                    className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-[12px] font-medium transition-colors ${
                         isInspectorOpen
-                            ? 'bg-neutral-800 text-white'
-                            : 'text-neutral-400 hover:text-white hover:bg-neutral-800/70'
+                            ? 'bg-[var(--app-raised)] text-[var(--app-text)]'
+                            : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]'
                     }`}
                 >
-                    <ListIcon className="w-4 h-4"/>
+                    <ListIcon className="h-3.5 w-3.5"/>
                     <span className="hidden lg:inline">Details</span>
-                    <span className="text-xs text-neutral-400 tabular-nums">{propertyCount}</span>
+                    <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{propertyCount}</span>
                 </button>
             )}
 
-            {/* Primary Actions */}
-            <div className="flex items-center gap-2">
-                <Button
-                    onClick={onPublish}
-                    disabled={isPublishing}
-                    variant={isPublished ? 'secondary' : 'primary'}
-                    size="sm"
-                    className="touch-target"
-                >
-                    {isPublishing ? 'Publishing…' : isPublished ? 'Published' : actionLabel}
-                </Button>
+            <Button
+                onClick={onPublish}
+                disabled={isPublishing}
+                variant={isPublished ? 'secondary' : 'primary'}
+                size="sm"
+                className="shrink-0"
+            >
+                {isPublishing ? 'Publishing…' : isPublished ? 'Published' : actionLabel}
+            </Button>
 
-                {/* More Menu */}
-                <DropdownMenu
-                    trigger={
-                        <IconButton
-                            icon={EllipsisVerticalIcon}
-                            variant="ghost"
-                            size="sm"
-                            tooltip="More actions"
-                        />
-                    }
-                    items={menuItems}
-                />
-            </div>
-
-            {/* Property Hints - Inline chips */}
-            {missingProperties.length > 0 && onAddProperty && (
-                <div className="flex items-center gap-1 ml-2">
-                    {missingProperties.slice(0, 3).map(prop => (
-                        <button
-                            key={prop}
-                            onClick={(e) => {
-                                e.preventDefault();
-                                onAddProperty(prop);
-                            }}
-                            title={`Add ${prop} property`}
- className="btn btn-ghost btn-xs px-2 py-0.5 text-xs tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95 touch-target"
-                        >
-                            + {prop}
-                        </button>
-                    ))}
-                </div>
-            )}
+            <DropdownMenu
+                trigger={
+                    <IconButton
+                        icon={EllipsisVerticalIcon}
+                        variant="ghost"
+                        size="sm"
+                        tooltip="More actions"
+                        tooltipPosition="bottom"
+                    />
+                }
+                items={menuItems}
+            />
         </div>
     );
-};
+}

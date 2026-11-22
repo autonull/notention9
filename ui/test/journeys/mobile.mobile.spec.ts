@@ -10,7 +10,7 @@ test('mobile has one composer and no bottom bar', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes'});
 
     await expect(page.getByTestId('quick-capture-input')).toBeVisible();
-    await expect(page.getByRole('button', {name: 'Capture a new note'})).toBeVisible();
+    await expect(page.getByRole('button', {name: 'New note'})).toBeVisible();
     await expect(page.getByRole('tablist', {name: 'Main navigation'})).toHaveCount(0);
 
     const fontSize = await page.getByTestId('quick-capture-input').evaluate((element) =>
