@@ -3,7 +3,7 @@ import {seed} from '../support/seed';
 import {snap} from '../support/capture';
 import {isolateNetwork} from '../fixtures/routes';
 import {demoNotes, defaultSettings} from '../fixtures/workspace';
-import {directMessage, event, identity, publish, RELAY_URL} from '../support/relay';
+import {clearRelay, directMessage, event, identity, publish, RELAY_URL} from '../support/relay';
 
 const now = Math.floor(Date.now() / 1000);
 
@@ -28,6 +28,7 @@ const chatEvents = async () => [
 ];
 
 test.beforeAll(async () => {
+    await clearRelay();
     await publish(await chatEvents());
 });
 

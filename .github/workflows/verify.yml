@@ -41,6 +41,12 @@ jobs:
       - name: Typecheck UI
         run: pnpm --filter @notention/ui typecheck
 
+      - name: Install Playwright Chromium
+        run: pnpm --filter @notention/ui exec playwright install --with-deps chromium
+
+      - name: Check UI
+        run: pnpm check:ui
+
       - name: Lint fabricated paths
         run: pnpm lint:fabricated
 

@@ -26,6 +26,8 @@ export interface RelayOptions {
     path?: string;
     server?: HttpServer;
     limits?: Partial<RelayLimits>;
+    /** Accept TEST-CLEAR for test isolation. Never enable on a public relay. */
+    allowTestReset?: boolean;
 }
 
 type NostrMessage = [string, ...unknown[]];
@@ -43,10 +45,12 @@ export class NostrRelay {
     private readonly host: string;
     private readonly path: string;
     private readonly requestedPort: number;
+    private readonly allowTestReset: boolean;
     #url: string;
 
     constructor(options: RelayOptions = {}) {
         this.limits = { ...DEFAULT_LIMITS, ...options.limits };
+        this.allowTestReset = options.allowTestReset === true;
         this.path = options.path === '/' ? '' : options.path ?? '';
         this.host = options.host ?? '127.0.0.1';
         this.requestedPort = options.port ?? 7000;
@@ -130,6 +134,14 @@ export class NostrRelay {
                 break;
             case 'CLOSE':
                 this.subscriptions.get(ws)?.delete(rest[0] as string);
+                break;
+            case 'TEST-CLEAR':
+                if (!this.allowTestReset) {
+                    send(ws, ['NOTICE', 'unsupported message: TEST-CLEAR']);
+                    break;
+                }
+                this.clearEvents();
+                send(ws, ['OK', 'cleared', true, '']);
                 break;
             default:
                 send(ws, ['NOTICE', `unsupported message: ${String(type)}`]);

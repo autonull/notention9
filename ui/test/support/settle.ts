@@ -1,5 +1,10 @@
 import type {Page} from '@playwright/test';
 
+/** Wait for the next painted frame so a synchronous React update has landed. */
+export const settleFrame = async (page: Page) => {
+    await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))));
+};
+
 export const settle = async (page: Page) => {
     await page.waitForSelector('[data-ready]');
     await page.evaluate(() => document.fonts.ready);

@@ -8,7 +8,11 @@ const argValue = (name: string): string | undefined => {
 
 const port = Number(argValue('port') ?? DEFAULT_PORTS.RELAY);
 const host = argValue('host') ?? '127.0.0.1';
-const relay = new NostrRelay({port, host});
+const relay = new NostrRelay({
+    port,
+    host,
+    allowTestReset: process.env.NOTENTION_RELAY_TEST_RESET === '1',
+});
 
 console.log(`Local relay listening on ${relay.url}`);
 

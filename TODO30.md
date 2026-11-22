@@ -56,13 +56,11 @@ No capability is removed. Only the false destinations are.
 | W30.5 Capture, search, commands | Done | One omnibox, `Cmd+N` composer, one `Cmd+K` overlay with Search / Explore public notes / Chat scopes. `→` previews a note in the same overlay; `Enter` opens it. |
 | W30.6 Settings | Done | Full-screen, five groups, one open, `#/settings/:tab` deep links. One row per network, one switch, one status sentence, no duplicate private-mode sentence. |
 | W30.7 Mobile | Done | No bottom nav, floating `+`, single-column grid, full-screen note, bottom-sheet rail, 18px capture, mobile tests green. |
-| W30.8 Evidence and loop | Partial | 47 scenes regenerate in ~90s, covering every capability: notes, detail, editor states, next steps, suggestions, replies, chat, search, explore, board, map, timeline, modals, trash, mobile, and all settings tabs. `pnpm check:ui` now covers typecheck, 8 dual-theme axe views, and 10 golden-path journeys. `waitForTimeout` is gone from journeys; only the deterministic audit settle remains. Remaining: relay per screenshot worker, gallery regeneration for this milestone, final CI run. |
+| W30.8 Evidence and loop | Done | 47 scenes regenerated for this milestone. Relay scenes clear the local relay before publishing; the runner uses one worker so public feeds cannot read another scene. `pnpm check:ui` covers typecheck, 8 dual-theme axe views, and 10 golden-path journeys, and runs in CI with Chromium installed. `waitForTimeout` is gone from journeys; only the deterministic audit settle remains. |
 
-### Remaining work, in order
+### Remaining work
 
-1. **W30.8 relay isolation** — give each screenshot worker its own relay instance, or clear the relay before the gallery, so public scenes cannot read notes from another scene.
-2. **W30.8 gallery** — regenerate the 47-scene gallery once for this milestone after the relay fix; keep `pnpm screenshot <scene>` for single-scene refreshes.
-3. **W30.8 CI** — run `pnpm check:ui` in CI and keep the gallery out of per-commit checks.
+None for W30.0–W30.8. Keep the gallery out of per-commit checks and regenerate it once per milestone.
 
 Do not re-open W30.1–W30.6 unless a golden-path or axe test fails.
 

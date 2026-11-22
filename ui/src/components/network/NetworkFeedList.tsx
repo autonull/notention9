@@ -53,13 +53,14 @@ export function NetworkFeedList({
     return (
         <div className="space-y-4">
             {sortedEvents.map((event) => (
-                <NostrEventCard
-                    key={event.id}
-                    event={event}
-                    profile={profiles[event.pubkey]}
-                    onApplyMatch={onApplyMatch}
-                    onFork={() => onFork(event)}
-                />
+                <div key={event.id} data-testid="network-feed-item">
+                    <NostrEventCard
+                        event={event}
+                        profile={profiles[event.pubkey]}
+                        onApplyMatch={onApplyMatch}
+                        onFork={() => onFork(event)}
+                    />
+                </div>
             ))}
         </div>
     );

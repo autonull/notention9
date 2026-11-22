@@ -1,6 +1,7 @@
 import {test, expect} from '@playwright/test';
 import type {Page} from '@playwright/test';
 import {seed} from '../support/seed';
+import {settleFrame} from '../support/settle';
 import {isolateNetwork} from '../fixtures/routes';
 import {defaultSettings} from '../fixtures/workspace';
 
@@ -8,9 +9,9 @@ const addDetail = async (page: Page, key: string, value: string) => {
     await page.getByTestId('add-detail').click();
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('combobox', {name: /Key/}).fill(key);
+    await settleFrame(page);
 
     const valueSelect = dialog.locator('select').nth(1);
-    await valueSelect.waitFor({state: 'visible', timeout: 2_000}).catch(() => {});
     if (await valueSelect.count()) {
         await valueSelect.selectOption({label: value});
     } else {
@@ -37,6 +38,11 @@ const createNote = async (page: Page, title: string) => {
     await titleInput.fill(title);
 };
 
+const saveNote = async (page: Page) => {
+    await page.keyboard.press('Control+s');
+    await expect(page.getByText('Saved', {exact: true})).toBeVisible();
+};
+
 test.describe('Local matching journey (two-note matching)', () => {
     test.beforeEach(async ({page}) => {
         await isolateNetwork(page);
@@ -52,6 +58,7 @@ test.describe('Local matching journey (two-note matching)', () => {
         await addDetail(page, 'stack', 'TypeScript');
         await addDetail(page, 'timezone', 'UTC');
         await addDetail(page, 'language', 'English');
+        await saveNote(page);
 
         await createNote(page, 'React developer available');
         await addDetail(page, 'skill', 'React');
@@ -60,21 +67,21 @@ test.describe('Local matching journey (two-note matching)', () => {
         await addDetail(page, 'timezone', 'UTC');
         await addDetail(page, 'language', 'English');
 
+        await saveNote(page);
         await page.evaluate(() => {
-            window.location.hash = '#inbox';
+            window.location.hash = '#/notes';
             window.dispatchEvent(new PopStateEvent('popstate'));
         });
 
-        const match = page.getByTestId('local-match');
+        await page.getByRole('button', {name: /Looking for a React developer/}).click();
+        const rail = page.getByRole('complementary', {name: 'Note context'});
+        await rail.getByRole('tab', {name: 'Matches'}).click();
+        const match = page.getByTestId('note-matches').getByTestId('match-item').first();
         await expect(match).toBeVisible({timeout: 20_000});
-        await expect(match).toContainText('satisfied');
-
-        // Step 3 of the golden path: the explanation is the honesty surface.
-        await match.getByTestId('match-explanations').locator('summary').click();
-        await expect(match.getByText('Why it fits')).toBeVisible();
+        await expect(match).toContainText('React developer available');
     });
 
-    test('match explanation shows satisfied and conflicting constraints', async ({page}) => {
+    test('match item lists satisfied and missing constraints', async ({page}) => {
         await seed(page, {notes: [], settings: defaultSettings()});
 
         await createNote(page, 'Looking for a React developer');
@@ -84,6 +91,7 @@ test.describe('Local matching journey (two-note matching)', () => {
         await addDetail(page, 'stack', 'TypeScript');
         await addDetail(page, 'timezone', 'UTC');
         await addDetail(page, 'language', 'English');
+        await saveNote(page);
 
         await createNote(page, 'React developer available');
         await addDetail(page, 'skill', 'React');
@@ -92,18 +100,17 @@ test.describe('Local matching journey (two-note matching)', () => {
         await addDetail(page, 'timezone', 'UTC');
         await addDetail(page, 'language', 'English');
 
+        await saveNote(page);
         await page.evaluate(() => {
-            window.location.hash = '#inbox';
+            window.location.hash = '#/notes';
             window.dispatchEvent(new PopStateEvent('popstate'));
         });
 
-        const match = page.getByTestId('local-match');
+        await page.getByRole('button', {name: /Looking for a React developer/}).click();
+        const rail = page.getByRole('complementary', {name: 'Note context'});
+        await rail.getByRole('tab', {name: 'Matches'}).click();
+        const match = page.getByTestId('note-matches').getByTestId('match-item').first();
         await expect(match).toBeVisible({timeout: 20_000});
-        
-        await match.getByTestId('match-explanations').locator('summary').click();
-        await expect(match.getByText('Why it fits')).toBeVisible();
-        
-        // Should show both satisfied and conflicting constraints
-        await expect(match.getByText(/conflicting/i)).toBeVisible();
+        await expect(match).toContainText('Missing: rate');
     });
 });

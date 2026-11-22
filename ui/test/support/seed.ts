@@ -1,6 +1,7 @@
 import type {Page} from '@playwright/test';
 import {STORAGE_KEYS} from '../../src/config/storageKeys';
 import type {AppSettings, Note, SortOrder, SidebarViewMode} from '../../../core/src/index';
+import {clearRelay} from './relay';
 
 export interface SeedOptions {
     notes?: Note[];
@@ -30,6 +31,10 @@ const put = async (page: Page, entries: Record<string, unknown>) => {
 };
 
 export async function seed(page: Page, options: SeedOptions) {
+    // Public feeds must not inherit notes from an earlier test. Showcase scenes
+    // publish before seeding, so they clear the relay in their own beforeAll.
+    if (process.env.SCREENSHOT_ISOLATION !== '1') await clearRelay();
+
     // App uses hash-based routing; callers pass '#view' values.
     const hash = options.hash ? (options.hash.startsWith('#') ? options.hash : `#${options.hash}`) : '';
     const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4199';

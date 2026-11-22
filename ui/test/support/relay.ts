@@ -63,4 +63,33 @@ export async function publish(events: Event[]): Promise<void> {
     });
 }
 
+/**
+ * Clear the local relay before a test seeds its workspace.
+ * The relay accepts this only when NOTENTION_RELAY_TEST_RESET=1.
+ */
+export async function clearRelay(): Promise<void> {
+    await new Promise<void>(resolve => {
+        const socket = new WebSocket(RELAY_URL);
+        let settled = false;
+        const timer = setTimeout(finish, 1_000);
+        timer.unref?.();
+
+        function finish() {
+            if (settled) return;
+            settled = true;
+            clearTimeout(timer);
+            socket.close();
+            resolve();
+        }
+
+        socket.on('open', () => socket.send(JSON.stringify(['TEST-CLEAR'])));
+        socket.on('message', data => {
+            const [type, , ok] = JSON.parse(data.toString());
+            if (type === 'OK' && ok) finish();
+        });
+        socket.on('error', finish);
+        socket.on('close', finish);
+    });
+}
+
 export const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

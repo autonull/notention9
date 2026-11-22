@@ -107,6 +107,7 @@ export default defineConfig({
             reuseExistingServer: !IS_CI,
             timeout: 60_000,
             cwd: path.resolve(ROOT, '../..'),
+            env: {NOTENTION_RELAY_TEST_RESET: '1'},
         },
     ],
 });

@@ -3,7 +3,7 @@ import {seed} from '../support/seed';
 import {snap} from '../support/capture';
 import {isolateNetwork} from '../fixtures/routes';
 import {demoNotes, defaultSettings} from '../fixtures/workspace';
-import {event, identity, publish, RELAY_URL} from '../support/relay';
+import {clearRelay, event, identity, publish, RELAY_URL} from '../support/relay';
 
 const now = Math.floor(Date.now() / 1000);
 
@@ -59,6 +59,7 @@ const feedEvents = () => [
 ];
 
 test.beforeAll(async () => {
+    await clearRelay();
     await publish(feedEvents());
 });
 
@@ -72,7 +73,7 @@ test('network feed', async ({page}) => {
         settings: defaultSettings({nostr: {privkey: Buffer.from(viewer.secret).toString('hex'), relays: [RELAY_URL]}}),
         hash: '#/notes?explore=1',
     });
-    await page.getByText(/Monthly meetup at the community hall/).first().waitFor({timeout: 20_000});
+    await page.getByTestId('network-feed-item').first().waitFor({timeout: 20_000});
     await snap(page, {
         area: 'network',
         state: 'feed',
@@ -84,7 +85,7 @@ test('network no identity', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes?explore=1'});
     await page.getByText('Read-only public feed').waitFor();
     await page.getByRole('heading', {name: /Public Feed/}).waitFor();
-    await page.getByText('Garden help on Saturdays').first().waitFor({timeout: 20_000});
+    await page.getByTestId('network-feed-item').first().waitFor({timeout: 20_000});
     await snap(page, {
         area: 'network',
         state: 'connect-identity',
