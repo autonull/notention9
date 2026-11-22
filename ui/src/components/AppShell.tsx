@@ -182,8 +182,14 @@ export function AppShell() {
 
     useKeyboardShortcuts({
         onNewNote: () => setIsCaptureComposerOpen(true),
-        onSearch: () => setIsPaletteOpen(true),
-        onCommandPalette: () => setIsPaletteOpen(true),
+        onSearch: () => {
+            window.dispatchEvent(new CustomEvent('open-search'));
+            setIsPaletteOpen(true);
+        },
+        onCommandPalette: () => {
+            window.dispatchEvent(new CustomEvent('open-search'));
+            setIsPaletteOpen(true);
+        },
         onPropertyPalette: () => window.dispatchEvent(new CustomEvent('open-property-palette')),
         onSave: () => window.dispatchEvent(new CustomEvent('save-note')),
         onPasteToCapture: (clipboardText: string) => {

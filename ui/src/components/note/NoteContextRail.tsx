@@ -1,4 +1,4 @@
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import type {Note, ScoredMatch} from '@notention/core';
 import {getTextFromHtml} from '@notention/core';
 import {useView} from '../../hooks/useViewContext';
@@ -11,6 +11,7 @@ import {SendIcon, SparklesIcon} from '../ui/icons';
 import {cn} from '../../utils/ui';
 import {NextStepStrip} from '../next-steps';
 import {MatchItem} from '../match/MatchItem';
+import {ChatPanel} from '../chat/ChatPanel';
 
 interface NoteContextRailProps {
     note: Note;
@@ -43,6 +44,16 @@ export function NoteContextRail({
     const {notes, addNote} = useNotes();
     const matches = useMatches(note);
     const [reply, setReply] = useState('');
+    const [replySurface, setReplySurface] = useState<'replies' | 'chat'>('replies');
+
+    const noteContact = useMemo(
+        () => note.properties.find(p => ['pubkey', 'contact', 'nostr'].includes(p.key))?.values[0] ?? null,
+        [note.properties]
+    );
+
+    useEffect(() => {
+        if (noteContact) setReplySurface('chat');
+    }, [noteContact]);
 
     const replies = useMemo(
         () => notes.filter(candidate =>
@@ -135,49 +146,82 @@ export function NoteContextRail({
                 )}
 
                 {noteTab === 'replies' && (
-                    <div className="flex h-full flex-col gap-3" data-testid="note-replies">
-                        <div className="min-h-0 flex-1 space-y-2 overflow-y-auto">
-                            {replies.length === 0 ? (
-                                <p className="px-1 py-2 text-sm text-neutral-400">No replies yet.</p>
-                            ) : replies.map(item => (
-                                <button
-                                    key={item.id}
-                                    type="button"
-                                    onClick={() => onNavigateToNote(item.id)}
-                                    className="w-full rounded-xl border border-neutral-800 bg-neutral-900/60 p-3 text-left hover:border-neutral-700"
-                                >
-                                    <span className="block truncate text-sm font-medium text-neutral-200">{item.title || 'Untitled reply'}</span>
-                                    <span className="mt-1 block line-clamp-2 text-sm text-neutral-400">{getTextFromHtml(item.content)}</span>
-                                </button>
-                            ))}
+                    <div className="flex h-full flex-col gap-2" data-testid="note-replies">
+                        <div className="flex shrink-0 items-center gap-1 rounded-lg border border-neutral-800 bg-neutral-900/60 p-1">
+                            <button
+                                type="button"
+                                onClick={() => setReplySurface('replies')}
+                                aria-pressed={replySurface === 'replies'}
+                                className={cn(
+                                    'h-8 flex-1 rounded-md text-xs font-medium',
+                                    replySurface === 'replies' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'
+                                )}
+                            >
+                                Replies
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => setReplySurface('chat')}
+                                aria-pressed={replySurface === 'chat'}
+                                className={cn(
+                                    'h-8 flex-1 rounded-md text-xs font-medium',
+                                    replySurface === 'chat' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400'
+                                )}
+                            >
+                                Chat
+                            </button>
                         </div>
-                        <div className="shrink-0">
-                            <label className="sr-only" htmlFor="note-reply-input">Write a reply</label>
-                            <div className="flex items-center gap-2">
-                                <Input
-                                    id="note-reply-input"
-                                    value={reply}
-                                    onChange={event => setReply(event.target.value)}
-                                    onKeyDown={(event) => {
-                                        if (event.key === 'Enter' && !event.shiftKey) {
-                                            event.preventDefault();
-                                            sendReply();
-                                        }
-                                    }}
-                                    placeholder="Write a reply…"
-                                    className="min-w-0"
-                                />
-                                <Button
-                                    variant="primary"
-                                    size="lg"
-                                    onClick={sendReply}
-                                    disabled={!reply.trim()}
-                                    aria-label="Send reply"
-                                >
-                                    <SendIcon className="h-4 w-4"/>
-                                </Button>
+
+                        {replySurface === 'chat' ? (
+                            <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-neutral-800">
+                                <ChatPanel initialPubkey={noteContact} className="h-full"/>
                             </div>
-                        </div>
+                        ) : (
+                            <div className="flex min-h-0 flex-1 flex-col gap-3">
+                                <div className="min-h-0 flex-1 space-y-2 overflow-y-auto">
+                                    {replies.length === 0 ? (
+                                        <p className="px-1 py-2 text-sm text-neutral-400">No replies yet.</p>
+                                    ) : replies.map(item => (
+                                        <button
+                                            key={item.id}
+                                            type="button"
+                                            onClick={() => onNavigateToNote(item.id)}
+                                            className="w-full rounded-xl border border-neutral-800 bg-neutral-900/60 p-3 text-left hover:border-neutral-700"
+                                        >
+                                            <span className="block truncate text-sm font-medium text-neutral-200">{item.title || 'Untitled reply'}</span>
+                                            <span className="mt-1 block line-clamp-2 text-sm text-neutral-400">{getTextFromHtml(item.content)}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <div className="shrink-0">
+                                    <label className="sr-only" htmlFor="note-reply-input">Write a reply</label>
+                                    <div className="flex items-center gap-2">
+                                        <Input
+                                            id="note-reply-input"
+                                            value={reply}
+                                            onChange={event => setReply(event.target.value)}
+                                            onKeyDown={(event) => {
+                                                if (event.key === 'Enter' && !event.shiftKey) {
+                                                    event.preventDefault();
+                                                    sendReply();
+                                                }
+                                            }}
+                                            placeholder="Write a reply…"
+                                            className="min-w-0"
+                                        />
+                                        <Button
+                                            variant="primary"
+                                            size="lg"
+                                            onClick={sendReply}
+                                            disabled={!reply.trim()}
+                                            aria-label="Send reply"
+                                        >
+                                            <SendIcon className="h-4 w-4"/>
+                                        </Button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 )}
             </div>

@@ -1,4 +1,5 @@
 import {test, expect} from '@playwright/test';
+import {generateSecretKey} from 'nostr-tools';
 import {seed} from '../support/seed';
 import {isolateNetwork} from '../fixtures/routes';
 import {defaultSettings, demoNotes} from '../fixtures/workspace';
@@ -32,7 +33,7 @@ test('capture one sentence and land in the note with one next step', async ({pag
 });
 
 test('respond to a match from the note context rail', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes/demo-request-react?tab=matches'});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/notes/demo-request-react?tab=matches'});
 
     const rail = page.getByRole('complementary', {name: 'Note context'});
     await expect(rail).toBeVisible();
@@ -44,7 +45,7 @@ test('respond to a match from the note context rail', async ({page}) => {
 });
 
 test('one search overlay finds notes and commands', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes'});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/notes'});
     await page.keyboard.press('Control+K');
 
     const dialog = page.getByRole('dialog', {name: 'Search'});
@@ -54,7 +55,7 @@ test('one search overlay finds notes and commands', async ({page}) => {
 });
 
 test('the top bar has one entry and no Inbox or Connections tabs', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes'});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/notes'});
 
     const header = page.locator('header').first();
     await expect(header.getByRole('button', {name: /Inbox|Connections|Network/})).toHaveCount(0);
@@ -64,11 +65,26 @@ test('the top bar has one entry and no Inbox or Connections tabs', async ({page}
 });
 
 test('settings deep link opens the named tab', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/settings/skills'});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/settings/skills'});
 
     await expect(page.getByRole('heading', {name: 'Settings', exact: true})).toBeVisible();
     await expect(page.getByRole('tabpanel', {name: 'Skills'})).toBeVisible();
     await expect(page.getByRole('tab', {name: 'Skills'})).toHaveAttribute('aria-selected', 'true');
+});
+
+test('chat and public notes stay reachable from the one overlay', async ({page}) => {
+    await seed(page, {
+        notes: demoNotes(),
+        settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}),
+        hash: '#chat',
+    });
+
+    const dialog = page.getByRole('dialog', {name: 'Search'});
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('button', {name: 'Chat'})).toHaveAttribute('aria-pressed', 'true');
+
+    await dialog.getByRole('button', {name: 'Explore public notes'}).click();
+    await expect(dialog.getByText(/No network notes found|Connect an identity/)).toBeVisible({timeout: 15_000});
 });
 
 test('legacy hashes redirect to one canonical destination', async ({page}) => {
@@ -93,7 +109,7 @@ test('legacy hashes redirect to one canonical destination', async ({page}) => {
 });
 
 test('reply to a note from the context rail', async ({page}) => {
-    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes/demo-request-react?tab=replies'});
+    await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/notes/demo-request-react?tab=replies'});
 
     const rail = page.getByRole('complementary', {name: 'Note context'});
     await expect(rail.getByTestId('note-replies')).toBeVisible();

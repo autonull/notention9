@@ -32,7 +32,10 @@ export function Header() {
 
             <button
                 type="button"
-                onClick={() => setIsPaletteOpen(true)}
+                onClick={() => {
+                    window.dispatchEvent(new CustomEvent('open-search'));
+                    setIsPaletteOpen(true);
+                }}
                 className="flex h-10 min-w-0 flex-1 max-w-xl items-center gap-2 rounded-xl border border-neutral-800 bg-neutral-900 px-3 text-left text-sm text-neutral-400 hover:border-neutral-700 hover:text-neutral-200"
                 aria-label="Search notes, details, tags, and commands"
             >

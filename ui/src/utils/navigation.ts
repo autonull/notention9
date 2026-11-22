@@ -10,6 +10,7 @@ export interface Route {
     capture: boolean;
     explore: boolean;
     search: boolean;
+    chat: boolean;
 }
 
 export const DEFAULT_ROUTE: Route = {
@@ -22,6 +23,7 @@ export const DEFAULT_ROUTE: Route = {
     capture: false,
     explore: false,
     search: false,
+    chat: false,
 };
 
 export const NOTE_MODES: NoteMode[] = ['canvas', 'list', 'board', 'map', 'timeline'];
@@ -49,7 +51,7 @@ export const LEGACY_REDIRECTS: Record<string, Partial<Route>> = {
     trash: {view: 'notes', section: 'trash'},
     network: {view: 'notes', explore: true},
     connections: {view: 'notes', explore: true},
-    chat: {view: 'notes', tab: 'replies'},
+    chat: {view: 'notes', tab: 'replies', chat: true},
     responses: {view: 'notes', tab: 'replies'},
     labels: {view: 'settings', settingsTab: 'labels'},
     ontology: {view: 'settings', settingsTab: 'ontology'},
@@ -77,6 +79,7 @@ export function parseRoute(hash: string): Route {
             capture: params.get('capture') === '1',
             explore: params.get('explore') === '1',
             search: params.get('search') === '1',
+            chat: params.get('chat') === '1',
         };
     }
 
@@ -107,6 +110,7 @@ export function routeToHash(route: Route): string {
     if (route.noteId) {
         const params = new URLSearchParams();
         if (route.tab !== 'next') params.set('tab', route.tab);
+        if (route.chat) params.set('chat', '1');
         const query = params.toString();
         return `#/notes/${route.noteId}${query ? `?${query}` : ''}`;
     }
@@ -117,6 +121,7 @@ export function routeToHash(route: Route): string {
     if (route.capture) params.set('capture', '1');
     if (route.explore) params.set('explore', '1');
     if (route.search) params.set('search', '1');
+    if (route.chat) params.set('chat', '1');
     const query = params.toString();
     return `#/notes${query ? `?${query}` : ''}`;
 }

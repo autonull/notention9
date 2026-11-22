@@ -36,7 +36,18 @@ export function useUrlRouting() {
         setSettingsTab(route.settingsTab);
         setNoteTab(route.tab);
         if (route.capture) focusCapture();
-        if (route.search || route.explore) setIsPaletteOpen(true);
+        if (route.search) {
+            setIsPaletteOpen(true);
+            requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('open-search')));
+        }
+        if (route.explore) {
+            setIsPaletteOpen(true);
+            requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('open-explore')));
+        }
+        if (route.chat) {
+            setIsPaletteOpen(true);
+            requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('open-chat')));
+        }
     }, [setActiveView, setSelectedNoteId, setNotesMode, setNotesSection, setSettingsTab, setNoteTab, setIsPaletteOpen]);
 
     useEffect(() => {
@@ -69,10 +80,20 @@ export function useUrlRouting() {
             capture: false,
             explore: false,
             search: false,
+            chat: false,
         };
         const pending = pendingFromUrl.current;
         if (pending) {
-            pendingFromUrl.current = null;
+            const settled =
+                pending.view === state.view &&
+                pending.noteId === state.noteId &&
+                pending.mode === state.mode &&
+                pending.section === state.section &&
+                pending.tab === state.tab &&
+                pending.settingsTab === state.settingsTab;
+            if (settled) {
+                pendingFromUrl.current = null;
+            }
             return;
         }
 

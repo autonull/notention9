@@ -9,6 +9,9 @@ import { useNotes } from '../../hooks/useNotes';
 import { modShortcut } from '../../utils/platform';
 import { getTextFromHtml } from '@notention/core';
 import { sanitizeHTML } from '../../utils/sanitize';
+import { cn } from '../../utils/ui';
+import { NetworkView } from '../views/NetworkView';
+import { ChatPanel } from '../chat/ChatPanel';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -92,6 +95,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
     const [query, setQuery] = useState('');
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [results, setResults] = useState<ScoredAction[]>([]);
+    const [scope, setScope] = useState<'search' | 'explore' | 'chat'>('search');
 
     // Build context for action enabling
     const context = useMemo<ActionContext>(() => ({
@@ -143,11 +147,26 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
         }
     }, [isOpen]);
 
+    useEffect(() => {
+        const openSearch = () => setScope('search');
+        const openExplore = () => setScope('explore');
+        const openChat = () => setScope('chat');
+        window.addEventListener('open-search', openSearch);
+        window.addEventListener('open-explore', openExplore);
+        window.addEventListener('open-chat', openChat);
+        return () => {
+            window.removeEventListener('open-search', openSearch);
+            window.removeEventListener('open-explore', openExplore);
+            window.removeEventListener('open-chat', openChat);
+        };
+    }, []);
+
     // Handle keyboard navigation
     useEffect(() => {
         if (!isOpen) return;
 
         const handleKeyDown = (e: KeyboardEvent) => {
+            if (scope !== 'search' && e.key !== 'Escape') return;
             switch (e.key) {
                 case 'Escape':
                     e.preventDefault();
@@ -175,7 +194,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, results, selectedIndex, onClose]);
+    }, [isOpen, results, selectedIndex, onClose, scope]);
 
     const executeAction = useCallback((action: RegisteredAction) => {
         try {
@@ -210,7 +229,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
             />
 
             {/* Palette */}
-            <div className="relative w-full max-w-2xl bg-neutral-900/95 border border-neutral-700/50 rounded-3xl shadow-2xl overflow-hidden animate-slide-down">
+            <div className={cn('relative w-full bg-neutral-900/95 border border-neutral-700/50 rounded-3xl shadow-2xl overflow-hidden animate-slide-down', scope === 'explore' ? 'max-w-5xl' : 'max-w-2xl')}>
                 {/* Input */}
                 <div className="p-4 border-b border-neutral-700/50">
                     <div className="relative">
@@ -231,7 +250,43 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                     </div>
                 </div>
 
+                <div className="flex items-center gap-1 border-b border-neutral-800 px-3 py-2">
+                    <button
+                        type="button"
+                        onClick={() => setScope('search')}
+                        aria-pressed={scope === 'search'}
+                        className={cn('h-8 rounded-lg px-3 text-sm font-medium', scope === 'search' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-neutral-200')}
+                    >
+                        Search
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setScope('explore')}
+                        aria-pressed={scope === 'explore'}
+                        className={cn('h-8 rounded-lg px-3 text-sm font-medium', scope === 'explore' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-neutral-200')}
+                    >
+                        Explore public notes
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setScope('chat')}
+                        aria-pressed={scope === 'chat'}
+                        className={cn('h-8 rounded-lg px-3 text-sm font-medium', scope === 'chat' ? 'bg-neutral-800 text-neutral-100' : 'text-neutral-400 hover:text-neutral-200')}
+                    >
+                        Chat
+                    </button>
+                </div>
+
                 {/* Results */}
+                {scope === 'explore' ? (
+                    <div className="max-h-[65vh] overflow-y-auto p-2">
+                        <NetworkView/>
+                    </div>
+                ) : scope === 'chat' ? (
+                    <div className="h-[60vh] p-2">
+                        <ChatPanel className="h-full"/>
+                    </div>
+                ) : (
                 <div
                     ref={listRef}
                     className="max-h-[60vh] overflow-y-auto p-2"
@@ -293,12 +348,17 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                         </>
                     )}
                 </div>
+                )}
 
                 {/* Footer hint */}
                 <div className="px-4 py-3 border-t border-neutral-700/50 flex items-center justify-between text-xs text-neutral-400">
-                    <span>↑↓ navigate • Enter select • Esc close</span>
+                    <span>{scope === 'search' ? '↑↓ navigate • Enter select • Esc close' : 'Esc close'}</span>
                     <span className="tabular-nums">
-                        {results.length} {results.length === 1 ? 'result' : 'results'}
+                        {scope === 'search'
+                            ? `${results.length} ${results.length === 1 ? 'result' : 'results'}`
+                            : scope === 'explore'
+                                ? 'Public notes'
+                                : 'Encrypted chat'}
                     </span>
                 </div>
             </div>

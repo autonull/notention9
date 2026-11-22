@@ -1,8 +1,9 @@
-import {test} from '@playwright/test';
+import {test, expect} from '@playwright/test';
 import {seed} from '../support/seed';
 import {snap} from '../support/capture';
 import {isolateNetwork} from '../fixtures/routes';
-import {demoNotes, defaultSettings} from '../fixtures/workspace';
+import {demoNotes, defaultSettings, property} from '../fixtures/workspace';
+import {generateSecretKey, getPublicKey} from 'nostr-tools';
 
 test.beforeEach(async ({page}) => {
     await isolateNetwork(page);
@@ -74,6 +75,65 @@ test('search', async ({page}) => {
         name: 'search/overlay',
         hash: '#/notes?search=1',
         description: 'One overlay for notes, details, tags, and commands.',
+    });
+});
+
+test('note-replies', async ({page}) => {
+    await gallery(page, {
+        name: 'note/replies',
+        hash: '#/notes/demo-request-react?tab=replies',
+        description: 'Replies are part of the note, with one composer.',
+    });
+});
+
+test('note-chat', async ({page}) => {
+    const privkey = Buffer.from(generateSecretKey()).toString('hex');
+    const contact = getPublicKey(Buffer.from(privkey, 'hex'));
+    const notes = demoNotes().map(note => note.id === 'demo-request-react'
+        ? {...note, properties: [...note.properties, property('pubkey', [contact])]}
+        : note);
+    await seed(page, {
+        notes,
+        settings: defaultSettings({nostr: {privkey, relays: ['ws://localhost:7000']}}),
+        hash: '#/notes/demo-request-react?tab=replies',
+    });
+    await expect(page.getByText('No messages yet.')).toBeVisible({timeout: 15_000});
+    await snap(page, {
+        area: 'note',
+        state: 'chat',
+        description: 'Encrypted chat for a note contact, in the same rail.',
+    });
+});
+
+test('search-explore', async ({page}) => {
+    await gallery(page, {
+        name: 'search/explore',
+        hash: '#/notes?explore=1',
+        description: 'Public notes stay reachable from the one search overlay.',
+    });
+});
+
+test('settings-ontology', async ({page}) => {
+    await gallery(page, {
+        name: 'settings/ontology',
+        hash: '#/settings/ontology',
+        description: 'Ontology remains a settings tab, with the graph editor.',
+    });
+});
+
+test('settings-labels', async ({page}) => {
+    await gallery(page, {
+        name: 'settings/labels',
+        hash: '#/settings/labels',
+        description: 'Labels remain a settings tab, reachable by deep link.',
+    });
+});
+
+test('settings-appearance', async ({page}) => {
+    await gallery(page, {
+        name: 'settings/appearance',
+        hash: '#/settings/appearance',
+        description: 'Appearance stays a settings tab, including the light theme option.',
     });
 });
 
