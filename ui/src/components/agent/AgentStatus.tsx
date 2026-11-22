@@ -79,19 +79,19 @@ export function AgentStatus() {
                 {/* Health Metrics */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
-                        <div className="text-xs text-neutral-400 uppercase font-semibold mb-1">Uptime</div>
+ <div className="text-xs text-neutral-400 font-semibold mb-1">Uptime</div>
                         <div className="text-xl font-mono text-blue-400">{formatUptime(status.uptime)}</div>
                     </div>
                     <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
-                        <div className="text-xs text-neutral-400 uppercase font-semibold mb-1">Active Workflows</div>
+ <div className="text-xs text-neutral-400 font-semibold mb-1">Active Workflows</div>
                         <div className="text-xl font-mono text-purple-400">{status.health.activeWorkflows}</div>
                     </div>
                     <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
-                        <div className="text-xs text-neutral-400 uppercase font-semibold mb-1">Active Tools</div>
+ <div className="text-xs text-neutral-400 font-semibold mb-1">Active Tools</div>
                         <div className="text-xl font-mono text-green-400">{status.health.activeTools}</div>
                     </div>
                     <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
-                        <div className="text-xs text-neutral-400 uppercase font-semibold mb-1">Memory Usage</div>
+ <div className="text-xs text-neutral-400 font-semibold mb-1">Memory Usage</div>
                         <div className="text-xl font-mono text-yellow-400">
                             {formatMemory(status.health.memory.used)} / {formatMemory(status.health.memory.available)}
                         </div>
@@ -100,7 +100,7 @@ export function AgentStatus() {
 
                 {/* Capabilities */}
                 <div>
-                    <h4 className="text-sm font-semibold text-neutral-400 mb-3 uppercase tracking-wider">Capabilities</h4>
+ <h4 className="text-sm font-semibold text-neutral-400 mb-3 tracking-wider">Capabilities</h4>
                     <div className="flex flex-wrap gap-2">
                         {Object.entries(status.capabilities).map(([feature, enabled]) => (
                             <div

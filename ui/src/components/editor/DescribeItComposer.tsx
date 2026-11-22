@@ -108,7 +108,7 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
 
                     {proposals.length > 0 && (
                         <div className="space-y-2">
-                            <div className="text-xs font-bold uppercase tracking-widest text-neutral-400">Suggestions</div>
+ <div className="text-xs font-bold tracking-widest text-neutral-400">Suggestions</div>
                             {proposals.map(proposal => (
                                 <div
                                     key={`${proposal.property.key}-${proposal.property.operator}-${proposal.property.values.join(',')}`}

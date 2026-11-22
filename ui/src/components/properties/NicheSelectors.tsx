@@ -16,7 +16,7 @@ export const NeedSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">What do you need?</div>
+ <div className="text-xs font-bold text-blue-400 tracking-wider">What do you need?</div>
             <div className="grid grid-cols-2 gap-2">
                 {['request', 'offer', 'task', 'service', 'product', 'meeting', 'collaboration', 'advice', 'resource', 'funding'].map(opt => (
                     <button
@@ -53,7 +53,7 @@ export const IdentitySelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology, note}) => (
         <div className="space-y-3">
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Select Person / Identity</div>
+ <div className="text-xs font-bold text-blue-400 tracking-wider">Select Person / Identity</div>
             <div className="space-y-2">
                 {['self', 'team', 'client', 'partner', 'vendor', 'expert', 'mentor', 'friend'].map(opt => (
                     <button
@@ -91,7 +91,7 @@ export const EmotionSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">How do you feel?</div>
+ <div className="text-xs font-bold text-blue-400 tracking-wider">How do you feel?</div>
             <div className="flex gap-2 flex-wrap">
                 {['😀', '🙂', '😐', '🙁', '😞', '😍', '😤', '😰', '😴', '🤔'].map(emoji => (
                     <button
@@ -139,7 +139,7 @@ export const LocationSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology, note, onPickLocation}) => (
         <div className="space-y-3">
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Pick Location</div>
+ <div className="text-xs font-bold text-blue-400 tracking-wider">Pick Location</div>
             <div className="flex gap-2">
                 <input
                     type="text"
@@ -182,7 +182,7 @@ export const TemplateSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Choose Template</div>
+ <div className="text-xs font-bold text-blue-400 tracking-wider">Choose Template</div>
             <div className="space-y-2">
                 {[
                     {id: 'task', label: 'Task', icon: '✅', desc: 'Action item with status'},
@@ -224,7 +224,7 @@ export const TimeRangeSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology, onPickTime}) => (
         <div className="space-y-3">
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Select Time</div>
+ <div className="text-xs font-bold text-blue-400 tracking-wider">Select Time</div>
             <div className="flex gap-2">
                 <Button
                     onClick={() => onPickTime?.(propertyKey)}
@@ -274,7 +274,7 @@ export const MarkdownSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange}) => (
         <div className="space-y-2">
-            <div className="text-xs font-bold text-blue-400 uppercase tracking-wider">Markdown Content</div>
+ <div className="text-xs font-bold text-blue-400 tracking-wider">Markdown Content</div>
             <textarea
                 value={currentValue}
                 onChange={e => onChange(e.target.value)}

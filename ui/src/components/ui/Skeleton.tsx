@@ -74,8 +74,8 @@ export function NoteItemSkeleton() {
                 <div className="flex items-center gap-1.5 overflow-hidden">
                     <Skeleton variant="text" width="80px" className="text-xs whitespace-nowrap"/>
                     <div className="flex gap-1">
-                        <Skeleton variant="text" width="50px" height="16px" className="text-xs uppercase tracking-wider font-bold rounded"/>
-                        <Skeleton variant="text" width="50px" height="16px" className="text-xs uppercase tracking-wider font-bold rounded"/>
+ <Skeleton variant="text" width="50px" height="16px" className="text-xs tracking-wider font-bold rounded"/>
+ <Skeleton variant="text" width="50px" height="16px" className="text-xs tracking-wider font-bold rounded"/>
                     </div>
                 </div>
                 <div className="flex items-center gap-0.5 opacity-0">

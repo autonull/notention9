@@ -227,7 +227,7 @@ export function ShortcutsTab() {
                     
                     return (
                         <div key={category} className="mb-6">
-                            <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-4 px-2">
+ <h3 className="text-xs font-bold text-neutral-400 tracking-widest mb-4 px-2">
                                 {category}
                             </h3>
                             <div className="space-y-2">

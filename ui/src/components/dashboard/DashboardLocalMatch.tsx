@@ -33,7 +33,7 @@ export function DashboardLocalMatch({notes, onSelectNote}: DashboardLocalMatchPr
 
     return (
         <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6 animate-slide-in-up stagger-2" data-testid="local-match">
-            <div className="flex items-center gap-2 text-green-300 text-xs font-bold uppercase tracking-widest mb-4">
+ <div className="flex items-center gap-2 text-green-300 text-xs font-bold tracking-widest mb-4">
                 <CheckCircleIcon className="w-4 h-4"/> Match found locally
             </div>
             <div className="flex flex-col md:flex-row md:items-center gap-4">

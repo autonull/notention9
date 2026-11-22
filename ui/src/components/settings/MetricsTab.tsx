@@ -168,7 +168,7 @@ export function MetricsTab() {
                         <div className="space-y-4">
                             {Array.from(workflowGroups.entries()).map(([workflow, signals]) => (
                                 <div key={workflow} className="space-y-2">
-                                    <h4 className="text-sm font-medium text-neutral-300 uppercase tracking-wider">{workflow}</h4>
+ <h4 className="text-sm font-medium text-neutral-300 tracking-wider">{workflow}</h4>
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                                         {signals.slice(0, 5).map((signal, idx) => (
                                             <div key={`${signal.workflow}-${signal.seam}-${signal.kind}-${idx}`} className="bg-neutral-800/50 rounded-lg p-3 border border-neutral-700">

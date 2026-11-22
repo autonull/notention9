@@ -148,7 +148,7 @@ export function InspectorPanel({
                             <span className="text-[11px] font-medium text-purple-200">
                                 {context.date.toLocaleDateString()}
                             </span>
-                            <span className="text-xs text-purple-400/80 uppercase font-bold">
+ <span className="text-xs text-purple-400/80 font-bold">
                                 {(() => {
                                     const diff = context.date!.getTime() - Date.now();
                                     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));

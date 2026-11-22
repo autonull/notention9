@@ -25,7 +25,7 @@ export function ConnectionStatus() {
         <div className="flex items-center gap-1.5 px-2" title={title}>
             <div className={`w-1.5 h-1.5 rounded-full ${colorClass}`}/>
             {queueSize > 0 && (
-                <span className="text-xs font-bold text-neutral-400 uppercase tracking-tighter">
+ <span className="text-xs font-bold text-neutral-400 tracking-tighter">
                     {queueSize}
                 </span>
             )}

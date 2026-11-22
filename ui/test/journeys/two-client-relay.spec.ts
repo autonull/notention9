@@ -8,9 +8,9 @@ const addDetail = async (page: Page, key: string, value: string) => {
     await page.getByTestId('add-detail').click();
     const dialog = page.getByRole('dialog');
     await dialog.getByRole('combobox', {name: /Key/}).fill(key);
-    await page.waitForTimeout(100);
 
     const valueSelect = dialog.locator('select').nth(1);
+    await valueSelect.waitFor({state: 'visible', timeout: 2_000}).catch(() => {});
     if (await valueSelect.count()) {
         await valueSelect.selectOption({label: value});
     } else {

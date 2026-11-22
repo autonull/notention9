@@ -10,7 +10,7 @@ export function SuggestedMatches() {
 
     return (
         <div className="mb-8">
-            <h2 className="text-sm font-semibold text-neutral-400 uppercase tracking-wider mb-3 flex items-center gap-2">
+ <h2 className="text-sm font-semibold text-neutral-400 tracking-wider mb-3 flex items-center gap-2">
                 <SparklesIcon className="w-4 h-4 text-blue-400"/>
                 Suggested Opportunities
             </h2>

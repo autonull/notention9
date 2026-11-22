@@ -120,7 +120,6 @@ test.describe('Next Steps E2E', () => {
         
         // Wait for suggestions to regenerate or stay suppressed
         await page.waitForSelector('[data-testid="editor-content"]', {timeout: 15_000});
-        await page.waitForTimeout(3000);
 
         // The dismissed step stays suppressed, so the quiet strip is absent
         await expect(page.locator('[data-testid="next-step-strip"]')).toHaveCount(0, {timeout: 15_000});
@@ -142,12 +141,9 @@ test.describe('Next Steps E2E', () => {
         await page.keyboard.type('Updated: ');
         await page.keyboard.press('Enter');
 
-        // Wait for debounced regeneration (2s)
-        await page.waitForTimeout(3000);
-
         // The old suggestion should become stale (showing Refresh action)
-        // The new suggestion should appear
-        await expect(page.locator('[data-testid="next-step-strip"]')).toBeVisible();
+        // The new suggestion should appear after the debounced regeneration
+        await expect(page.locator('[data-testid="next-step-strip"]')).toBeVisible({timeout: 15_000});
     });
 
     test('keyboard-only: reach, navigate, apply, dismiss, refresh, undo', async ({page}) => {

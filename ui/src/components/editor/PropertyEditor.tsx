@@ -227,7 +227,7 @@ export function PropertyEditor({
         <>
             <div className="flex items-center flex-wrap gap-1 mb-2">
                 {!isModal && (
-                    <span className="mr-auto text-xs font-bold text-blue-400 uppercase tracking-wider">
+ <span className="mr-auto text-xs font-bold text-blue-400 tracking-wider">
                         {title || (isAdding ? 'New Property' : 'Edit Property')}
                     </span>
                 )}
@@ -326,7 +326,7 @@ export function PropertyEditor({
             )}
 
             <div className="relative">
-                <label className="block text-xs uppercase font-bold text-neutral-400 mb-2 tracking-wider">Key</label>
+ <label className="block text-xs font-bold text-neutral-400 mb-2 tracking-wider">Key</label>
                 <Input
                     list="property-keys"
                     placeholder="Key (e.g. price)"
@@ -349,7 +349,7 @@ export function PropertyEditor({
                     ))}
                 </datalist>
                 {type && !readonly && (
-                    <span className="absolute right-2 top-3 text-xs uppercase bg-neutral-700 text-neutral-300 px-1.5 py-0.5 rounded border border-neutral-600">
+ <span className="absolute right-2 top-3 text-xs bg-neutral-700 text-neutral-300 px-1.5 py-0.5 rounded border border-neutral-600">
                         {type}
                     </span>
                 )}
@@ -364,7 +364,7 @@ export function PropertyEditor({
 
             <div className="grid grid-cols-[1fr,2fr] gap-3">
                 <div>
-                    <label className="block text-xs uppercase font-bold text-neutral-400 mb-2 tracking-wider">Comparison</label>
+ <label className="block text-xs font-bold text-neutral-400 mb-2 tracking-wider">Comparison</label>
                     <Select
                         value={operator}
                         onChange={(e) => setOperator(e.target.value)}
@@ -373,7 +373,7 @@ export function PropertyEditor({
                     />
                 </div>
                 <div>
-                    <label className="block text-xs uppercase font-bold text-neutral-400 mb-2 tracking-wider">Value</label>
+ <label className="block text-xs font-bold text-neutral-400 mb-2 tracking-wider">Value</label>
                     <EnhancedPropertyValueInput
                         value={value}
                         onChange={(val) => {

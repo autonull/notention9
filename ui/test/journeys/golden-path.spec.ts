@@ -54,6 +54,30 @@ test('one search overlay finds notes and commands', async ({page}) => {
     await expect(dialog.getByText('Looking for a React developer').first()).toBeVisible();
 });
 
+test('arrow previews a note without leaving the one overlay', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes'});
+    await page.keyboard.press('Control+K');
+
+    const dialog = page.getByRole('dialog', {name: 'Search'});
+    await dialog.getByPlaceholder('Search notes, details, tags, and commands…').fill('React');
+    await expect(dialog.getByText('Looking for a React developer').first()).toBeVisible();
+    await page.keyboard.press('ArrowRight');
+    await expect(dialog.getByRole('complementary', {name: 'Note preview'})).toBeVisible();
+    await expect(dialog).toBeVisible();
+
+    await page.keyboard.press('Escape');
+    await expect(dialog.getByRole('complementary', {name: 'Note preview'})).toHaveCount(0);
+    await expect(dialog).toBeVisible();
+});
+
+test('light theme applies to the workspace', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings({theme: 'light'}), hash: '#/notes'});
+
+    await expect(page.locator('html')).toHaveAttribute('data-theme', 'light');
+    await expect.poll(() => page.locator('[data-ready]').evaluate(element => getComputedStyle(element).backgroundColor))
+        .toBe('rgb(250, 250, 250)');
+});
+
 test('the top bar has one entry and no Inbox or Connections tabs', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/notes'});
 

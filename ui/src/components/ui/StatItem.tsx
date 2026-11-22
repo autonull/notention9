@@ -44,7 +44,7 @@ export function StatItem({
         <div className={cn('bg-neutral-800/50 rounded-xl p-4 border border-neutral-700', className)}>
             <div className="flex items-start justify-between">
                 <div>
-                    <p className="text-xs text-neutral-400 font-medium uppercase tracking-wide">{label}</p>
+ <p className="text-xs text-neutral-400 font-medium tracking-wide">{label}</p>
                     <p className={cn('text-2xl font-bold mt-1', variantColors[variant])}>
                         {value}
                     </p>

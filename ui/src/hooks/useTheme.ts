@@ -1,6 +1,18 @@
 import { useEffect } from 'react';
 import { useSettings } from './useSettingsContext';
 
+const systemPrefersDark = (): boolean =>
+    typeof window === 'undefined' || !window.matchMedia
+        ? true
+        : window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+const applyTheme = (theme: string | undefined, root: HTMLElement): void => {
+    const effective = theme === 'system' || !theme ? (systemPrefersDark() ? 'dark' : 'light') : theme;
+    root.setAttribute('data-theme', effective);
+    root.classList.toggle('light', effective === 'light');
+    root.classList.toggle('dark', effective === 'dark');
+};
+
 export function useTheme() {
     const { settings } = useSettings();
 
@@ -8,19 +20,13 @@ export function useTheme() {
     useEffect(() => {
         const theme = settings.theme ?? 'system';
         const root = document.documentElement;
+        applyTheme(theme, root);
+        if (theme !== 'system') return;
 
-        root.removeAttribute('data-theme');
-        root.classList.remove('light', 'dark');
-
-        if (theme === 'system') {
-            // Let CSS media queries handle it
-        } else if (theme === 'light') {
-            root.setAttribute('data-theme', 'light');
-            root.classList.add('light');
-        } else if (theme === 'dark') {
-            root.setAttribute('data-theme', 'dark');
-            root.classList.add('dark');
-        }
+        const media = window.matchMedia('(prefers-color-scheme: dark)');
+        const handleChange = () => applyTheme(theme, root);
+        media.addEventListener('change', handleChange);
+        return () => media.removeEventListener('change', handleChange);
     }, [settings.theme]);
 
     // Apply density
@@ -77,15 +83,7 @@ export function initializeTheme(settings: { theme?: string; density?: string; ac
     const root = document.documentElement;
 
     // Theme
-    root.removeAttribute('data-theme');
-    root.classList.remove('light', 'dark');
-    if (theme === 'light') {
-        root.setAttribute('data-theme', 'light');
-        root.classList.add('light');
-    } else if (theme === 'dark') {
-        root.setAttribute('data-theme', 'dark');
-        root.classList.add('dark');
-    }
+    applyTheme(theme, root);
 
     // Density
     root.classList.remove('density-compact', 'density-comfortable');

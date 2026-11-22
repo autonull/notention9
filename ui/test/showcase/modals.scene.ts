@@ -1,4 +1,4 @@
-import {test} from '@playwright/test';
+import {test, expect} from '@playwright/test';
 import {seed} from '../support/seed';
 import {snap} from '../support/capture';
 import {isolateNetwork} from '../fixtures/routes';
@@ -16,7 +16,7 @@ test('command palette', async ({page}) => {
     const input = palette.getByPlaceholder('Search notes, details, tags, and commands…');
     await input.waitFor({timeout: 5_000});
     await input.fill('react');
-    await page.waitForTimeout(200);
+    await expect(palette.getByText('Looking for a React developer').first()).toBeVisible();
     await snap(page, {
         area: 'modals',
         state: 'command-palette',

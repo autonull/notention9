@@ -8,6 +8,7 @@
 @source "../src";
 
 @custom-variant rtl (&:where([dir="rtl"], [dir="rtl"] *));
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 /* Native controls (checkbox, select, date) should match the surface, not the OS. */
 :root { color-scheme: dark; }
@@ -42,6 +43,24 @@
     /* text-neutral-400 */
     pointer-events: none;
     height: 0;
+}
+
+:root[data-theme='light'] .ProseMirror {
+    color: #262626;
+}
+
+:root[data-theme='light'] .ProseMirror[contenteditable='true']:empty:before {
+    color: #737373;
+}
+
+:root[data-theme='light'] .note-content a,
+:root[data-theme='light'] .suggestion-note {
+    color: #1d4ed8;
+}
+
+:root[data-theme='light'] .note-content a:hover,
+:root[data-theme='light'] .suggestion-note:hover {
+    color: #1e40af;
 }
 
 /* Rich-Text Content Styles */

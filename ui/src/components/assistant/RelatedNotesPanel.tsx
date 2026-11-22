@@ -59,7 +59,7 @@ export function RelatedNotesPanel({
 
             {displayRelated.length > 0 && (
                 <div className="p-4 space-y-3">
-                    <div className="flex items-center gap-2 text-xs text-neutral-400 uppercase tracking-wide">
+ <div className="flex items-center gap-2 text-xs text-neutral-400 tracking-wide">
                         <span>Related by properties & tags</span>
                     </div>
                     {displayRelated.map((related, index) => (
@@ -75,7 +75,7 @@ export function RelatedNotesPanel({
 
             {displayBacklinks.length > 0 && (
                 <div className="p-4 space-y-3 border-t border-neutral-800">
-                    <div className="flex items-center gap-2 text-xs text-neutral-400 uppercase tracking-wide">
+ <div className="flex items-center gap-2 text-xs text-neutral-400 tracking-wide">
                         <LinkIcon className="w-3 h-3" />
                         <span>Backlinks</span>
                     </div>

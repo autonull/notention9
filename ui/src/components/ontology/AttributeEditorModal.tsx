@@ -137,7 +137,7 @@ export function AttributeEditorModal({
                     <div className="mt-4 pt-4 border-t border-neutral-700/50">
                         <div className="flex items-center gap-2 mb-2 text-neutral-400">
                              <CodeBlockIcon className="w-4 h-4" />
-                             <span className="text-xs font-semibold uppercase tracking-wider">Preview</span>
+ <span className="text-xs font-semibold tracking-wider">Preview</span>
                         </div>
                         <div className="bg-neutral-900 rounded-md p-3 border border-neutral-800 overflow-x-auto">
                             <pre className="text-xs font-mono text-blue-300 leading-relaxed">

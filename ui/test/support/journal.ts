@@ -56,15 +56,35 @@ export async function waitForFrictionEvent(
     kind: string,
     timeoutMs = 15_000
 ): Promise<JournalEvent> {
-    const deadline = Date.now() + timeoutMs;
-    let seen: JournalEvent[] = [];
-    while (Date.now() < deadline) {
-        seen = await readFrictionJournal(page);
-        const matches = seen.filter(event => event.kind === kind);
-        if (matches.length > 0) return matches[matches.length - 1];
-        await page.waitForTimeout(250);
-    }
-    throw new Error(
-        `No "${kind}" friction event was recorded within ${timeoutMs}ms. Recorded: ${seen.map(e => e.kind).join(', ') || 'nothing'}`
-    );
+    const handle = await page.waitForFunction(async (eventKind) => {
+        const db = await new Promise<IDBDatabase>((resolve, reject) => {
+            const request = indexedDB.open('notention-journal');
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+
+        const events = await new Promise<JournalEvent[]>((resolve, reject) => {
+            try {
+                const tx = db.transaction('friction', 'readonly');
+                const request = tx.objectStore('friction').get('friction-journal');
+                tx.oncomplete = () => {
+                    const raw = request.result;
+                    if (raw === null || raw === undefined) return resolve([]);
+                    try {
+                        resolve(typeof raw === 'string' ? JSON.parse(raw) : raw);
+                    } catch {
+                        resolve([]);
+                    }
+                };
+                tx.onerror = () => reject(request.error);
+            } catch {
+                resolve([]);
+            }
+        });
+
+        db.close();
+        return events.filter(event => event.kind === eventKind).pop();
+    }, kind, {timeout: timeoutMs, polling: 250});
+
+    return await handle.jsonValue() as JournalEvent;
 }

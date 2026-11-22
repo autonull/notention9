@@ -333,7 +333,7 @@ export function EnhancedCommandPalette({
         <div className="space-y-4 animate-fade-in stagger-children">
             {COMMAND_PALETTE_SHORTCUTS.map((group, groupIndex) => (
                 <div key={group.category} className="stagger-children" style={{animationDelay: `${groupIndex * 50}ms`}}>
-                    <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest">
                         {group.category}
                     </div>
                     <div className="space-y-2 px-3">
@@ -350,7 +350,7 @@ export function EnhancedCommandPalette({
             ))}
             {/* Search Syntax Hints */}
             <div className="stagger-children">
-                <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest">
                     Search Syntax
                 </div>
                 <div className="space-y-1 px-3">
@@ -476,7 +476,7 @@ export function EnhancedCommandPalette({
                             {/* Recent Searches */}
                             {showRecent && recentSearches.length > 0 && (
                                 <div className="space-y-2 animate-fade-in">
-                                    <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest flex items-center justify-between">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest flex items-center justify-between">
                                         <span>Recent Searches ({recentSearches.length})</span>
                                         <Button
                                             onClick={() => setRecentSearches([])}
@@ -515,7 +515,7 @@ export function EnhancedCommandPalette({
                             {/* Recent Items */}
                             {showRecent && recentItems.length > 0 && (
                                 <div className="space-y-2 animate-fade-in">
-                                    <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest flex items-center justify-between">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest flex items-center justify-between">
                                         <span>Recent ({recentItems.length})</span>
                                         <Button
                                             onClick={() => handleRecentChange([])}
@@ -571,7 +571,7 @@ export function EnhancedCommandPalette({
 
                     {showHelp && !query && (
                         <div className="p-4 space-y-4 animate-fade-in stagger-children">
-                            <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest">
                                 Help & Shortcuts
                             </div>
                             {renderShortcuts()}
@@ -587,7 +587,7 @@ export function EnhancedCommandPalette({
                         return (
                             <React.Fragment key={item.id}>
                                 {showCategory && (
-                                    <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest">
                                         {item.category}
                                     </div>
                                 )}

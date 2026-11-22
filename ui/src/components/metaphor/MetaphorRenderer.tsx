@@ -37,7 +37,7 @@ export function MetaphorRenderer({note, metaphor}: MetaphorRendererProps) {
 
 const MetaphorProperty: React.FC<{ label: string; match?: Property }> = ({label, match}) => (
     <div className="flex flex-col bg-neutral-750 p-2 rounded">
-        <span className="text-xs text-neutral-400 uppercase font-medium">{label}</span>
+ <span className="text-xs text-neutral-400 font-medium">{label}</span>
         <span className={`text-sm ${match ? 'text-white' : 'text-neutral-400 italic'}`}>
       {match ? match.values.join(', ') : '(Not set)'}
     </span>

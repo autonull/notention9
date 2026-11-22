@@ -24,7 +24,7 @@ export function HelpDialog({isOpen, onClose, onAddDetail}: {isOpen: boolean; onC
         <Modal isOpen={isOpen} onClose={onClose} title="Help & Shortcuts" className="max-w-2xl">
             <div className="space-y-6 overflow-y-auto custom-scrollbar pr-1">
                 <section>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Concepts</h4>
+ <h4 className="text-xs font-bold tracking-widest text-neutral-400 mb-3">Concepts</h4>
                     <div className="grid gap-3 sm:grid-cols-2">
                         {CONCEPTS.map(({title, body}) => (
                             <div key={title} className="rounded-xl border border-neutral-700/60 bg-neutral-900/60 p-4">
@@ -36,7 +36,7 @@ export function HelpDialog({isOpen, onClose, onAddDetail}: {isOpen: boolean; onC
                 </section>
 
                 <section>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">Keyboard</h4>
+ <h4 className="text-xs font-bold tracking-widest text-neutral-400 mb-3">Keyboard</h4>
                     <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
                         {SHORTCUTS.map(([label, keys]) => (
                             <div key={label} className="flex items-center justify-between text-sm text-neutral-400">
@@ -68,7 +68,7 @@ export function HelpDialog({isOpen, onClose, onAddDetail}: {isOpen: boolean; onC
                 </section>
 
                 <section>
-                    <h4 className="text-xs font-bold uppercase tracking-widest text-neutral-400 mb-3">What you can do</h4>
+ <h4 className="text-xs font-bold tracking-widest text-neutral-400 mb-3">What you can do</h4>
                     <div className="grid gap-2 sm:grid-cols-2 text-sm text-neutral-400">
                         <div className="flex items-center gap-2"><TagIcon className="w-4 h-4 text-neutral-400"/>Tag notes and filter by them</div>
                         <div className="flex items-center gap-2"><SearchIcon className="w-4 h-4 text-neutral-400"/>Search prose, tags, and details</div>

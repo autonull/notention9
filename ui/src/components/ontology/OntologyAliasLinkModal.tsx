@@ -93,7 +93,7 @@ export function OntologyAliasLinkModal({
 
                 {hasHighConfidenceMatch && !searchTerm && (
                     <div className="bg-purple-900/20 border border-purple-800/50 rounded-lg p-3 mb-2">
-                        <div className="flex items-center gap-2 mb-2 text-purple-300 text-xs uppercase font-bold">
+ <div className="flex items-center gap-2 mb-2 text-purple-300 text-xs font-bold">
                             <SparklesIcon className="w-3 h-3" />
                             Suggested Match
                         </div>
@@ -151,7 +151,7 @@ export function OntologyAliasLinkModal({
                                                         {Math.round(attr.score * 100)}%
                                                     </span>
                                                 )}
-                                                <span className="text-xs text-neutral-400 uppercase tracking-wide">
+ <span className="text-xs text-neutral-400 tracking-wide">
                                                     {attr.nodeLabel}
                                                 </span>
                                             </div>

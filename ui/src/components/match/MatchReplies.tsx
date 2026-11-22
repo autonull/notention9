@@ -16,7 +16,7 @@ export function MatchReplies({matches, onMatchClick, onMatchRespond}: MatchRepli
         <div className="mt-8 border-t border-neutral-800 pt-6" data-testid="match-replies">
             <div className="flex items-center gap-2 mb-4 text-neutral-400">
                 <SparklesIcon className="w-4 h-4 text-blue-400"/>
-                <h3 className="text-sm font-semibold uppercase tracking-wider">Semantic Matches</h3>
+ <h3 className="text-sm font-semibold tracking-wider">Semantic Matches</h3>
                 <span className="text-xs bg-blue-900/30 text-blue-300 px-2 py-0.5 rounded-full border border-blue-800/50">
                     {matches.length}
                 </span>

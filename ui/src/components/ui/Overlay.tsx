@@ -561,7 +561,7 @@ export function CommandPalette({
                     )}
                     {filteredItems.length === 0 && !query && (
                         <div className="p-4 space-y-4">
-                            <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest">
                                 Keyboard Shortcuts
                             </div>
                             <div className="space-y-2 px-3">
@@ -581,7 +581,7 @@ export function CommandPalette({
                         return (
                             <React.Fragment key={item.id}>
                                 {showCategory && (
-                                    <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 uppercase tracking-widest">
+ <div className="px-3 pt-3 pb-1 text-xs font-bold text-neutral-400 tracking-widest">
                                         {item.category}
                                     </div>
                                 )}

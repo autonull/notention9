@@ -63,7 +63,7 @@ export function DiscoveredProperties({
         <div className="mb-4 bg-neutral-800/30 rounded-lg p-3 border border-neutral-700/50">
             <div className="flex items-center gap-2 mb-3">
                 <LightBulbIcon className="w-4 h-4 text-yellow-400" />
-                <span className="text-xs font-bold text-neutral-300 uppercase tracking-wide">Discovered Properties</span>
+ <span className="text-xs font-bold text-neutral-300 tracking-wide">Discovered Properties</span>
             </div>
             <div className="grid grid-cols-1 gap-2">
                 {unknownProperties.map(({ key, count, inferredType }) => (

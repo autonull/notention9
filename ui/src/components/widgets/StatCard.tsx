@@ -17,7 +17,7 @@ export function StatCard({label, value, icon, trend, trendValue, className = ''}
             aria-label={`${label} statistic`}
         >
             <div className="flex justify-between items-start mb-2">
-                <span className="text-neutral-400 text-xs uppercase font-semibold tracking-wider">{label}</span>
+ <span className="text-neutral-400 text-xs font-semibold tracking-wider">{label}</span>
                 {icon && <div className="text-neutral-400 opacity-80" aria-hidden="true">{icon}</div>}
             </div>
             <div className="flex items-baseline gap-2">

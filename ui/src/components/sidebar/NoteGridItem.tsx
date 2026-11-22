@@ -4,23 +4,13 @@ import {DownloadIcon, LockIcon, PinIcon, WorldIcon} from '../ui/icons';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {useNoteDisplay} from './useNoteDisplay';
 import {cn} from '../../utils/ui';
+import {noteAccentClass} from '../../utils/noteAccent';
 
 interface NoteGridItemProps {
     note: Note;
     isSelected: boolean;
     onSelect: () => void;
 }
-
-const accentClass = (note: Note): string => {
-    const intent = note.properties.find(p => p.key === 'intent')?.values[0];
-    const type = note.properties.find(p => p.key === 'type')?.values[0];
-    if (intent === 'request') return 'note-request';
-    if (intent === 'offer') return 'note-offer';
-    if (note.tags.includes('task') || type === 'task') return 'note-task';
-    if (type === 'event') return 'note-event';
-    if (type === 'person') return 'note-person';
-    return 'note-neutral';
-};
 
 export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
     const {
@@ -55,7 +45,7 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
                 'relative flex min-h-[132px] cursor-pointer flex-col gap-2 overflow-hidden rounded-xl border border-neutral-800 bg-neutral-900/60 p-4 pl-5 transition-colors',
                 'before:absolute before:bottom-0 before:left-0 before:top-0 before:w-1 before:bg-[var(--note-accent)]',
                 'hover:border-neutral-700 hover:bg-neutral-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-500/50',
-                accentClass(note),
+                noteAccentClass(note),
                 isSelected && 'border-neutral-600 bg-neutral-900',
                 isLowPriority && 'opacity-60',
                 isVeryLowPriority && 'border-dashed'

@@ -10,31 +10,33 @@ const VIEWS = [
     {name: 'Skills', hash: '#/settings/skills'},
 ];
 
-for (const view of VIEWS) {
-    test(`axe: ${view.name} has no serious or critical violations`, async ({page}) => {
-        await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: view.hash});
+for (const theme of ['dark', 'light'] as const) {
+    for (const view of VIEWS) {
+        test(`axe: ${theme} ${view.name} has no serious or critical violations`, async ({page}) => {
+            await seed(page, {notes: demoNotes(), settings: defaultSettings({theme}), hash: view.hash});
 
-        const results = await new AxeBuilder({page})
-            .withTags(['wcag2aa', 'wcag21aa', 'best-practice'])
-            .analyze();
+            const results = await new AxeBuilder({page})
+                .withTags(['wcag2aa', 'wcag21aa', 'best-practice'])
+                .analyze();
 
-        const serious = results.violations.filter(v => v.impact === 'serious');
-        const critical = results.violations.filter(v => v.impact === 'critical');
+            const serious = results.violations.filter(v => v.impact === 'serious');
+            const critical = results.violations.filter(v => v.impact === 'critical');
 
-        if (serious.length > 0 || critical.length > 0) {
-            console.log(`\n=== ${view.name} violations ===`);
-            for (const v of [...critical, ...serious]) {
-                console.log(`  [${(v.impact ?? 'unknown').toUpperCase()}] ${v.id}: ${v.description}`);
-                console.log(`    Nodes: ${v.nodes.length}`);
-                for (const node of v.nodes.slice(0, 25)) {
-                    console.log(`      ${node.target.join(' ')}`);
-                    console.log(`      ${node.html.slice(0, 220)}`);
-                    console.log(`      ${node.failureSummary?.split('\n').slice(0, 3).join(' | ')}`);
+            if (serious.length > 0 || critical.length > 0) {
+                console.log(`\n=== ${theme} ${view.name} violations ===`);
+                for (const v of [...critical, ...serious]) {
+                    console.log(`  [${(v.impact ?? 'unknown').toUpperCase()}] ${v.id}: ${v.description}`);
+                    console.log(`    Nodes: ${v.nodes.length}`);
+                    for (const node of v.nodes.slice(0, 25)) {
+                        console.log(`      ${node.target.join(' ')}`);
+                        console.log(`      ${node.html.slice(0, 220)}`);
+                        console.log(`      ${node.failureSummary?.split('\n').slice(0, 3).join(' | ')}`);
+                    }
                 }
             }
-        }
 
-        expect(critical.length, `Critical violations on ${view.name}`).toBe(0);
-        expect(serious.length, `Serious violations on ${view.name}`).toBe(0);
-    });
+            expect(critical.length, `Critical violations on ${theme} ${view.name}`).toBe(0);
+            expect(serious.length, `Serious violations on ${theme} ${view.name}`).toBe(0);
+        });
+    }
 }

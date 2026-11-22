@@ -17,7 +17,7 @@ export function OntologySuggestionItem({
             <div>
                 <div className="flex items-center gap-2">
                     <span className="font-mono text-blue-300 font-bold">{suggestion.key}</span>
-                    <span className={`text-xs px-1.5 py-0.5 rounded uppercase font-medium ${
+ <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
                         suggestion.type === 'number' ? 'bg-orange-900/30 text-orange-300' :
                         suggestion.type === 'date' ? 'bg-purple-900/30 text-purple-300' :
                         suggestion.type === 'geo' ? 'bg-teal-900/30 text-teal-300' :

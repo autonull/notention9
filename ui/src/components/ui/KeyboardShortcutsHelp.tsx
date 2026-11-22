@@ -90,7 +90,7 @@ export function KeyboardShortcutsHelp({
                     <div className="h-full overflow-y-auto p-4 pb-10 custom-scrollbar">
                     {groups.map((group) => (
                         <div key={group.category} className="mb-8">
-                            <h3 className="text-xs font-bold text-neutral-400 uppercase tracking-widest mb-4 px-2">
+ <h3 className="text-xs font-bold text-neutral-400 tracking-widest mb-4 px-2">
                                 {group.category}
                             </h3>
                             <div className="space-y-2">

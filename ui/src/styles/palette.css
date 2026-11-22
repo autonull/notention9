@@ -14,6 +14,130 @@
     --success: #34d399;
     --danger: #ff5c7a;
     --note-accent: var(--accent-neutral);
+
+    --color-surface: var(--surface);
+    --color-surface-raised: var(--surface-2);
+    --color-surface-hover: #262626;
+    --color-success: var(--success);
+    --color-error: var(--danger);
+    --color-warning: #fbbf24;
+}
+
+/*
+ * Light mode inverts the neutral and accent ramps once. Components keep their
+ * existing utility classes, so every surface follows the theme without a
+ * second class set.
+ */
+:root[data-theme='light'] {
+    color-scheme: light;
+
+    --bg: #fafafa;
+    --surface: #ffffff;
+    --surface-2: #f5f5f5;
+    --line: #e5e5e5;
+    --text: #171717;
+    --text-muted: #525252;
+    --accent-neutral: #404040;
+    --note-accent: var(--accent-neutral);
+
+    --color-surface: var(--surface);
+    --color-surface-raised: var(--surface-2);
+    --color-surface-hover: #f5f5f5;
+
+    --color-white: #171717;
+    --color-neutral-50: #0a0a0a;
+    --color-neutral-100: #171717;
+    --color-neutral-200: #262626;
+    --color-neutral-300: #404040;
+    --color-neutral-400: #525252;
+    --color-neutral-500: #737373;
+    --color-neutral-600: #a3a3a3;
+    --color-neutral-700: #d4d4d4;
+    --color-neutral-800: #e5e5e5;
+    --color-neutral-900: #ffffff;
+    --color-neutral-950: #fafafa;
+
+    --color-blue-50: #172554;
+    --color-blue-100: #1e3a8a;
+    --color-blue-200: #1e40af;
+    --color-blue-300: #1e40af;
+    --color-blue-400: #1e40af;
+    --color-blue-500: #3b82f6;
+    --color-blue-600: #60a5fa;
+    --color-blue-700: #93c5fd;
+    --color-blue-800: #bfdbfe;
+    --color-blue-900: #dbeafe;
+
+    --color-red-100: #7f1d1d;
+    --color-red-200: #991b1b;
+    --color-red-300: #991b1b;
+    --color-red-400: #991b1b;
+    --color-red-500: #ef4444;
+    --color-red-600: #f87171;
+    --color-red-700: #fca5a5;
+    --color-red-800: #fecaca;
+    --color-red-900: #fee2e2;
+
+    --color-green-100: #14532d;
+    --color-green-200: #166534;
+    --color-green-300: #166534;
+    --color-green-400: #166534;
+    --color-green-500: #22c55e;
+    --color-green-600: #4ade80;
+    --color-green-700: #86efac;
+    --color-green-800: #bbf7d0;
+    --color-green-900: #dcfce7;
+
+    --color-yellow-100: #713f12;
+    --color-yellow-200: #854d0e;
+    --color-yellow-300: #854d0e;
+    --color-yellow-400: #854d0e;
+    --color-yellow-500: #eab308;
+    --color-yellow-600: #facc15;
+    --color-yellow-700: #fde047;
+    --color-yellow-800: #fef08a;
+    --color-yellow-900: #fef9c3;
+
+    --color-purple-100: #581c87;
+    --color-purple-200: #6b21a8;
+    --color-purple-300: #6b21a8;
+    --color-purple-400: #6b21a8;
+    --color-purple-500: #a855f7;
+    --color-purple-600: #c084fc;
+    --color-purple-700: #d8b4fe;
+    --color-purple-800: #e9d5ff;
+    --color-purple-900: #f3e8ff;
+
+    --color-amber-100: #78350f;
+    --color-amber-200: #92400e;
+    --color-amber-300: #92400e;
+    --color-amber-400: #92400e;
+    --color-amber-500: #f59e0b;
+    --color-amber-600: #fbbf24;
+    --color-amber-700: #fcd34d;
+    --color-amber-800: #fde68a;
+    --color-amber-900: #fef3c7;
+
+    --color-orange-300: #9a3412;
+    --color-orange-400: #9a3412;
+    --color-orange-500: #f97316;
+    --color-orange-700: #fdba74;
+    --color-orange-900: #ffedd5;
+
+    --color-cyan-300: #155e75;
+    --color-cyan-400: #155e75;
+    --color-cyan-500: #06b6d4;
+    --color-cyan-700: #67e8f9;
+    --color-cyan-900: #cffafe;
+
+    --color-teal-300: #115e59;
+    --color-teal-900: #ccfbf1;
+
+    --color-emerald-300: #065f46;
+    --color-emerald-400: #065f46;
+    --color-emerald-500: #10b981;
+
+    --color-pink-400: #9d174d;
 }
 
 .note-request { --note-accent: var(--accent-request); }

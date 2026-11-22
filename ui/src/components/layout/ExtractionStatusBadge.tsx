@@ -65,7 +65,7 @@ export function ExtractionStatusIndicator() {
     return (
         <div className="flex items-center gap-1.5 px-2" title={label}>
             <div className={`w-1.5 h-1.5 rounded-full ${colorClass}`}/>
-            <span className="text-xs font-bold text-neutral-400 uppercase tracking-tighter hidden sm:inline">
+ <span className="text-xs font-bold text-neutral-400 tracking-tighter hidden sm:inline">
                 {providerName}
             </span>
         </div>

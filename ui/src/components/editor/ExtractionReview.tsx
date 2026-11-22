@@ -45,7 +45,7 @@ export function ExtractionReview({items, onAccept, onReject}: ExtractionReviewPr
         <div className="pt-3 border-t border-neutral-800 mt-2" data-testid="extraction-review">
             <div className="flex items-center gap-2 mb-2 px-1">
                 <SparklesIcon className="w-3 h-3 text-purple-400"/>
-                <span className="text-xs font-bold text-neutral-400 uppercase">Review suggestions</span>
+ <span className="text-xs font-bold text-neutral-400">Review suggestions</span>
                 <span className="text-xs text-neutral-400">{items.length}</span>
                 {hasDegraded && (
                     <span className="ml-auto inline-flex items-center gap-1 px-2 py-0.5 rounded bg-amber-900/30 border border-amber-800 text-amber-300 text-xs font-medium">

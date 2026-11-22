@@ -97,7 +97,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
 
     return (
         <section className="rounded-3xl border border-green-500/20 bg-green-500/5 p-6 animate-slide-in-up stagger-2" data-testid="local-match">
-            <div className="flex items-center gap-2 text-green-300 text-xs font-bold uppercase tracking-widest mb-4">
+ <div className="flex items-center gap-2 text-green-300 text-xs font-bold tracking-widest mb-4">
                 <CheckCircleIcon className="w-4 h-4"/> Match found locally
             </div>
             <div className="flex flex-col md:flex-row md:items-center gap-4">
@@ -126,7 +126,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                 {/* Cross-key mappings used */}
                                 {result.matches.some(m => crossKeyMap[m.requestProp.key]?.includes(m.offerProp.key)) && (
                                     <div className="p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-                                        <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-wide mb-2">
+ <div className="flex items-center gap-2 text-blue-400 font-bold text-xs tracking-wide mb-2">
                                             <MapIcon className="w-3 h-3"/> Cross-key mappings used
                                         </div>
                                         <div className="space-y-1 text-blue-300">
@@ -151,7 +151,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                 {/* Score breakdown */}
                                 {result.matches.length > 0 && (
                                     <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
-                                        <div className="flex items-center gap-2 text-green-400 font-bold text-xs uppercase tracking-wide mb-2">
+ <div className="flex items-center gap-2 text-green-400 font-bold text-xs tracking-wide mb-2">
                                             <ChartBarIcon className="w-3 h-3"/> Score breakdown
                                         </div>
                                         <div className="space-y-1 text-green-300">
@@ -182,7 +182,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                 {/* Matches */}
                                 {result.matches.length > 0 && (
                                     <div>
-                                        <div className="text-xs font-bold text-green-400 uppercase tracking-wide mb-2">Why it fits</div>
+ <div className="text-xs font-bold text-green-400 tracking-wide mb-2">Why it fits</div>
                                         <div className="space-y-1">
                                             {result.matches.map((m, i) => (
                                                 <div key={i} className="flex items-start gap-2 p-2 bg-green-500/10 rounded border border-green-500/20">
@@ -219,7 +219,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                 
                                 {result.conflicts.length > 0 && (
                                     <div>
-                                        <div className="text-xs font-bold text-red-400 uppercase tracking-wide mb-2">Conflicts</div>
+ <div className="text-xs font-bold text-red-400 tracking-wide mb-2">Conflicts</div>
                                         <div className="space-y-1">
                                             {result.conflicts.map((c, i) => (
                                                 <div key={i} className="flex items-start gap-2 p-2 bg-red-500/10 rounded border border-red-500/20">
@@ -243,7 +243,7 @@ export function LocalMatchPreview({match, onSelectNote, onAcceptMatch, onRejectM
                                 
                                 {totalMissing > 0 && (
                                     <div>
-                                        <div className="text-xs font-bold text-yellow-400 uppercase tracking-wide mb-2">Missing details</div>
+ <div className="text-xs font-bold text-yellow-400 tracking-wide mb-2">Missing details</div>
                                         <div className="space-y-1">
                                             {result.missing.map((m, i) => (
                                                 <div key={i} className="flex items-center gap-2 p-2 bg-yellow-500/10 rounded border border-yellow-500/20">

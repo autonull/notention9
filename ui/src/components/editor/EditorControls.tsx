@@ -150,7 +150,7 @@ export function EditorControls({
                                 onAddProperty(prop);
                             }}
                             title={`Add ${prop} property`}
-                            className="btn btn-ghost btn-xs px-2 py-0.5 text-xs uppercase tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95 touch-target"
+ className="btn btn-ghost btn-xs px-2 py-0.5 text-xs tracking-wider bg-yellow-900/20 text-yellow-500/80 border border-yellow-700/30 hover:bg-yellow-900/40 hover:text-yellow-400 hover:border-yellow-600/50 active:scale-95 touch-target"
                         >
                             + {prop}
                         </button>

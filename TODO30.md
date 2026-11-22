@@ -52,20 +52,19 @@ No capability is removed. Only the false destinations are.
 | W30.1 IA collapse | Done | `View = notes \| settings`, `parseRoute`/`routeToHash`, legacy redirects, sidebar and bottom nav removed. |
 | W30.2 Full-bleed workspace | Done | Omnibox hero, filter chips, Canvas/List/Board/Map/Timeline switcher, responsive grid, scroll restore. |
 | W30.3 Note detail and rail | Done | `NoteContextRail` with Next steps / Matches / Replies / Chat / Share; tags are a sticky row inside the note body; the text editor fills the remaining height; one publish in the note header. |
-| W30.4 Type and colour | Partial | `type.css`, `palette.css`, neutral chrome, no 9–10px text, compact note cards, dark axe green. Remaining: uppercase sentence sweep and light-theme audit. |
-| W30.5 Capture, search, commands | Partial | One omnibox, `Cmd+N` composer, one `Cmd+K` overlay with Search / Explore public notes / Chat scopes. Remaining: `→` preview. |
-| W30.6 Settings | Partial | Full-screen, five groups, one open, `#/settings/:tab` deep links. Remaining: provider card copy dedupe and duplicate local-only sentence. |
+| W30.4 Type and colour | Done | `type.css`, `palette.css`, neutral chrome, no uppercase sentence labels, compact note cards, one accent edge on note detail, light theme on the core path. Axe is green in dark and light on Notes, Note, Settings, and Skills. |
+| W30.5 Capture, search, commands | Done | One omnibox, `Cmd+N` composer, one `Cmd+K` overlay with Search / Explore public notes / Chat scopes. `→` previews a note in the same overlay; `Enter` opens it. |
+| W30.6 Settings | Done | Full-screen, five groups, one open, `#/settings/:tab` deep links. One row per network, one switch, one status sentence, no duplicate private-mode sentence. |
 | W30.7 Mobile | Done | No bottom nav, floating `+`, single-column grid, full-screen note, bottom-sheet rail, 18px capture, mobile tests green. |
-| W30.8 Evidence and loop | Partial | 47 scenes regenerate in ~90s, covering every capability: notes, detail, editor states, next steps, suggestions, replies, chat, search, explore, board, map, timeline, modals, trash, mobile, and all settings tabs. `pnpm check:ui` added. Remaining: remove residual `waitForTimeout`, relay per screenshot worker, final CI run. |
+| W30.8 Evidence and loop | Partial | 47 scenes regenerate in ~90s, covering every capability: notes, detail, editor states, next steps, suggestions, replies, chat, search, explore, board, map, timeline, modals, trash, mobile, and all settings tabs. `pnpm check:ui` now covers typecheck, 8 dual-theme axe views, and 10 golden-path journeys. `waitForTimeout` is gone from journeys; only the deterministic audit settle remains. Remaining: relay per screenshot worker, gallery regeneration for this milestone, final CI run. |
 
 ### Remaining work, in order
 
-1. **W30.4 finish** — replace uppercase sentence labels with sentence case; check the light theme on Notes, note detail, and Settings; add the 4px note accent to the detail page.
-2. **W30.5 finish** — support `→` preview without a second palette. Public-note scope and Chat are live in the overlay.
-3. **W30.6 finish** — one provider row per network; remove the duplicate “Local-Only Mode” sentence and the empty status bullet.
-4. **W30.8 finish** — remove non-deterministic waits, isolate the relay per screenshot worker, and run `pnpm check:ui` in CI. The full 47-scene gallery already regenerates locally.
+1. **W30.8 relay isolation** — give each screenshot worker its own relay instance, or clear the relay before the gallery, so public scenes cannot read notes from another scene.
+2. **W30.8 gallery** — regenerate the 47-scene gallery once for this milestone after the relay fix; keep `pnpm screenshot <scene>` for single-scene refreshes.
+3. **W30.8 CI** — run `pnpm check:ui` in CI and keep the gallery out of per-commit checks.
 
-Do not re-open W30.1–W30.3 unless a golden-path test fails.
+Do not re-open W30.1–W30.6 unless a golden-path or axe test fails.
 
 ### Capability guarantee
 
@@ -458,10 +457,10 @@ axe views, and the golden-path journeys green.
       labels in default navigation.
 - [x] `#inbox`, `#network`, `#connections`, `#chat`, `#responses`, `#actions`, `#map`,
       `#timeline`, `#trash`, `#labels`, `#ontology`, `#skills` redirect and never dead-end.
-- [ ] Capture is one field; the header shortcut still opens the composer. Consolidate to the omnibox.
+- [x] Capture is one field; the header shortcut still opens the composer. The omnibox is the only entry.
 - [x] The workspace uses ≥95% of the 1440px width and ≥90% of 390px, with only 16–24px gutters.
 - [x] Note detail uses the full width with a 22rem context rail; prose stops at 72ch.
-- [ ] Body text ≥16px mobile / ≥18px desktop; no 9–10px text. Uppercase sentence sweep still open.
+- [x] Body text ≥16px mobile / ≥18px desktop; no 9–10px text; uppercase sentence labels removed.
 - [x] Dark-mode chrome is black / neutral gray; no blue-tinted surfaces or blue default button.
 - [x] One accent per note type; one primary action per view; ≥4.5:1 contrast.
 - [x] Every note connection (match, reply, chat, publish) is reachable from that note.
@@ -515,7 +514,7 @@ add a new top-level surface to solve a local problem.
 | Type scale bloats | Three sizes per surface; a lint rule for `text-[9px]`/`text-[10px]` |
 | Screenshot churn | 12 scenes; one scene per change; archive the old gallery |
 | The next-step system regresses | The existing suggestion tests stay; the rail is a new host, not a new engine |
-| Light theme remains half-done | Either finish it on the core path or hide the option; do not ship a broken theme |
+| Light theme remains half-done | Finished on the core path: one palette inversion, body prose fix, and dual-theme axe green on Notes, Note, Settings, and Skills |
 
 ## 10. Fresh-session start
 

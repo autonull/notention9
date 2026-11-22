@@ -211,7 +211,7 @@ export function AppShell() {
         },
         onBackToList: () => setSelectedNoteId(null),
         onEscape: () => {
-            setIsPaletteOpen(false);
+            if (isPaletteOpen) return;
             setIsHelpOpen(false);
             setIsShortcutsHelpOpen(false);
             setIsCaptureComposerOpen(false);

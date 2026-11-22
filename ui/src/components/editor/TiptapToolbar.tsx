@@ -199,7 +199,7 @@ function TiptapToolbarContent({
                             className="flex items-center gap-1 px-2 py-1 rounded-md hover:bg-neutral-800 text-neutral-400 hover:text-white transition-colors"
                             aria-label="Text formatting"
                         >
-                            <span className="text-xs uppercase tracking-wider font-bold hidden sm:inline">Text</span>
+ <span className="text-xs tracking-wider font-bold hidden sm:inline">Text</span>
                             <ChevronDownIcon className="w-3 h-3"/>
                         </button>
                     }

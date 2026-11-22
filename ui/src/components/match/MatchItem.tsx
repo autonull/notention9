@@ -61,7 +61,7 @@ export function MatchItem({
                             {score}% Match
                         </span>
                         {direction && (
-                            <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium uppercase tracking-wide ${
+ <span className={`text-xs px-1.5 py-0.5 rounded-full font-medium tracking-wide ${
                                 direction === 'outgoing'
                                     ? 'bg-blue-900/30 text-blue-300 border border-blue-800/50'
                                     : 'bg-purple-900/30 text-purple-300 border border-purple-800/50'

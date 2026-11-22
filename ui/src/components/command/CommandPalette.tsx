@@ -12,6 +12,7 @@ import { sanitizeHTML } from '../../utils/sanitize';
 import { cn } from '../../utils/ui';
 import { NetworkView } from '../views/NetworkView';
 import { ChatPanel } from '../chat/ChatPanel';
+import { NotePreview } from './NotePreview';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -96,6 +97,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [results, setResults] = useState<ScoredAction[]>([]);
     const [scope, setScope] = useState<'search' | 'explore' | 'chat'>('search');
+    const [isPreviewOpen, setIsPreviewOpen] = useState(false);
 
     // Build context for action enabling
     const context = useMemo<ActionContext>(() => ({
@@ -136,6 +138,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
         scored.sort((a, b) => b.score - a.score);
         setResults(scored.slice(0, 100));
         setSelectedIndex(0);
+        setIsPreviewOpen(false);
     }, [query, paletteActions, noteActions]);
 
     // Focus input on open
@@ -170,15 +173,24 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
             switch (e.key) {
                 case 'Escape':
                     e.preventDefault();
-                    onClose();
+                    if (isPreviewOpen) setIsPreviewOpen(false);
+                    else onClose();
                     break;
                 case 'ArrowDown':
                     e.preventDefault();
                     setSelectedIndex(i => Math.min(i + 1, results.length - 1));
+                    setIsPreviewOpen(false);
                     break;
                 case 'ArrowUp':
                     e.preventDefault();
                     setSelectedIndex(i => Math.max(i - 1, 0));
+                    setIsPreviewOpen(false);
+                    break;
+                case 'ArrowRight':
+                    if (results[selectedIndex]?.action.id.startsWith('note:')) {
+                        e.preventDefault();
+                        setIsPreviewOpen(open => !open);
+                    }
                     break;
                 case 'Enter':
                     e.preventDefault();
@@ -194,7 +206,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, results, selectedIndex, onClose, scope]);
+    }, [isOpen, results, selectedIndex, onClose, scope, isPreviewOpen]);
 
     const executeAction = useCallback((action: RegisteredAction) => {
         try {
@@ -208,11 +220,15 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
 
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
         setQuery(e.target.value);
+        setIsPreviewOpen(false);
     }, []);
 
     if (!isOpen) return null;
 
     const selectedAction = results[selectedIndex];
+    const previewNote = isPreviewOpen && selectedAction?.action.id.startsWith('note:')
+        ? notes.find(note => note.id === selectedAction.action.id.slice(5))
+        : undefined;
 
     return (
         <div
@@ -229,7 +245,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
             />
 
             {/* Palette */}
-            <div className={cn('relative w-full bg-neutral-900/95 border border-neutral-700/50 rounded-3xl shadow-2xl overflow-hidden animate-slide-down', scope === 'explore' ? 'max-w-5xl' : 'max-w-2xl')}>
+            <div className={cn('relative w-full bg-neutral-900/95 border border-neutral-700/50 rounded-3xl shadow-2xl overflow-hidden animate-slide-down', scope === 'explore' || previewNote ? 'max-w-5xl' : 'max-w-2xl')}>
                 {/* Input */}
                 <div className="p-4 border-b border-neutral-700/50">
                     <div className="relative">
@@ -287,9 +303,10 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                         <ChatPanel className="h-full"/>
                     </div>
                 ) : (
+                <div className="flex max-h-[60vh] flex-col md:flex-row">
                 <div
                     ref={listRef}
-                    className="max-h-[60vh] overflow-y-auto p-2"
+                    className="min-h-0 min-w-0 flex-1 overflow-y-auto p-2"
                     role="listbox"
                     aria-label="Search results"
                 >
@@ -348,11 +365,13 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                         </>
                     )}
                 </div>
+                {previewNote && <NotePreview note={previewNote}/>}
+                </div>
                 )}
 
                 {/* Footer hint */}
                 <div className="px-4 py-3 border-t border-neutral-700/50 flex items-center justify-between text-xs text-neutral-400">
-                    <span>{scope === 'search' ? '↑↓ navigate • Enter select • Esc close' : 'Esc close'}</span>
+                    <span>{scope === 'search' ? '↑↓ navigate • → preview • Enter open • Esc close' : 'Esc close'}</span>
                     <span className="tabular-nums">
                         {scope === 'search'
                             ? `${results.length} ${results.length === 1 ? 'result' : 'results'}`

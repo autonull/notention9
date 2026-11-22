@@ -104,7 +104,7 @@ export function TagInput({
                 <button
                     type="button"
                     onClick={handleAddTagClick}
-                    className="btn btn-ghost btn-xs px-2 py-0.5 text-xs uppercase tracking-wider bg-neutral-800 text-neutral-400 border border-neutral-700 hover:bg-neutral-700 hover:text-neutral-200 active:scale-95 touch-target flex-shrink-0"
+ className="btn btn-ghost btn-xs px-2 py-0.5 text-xs tracking-wider bg-neutral-800 text-neutral-400 border border-neutral-700 hover:bg-neutral-700 hover:text-neutral-200 active:scale-95 touch-target flex-shrink-0"
                 >
                     <PlusIcon className="w-3 h-3 mr-1" />
                     tag
