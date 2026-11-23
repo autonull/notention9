@@ -18,7 +18,7 @@ replaces `editor/property-inspector`.
 
 | Workstream | State | Landed | Still open |
 | :--- | :--- | :--- | :--- |
-| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop; one `Tabs` in `kit` (`TabOption`) after `Navigation` deletion; `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel` extraction only when a second use exists; layer check has no per-file baseline |
+| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop; one `Tabs` in `kit` (`TabOption`) after `Navigation` deletion; `check-ui-layers`, `check-tone` baseline, and settings type guards | `ListRow`, `Field`, `ContextPanel` extraction only when a second use exists; layer check has no per-file baseline |
 | W31.1 The page | **Done** | Full-bleed page, editable 30 px title in the page, one 3 rem bar, focus-only formatting row, saved + word count at page end, 17 px body, 88ch left-aligned measure, `PageSurface` / `PageHeader` / `PageTitle` / `PageMeta`; `KitGallery` exercises the page patterns | None |
 | W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, one row tab stop with arrows/Home/End/Enter, mobile list/page swap, subset/arrangement/order persist, pure `selectIndex` + tests, group axis scoped to Board | None |
 | W31.3 New note is a page | **Done** | `New note` creates and focuses a blank page; capture modal and hero omnibox deleted; `Cmd/Ctrl+N` creates a page; paste-to-capture writes into a page | None |
@@ -70,8 +70,10 @@ The remaining items are follow-ups, in value order:
    A long tail of one to six literal classes remains across widget, layout,
    and metaphor files, plus deliberate semantic colors: `PropertyBlock`
    categories, agent status, match types, automation cadence, and suggestion
-   type badges. Do not sweep the tail; route a file when its surface changes,
-   and keep semantic colors unless the axis changes.
+   type badges. `pnpm lint:tone` freezes the tail at 342 literals in 52 files:
+   new files or higher counts fail; lower counts are reported, and `--update`
+   records a deliberate change. Do not sweep the tail; route a file when its
+   surface changes, and keep semantic colors unless the axis changes.
 2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
    where a second use exists. `KitGallery` is the gallery entry when another
    second use appears; do not extract a one-off.
@@ -641,7 +643,8 @@ history workstreams need.
   - patterns cannot import `contexts/`;
   - no new CSS module under `ui/src/components`;
   - touched files over 250 lines must split or state why not.
-- Guardrails in `scripts/check-type-scale.mjs` or a sibling check:
+- Guardrails in `scripts/check-type-scale.mjs` or a sibling check (shipped as
+  `scripts/check-tone.mjs`, baseline `scripts/tone-baseline.json`):
   - no `text-xl` or `text-[20px]` in settings tabs;
   - no new `bg-neutral-800` / `bg-neutral-900` in `ui/src/components`;
   - no new `text-white` in `ui/src/components`;
