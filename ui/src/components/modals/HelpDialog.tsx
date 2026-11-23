@@ -1,5 +1,6 @@
 import React from 'react';
 import {Modal} from '../ui/Modal';
+import {Button} from '../ui/Button';
 import {KeyIcon, MapPinIcon, PlusCircleIcon, SearchIcon, SparklesIcon, TagIcon} from '../ui/icons';
 
 const SHORTCUTS = [
@@ -19,62 +20,66 @@ const CONCEPTS = [
     {title: 'Privacy is explicit', body: 'Notes stay local until you publish. Private notes are never transmitted; public notes show a preview before leaving your device.'},
 ];
 
+const heading = 'mb-3 text-xs font-bold tracking-widest text-[var(--app-muted)]';
+
 export function HelpDialog({isOpen, onClose, onAddDetail}: {isOpen: boolean; onClose: () => void; onAddDetail?: () => void}) {
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Help & Shortcuts" className="max-w-2xl">
             <div className="space-y-6 overflow-y-auto custom-scrollbar pr-1">
                 <section>
- <h4 className="text-xs font-bold tracking-widest text-neutral-400 mb-3">Concepts</h4>
+                    <h4 className={heading}>Concepts</h4>
                     <div className="grid gap-3 sm:grid-cols-2">
                         {CONCEPTS.map(({title, body}) => (
-                            <div key={title} className="rounded-xl border border-neutral-700/60 bg-neutral-900/60 p-4">
-                                <div className="font-semibold text-neutral-100 mb-1">{title}</div>
-                                <p className="text-sm text-neutral-400 leading-relaxed">{body}</p>
+                            <div key={title} className="rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
+                                <div className="mb-1 font-semibold text-[var(--app-text)]">{title}</div>
+                                <p className="text-sm leading-relaxed text-[var(--app-muted)]">{body}</p>
                             </div>
                         ))}
                     </div>
                 </section>
 
                 <section>
- <h4 className="text-xs font-bold tracking-widest text-neutral-400 mb-3">Keyboard</h4>
+                    <h4 className={heading}>Keyboard</h4>
                     <div className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
                         {SHORTCUTS.map(([label, keys]) => (
-                            <div key={label} className="flex items-center justify-between text-sm text-neutral-400">
+                            <div key={label} className="flex items-center justify-between text-sm text-[var(--app-muted)]">
                                 <span>{label}</span>
-                                <kbd className="rounded border border-neutral-600/40 bg-neutral-700/50 px-1.5 py-0.5 text-xs text-neutral-300">{keys}</kbd>
+                                <kbd className="rounded border border-[var(--app-line-strong)] bg-[var(--app-raised)] px-1.5 py-0.5 text-xs text-[var(--app-text-secondary)]">{keys}</kbd>
                             </div>
                         ))}
                     </div>
                 </section>
 
-                <section className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4">
+                <section className="rounded-xl border border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] p-4">
                     <div className="flex items-start gap-3">
-                        <div className="rounded-lg bg-blue-500/10 p-2 text-blue-400">
+                        <div className="rounded-lg bg-[var(--app-accent-soft)] p-2 text-[var(--app-accent-text)]">
                             <PlusCircleIcon className="w-5 h-5"/>
                         </div>
                         <div className="flex-1">
-                            <div className="font-semibold text-neutral-100">Add a detail</div>
-                            <p className="text-sm text-neutral-400 mt-1">Use the Add detail button in the editor toolbar, or press Ctrl Shift P. Pick what the detail is about, choose a comparison, and enter a value.</p>
+                            <div className="font-semibold text-[var(--app-text)]">Add a detail</div>
+                            <p className="mt-1 text-sm text-[var(--app-muted)]">Use the Add detail button in the editor toolbar, or press Ctrl Shift P. Pick what the detail is about, choose a comparison, and enter a value.</p>
                             {onAddDetail && (
-                                <button
+                                <Button
                                     onClick={onAddDetail}
-                                    className="mt-3 inline-flex items-center gap-2 rounded-lg bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-500"
+                                    size="sm"
+                                    icon={PlusCircleIcon}
+                                    className="mt-3"
                                 >
-                                    <PlusCircleIcon className="w-4 h-4"/> Add detail now
-                                </button>
+                                    Add detail now
+                                </Button>
                             )}
                         </div>
                     </div>
                 </section>
 
                 <section>
- <h4 className="text-xs font-bold tracking-widest text-neutral-400 mb-3">What you can do</h4>
-                    <div className="grid gap-2 sm:grid-cols-2 text-sm text-neutral-400">
-                        <div className="flex items-center gap-2"><TagIcon className="w-4 h-4 text-neutral-400"/>Tag notes and filter by them</div>
-                        <div className="flex items-center gap-2"><SearchIcon className="w-4 h-4 text-neutral-400"/>Search prose, tags, and details</div>
-                        <div className="flex items-center gap-2"><MapPinIcon className="w-4 h-4 text-neutral-400"/>Place notes on the map</div>
-                        <div className="flex items-center gap-2"><SparklesIcon className="w-4 h-4 text-neutral-400"/>Extract details from text</div>
-                        <div className="flex items-center gap-2"><KeyIcon className="w-4 h-4 text-neutral-400"/>No model is needed to use the app</div>
+                    <h4 className={heading}>What you can do</h4>
+                    <div className="grid gap-2 text-sm text-[var(--app-muted)] sm:grid-cols-2">
+                        <div className="flex items-center gap-2"><TagIcon className="w-4 h-4 text-[var(--app-muted)]"/>Tag notes and filter by them</div>
+                        <div className="flex items-center gap-2"><SearchIcon className="w-4 h-4 text-[var(--app-muted)]"/>Search prose, tags, and details</div>
+                        <div className="flex items-center gap-2"><MapPinIcon className="w-4 h-4 text-[var(--app-muted)]"/>Place notes on the map</div>
+                        <div className="flex items-center gap-2"><SparklesIcon className="w-4 h-4 text-[var(--app-muted)]"/>Extract details from text</div>
+                        <div className="flex items-center gap-2"><KeyIcon className="w-4 h-4 text-[var(--app-muted)]"/>No model is needed to use the app</div>
                     </div>
                 </section>
             </div>

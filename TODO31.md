@@ -43,14 +43,16 @@ No workstream is open. This pass landed three follow-ups:
 - History rows rove: the selected row, or the first row when the selection is
   elsewhere, is the list's only tab stop. Arrows move focus, Home/End jump, and
   Enter/Space opens. `Publish` drops from tab stop 19 to 2.
+- The help dialog is on tokens and the shared `Button`; its concepts, keys, and
+  action carry no literal accent classes.
 
 The remaining items are follow-ups, in value order:
 
-1. **Tone outside settings** — settings, the header, and the ontology surface
-   are on tokens. Literal `neutral-*`, `blue-*`, and `purple-*` remain in
-   agent, property, assistant, and dashboard surfaces. Route them when each
-   surface is touched; keep semantic category colors in `PropertyBlock` unless
-   the category axis is replaced.
+1. **Tone outside settings** — settings, the header, the help dialog, and the
+   ontology surface are on tokens. Literal `neutral-*`, `blue-*`, and
+   `purple-*` remain in agent, property, assistant, dashboard, and editor
+   surfaces. Route them when each surface is touched; keep semantic category
+   colors in `PropertyBlock` unless the category axis is replaced.
 2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
    where a second use exists. `KitGallery` is the gallery entry when another
    second use appears; do not extract a one-off.
