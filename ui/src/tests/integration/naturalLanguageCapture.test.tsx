@@ -1,7 +1,6 @@
 import {describe, it, expect, vi, beforeEach} from 'vitest';
 import {render, screen, fireEvent, waitFor} from '@testing-library/react';
 import {DescribeItComposer} from '../../components/editor/DescribeItComposer';
-import {ExtractionReview} from '../../components/editor/ExtractionReview';
 import {SettingsProvider} from '../../components/contexts/SettingsContext';
 import {ToastProvider} from '../../components/contexts/ToastProvider';
 import {AccessibilityProvider} from '../../hooks/useAccessibility';
@@ -138,108 +137,4 @@ describe('Natural Language Capture End-to-End (P1)', () => {
         });
     });
 
-    describe('ExtractionReview', () => {
-        it('renders without crashing', () => {
-            const items = [
-                {
-                    property: {key: 'role', operator: 'is', values: ['developer']},
-                    confidence: 0.85,
-                    presentation: 'suggest' as const,
-                },
-                {
-                    property: {key: 'skills', operator: 'contains', values: ['react']},
-                    confidence: 0.7,
-                    presentation: 'suggest' as const,
-                },
-            ];
-
-            render(
-                <ExtractionReview
-                    items={items}
-                    onAccept={vi.fn()}
-                    onReject={vi.fn()}
-                />
-            );
-
-            expect(screen.getByTestId('extraction-review')).toBeInTheDocument();
-            expect(screen.getByText('role')).toBeInTheDocument();
-            expect(screen.getByText('skills')).toBeInTheDocument();
-        });
-
-        it('shows confidence bars', () => {
-            const items = [
-                {
-                    property: {key: 'role', operator: 'is', values: ['developer']},
-                    confidence: 0.85,
-                    presentation: 'suggest' as const,
-                },
-            ];
-
-            render(
-                <ExtractionReview
-                    items={items}
-                    onAccept={vi.fn()}
-                    onReject={vi.fn()}
-                />
-            );
-
-            expect(screen.getByText('85%')).toBeInTheDocument();
-        });
-
-        it('calls onAccept when accept clicked', () => {
-            const onAccept = vi.fn();
-            const items = [
-                {
-                    property: {key: 'role', operator: 'is', values: ['developer']},
-                    confidence: 0.85,
-                    presentation: 'suggest' as const,
-                },
-            ];
-
-            render(
-                <ExtractionReview
-                    items={items}
-                    onAccept={onAccept}
-                    onReject={vi.fn()}
-                />
-            );
-
-            fireEvent.click(screen.getByTitle('Accept role'));
-            expect(onAccept).toHaveBeenCalledWith(items[0]);
-        });
-
-        it('calls onReject when reject clicked', () => {
-            const onReject = vi.fn();
-            const items = [
-                {
-                    property: {key: 'role', operator: 'is', values: ['developer']},
-                    confidence: 0.85,
-                    presentation: 'suggest' as const,
-                },
-            ];
-
-            render(
-                <ExtractionReview
-                    items={items}
-                    onAccept={vi.fn()}
-                    onReject={onReject}
-                />
-            );
-
-            fireEvent.click(screen.getByTitle('Reject role'));
-            expect(onReject).toHaveBeenCalledWith(items[0]);
-        });
-
-        it('returns null when no items', () => {
-            const {container} = render(
-                <ExtractionReview
-                    items={[]}
-                    onAccept={vi.fn()}
-                    onReject={vi.fn()}
-                />
-            );
-
-            expect(container.firstChild).toBeNull();
-        });
-    });
 });

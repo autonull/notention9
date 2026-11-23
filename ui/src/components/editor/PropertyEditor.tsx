@@ -227,7 +227,7 @@ export function PropertyEditor({
         <>
             <div className="flex items-center flex-wrap gap-1 mb-2">
                 {!isModal && (
- <span className="mr-auto text-xs font-bold text-blue-400 tracking-wider">
+ <span className="mr-auto text-xs font-bold text-[var(--app-accent-text)] tracking-wider">
                         {title || (isAdding ? 'New Property' : 'Edit Property')}
                     </span>
                 )}
@@ -242,7 +242,7 @@ export function PropertyEditor({
                             aria-label="Extract a detail from text"
                             isActive={showExtraction}
                             label="Extract"
-                            className="text-purple-300"
+                            className="text-[var(--app-accent-text)]"
                         />
                     )}
                     {onPickLocation && (isAdding || ['location', 'geo', 'place'].includes(key)) && (
@@ -294,7 +294,7 @@ export function PropertyEditor({
             </div>
 
             {showExtraction && (
-                <div className="bg-neutral-700/50 p-3 rounded mb-2 border border-purple-500/30">
+                <div className="bg-[var(--app-raised)] p-3 rounded mb-2 border border-[var(--app-accent-line)]">
                     <Textarea
                         placeholder="Describe property (e.g. 'budget < 200')"
                         value={extractionText}
@@ -317,7 +317,7 @@ export function PropertyEditor({
                         onClick={handleMagicFill}
                         size="xs"
                         variant="primary"
-                        className="w-full bg-purple-600 hover:bg-purple-500"
+                        className="w-full"
                         disabled={aiLoading}
                     >
                         {aiLoading ? 'Extracting...' : 'Extract Property'}
@@ -326,7 +326,7 @@ export function PropertyEditor({
             )}
 
             <div className="relative">
- <label className="block text-xs font-bold text-neutral-400 mb-2 tracking-wider">Key</label>
+                <label className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Key</label>
                 <Input
                     list="property-keys"
                     placeholder="Key (e.g. price)"
@@ -334,7 +334,7 @@ export function PropertyEditor({
                     onChange={handleKeyChange}
                     autoFocus={isAdding && !showExtraction}
                     disabled={readonly}
-                    className={activeDef ? "border-blue-500/50 ring-1 ring-blue-500/20" : ""}
+                    className={activeDef ? "border-[var(--app-accent-line)] ring-1 ring-[var(--app-accent-line)]" : ""}
                 />
                 <datalist id="property-keys">
                     {ontology.flatMap(n =>
@@ -349,14 +349,14 @@ export function PropertyEditor({
                     ))}
                 </datalist>
                 {type && !readonly && (
- <span className="absolute right-2 top-3 text-xs bg-neutral-700 text-neutral-300 px-1.5 py-0.5 rounded border border-neutral-600">
+ <span className="absolute right-2 top-3 text-xs bg-[var(--app-panel)] text-[var(--app-text-secondary)] px-1.5 py-0.5 rounded border border-[var(--app-line-strong)]">
                         {type}
                     </span>
                 )}
             </div>
 
             {description && (
-                <div className="text-xs text-neutral-400 italic flex items-start gap-1 mb-2">
+                <div className="text-xs text-[var(--app-muted)] italic flex items-start gap-1 mb-2">
                     <InformationCircleIcon className="w-3 h-3 flex-shrink-0 mt-0.5"/>
                     {description}
                 </div>
@@ -364,7 +364,7 @@ export function PropertyEditor({
 
             <div className="grid grid-cols-[1fr,2fr] gap-3">
                 <div>
- <label className="block text-xs font-bold text-neutral-400 mb-2 tracking-wider">Comparison</label>
+                <label className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Comparison</label>
                     <Select
                         value={operator}
                         onChange={(e) => setOperator(e.target.value)}
@@ -373,7 +373,7 @@ export function PropertyEditor({
                     />
                 </div>
                 <div>
- <label className="block text-xs font-bold text-neutral-400 mb-2 tracking-wider">Value</label>
+                <label className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Value</label>
                     <EnhancedPropertyValueInput
                         value={value}
                         onChange={(val) => {
@@ -394,7 +394,7 @@ export function PropertyEditor({
             </div>
 
             {activeDef?.arity && (
-                <div className="text-xs text-neutral-400 flex items-center gap-1 mb-2">
+                <div className="text-xs text-[var(--app-muted)] flex items-center gap-1 mb-2">
                     <span className="w-3 h-3" style={{background: `url("data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22%3E%3Ccircle cx=%2212%22 cy=%2212%22 r=%2210%22%3E%3C/circle%3E%3Cline x1=%2212%22 y1=%228%22 x2=%2212%22 y2=%2216%22%3E%3C/line%3E%3Cline x1=%228%22 y1=%2212%22 x2=%2216%22 y2=%2212%22%3E%3C/line%3E%3C/svg%22")`}} />
                     {activeDef.arity.min > 0 && <span className="text-red-400">Required</span>}
                     {activeDef.arity.max && <span>Max {activeDef.arity.max} values</span>}
@@ -408,7 +408,7 @@ export function PropertyEditor({
                             key={s.key}
                             type="button"
                             onClick={() => setKey(s.key)}
-                            className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-purple-900/30 text-purple-300 border border-purple-800/50 hover:bg-purple-900/50 transition-colors"
+                            className="flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-[var(--app-accent-soft)] text-[var(--app-accent-text)] border border-[var(--app-accent-line)] hover:bg-[var(--app-hover)] transition-colors"
                         >
                             <SparklesIcon className="w-3 h-3" />
                             {s.key}
@@ -442,16 +442,16 @@ export function PropertyEditor({
             )}
 
             {activeDef && (
-                <div className="bg-blue-900/10 border border-blue-900/30 rounded p-2 mb-2 text-xs flex flex-col gap-1">
+                <div className="bg-[var(--app-accent-soft)] border border-[var(--app-accent-line)] rounded p-2 mb-2 text-xs flex flex-col gap-1">
                     {activeDef.description && (
-                        <div className="flex items-start gap-1.5 text-blue-300">
+                        <div className="flex items-start gap-1.5 text-[var(--app-accent-text)]">
                             <InformationCircleIcon className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"/>
                             <span>{activeDef.description}</span>
                         </div>
                     )}
                     {activeDef.aliases && activeDef.aliases.length > 0 && (
-                        <div className="text-neutral-400 pl-5">
-                            <span className="italic text-neutral-400">Also known as: </span>
+                        <div className="text-[var(--app-muted)] pl-5">
+                            <span className="italic text-[var(--app-muted)]">Also known as: </span>
                             {activeDef.aliases.join(', ')}
                         </div>
                     )}
@@ -505,7 +505,7 @@ export function PropertyEditor({
     }
 
     return (
-        <div className={`bg-neutral-800 rounded-lg border space-y-4 animate-fade-in ${isModal ? 'shadow-xl p-4' : 'p-3 shadow-lg border-blue-500/50'}`}>
+        <div className={`bg-[var(--app-surface)] rounded-lg border space-y-4 animate-fade-in ${isModal ? 'shadow-xl p-4' : 'p-3 shadow-lg border-[var(--app-accent-line)]'}`}>
             {renderContent()}
         </div>
     );
