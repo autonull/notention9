@@ -9,12 +9,21 @@ export interface ToJourneyOptions {
     version?: number;
     conditions?: string[];
     status?: 'draft' | 'ready';
+    dimensions?: {
+        viewport?: string;
+        theme?: string;
+        profile?: string;
+        context?: string;
+    };
 }
 
 function compileStep(step: UisgStep): JourneyStep {
     switch (step.kind) {
-        case 'show':
-            return { kind: 'captureAria', label: step.name };
+        case 'show': {
+            if (!step.target)
+                throw new Error(`Step ${step.id} (show) needs a target; run analyze first`);
+            return { kind: 'assertVisible', target: step.target };
+        }
         case 'result':
             return step.statePath !== undefined
                 ? { kind: 'assertState', path: step.statePath, equals: step.stateEquals }
@@ -28,6 +37,13 @@ function compileStep(step: UisgStep): JourneyStep {
     }
 }
 
+function substituteRouteParams(route: string, seedNotes: Note[]): string | null {
+    if (!route.includes(':')) return route;
+    const noteId = seedNotes[0]?.id;
+    if (!noteId) return null;
+    return route.replace(/:noteId/g, noteId);
+}
+
 export function flowToJourney(graph: UisgGraph, flowId: string, options: ToJourneyOptions): JourneySpec {
     const index = indexGraph(graph);
     const flow = index.byId.get(flowId);
@@ -36,10 +52,14 @@ export function flowToJourney(graph: UisgGraph, flowId: string, options: ToJourn
 
     const contained = new Set(edgesFrom(index, flowId, 'contains').map(({ to }) => to));
     const steps: JourneyStep[] = [{ kind: 'seed', notes: options.seed.notes, settings: options.seed.settings }];
+
     const entrySurface = edgesFrom(index, flow.entry, 'renders')
         .map(({ to }) => index.byId.get(to))
-        .find(node => node?.type === 'surface' && node.route && !node.route.includes(':'));
-    if (entrySurface?.type === 'surface' && entrySurface.route) steps.push({ kind: 'navigate', hash: entrySurface.route });
+        .find(node => node?.type === 'surface' && node.route);
+    if (entrySurface?.type === 'surface' && entrySurface.route) {
+        const hash = substituteRouteParams(entrySurface.route, options.seed.notes);
+        if (hash) steps.push({ kind: 'navigate', hash });
+    }
 
     const seen = new Set<string>();
     let current: string | undefined = flow.entry;
@@ -65,7 +85,7 @@ export function flowToJourney(graph: UisgGraph, flowId: string, options: ToJourn
         .map(({ to }) => index.byId.get(to))
         .find(node => node?.type === 'intent');
 
-    return JourneySpecSchema.parse({
+    const spec: JourneySpec = {
         id: options.id ?? flow.journey ?? `uisg.${flowId}`,
         version: options.version ?? 1,
         intent: intent?.name ?? flow.name,
@@ -73,5 +93,16 @@ export function flowToJourney(graph: UisgGraph, flowId: string, options: ToJourn
         seed: options.seed,
         steps,
         status: options.status ?? 'draft',
-    } satisfies JourneySpec);
+    };
+    if (options.dimensions) {
+        spec.dimensions = {
+            viewport: options.dimensions.viewport,
+            theme: options.dimensions.theme,
+            profile: options.dimensions.profile,
+            context: options.dimensions.context,
+            conditions: options.conditions,
+        };
+    }
+
+    return JourneySpecSchema.parse(spec);
 }

@@ -327,12 +327,14 @@ export function PropertyEditor({
 
             <div>
                 <div className="mb-2 flex items-center gap-2">
-                    <label className="block text-xs font-bold text-[var(--app-muted)] tracking-wider">Key</label>
+                    <label htmlFor="property-key-input" className="block text-xs font-bold text-[var(--app-muted)] tracking-wider">Key</label>
                     {type && !readonly && (
                         <span className="ml-auto rounded border border-[var(--app-line)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--app-faint)]">{type}</span>
                     )}
                 </div>
                 <Input
+                    id="property-key-input"
+                    data-testid="property-key-input"
                     list="property-keys"
                     placeholder="Key (e.g. price)"
                     value={key}
@@ -364,8 +366,10 @@ export function PropertyEditor({
 
             <div className="grid grid-cols-[1fr,2fr] gap-3">
                 <div>
-                <label className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Comparison</label>
+                <label htmlFor="property-operator-select" className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Comparison</label>
                     <Select
+                        id="property-operator-select"
+                        data-testid="property-operator-select"
                         value={operator}
                         onChange={(e) => setOperator(e.target.value)}
                         options={compatibleOperators}
@@ -373,8 +377,10 @@ export function PropertyEditor({
                     />
                 </div>
                 <div>
-                <label className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Value</label>
+                <label htmlFor="property-value-input" className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Value</label>
                     <EnhancedPropertyValueInput
+                        testId="property-value-input"
+                        id="property-value-input"
                         value={value}
                         onChange={(val) => {
                             setValue(val);

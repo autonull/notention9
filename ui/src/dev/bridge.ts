@@ -71,6 +71,8 @@ function getDefaultState(): SemanticState {
         validation: { errors: [], missing: [] },
         dialogs: [],
         pendingConfirmations: [],
+        matches: [],
+        conflicts: [],
     };
 }
 

@@ -80,6 +80,7 @@ export const useTiptapConfig = ({
         editorProps: {
             attributes: {
                 class: `prose prose-invert focus:outline-none h-full w-full ${minimal ? 'p-2 text-sm prose-sm' : 'text-body-lg p-6'}`,
+                'aria-label': 'Note body',
             },
         },
         onUpdate: ({editor}) => onUpdateRef.current(editor.getHTML()),

@@ -116,7 +116,9 @@ export type LedgerEventType =
     | 'calibration:recorded'
     | 'match:accepted'
     | 'match:withdrawn'
-    | 'match:rejected';
+    | 'match:rejected'
+    | 'action:approval'
+    | 'action:execution';
 
 export interface RunConfig {
     manifestHash: string;
@@ -175,7 +177,9 @@ export type LedgerPayload =
     | { type: 'calibration:recorded'; record: CalibrationRecord }
     | { type: 'match:accepted'; requestNoteId: string; offerNoteId: string; responseNoteId: string; score: number; userId?: string }
     | { type: 'match:withdrawn'; responseNoteId: string; requestNoteId: string; offerNoteId: string; userId?: string }
-    | { type: 'match:rejected'; requestNoteId: string; offerNoteId: string; userId?: string };
+    | { type: 'match:rejected'; requestNoteId: string; offerNoteId: string; userId?: string }
+    | { type: 'action:approval'; request: { id: string; kind: string; scope: string; preview: string; capabilities: Array<{ type: string; scope: string }>; requestedAt: string; expiresAt: string; status: string; noteId?: string }; decision: { requestId: string; decision: 'approve' | 'deny'; decidedAt: string; reason?: string; scope?: string; undoUntil?: string } }
+    | { type: 'action:execution'; approvalId: string; requestId: string; kind: string; scope: string; executed: boolean; error?: string };
 
 // --- Revision Store Types ---
 

@@ -16,4 +16,6 @@ export interface SemanticState {
     validation: { errors: string[]; missing: string[] };
     dialogs: Array<{ id: string; kind: 'confirm' | 'modal'; confirmLabel?: string }>;
     pendingConfirmations: Array<{ action: string; consequence: string }>;
+    matches: Array<{ noteId: string; score: number; matched: string[] }>;
+    conflicts: Array<{ noteId: string; propertyKey: string; reason: string }>;
 }

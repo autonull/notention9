@@ -1,5 +1,8 @@
 import { useEffect } from 'react';
 import { useNotes } from '../hooks/useNotes';
+import { useMatches } from '../hooks/useMatches';
+import { useSettings } from '../hooks/useSettingsContext';
+import { detectConflicts } from '@notention/core';
 import { useView } from '../hooks/useViewContext';
 import { usePendingConfirmations } from '../hooks/usePendingConfirmations';
 import { installBridge, updateState, addActionTrace, addPromptTrace } from './bridge';
@@ -13,6 +16,9 @@ export function DevBridge() {
     const { notes, loading } = useNotes();
     const { activeView, selectedNoteId, searchTerm, sortOrder } = useView();
     const { pendingConfirmations } = usePendingConfirmations();
+    const matches = useMatches(notes.find(({ id }) => id === selectedNoteId) ?? null);
+    const { settings } = useSettings();
+    const conflicts = detectConflicts(notes, settings.ontology || []);
 
     useEffect(() => {
         console.log('[DevBridge] useEffect 1 - installing bridge');
@@ -72,10 +78,16 @@ export function DevBridge() {
                 action: c.action,
                 consequence: c.consequence,
             })),
+            matches: matches.map(({ note, result }) => ({
+                noteId: note.id,
+                score: result.score,
+                matched: result.matches.map(({ requestProp }) => requestProp.key),
+            })),
+            conflicts: conflicts.map(({ noteId, propertyKey, reason }) => ({ noteId, propertyKey, reason })),
         };
 
         updateState(state);
-    }, [notes, activeView, selectedNoteId, loading, pendingConfirmations]);
+    }, [notes, activeView, selectedNoteId, loading, pendingConfirmations, matches, conflicts]);
 
     return null;
 }

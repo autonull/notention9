@@ -60,7 +60,7 @@ export const knownJourneys: Record<string, JourneySpec> = {
         steps: [
             { kind: 'seed', notes: [], settings: {} },
             { kind: 'navigate', hash: 'notes/scene-editor-note' },
-            { kind: 'act', target: { testId: 'add-detail' }, action: 'click' },
+            { kind: 'act', target: { testId: 'page-add-detail' }, action: 'click' },
             { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
             { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'select', value: 'contains' },
             { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
@@ -96,7 +96,7 @@ export const knownJourneys: Record<string, JourneySpec> = {
         steps: [
             { kind: 'seed', notes: [], settings: {} },
             { kind: 'navigate', hash: 'notes/scene-editor-note' },
-            { kind: 'act', target: { testId: 'add-detail' }, action: 'press', value: 'Enter' },
+            { kind: 'act', target: { testId: 'page-add-detail' }, action: 'press', value: 'Enter' },
             { kind: 'script', code: 'new Promise(r => setTimeout(r, 500))' },
             { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
             { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'Tab' },

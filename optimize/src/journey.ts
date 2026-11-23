@@ -17,10 +17,11 @@ export type Step =
     | { kind: 'assertAriaSnapshot'; target: Target; snapshot: string }
     | { kind: 'assertFocus'; target: Target }
     | { kind: 'assertAccessibleName'; target: Target; expected: string }
-    | { kind: 'assertRole'; target: Target; expectedRole: string };
+    | { kind: 'assertRole'; target: Target; expectedRole: string }
+    | { kind: 'assertVisible'; target: Target };
 
 export type Target =
-    | { role: AriaRole; name: string | RegExp; modal?: string }
+    | { role: AriaRole; name: string | RegExp; exact?: boolean; modal?: string }
     | { testId: string; modal?: string }
     | { label: string; modal?: string };
 
@@ -33,11 +34,18 @@ export interface JourneySpec {
     steps: Step[];
     teardown?: Step[];
     status: 'draft' | 'ready';
+    dimensions?: {
+        viewport?: string;
+        theme?: string;
+        profile?: string;
+        context?: string;
+        conditions?: string[];
+    };
 }
 
 // Use loose schema for Target to avoid AriaRole constraint issues
 const TargetSchema = z.union([
-    z.object({ role: z.string(), name: z.union([z.string(), z.any()]) }),
+    z.object({ role: z.string(), name: z.union([z.string(), z.any()]), exact: z.boolean().optional() }),
     z.object({ testId: z.string() }),
     z.object({ label: z.string() }),
 ]);
@@ -52,6 +60,7 @@ const AssertAriaSnapshotStepSchema = z.object({ kind: z.literal('assertAriaSnaps
 const AssertFocusStepSchema = z.object({ kind: z.literal('assertFocus'), target: TargetSchema });
 const AssertAccessibleNameStepSchema = z.object({ kind: z.literal('assertAccessibleName'), target: TargetSchema, expected: z.string() });
 const AssertRoleStepSchema = z.object({ kind: z.literal('assertRole'), target: TargetSchema, expectedRole: z.string() });
+const AssertVisibleStepSchema = z.object({ kind: z.literal('assertVisible'), target: TargetSchema });
 const AssertAriaStepSchema = z.object({ kind: z.literal('assertAria'), target: TargetSchema, snapshot: z.string() });
 const AssertStateStepSchema = z.object({ kind: z.literal('assertState'), path: z.string(), equals: z.any() });
 const AssertNoConsoleErrorsStepSchema = z.object({ kind: z.literal('assertNoConsoleErrors') });
@@ -72,6 +81,7 @@ export const StepSchema = z.discriminatedUnion('kind', [
     AssertFocusStepSchema,
     AssertAccessibleNameStepSchema,
     AssertRoleStepSchema,
+    AssertVisibleStepSchema,
 ]) as z.ZodType<Step>;
 
 export const JourneySpecSchema = z.object({
@@ -83,6 +93,13 @@ export const JourneySpecSchema = z.object({
     steps: z.array(StepSchema),
     teardown: z.array(StepSchema).optional(),
     status: z.enum(['draft', 'ready']),
+    dimensions: z.object({
+        viewport: z.string().optional(),
+        theme: z.string().optional(),
+        profile: z.string().optional(),
+        context: z.string().optional(),
+        conditions: z.array(z.string()).optional(),
+    }).optional(),
 });
 
 export function validateJourneySpec(spec: unknown): JourneySpec {

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-23T14:09:12.607Z",
+  "generatedAt": "2026-11-23T17:40:38.897Z",
   "cases": [
     {
       "id": "notes-empty",
@@ -19,13 +19,7 @@
         "contentHeight": 118,
         "root": "main",
         "overflowX": 0,
-        "stretchDefects": [
-          {
-            "element": "div[data-testid=\"\"]:flex h-full min-h-0 items-center justify-center overflow-y-a",
-            "height": 852,
-            "childHeight": 279
-          }
-        ],
+        "stretchDefects": [],
         "emptyState": {
           "element": "mx-auto flex max-w-md flex-col items-center justify-center p",
           "height": 279,
@@ -512,16 +506,16 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.837,
+        "contentRatio": 0.857,
         "wastedSpace": 11,
         "wastedRatio": 0.012,
-        "trailingSpace": 2,
-        "contentHeight": 850,
+        "trailingSpace": 0,
+        "contentHeight": 852,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 22.4,
+        "density": 23.5,
         "actions": [
           {
             "label": "Profile",
@@ -703,13 +697,7 @@
         "contentHeight": 118,
         "root": "main",
         "overflowX": 0,
-        "stretchDefects": [
-          {
-            "element": "div[data-testid=\"\"]:flex h-full min-h-0 items-center justify-center overflow-y-a",
-            "height": 796,
-            "childHeight": 151
-          }
-        ],
+        "stretchDefects": [],
         "emptyState": {
           "element": "mx-auto flex max-w-md flex-col items-center justify-center p",
           "height": 151,
@@ -1164,16 +1152,16 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.6,
+        "contentRatio": 0.601,
         "wastedSpace": 33,
         "wastedRatio": 0.039,
-        "trailingSpace": 1,
+        "trailingSpace": 0,
         "contentHeight": 780,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 2.6,
+        "density": 3.8,
         "actions": [
           {
             "label": "ProfileAppearanceLanguage & RegionKeyboa",
@@ -1182,6 +1170,10 @@
           {
             "label": "Default — Balanced experience for all us",
             "top": 313
+          },
+          {
+            "label": "Strategy overrides",
+            "top": 399
           }
         ],
         "facts": 0

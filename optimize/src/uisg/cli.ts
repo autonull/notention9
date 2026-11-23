@@ -15,6 +15,10 @@ import { compareBundles } from './compare.js';
 import { indexGraph, queryGraph } from './query.js';
 import { flowToJourney } from './toJourney.js';
 import { validateGraph } from './validate.js';
+import { buildComponentRegistry, validateAgainstRegistry } from './registry.js';
+import { emitManifest } from './manifest.js';
+import { scanAll } from './scan.js';
+import { syncGraphWithCode } from './sync.js';
 import type { UisgGraph } from './types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -28,6 +32,8 @@ Commands:
   run <flowId> [same flags as to-journey]   Compile, emit the journey test if missing, run it
   compare <bundleA> <bundleB>               Diff two evidence bundles (run dirs or bundle.json files)
   inventory                                 Graph stats, journey links, seam coverage, variants
+  scan [--out <file>]                       Scan codebase for surfaces, navigation, seams, journeys, strategies
+  sync [--graph <file>]                     Compare graph with code; propose repairs (dry-run by default)
 
 Default graph: doc/uisg/graph.json`;
 
@@ -77,11 +83,31 @@ function compileFlow(flowId: string, flags: Map<string, string>): JourneySpec {
     const seedFile = flags.get('seed');
     const seed = seedFile ? JSON.parse(readFileSync(resolve(ROOT, seedFile), 'utf8')) : linked?.seed;
     if (!seed) throw new Error('No seed: pass --seed <file> or link a registered journey');
-    return flowToJourney(graph, flowId, {
+    const dimensions = {
+        viewport: flags.get('viewport'),
+        theme: flags.get('theme'),
+        profile: flags.get('profile'),
+        context: flags.get('context'),
+    };
+    const spec = flowToJourney(graph, flowId, {
         seed,
         conditions: flags.get('conditions')?.split(','),
         status: flags.has('ready') ? 'ready' : 'draft',
+        dimensions: Object.values(dimensions).some(v => v) ? dimensions : undefined,
     });
+
+    // Validate against registry
+    const registry = buildComponentRegistry();
+    const validation = validateAgainstRegistry(graph, registry);
+    if (!validation.ok) {
+        for (const err of validation.errors) console.error(`REGISTRY ERROR: ${err}`);
+        throw new Error('Registry validation failed');
+    }
+
+    // Emit manifest
+    emitManifest(flowId, spec, validation.errors);
+
+    return spec;
 }
 
 function emitTest(spec: JourneySpec, flags: Map<string, string>): string {
@@ -175,6 +201,37 @@ function main(): number {
             for (const { index, kindA, kindB, deltaMs } of comparison.stepDeltas)
                 console.log(`  ${index}: ${kindA ?? '-'} -> ${kindB ?? '-'} ${deltaMs >= 0 ? '+' : ''}${deltaMs}ms`);
             return 0;
+        }
+        case 'scan': {
+            const result = scanAll();
+            const json = JSON.stringify(result, null, 2);
+            const out = flags.get('out');
+            out ? writeFileSync(resolve(ROOT, out), json + '\n') : console.log(json);
+            if (out) console.log(`Wrote scan results to ${out}`);
+            console.log(`surfaces: ${result.surfaces.length}, navigation: ${result.navigation.length}, seams: ${result.seams.length}, journeys: ${result.journeys.length}, strategies: ${result.strategies.length}, components: ${result.components.length}, taxonomy: ${result.taxonomy.length}, goldenCases: ${result.goldenCases.length}, loopRuns: ${result.loopRuns.length}`);
+            return 0;
+        }
+        case 'sync': {
+            const graph = loadGraph(flags);
+            const apply = flags.has('apply');
+            const result = syncGraphWithCode(graph, apply);
+            console.log(`Graph vs Code Sync Report`);
+            console.log(`========================`);
+            console.log(`Surfaces:  graph=${result.stats.graphSurfaces} scan=${result.stats.scanSurfaces}`);
+            console.log(`Navigation: graph=${result.stats.graphNavigation} scan=${result.stats.scanNavigation}`);
+            console.log(`Seams:     graph=${result.stats.graphSeams} scan=${result.stats.scanSeams}`);
+            console.log(`Journeys:  graph=${result.stats.graphJourneys} scan=${result.stats.scanJourneys}`);
+            console.log(`Strategies: graph=${result.stats.graphStrategies} scan=${result.stats.scanStrategies}`);
+            console.log();
+            console.log(`Proposals: ${result.proposals.length}`);
+            for (const p of result.proposals) {
+                console.log(`  [${p.severity.toUpperCase()}] ${p.type}: ${p.description}`);
+                console.log(`    Fix: ${p.suggestedChange}`);
+            }
+            if (apply) {
+                console.log('\n--apply not yet implemented; proposals shown above');
+            }
+            return result.proposals.some(p => p.severity === 'error') ? 1 : 0;
         }
         case 'inventory': {
             const graph = loadGraph(flags);

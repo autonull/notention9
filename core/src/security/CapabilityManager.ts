@@ -126,7 +126,7 @@ export class CapabilityManager {
         return false;
     }
 
-    private matchScope(granted: string, requested: string): boolean {
+    public matchScope(granted: string, requested: string): boolean {
         if (granted === '*') return true;
         if (granted === requested) return true;
 

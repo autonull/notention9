@@ -52,7 +52,7 @@ export function resolveTarget(page: Page, target: Target): Locator {
     }
     if ('role' in target) {
         const name = resolveName(target.name);
-        return scope.getByRole(target.role, { name });
+        return scope.getByRole(target.role, { name, exact: target.exact });
     }
     if ('label' in target) {
         return scope.getByLabel(target.label);

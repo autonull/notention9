@@ -510,6 +510,162 @@
         "careRequirements"
       ],
       "summary": "Matched keys explain the match."
+    },
+    {
+      "id": "pred.can-publish",
+      "type": "predicate",
+      "name": "Can publish note",
+      "status": "existing",
+      "expression": "note.privacy === \"private\" && user.hasPermission(\"publish_note\")",
+      "registryId": "can-publish",
+      "source": [
+        "core/src/security/ActionApprovalManager.ts"
+      ]
+    },
+    {
+      "id": "pred.can-delete",
+      "type": "predicate",
+      "name": "Can delete note",
+      "status": "existing",
+      "expression": "note.privacy === \"private\" && user.hasPermission(\"delete_note\")",
+      "registryId": "can-delete",
+      "source": [
+        "core/src/security/ActionApprovalManager.ts"
+      ]
+    },
+    {
+      "id": "pred.can-merge-ontology",
+      "type": "predicate",
+      "name": "Can merge ontology",
+      "status": "existing",
+      "expression": "user.hasPermission(\"merge_ontology\")",
+      "registryId": "can-merge-ontology",
+      "source": [
+        "core/src/security/ActionApprovalManager.ts"
+      ]
+    },
+    {
+      "id": "pred.can-grant-permission",
+      "type": "predicate",
+      "name": "Can grant permission",
+      "status": "existing",
+      "expression": "user.hasPermission(\"grant_permission\")",
+      "registryId": "can-grant-permission",
+      "source": [
+        "core/src/security/ActionApprovalManager.ts"
+      ]
+    },
+    {
+      "id": "eff.publish-note",
+      "type": "effect",
+      "name": "Publish note",
+      "status": "existing",
+      "reversibility": "irreversible",
+      "risk": "consequential",
+      "confirmationRequired": true,
+      "failureModes": [
+        "network-error",
+        "permission-denied",
+        "validation-failed"
+      ],
+      "registryId": "publish_note",
+      "source": [
+        "optimize/src/policy.ts",
+        "core/src/security/ActionApprovalManager.ts"
+      ]
+    },
+    {
+      "id": "eff.delete-note",
+      "type": "effect",
+      "name": "Delete note",
+      "status": "existing",
+      "reversibility": "irreversible",
+      "risk": "consequential",
+      "confirmationRequired": true,
+      "failureModes": [
+        "network-error",
+        "permission-denied",
+        "note-not-found"
+      ],
+      "registryId": "delete_note",
+      "source": [
+        "optimize/src/policy.ts"
+      ]
+    },
+    {
+      "id": "eff.merge-ontology",
+      "type": "effect",
+      "name": "Merge ontology",
+      "status": "existing",
+      "reversibility": "compensatable",
+      "risk": "consequential",
+      "confirmationRequired": true,
+      "failureModes": [
+        "conflict-detected",
+        "validation-failed",
+        "permission-denied"
+      ],
+      "registryId": "merge_ontology",
+      "source": [
+        "optimize/src/policy.ts"
+      ]
+    },
+    {
+      "id": "eff.grant-permission",
+      "type": "effect",
+      "name": "Grant permission",
+      "status": "existing",
+      "reversibility": "reversible",
+      "risk": "consequential",
+      "confirmationRequired": true,
+      "failureModes": [
+        "invalid-scope",
+        "permission-denied",
+        "user-not-found"
+      ],
+      "registryId": "grant_permission",
+      "source": [
+        "optimize/src/policy.ts"
+      ]
+    },
+    {
+      "id": "cap.note.delete",
+      "type": "capability",
+      "name": "Delete note",
+      "status": "existing",
+      "seam": "elicit",
+      "risk": "destructive",
+      "effect": "delete_note",
+      "summary": "delete_note is CONSEQUENTIAL in optimize/src/policy.ts.",
+      "source": [
+        "optimize/src/policy.ts"
+      ]
+    },
+    {
+      "id": "cap.ontology.merge",
+      "type": "capability",
+      "name": "Merge ontology",
+      "status": "existing",
+      "seam": "ontology",
+      "risk": "destructive",
+      "effect": "merge_ontology",
+      "summary": "merge_ontology is CONSEQUENTIAL in optimize/src/policy.ts.",
+      "source": [
+        "optimize/src/policy.ts"
+      ]
+    },
+    {
+      "id": "cap.permission.grant",
+      "type": "capability",
+      "name": "Grant permission",
+      "status": "existing",
+      "seam": "ontology",
+      "risk": "destructive",
+      "effect": "grant_permission",
+      "summary": "grant_permission is CONSEQUENTIAL in optimize/src/policy.ts.",
+      "source": [
+        "optimize/src/policy.ts"
+      ]
     }
   ],
   "edges": [
@@ -890,6 +1046,31 @@
       "from": "step.gp.explain",
       "type": "renders",
       "to": "surface.match-rail"
+    },
+    {
+      "from": "cap.note.publish",
+      "type": "effects",
+      "to": "eff.publish-note"
+    },
+    {
+      "from": "step.pub.open",
+      "type": "guards",
+      "to": "pred.can-publish"
+    },
+    {
+      "from": "cap.note.delete",
+      "type": "effects",
+      "to": "eff.delete-note"
+    },
+    {
+      "from": "cap.ontology.merge",
+      "type": "effects",
+      "to": "eff.merge-ontology"
+    },
+    {
+      "from": "cap.permission.grant",
+      "type": "effects",
+      "to": "eff.grant-permission"
     }
   ]
 }

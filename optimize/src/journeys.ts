@@ -1,5 +1,6 @@
 import { registerJourney } from './registry.js';
 import type { JourneySpec } from './journey.js';
+import { DEFAULT_ONTOLOGY } from '@notention/core';
 import type { Note, AppSettings } from '@notention/core';
 
 const baseSettings: AppSettings = {
@@ -30,6 +31,18 @@ const testNote: Note = {
     priority: 1,
 };
 
+const conflictNote: Note = {
+    ...testNote,
+    id: 'conflict-note',
+    title: 'Meetup with too many seats',
+    properties: [{ key: 'capacity', operator: 'is', values: ['many'] }],
+};
+const privatePublishNote: Note = {
+    ...testNote,
+    id: 'private-note-for-publish',
+    title: 'Private note for publish',
+    privacy: 'private',
+};
 const captureAndEdit: JourneySpec = {
     id: 'capture-and-edit',
     version: 1,
@@ -38,10 +51,10 @@ const captureAndEdit: JourneySpec = {
     seed: { notes: [testNote], settings: baseSettings },
     steps: [
         { kind: 'seed', notes: [testNote], settings: baseSettings },
-        { kind: 'act', target: { testId: 'add-detail' }, action: 'click' },
-        { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
-        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'select', value: 'contains' },
-        { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
+        { kind: 'act', target: { testId: 'page-add-detail' }, action: 'click' },
+        { kind: 'act', target: { label: 'Key', modal: 'Add detail' }, action: 'fill', value: 'framework' },
+        { kind: 'act', target: { label: 'Comparison', modal: 'Add detail' }, action: 'select', value: 'contains' },
+        { kind: 'act', target: { label: 'Value', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
         { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'click' },
         { kind: 'script', code: 'window.dispatchEvent(new CustomEvent("save-note"))' },
         { kind: 'waitForState', path: 'note.propertyIndex.framework', equals: ['Next.js'], timeoutMs: 3000 },
@@ -57,11 +70,11 @@ const publishGate: JourneySpec = {
     version: 1,
     intent: 'verify publish gate requires confirmation for private notes',
     journeysTouched: ['publish', 'privacy-gate'],
-    seed: { notes: [], settings: baseSettings },
+    seed: { notes: [privatePublishNote], settings: baseSettings },
     steps: [
-        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'seed', notes: [privatePublishNote], settings: baseSettings },
         { kind: 'navigate', hash: 'notes/private-note-for-publish' },
-        { kind: 'act', target: { role: 'button', name: 'publish' }, action: 'click' },
+        { kind: 'act', target: { role: 'button', name: 'Publish', exact: true }, action: 'click' },
         { kind: 'assertState', path: 'pendingConfirmations.0.action', equals: 'publish' },
         { kind: 'act', target: { role: 'button', name: 'cancel' }, action: 'click' },
         { kind: 'assertState', path: 'note.privacy', equals: 'private' },
@@ -73,16 +86,19 @@ const publishGate: JourneySpec = {
 
 const ontologyConflict: JourneySpec = {
     id: 'ontology-conflict',
-    version: 1,
+    version: 2,
     intent: 'verify ontology conflict detection and resolution',
     journeysTouched: ['ontology', 'conflict-resolution'],
-    seed: { notes: [], settings: baseSettings },
+    seed: { notes: [conflictNote], settings: { ...baseSettings, ontology: DEFAULT_ONTOLOGY } },
     steps: [
-        { kind: 'seed', notes: [], settings: baseSettings },
-        { kind: 'navigate', hash: 'notes/ontology-conflict-note' },
-        { kind: 'assertState', path: 'note.propertyIndex.status', equals: ['pending'] },
+        { kind: 'seed', notes: [conflictNote], settings: { ...baseSettings, ontology: DEFAULT_ONTOLOGY } },
+        { kind: 'navigate', hash: 'settings/ontology' },
+        { kind: 'act', target: { role: 'tab', name: 'Conflicts' }, action: 'click' },
+        { kind: 'waitForState', path: 'conflicts.0.propertyKey', equals: 'capacity', timeoutMs: 5000 },
+        { kind: 'assertState', path: 'conflicts.length', equals: 1 },
+        { kind: 'capture', label: 'conflict-visible' },
     ],
-    status: 'draft',
+    status: 'ready',
 };
 
 // Keyboard-only variant of capture-and-edit
@@ -95,18 +111,18 @@ const captureAndEditKeyboard: JourneySpec = {
     steps: [
         { kind: 'seed', notes: [testNote], settings: baseSettings },
         // Focus the add-detail button and press Enter
-        { kind: 'act', target: { testId: 'add-detail' }, action: 'press', value: 'Enter' },
+        { kind: 'act', target: { testId: 'page-add-detail' }, action: 'press', value: 'Enter' },
         // Wait for modal to appear
         { kind: 'script', code: 'new Promise(r => setTimeout(r, 500))' },
         // Fill property key input (already focused via Tab navigation in modal)
-        { kind: 'act', target: { testId: 'property-key-input', modal: 'Add detail' }, action: 'fill', value: 'framework' },
+        { kind: 'act', target: { label: 'Key', modal: 'Add detail' }, action: 'fill', value: 'framework' },
         // Tab to operator select, use arrow keys to select 'contains'
-        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'Tab' },
-        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'ArrowDown' },
-        { kind: 'act', target: { testId: 'property-operator-select', modal: 'Add detail' }, action: 'press', value: 'Enter' },
+        { kind: 'act', target: { label: 'Comparison', modal: 'Add detail' }, action: 'press', value: 'Tab' },
+        { kind: 'act', target: { label: 'Comparison', modal: 'Add detail' }, action: 'press', value: 'ArrowDown' },
+        { kind: 'act', target: { label: 'Comparison', modal: 'Add detail' }, action: 'press', value: 'Enter' },
         // Tab to value input
-        { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'press', value: 'Tab' },
-        { kind: 'act', target: { testId: 'property-value-input', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
+        { kind: 'act', target: { label: 'Value', modal: 'Add detail' }, action: 'press', value: 'Tab' },
+        { kind: 'act', target: { label: 'Value', modal: 'Add detail' }, action: 'fill', value: 'Next.js' },
         // Tab to Add Detail button and press Enter
         { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'press', value: 'Tab' },
         { kind: 'act', target: { role: 'button', name: /^add detail$/i, modal: 'Add detail' }, action: 'press', value: 'Enter' },
@@ -121,32 +137,28 @@ const captureAndEditKeyboard: JourneySpec = {
 
 const goldenPath: JourneySpec = {
     id: 'golden-path',
-    version: 1,
+    version: 2,
     intent: 'first-time user writes a request and an offer note, sees a relevant explained match',
-    journeysTouched: ['capture', 'match', 'dashboard', 'property-extraction'],
-    seed: { notes: [], settings: baseSettings },
+    journeysTouched: ['capture', 'match', 'property-extraction'],
+    seed: { notes: [], settings: { ...baseSettings, ontology: DEFAULT_ONTOLOGY } },
     steps: [
-        { kind: 'seed', notes: [], settings: baseSettings },
-        // Step 1: Create request note via quick capture
-        { kind: 'act', target: { role: 'textbox', name: /what.{0,3}s on your mind/i }, action: 'fill', value: 'need a React developer in Berlin with TypeScript' },
-        { kind: 'act', target: { role: 'button', name: /create note/i }, action: 'click' },
+        { kind: 'seed', notes: [], settings: { ...baseSettings, ontology: DEFAULT_ONTOLOGY } },
+        { kind: 'act', target: { role: 'button', name: 'New note' }, action: 'click' },
+        { kind: 'act', target: { role: 'textbox', name: 'Note title' }, action: 'fill', value: 'Looking for a React developer in Berlin' },
+        { kind: 'act', target: { role: 'textbox', name: 'Note body' }, action: 'fill', value: 'need a React developer in Berlin with TypeScript #request' },
         { kind: 'waitForState', path: 'note.propertyIndex.role', equals: ['React developer'], timeoutMs: 5000 },
-        { kind: 'assertState', path: 'note.propertyIndex.role', equals: ['React developer'] },
         { kind: 'assertState', path: 'note.propertyIndex.location', equals: ['Berlin'] },
         { kind: 'capture', label: 'request-note-created' },
-        // Step 2: Go back to dashboard and create offer note via quick capture
-        { kind: 'navigate', hash: 'dashboard' },
-        { kind: 'act', target: { role: 'textbox', name: /what.{0,3}s on your mind/i }, action: 'fill', value: 'I am a React TypeScript developer in Berlin' },
-        { kind: 'act', target: { role: 'button', name: /create note/i }, action: 'click' },
-        { kind: 'waitForState', path: 'note.propertyIndex.role', equals: ['React TypeScript developer'], timeoutMs: 5000 },
-        { kind: 'assertState', path: 'note.propertyIndex.role', equals: ['React TypeScript developer'] },
-        { kind: 'assertState', path: 'note.propertyIndex.location', equals: ['Berlin'] },
+        { kind: 'navigate', hash: 'notes' },
+        { kind: 'act', target: { role: 'button', name: 'New note' }, action: 'click' },
+        { kind: 'act', target: { role: 'textbox', name: 'Note title' }, action: 'fill', value: 'I am a React developer in Berlin' },
+        { kind: 'act', target: { role: 'textbox', name: 'Note body' }, action: 'fill', value: 'I am a React developer in Berlin with TypeScript #offer' },
+        { kind: 'waitForState', path: 'note.propertyIndex.role', equals: ['React developer'], timeoutMs: 5000 },
         { kind: 'capture', label: 'offer-note-created' },
-        // Step 3: Navigate to dashboard and verify match
-        { kind: 'navigate', hash: 'dashboard' },
-        { kind: 'script', code: 'const matchEl = document.querySelector("[data-testid=\\"local-match\\"]"); if (matchEl) window.__MATCH_FOUND__ = true; else window.__MATCH_FOUND__ = false;' },
-        { kind: 'assertState', path: 'route.hash', equals: 'dashboard' },
-        { kind: 'capture', label: 'match-found-on-dashboard' },
+        { kind: 'act', target: { role: 'tab', name: 'Matches' }, action: 'click' },
+        { kind: 'waitForState', path: 'matches.length', equals: 1, timeoutMs: 5000 },
+        { kind: 'waitForState', path: 'matches.0.matched', equals: ['role', 'careRequirements'], timeoutMs: 5000 },
+        { kind: 'capture', label: 'match-explained-on-rail' },
     ],
     status: 'ready',
 };

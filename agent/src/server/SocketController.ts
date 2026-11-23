@@ -1,7 +1,7 @@
 import { WebSocket } from 'ws';
 import { PersistenceService } from '../persistence.js';
 import { FeedbackCollector } from '../feedback/FeedbackCollector.js';
-import { Note, Feedback, SuggestionOrchestrator, SuggestionEvent, NoteSuggestion } from '@notention/core';
+import { Note, Feedback, SuggestionOrchestrator, SuggestionEvent, NoteSuggestion, createActionApprovalManager, type ActionApprovalManager, type CapabilityType } from '@notention/core';
 import { error, log } from '../core/utils.js';
 import { MeshtasticAgentManager } from '../network/MeshtasticAgentManager.js';
 import { tryCatch } from '../utils/errorHandling.js';
@@ -26,6 +26,7 @@ export class SocketController {
   private meshtasticManager: MeshtasticAgentManager;
   private suggestionSubscriptions = new Map<string, Set<WebSocket>>();
   private suggestionOrchestrator: SuggestionOrchestrator;
+  private actionApprovalManager: ActionApprovalManager;
 
   constructor(
     private feedbackCollector: FeedbackCollector
@@ -35,6 +36,11 @@ export class SocketController {
     });
     this.suggestionOrchestrator = SuggestionOrchestrator.getInstance();
     this.setupSuggestionEventForwarding();
+    this.initActionApprovalManager();
+  }
+
+  private initActionApprovalManager(): void {
+    this.actionApprovalManager = createActionApprovalManager();
   }
 
   private setupSuggestionEventForwarding(): void {
@@ -152,6 +158,63 @@ export class SocketController {
         });
       },
 
+      // Action execution with approval
+      execute_action: async () => {
+        if (!this.actionApprovalManager) {
+          sendResponse(ws, id, false, { message: 'Action approval system not initialized' });
+          return;
+        }
+
+        const { action, noteId } = payload as { action: any; noteId?: string };
+        if (!action || !action.type) {
+          sendResponse(ws, id, false, { message: 'Invalid action: missing type' });
+          return;
+        }
+
+        // Build capability list from action
+        const capabilities = this.extractCapabilitiesFromAction(action);
+
+        // Request approval
+        const request = await this.actionApprovalManager.requestApproval({
+            kind: action.type,
+            scope: action.scope || '*',
+            preview: this.generateActionPreview(action),
+            capabilities,
+            noteId: payload.noteId,
+        });
+
+        // Send approval request to UI
+        sendResponse(ws, id, true, {
+            type: 'action_approval_required',
+            payload: {
+                requestId: request.id,
+                kind: request.kind,
+                scope: request.scope,
+                preview: request.preview,
+                capabilities: request.capabilities,
+                requestedAt: request.requestedAt,
+                expiresAt: request.expiresAt,
+                noteId: request.noteId,
+            }
+        });
+
+        // Wait for approval decision (with timeout)
+        const approvalResult = await this.waitForApproval(request.id, 5 * 60 * 1000);
+        if (!approvalResult || approvalResult.decision !== 'approve') {
+            sendResponse(ws, id, false, { message: 'Action denied or expired', approved: false });
+            return;
+        }
+
+        // Execute the approved action
+        try {
+            const result = await this.executeActionWithApproval(action, request.id, approvalResult);
+            sendResponse(ws, id, true, { type: 'action_result', payload: result });
+        } catch (e) {
+            error('ActionExecutor', 'Action execution failed', e as Error);
+            sendResponse(ws, id, false, { message: (e as Error).message });
+        }
+      },
+
       // No-op handlers
       note_created: async () => {},
       note_updated: async () => {},
@@ -174,5 +237,114 @@ export class SocketController {
     } else {
       sendResponse(ws, id, false, { message: `Unknown type: ${type}` });
     }
+  }
+
+  /**
+   * Extract capabilities from an action object
+   */
+  private extractCapabilitiesFromAction(action: any): Array<{ type: CapabilityType; scope: string }> {
+    const capabilities: Array<{ type: CapabilityType; scope: string }> = [];
+
+    switch (action.type) {
+      case 'browser:navigate':
+      case 'browser:screenshot':
+      case 'browser:scrape':
+      case 'browser:interact':
+        capabilities.push({ type: action.type as CapabilityType, scope: action.url || action.scope || '*' });
+        break;
+      case 'network:fetch':
+        try {
+          capabilities.push({ type: 'network:fetch', scope: new URL(action.url).hostname });
+        } catch {
+          capabilities.push({ type: 'network:fetch', scope: action.url });
+        }
+        break;
+      case 'filesystem:read':
+      case 'filesystem:write':
+        capabilities.push({ type: action.type as CapabilityType, scope: action.path || '*' });
+        break;
+      case 'system:exec':
+        capabilities.push({ type: 'system:exec', scope: '*' });
+        break;
+      default:
+        capabilities.push({ type: action.type as CapabilityType, scope: action.scope || '*' });
+    }
+
+    return capabilities;
+  }
+
+  /**
+   * Generate a human-readable preview of what the action will do
+   */
+  private generateActionPreview(action: any): string {
+    switch (action.type) {
+      case 'browser:navigate':
+        return `Navigate to ${action.url}`;
+      case 'browser:screenshot':
+        return `Take a screenshot of ${action.url || 'current page'}${action.screenshot === 'full' ? ' (full page)' : ''}`;
+      case 'browser:scrape':
+        return `Scrape content from ${action.url || 'current page'}`;
+      case 'browser:interact':
+        if (action.interactions && action.interactions.length > 0) {
+          const steps = action.interactions.map((i: any) => `${i.type} ${i.selector || ''}`).join(', ');
+          return `Interact with page: ${steps}`;
+        }
+        return 'Interact with page';
+      case 'network:fetch':
+        return `Make ${action.method || 'GET'} request to ${action.url}`;
+      case 'filesystem:read':
+        return `Read file: ${action.path}`;
+      case 'filesystem:write':
+        return `Write to file: ${action.path}`;
+      case 'system:exec':
+        return `Execute command: ${action.command}`;
+      default:
+        return `Execute ${action.type}`;
+    }
+  }
+
+  /**
+   * Wait for approval decision with timeout
+   * In a real implementation, this would listen for a WebSocket message from the UI
+   * For now, we use a polling mechanism with a timeout
+   */
+  private async waitForApproval(requestId: string, timeoutMs: number): Promise<{ decision: 'approve' | 'deny'; scope?: string; undoUntil?: string } | null> {
+    const startTime = Date.now();
+    const checkInterval = 500;
+
+    return new Promise((resolve) => {
+      const checkApproval = () => {
+        const elapsed = Date.now() - startTime;
+        if (elapsed > timeoutMs) {
+          return resolve(null);
+        }
+        
+        // In a real implementation, this would check a decision queue
+        // For now, we simulate by checking if the request has been resolved
+        // The actual approval comes from the UI via WebSocket
+        
+        // This is a placeholder - real implementation would wait for a WebSocket message
+        // from the UI with the approval decision
+        setTimeout(checkApproval, checkInterval);
+      };
+      checkApproval();
+    });
+  }
+
+  /**
+   * Execute an approved action
+   */
+  private async executeActionWithApproval(action: any, requestId: string, approval: any): Promise<any> {
+    // Log execution start
+    const { log } = await import('../core/utils.js');
+    log('ActionExecutor', `Executing approved action: ${action.type}`, { requestId });
+
+    // Import action executor
+    const { executeAction } = await import('../core/actionExecutor.js');
+    
+    // Execute the action
+    const result = await executeAction(action);
+    
+    return result;
   }
 }

@@ -13,6 +13,7 @@ import { assertAriaSnapshotExecutor } from './assertAriaSnapshot.js';
 import { assertFocusExecutor } from './assertFocus.js';
 import { assertAccessibleNameExecutor } from './assertAccessibleName.js';
 import { assertRoleExecutor } from './assertRole.js';
+import { assertVisibleExecutor } from './assertVisible.js';
 import { seedExecutor } from './seed.js';
 
 export interface StepExecutor {
@@ -40,6 +41,7 @@ export { assertAriaSnapshotExecutor } from './assertAriaSnapshot.js';
 export { assertFocusExecutor } from './assertFocus.js';
 export { assertAccessibleNameExecutor } from './assertAccessibleName.js';
 export { assertRoleExecutor } from './assertRole.js';
+export { assertVisibleExecutor } from './assertVisible.js';
 export { seedExecutor } from './seed.js';
 
 const executors: Record<string, StepExecutor> = {
@@ -56,6 +58,7 @@ const executors: Record<string, StepExecutor> = {
     assertFocus: assertFocusExecutor,
     assertAccessibleName: assertAccessibleNameExecutor,
     assertRole: assertRoleExecutor,
+    assertVisible: assertVisibleExecutor,
     seed: seedExecutor,
 };
 

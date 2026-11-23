@@ -20,6 +20,7 @@
     "./steps": "./dist/steps.js",
     "./execute": "./dist/execute.js",
     "./registry": "./dist/registry.js",
+    "./uisg": "./dist/uisg/index.js",
     "./synthesis": "./dist/synthesis/index.js",
     "./synthesis/strategyComparison": "./dist/synthesis/strategyComparison.js",
     "./synthesis/fastEvaluator": "./dist/synthesis/fastEvaluator.js",

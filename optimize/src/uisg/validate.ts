@@ -1,9 +1,11 @@
 import { z } from 'zod';
-import type { UisgEdgeType, UisgGraph, UisgNode, UisgNodeType } from './types.js';
+import type { UisgEdgeType, UisgGraph, UisgNode, UisgNodeType, UisgReversibility, UisgEffectRisk } from './types.js';
 
 const StatusSchema = z.enum(['existing', 'partial', 'planned', 'idea', 'removed']);
 const ConfidenceSchema = z.enum(['high', 'medium', 'low']);
 const SeamRoleSchema = z.enum(['capture', 'elicit', 'match', 'display', 'layout', 'explain', 'ontology', 'intent']);
+const ReversibilitySchema = z.enum(['reversible', 'compensatable', 'irreversible', 'unknown']);
+const EffectRiskSchema = z.enum(['normal', 'caution', 'destructive', 'consequential']);
 
 const baseFields = {
     id: z.string().min(1),
@@ -22,15 +24,17 @@ const TargetSchema = z.union([
 
 const NodeSchema = z.discriminatedUnion('type', [
     z.object({ ...baseFields, type: z.literal('intent'), actor: z.string().optional(), outcome: z.string().optional() }),
-    z.object({ ...baseFields, type: z.literal('capability'), seam: SeamRoleSchema.optional(), strategy: z.string().optional(), skill: z.string().optional(), risk: z.enum(['normal', 'caution', 'destructive']).optional() }),
+    z.object({ ...baseFields, type: z.literal('capability'), seam: SeamRoleSchema.optional(), strategy: z.string().optional(), skill: z.string().optional(), risk: z.enum(['normal', 'caution', 'destructive']).optional(), effect: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('flow'), entry: z.string().min(1), outcome: z.string().min(1), journey: z.string().optional() }),
-    z.object({ ...baseFields, type: z.literal('step'), kind: z.enum(['show', 'action', 'choice', 'confirm', 'result']), target: TargetSchema.optional(), action: z.enum(['click', 'fill', 'press', 'select']).optional(), value: z.string().optional(), statePath: z.string().optional(), stateEquals: z.unknown().optional() }),
+    z.object({ ...baseFields, type: z.literal('step'), kind: z.enum(['show', 'action', 'choice', 'confirm', 'result']), target: TargetSchema.optional(), action: z.enum(['click', 'fill', 'press', 'select']).optional(), value: z.string().optional(), statePath: z.string().optional(), stateEquals: z.unknown().optional(), guard: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('surface'), component: z.string().optional(), route: z.string().optional(), configKey: z.string().optional(), seam: SeamRoleSchema.optional() }),
+    z.object({ ...baseFields, type: z.literal('predicate'), expression: z.string().min(1), registryId: z.string().min(1) }),
+    z.object({ ...baseFields, type: z.literal('effect'), reversibility: ReversibilitySchema, risk: EffectRiskSchema, confirmationRequired: z.boolean(), failureModes: z.array(z.string()), registryId: z.string().min(1) }),
 ]);
 
 const EdgeSchema = z.object({
     from: z.string().min(1),
-    type: z.enum(['supports', 'uses', 'invokes', 'contains', 'renders', 'next', 'alternative', 'implementedBy']),
+    type: z.enum(['supports', 'uses', 'invokes', 'contains', 'renders', 'next', 'alternative', 'implementedBy', 'guards', 'effects']),
     to: z.string().min(1),
     when: z.string().optional(),
     notes: z.string().optional(),
@@ -64,6 +68,8 @@ const EDGE_RULES: Record<UisgEdgeType, { from: UisgNodeType[]; to: UisgNodeType[
     next: { from: ['step'], to: ['step'] },
     alternative: { from: ['flow', 'step'], to: ['flow', 'step'] },
     implementedBy: { from: ['capability', 'surface'], to: 'reference' },
+    guards: { from: ['step'], to: ['predicate'] },
+    effects: { from: ['capability', 'step'], to: ['effect'] },
 };
 
 const issue = (severity: GraphIssue['severity'], code: string, message: string, ref?: string): GraphIssue =>
@@ -76,7 +82,6 @@ function semanticIssues(graph: UisgGraph): GraphIssue[] {
         if (byId.has(node.id)) issues.push(issue('error', 'duplicate-id', `Duplicate node id ${node.id}`, node.id));
         byId.set(node.id, node);
     }
-
     for (const edge of graph.edges) {
         const rule = EDGE_RULES[edge.type];
         const from = byId.get(edge.from);
@@ -88,7 +93,6 @@ function semanticIssues(graph: UisgGraph): GraphIssue[] {
         if (!to) { issues.push(issue('error', 'dangling-edge', `Edge target ${edge.to} does not exist`, ref)); continue; }
         if (!rule.to.includes(to.type)) issues.push(issue('error', 'edge-direction', `${edge.type} cannot end at ${to.type} (${edge.to})`, ref));
     }
-
     const contained = new Map<string, Set<string>>();
     const next = new Map<string, string[]>();
     for (const { from, type, to } of graph.edges) {
@@ -96,7 +100,6 @@ function semanticIssues(graph: UisgGraph): GraphIssue[] {
         if (type === 'next') (next.get(from) ?? next.set(from, []).get(from)!).push(to);
     }
     const inFlow = new Set([...contained.values()].flatMap(set => [...set]));
-
     for (const node of graph.nodes) {
         if (node.type === 'step' && !inFlow.has(node.id)) issues.push(issue('warning', 'orphan-step', `Step ${node.id} is not contained in any flow`, node.id));
         if (node.type !== 'flow') continue;
@@ -105,7 +108,6 @@ function semanticIssues(graph: UisgGraph): GraphIssue[] {
         if (!entry || entry.type !== 'step') issues.push(issue('error', 'bad-entry', `Flow ${node.id} entry ${node.entry} is not a step`, node.id));
         else if (!steps.has(node.entry)) issues.push(issue('error', 'bad-entry', `Flow ${node.id} entry ${node.entry} is not contained in the flow`, node.id));
         if (node.status === 'idea' || node.status === 'planned' || node.status === 'removed') continue;
-
         const reached = new Set<string>();
         const queue = steps.has(node.entry) ? [node.entry] : [];
         while (queue.length) {
@@ -121,14 +123,12 @@ function semanticIssues(graph: UisgGraph): GraphIssue[] {
                 issues.push(issue('warning', 'dead-end', `Step ${id} (${step.kind}) has no next edge in flow ${node.id}`, id));
         }
     }
-
     for (const edge of graph.edges) {
         if (edge.type !== 'next' || edge.when) continue;
         const from = byId.get(edge.from);
         if (from?.type === 'step' && from.kind === 'choice' && (next.get(edge.from) ?? []).length > 1)
             issues.push(issue('warning', 'unlabeled-branch', `Choice step ${edge.from} has an unlabeled branch to ${edge.to}`, edge.from));
     }
-
     return issues;
 }
 

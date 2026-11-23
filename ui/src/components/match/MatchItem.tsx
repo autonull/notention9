@@ -75,7 +75,7 @@ export function MatchItem({
                 </p>
             </div>
 
-            <div className="flex flex-wrap gap-1">
+            <div className="flex flex-wrap gap-1" data-testid="match-explanations">
                 {result.matches.map((m, i) => (
                     <MatchBadge key={`match-${i}`} match={m} />
                 ))}
