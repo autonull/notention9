@@ -12,6 +12,21 @@
 
 ---
 
+## Progress Summary (2026-11-23 session)
+
+| Phase | Status | Key Deliverables |
+|-------|--------|------------------|
+| **A — Foundational Infrastructure (P0)** | **Done** | `uisg metrics/rank/select/contexts/adopt/canonicalize/diff/findings/runs`; 112-node graph with lifecycle × implementation records; round-trip canonicalization; findings repo |
+| **B — Experiment Program (P1)** | **Partial** | Elicit experiment (`InlineDetailStrategy`); Explain consolidation (`MatchItem` expanded, orphans deleted); Conflict detection journey (v2) |
+| **C — Broad Coverage (P1)** | **Done** | 12 state journeys, 5 network capabilities, import/export/trash, 4 config capabilities, 2 mobile journeys, intent seam declared unsupported |
+| **D — Polish (P2)** | **Pending** | Orphan cleanup, docs/screenshots, final matrix |
+
+**Graph:** 112 nodes / 136 edges; 5/5 journeys linked; 8/8 seams covered (intent: rejected/unsupported)
+**Tests:** All UISG tests pass (145); optimize build clean; UI build clean
+**Verify:** L0-L2 pass; L3 ontology-conflict passes; golden-path passes; capture-and-edit has timing flake
+
+---
+
 ## 1. The change in one paragraph
 
 The session proved the loop on five flows. TODO32 makes the loop cover the UI/UX space and the remaining seams, and the integration of every UI-relevant system.
