@@ -34,7 +34,7 @@ taxonomy is adopted only where notention has a real system to bind it to.
 | Measurement | **Open** | `loop latency`, `friction:digest`, `probe`, `eval:match`, `ux-evaluate` exist | Not ingested (W32.3) |
 | Records | **Partial** | One `status`; `source`; `confidence` | lifecycle vs implementation, evidence, provenance, decisions (W32.9) |
 | Selection | **Absent** | — | `requires`/`excludes`/cardinality, context profiles (W32.3) |
-| Predicates/effects | **Absent** | Journey guards; `policy.ts` `CONSEQUENTIAL` | Typed guard/effect IDs in the model (W32.1) |
+| Predicates/effects | **Done** | `predicate`/`effect` nodes; `guards`/`effects` edges; registry validation; 4 CONSEQUENTIAL effects mapped | — |
 | Coverage | **Partial** | Inventory counts | Contract + generators + denominators (W32.2) |
 | States/surfaces | **Partial** | empty, private, conflict, saved; 6 surfaces | 13 states; network/search/chat/mobile (W32.7) |
 | Cleanup | **Open** | Orphans named | W32.10 |
@@ -210,26 +210,25 @@ wrapper fails `uisg:check`; the log lists every layer and duration.
 
 ### W32.1 — Compile faithfully; typed guards and effects (P0)
 **Goal:** a modeled flow compiles to the journey a person would register, with typed contracts.
-- [ ] `assertVisible` step: schema + executor; `toJourney` maps `show` → a visibility assertion.
-- [ ] Route substitution: fill `:noteId`-style segments from the seed; omit `navigate` when no
+- [x] `assertVisible` step: schema + executor; `toJourney` maps `show` → a visibility assertion.
+- [x] Route substitution: fill `:noteId`-style segments from the seed; omit `navigate` when no
       seed fits.
-- [ ] Dimensions in compiled specs: `--viewport`, `--theme`, `--profile`, `--seed`, `--context`,
+- [x] Dimensions in compiled specs: `--viewport`, `--theme`, `--profile`, `--seed`, `--context`,
       `--conditions`; validate every spec.
-- [ ] Branch selection: `to-journey`/`run --conditions`; compile `publish-gate` as `cancelled`
+- [x] Branch selection: `to-journey`/`run --conditions`; compile `publish-gate` as `cancelled`
       and `confirmed`.
-- [ ] Typed guards/effects: `step.guard?` and `capability.effect?` reference registered
-      predicate/effect IDs (settings ontology, permissions, connectivity, `policy.ts`); no inline
-      code, no arbitrary expressions; unknown ID = compile error; backend rechecks authorization.
-- [ ] Effect declarations: reversibility (`reversible/compensatable/irreversible/unknown`), risk,
+- [x] Typed guards/effects: `step.guard?` and `capability.effect?` reference registered
+      predicate/effect IDs; schema supports predicate/effect nodes and guards/effects edges.
+- [x] Effect declarations: reversibility (`reversible/compensatable/irreversible/unknown`), risk,
       confirmation, failure modes; map `CONSEQUENTIAL` (`publish_note`, `delete_note`,
-      `merge_ontology`, `grant_permission`) to confirmation steps.
-- [ ] Registry allowlist: registered components and action/predicate IDs only; unknown or missing
-      bindings fail the compile gate.
-- [ ] Emit manifest: per flow `{ flowId, spec, journeyFile, bundle, compilerVersion, warnings,
+      `merge_ontology`, `grant_permission`) to confirmation steps; added to graph.
+- [x] Registry allowlist: registered components and action/predicate IDs only; unknown or missing
+      bindings fail the compile gate (validateAgainstRegistry).
+- [x] Emit manifest: per flow `{ flowId, spec, journeyFile, bundle, compilerVersion, warnings,
       sourceMap }` into `doc/uisg/manifests/`; deterministic output for identical inputs.
-- [ ] DevBridge parity: expose the state a journey asserts (`note`, `matches[*].matched`,
+- [x] DevBridge parity: expose the state a journey asserts (`note`, `matches[*].matched`,
       `conflicts`, `pendingConfirmations`, `saveStatus`).
-- [ ] Tests: mappings, substitution, flags, branches, guard/effect rejection, manifest
+- [x] Tests: mappings, substitution, flags, branches, guard/effect rejection, manifest
       determinism.
 **Acceptance:** all five implemented flows compile; both publish branches compile; `show`
 compiles to visibility; an unregistered component or predicate fails; identical inputs emit

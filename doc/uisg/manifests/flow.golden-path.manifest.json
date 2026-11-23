@@ -1,0 +1,110 @@
+{
+  "flowId": "flow.golden-path",
+  "spec": {
+    "id": "golden-path",
+    "version": 1,
+    "intent": "Express a need and understand a match",
+    "journeysTouched": [
+      "flow.golden-path"
+    ],
+    "seed": {
+      "notes": [],
+      "settings": {
+        "theme": "dark",
+        "ontology": [],
+        "developerMode": false,
+        "aiEnabled": false,
+        "aiProvider": "local",
+        "aiModel": "",
+        "googleGeminiApiKey": "",
+        "nostr": {
+          "privkey": null,
+          "relays": []
+        }
+      }
+    },
+    "steps": [
+      {
+        "kind": "seed",
+        "notes": [],
+        "settings": {
+          "theme": "dark",
+          "ontology": [],
+          "developerMode": false,
+          "aiEnabled": false,
+          "aiProvider": "local",
+          "aiModel": "",
+          "googleGeminiApiKey": "",
+          "nostr": {
+            "privkey": null,
+            "relays": []
+          }
+        }
+      },
+      {
+        "kind": "navigate",
+        "hash": "#/notes"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "role": "button",
+          "name": "New note"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "role": "textbox",
+          "name": "Note body"
+        },
+        "action": "fill",
+        "value": "need a React developer in Berlin with TypeScript #request"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "role": "button",
+          "name": "New note"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "role": "textbox",
+          "name": "Note body"
+        },
+        "action": "fill",
+        "value": "I am a React developer in Berlin with TypeScript #offer"
+      },
+      {
+        "kind": "assertVisible",
+        "target": {
+          "testId": "match-item"
+        }
+      },
+      {
+        "kind": "assertState",
+        "path": "matches.0.matched",
+        "equals": [
+          "role",
+          "careRequirements"
+        ]
+      },
+      {
+        "kind": "assertState",
+        "path": "matches.length",
+        "equals": 1
+      }
+    ],
+    "status": "draft"
+  },
+  "journeyFile": "ui/test/optimize/golden-path.journey.ts",
+  "compilerVersion": "1.0.0",
+  "warnings": [],
+  "sourceMap": "",
+  "generatedAt": "2026-11-23T18:59:43.096Z",
+  "contentHash": "50affaba"
+}
