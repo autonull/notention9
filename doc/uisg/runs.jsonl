@@ -2,3 +2,10 @@
 {"flowId":"flow.golden-path","runId":"run_1795466641505_nkya9af","bundlePath":"data/loop/runs/run-run_1795466641505_nkya9af/bundle.json","status":"passed","timestamp":"2026-11-23T20:44:13.274Z","dimensions":{}}
 {"flowId":"flow.publish-gate","runId":"run_1795466656262_7xekbtd","bundlePath":"data/loop/runs/run-run_1795466656262_7xekbtd/bundle.json","status":"passed","timestamp":"2026-11-23T20:44:24.635Z","dimensions":{}}
 {"flowId":"flow.ontology-conflict","runId":"run_1795466667645_u04hr3o","bundlePath":"data/loop/runs/run-run_1795466667645_u04hr3o/bundle.json","status":"passed","timestamp":"2026-11-23T20:44:35.962Z","dimensions":{}}
+{"flowId":"flow.capture-and-edit","runId":"run_1795468358971_h3hr4dv","bundlePath":"data/loop/runs/run-run_1795468358971_h3hr4dv/bundle.json","status":"passed","timestamp":"2026-11-23T21:13:01.524Z","dimensions":{}}
+{"flowId":"flow.golden-path","runId":"run_1795468389055_0i9fimd","bundlePath":"data/loop/runs/run-run_1795468389055_0i9fimd/bundle.json","status":"passed","timestamp":"2026-11-23T21:13:28.119Z","dimensions":{}}
+{"flowId":"flow.publish-gate","runId":"run_1795468414765_i7gksya","bundlePath":"data/loop/runs/run-run_1795468414765_i7gksya/bundle.json","status":"passed","timestamp":"2026-11-23T21:13:52.236Z","dimensions":{}}
+{"flowId":"flow.ontology-conflict","runId":"run_1795468443731_jusmoya","bundlePath":"data/loop/runs/run-run_1795468443731_jusmoya/bundle.json","status":"failed","timestamp":"2026-11-23T21:14:31.064Z","dimensions":{}}
+{"flowId":"flow.ontology-conflict","runId":"run_1795468598176_u4kltlm","bundlePath":"data/loop/runs/run-run_1795468598176_u4kltlm/bundle.json","status":"passed","timestamp":"2026-11-23T21:16:47.090Z","dimensions":{}}
+{"flowId":"flow.ontology-conflict","runId":"run_1795468614368_krnkgab","bundlePath":"data/loop/runs/run-run_1795468614368_krnkgab/bundle.json","status":"passed","timestamp":"2026-11-23T21:17:03.488Z","dimensions":{}}
+{"flowId":"flow.ontology-conflict","runId":"run_1795468629635_yba827c","bundlePath":"data/loop/runs/run-run_1795468629635_yba827c/bundle.json","status":"passed","timestamp":"2026-11-23T21:17:18.398Z","dimensions":{}}

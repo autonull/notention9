@@ -221,7 +221,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [ ] Gardener/merge flow coverage; `ontology:audit` output linked to graph.
 
 **Phase B Acceptance:** ≥1 evaluated experiment per seam with 2 strategies; every decision recorded; no variant without evidence bundle; `check:ui` green; resolution journey green; detection+resolution capabilities; no silent data loss.
-- Status: Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended. Remaining: Capture/Match/Display experiments, gardener/merge flow, journey assertions for explanations.
+- Status: Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended (detection verified). Remaining: Capture/Match/Display experiments, gardener/merge flow, journey assertions for explanations.
 
 ---
 
