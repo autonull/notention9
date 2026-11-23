@@ -1,5 +1,4 @@
 import React from 'react';
-import type {Note} from '@notention/core';
 
 import {useSettings} from '../hooks/useSettingsContext';
 import {useView} from '../hooks/useViewContext';
@@ -11,11 +10,10 @@ import {NotesView} from './views/NotesView';
 import {SettingsView} from './views/SettingsView';
 
 interface MainViewProps {
-    sortedNotes?: Note[];
     loading?: boolean;
 }
 
-export function MainView({sortedNotes, loading = false}: MainViewProps) {
+export function MainView({loading = false}: MainViewProps) {
     const {activeView} = useView();
     const {settingsLoading} = useSettings();
 
@@ -35,7 +33,7 @@ export function MainView({sortedNotes, loading = false}: MainViewProps) {
         <div className="relative h-full">
             {activeView === 'settings'
                 ? <SettingsView/>
-                : <NotesView sortedNotes={sortedNotes}/>}
+                : <NotesView/>}
         </div>
     );
 }

@@ -236,7 +236,7 @@ export function AppShell() {
                     <DegradedModeBanner/>
                     <main id="main-content" className="relative flex-1 overflow-hidden" tabIndex={-1}>
                         <Suspense fallback={<div className="flex h-full items-center justify-center text-neutral-400">Loading…</div>}>
-                            <MainView sortedNotes={sortedNotes} loading={notesLoading}/>
+                            <MainView loading={notesLoading}/>
                         </Suspense>
                     </main>
                     <CommandPalette isOpen={isPaletteOpen} onClose={() => setIsPaletteOpen(false)}/>

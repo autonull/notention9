@@ -119,7 +119,7 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
                                 {noteGrants.map((grant, idx) => (
                                     <div key={`${noteId}-${idx}`} className="flex items-center justify-between gap-4 p-3 bg-[var(--app-raised)] rounded-lg">
                                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                                            <ShieldIcon className="h-5 w-5 text-green-400 flex-shrink-0"/>
+                                            <ShieldIcon tone="success" className="h-5 w-5 flex-shrink-0"/>
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2 text-sm">
                                                     <code className="text-blue-300 font-mono text-xs bg-[var(--app-surface)] px-1.5 py-0.5 rounded">{formatCapability(grant.permission.type)}</code>

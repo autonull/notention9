@@ -1,9 +1,10 @@
 import React, {useEffect, useMemo, useRef, useState} from 'react';
-import type {Note, NotesSection} from '@notention/core';
+import {NoteFilter, type Note, type NotesSection} from '@notention/core';
 
 import {useView} from '../../hooks/useViewContext';
 import {useNotesView} from '../../hooks/useNotesView';
 import {useNotes} from '../../hooks/useNotes';
+import {useSettings} from '../../hooks/useSettingsContext';
 import {useToast} from '../../hooks/useToast';
 import {EditorManager} from '../editor/EditorManager';
 import {NoteListItem} from '../sidebar/NoteListItem';
@@ -13,19 +14,13 @@ import {MapView} from './MapView';
 import {TimelineView} from './TimelineView';
 import {EmptyState, NotesEmptyIllustration, ConfirmationModal} from '../ui/Primitives';
 import {browseModeLabel, sortOrderLabel} from '../../config/uiSurfaces';
-import {getNoteCounts, isTaskNote} from '../../utils/noteFilters';
+import {selectIndex, type NoteIndexGroup} from '../../utils/noteIndex';
 
 type Section = NotesSection;
 
-const UNGROUPED = 'unscheduled';
-const STATUS_ORDER = ['todo', 'queued', 'planned', 'open', 'running', 'in-progress', 'blocked', 'review', 'completed', 'done', 'cancelled'];
 const SCROLL_KEY = 'notention-notes-scroll';
 
-interface NotesViewProps {
-    sortedNotes?: Note[];
-}
-
-export function NotesView({sortedNotes = []}: NotesViewProps) {
+export function NotesView() {
     const {selectedNote, updateNote} = useNotesView();
     const {
         selectedNoteId,
@@ -40,16 +35,18 @@ export function NotesView({sortedNotes = []}: NotesViewProps) {
         setNotesGroup,
         searchTerm,
         setSearchTerm,
+        userLocation,
         historyShare,
         setHistoryShare,
     } = useView();
     const {notes: allNotes, restoreNote, permanentlyDeleteNote} = useNotes();
+    const {settings} = useSettings();
     const {addToast} = useToast();
     const scrollRef = useRef<HTMLDivElement>(null);
     const [noteToDelete, setNoteToDelete] = useState<Note | null>(null);
 
     const section: Section = notesSection;
-    const counts = getNoteCounts(allNotes);
+    const activeMode = section === 'trash' ? 'list' : notesMode;
 
     useEffect(() => {
         const saved = Number(sessionStorage.getItem(SCROLL_KEY) ?? '0');
@@ -59,16 +56,18 @@ export function NotesView({sortedNotes = []}: NotesViewProps) {
         };
     }, []);
 
-    const sourceNotes = section === 'trash' ? allNotes.filter(note => !!note.deletedAt) : sortedNotes;
-    const filteredNotes = sourceNotes.filter(note => {
-        const isDeleted = !!note.deletedAt;
-        if (section === 'trash') return isDeleted;
-        if (section === 'tasks') return isTaskNote(note);
-        if (section === 'tags') return note.tags.length > 0;
-        return !isDeleted;
-    });
+    const noteFilter = useMemo(() => new NoteFilter(settings.ontology ?? []), [settings.ontology]);
+    const index = useMemo(() => selectIndex(allNotes, {
+        subset: section,
+        arrangement: activeMode,
+        order: sortOrder,
+        group: notesGroup,
+        query: searchTerm,
+        location: userLocation,
+    }, noteFilter), [allNotes, section, activeMode, sortOrder, notesGroup, searchTerm, userLocation, noteFilter]);
 
-    const activeMode = section === 'trash' ? 'list' : notesMode;
+    const filteredNotes = index.items;
+    const counts = index.counts;
 
     const selectNote = (id: string) => {
         if (section === 'trash') return;
@@ -151,7 +150,7 @@ export function NotesView({sortedNotes = []}: NotesViewProps) {
                                     />
                                 </div>
                             ) : activeMode === 'board' ? (
-                                <Board notes={filteredNotes} group={notesGroup} renderNote={renderNote}/>
+                                <Board groups={index.groups} renderNote={renderNote}/>
                             ) : activeMode === 'map' ? (
                                 <MapView/>
                             ) : activeMode === 'timeline' ? (
@@ -222,43 +221,30 @@ function IndexHeader({count, mode, sortOrder}: {
     );
 }
 
-function Board({notes, group, renderNote}: {
-    notes: Note[];
-    group: string;
+function Board({groups, renderNote}: {
+    groups: NoteIndexGroup[];
     renderNote: (note: Note) => React.ReactNode;
 }) {
-    const columns = useMemo(() => {
-        if (group === 'none') return [['all', notes]] as Array<[string, Note[]]>;
-        const groups = new Map<string, Note[]>();
-        for (const note of notes) {
-            const value = note.properties.find(p => p.key === 'status')?.values[0] ?? UNGROUPED;
-            const key = value.toLowerCase();
-            const bucket = groups.get(key) ?? [];
-            bucket.push(note);
-            groups.set(key, bucket);
-        }
-
-        const rank = (key: string) => {
-            const index = STATUS_ORDER.indexOf(key);
-            if (index !== -1) return index;
-            return key === UNGROUPED ? 1000 : 500;
-        };
-
-        return [...groups.entries()].sort((a, b) => rank(a[0]) - rank(b[0]) || a[0].localeCompare(b[0]));
-    }, [notes, group]);
+    if (groups.length === 0) {
+        return (
+            <p className="px-1 py-8 text-[12px] text-[var(--app-muted)]">
+                Group this board by status to see columns.
+            </p>
+        );
+    }
 
     return (
         <div className="flex items-start gap-3 overflow-x-auto pb-4" role="list" aria-label="Board">
-            {columns.map(([status, columnNotes]) => (
-                <section key={status} role="listitem" className="w-[280px] shrink-0">
+            {groups.map(group => (
+                <section key={group.id} role="listitem" className="w-[280px] shrink-0">
                     <h3 className="mb-1 flex items-center justify-between gap-2 px-1 text-[12px] font-medium text-[var(--app-text-secondary)]">
-                        <span className="truncate capitalize" title={status === UNGROUPED ? 'No status' : status}>
-                            {status === UNGROUPED ? 'No status' : status === 'all' ? 'All notes' : status}
+                        <span className="truncate capitalize" title={group.label}>
+                            {group.label}
                         </span>
-                        <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{columnNotes.length}</span>
+                        <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{group.notes.length}</span>
                     </h3>
-                    <div className="space-y-2" role="list" aria-label={`${status === UNGROUPED ? 'No status' : status} notes`}>
-                        {columnNotes.map(renderNote)}
+                    <div className="space-y-2" role="list" aria-label={`${group.label} notes`}>
+                        {group.notes.map(renderNote)}
                     </div>
                 </section>
             ))}

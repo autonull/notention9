@@ -311,6 +311,8 @@ export const componentTokens = {
     header: "flex items-start justify-between gap-4 border-b border-[var(--app-line)] p-4",
     closeButton: "rounded-md p-1.5 text-[var(--app-muted)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]",
     body: "flex-1 overflow-y-auto p-4",
+    bodyFlush: "min-h-0 flex-1 overflow-hidden",
+    footer: "border-t border-[var(--app-line)] p-4",
   },
   toast: {
     base: "relative flex items-start gap-3 overflow-hidden rounded-xl border p-3 shadow-[var(--app-shadow)] animate-slide-in-up",

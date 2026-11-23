@@ -45,7 +45,7 @@ export function AutomationTab() {
             {enabled && (
                 <div className="space-y-4">
                     <div className="p-3 bg-purple-900/20 border border-purple-800 rounded-lg flex gap-3">
-                        <CpuChipIcon className="w-6 h-6 text-purple-400 flex-shrink-0 mt-0.5"/>
+                        <CpuChipIcon tone="accent" className="w-6 h-6 flex-shrink-0 mt-0.5"/>
                         <div className="flex-1">
                             <p className="text-sm text-purple-200 font-medium">Automation Active</p>
                             <p className="text-xs text-purple-400 mt-1">
@@ -86,7 +86,7 @@ export function AutomationTab() {
                         <div className="space-y-4 pt-4 border-t border-[var(--app-line)]">
                             <div className="p-3 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]">
                                 <h4 className="font-medium text-[var(--app-text)] mb-2 flex items-center gap-2">
-                                    <InformationCircleIcon className="w-4 h-4 text-blue-400"/>
+                                    <InformationCircleIcon tone="accent" className="w-4 h-4"/>
                                     Agent Connection
                                 </h4>
                                 <p className="text-[12px] text-[var(--app-muted)] mb-3">

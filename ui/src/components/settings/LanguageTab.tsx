@@ -19,7 +19,7 @@ export function LanguageTab() {
                 </p>
                 <div className="flex items-center justify-between p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[var(--app-raised)] rounded-lg text-blue-400">
+                        <div className="p-2 bg-[var(--app-raised)] rounded-lg text-[var(--app-accent-text)]">
                             <GlobeIcon className="w-5 h-5" />
                         </div>
                         <div>

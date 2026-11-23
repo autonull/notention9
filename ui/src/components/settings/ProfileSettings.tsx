@@ -171,7 +171,7 @@ export function ProfileSettings() {
                                     <p className="text-[12px] text-[var(--app-muted)]">{profile.description}</p>
                                 </div>
                                 {profile.id === activeProfileId && (
-                                    <span className="text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">
+                                    <span className="text-xs text-[var(--app-accent-text)] bg-[var(--app-accent-soft)] px-2 py-0.5 rounded">
                                         Active
                                     </span>
                                 )}

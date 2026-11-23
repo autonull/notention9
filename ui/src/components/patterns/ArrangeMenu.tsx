@@ -51,11 +51,22 @@ export function ArrangeMenu({
 
     const layouts = optionsFor<NoteMode>('layout');
     const orders = optionsFor<SortOrder>('order');
-    const groups = optionsFor<NotesGroup>('group');
+    // Grouping belongs to the arrangement: Board groups by status. Timeline
+    // groups by date, Map by location, and List by the active order already.
+    const groups = mode === 'board'
+        ? optionsFor<NotesGroup>('group').filter(option => option.id !== 'date')
+        : [];
 
     const choose = (apply: () => void) => {
         apply();
         setIsOpen(false);
+    };
+
+    const chooseMode = (next: NoteMode) => {
+        choose(() => {
+            onModeChange(next);
+            if (next === 'board' && group !== 'status' && group !== 'none') onGroupChange('status');
+        });
     };
 
     return (
@@ -87,7 +98,7 @@ export function ArrangeMenu({
                                         key={option.id}
                                         type="button"
                                         aria-pressed={mode === option.id}
-                                        onClick={() => choose(() => onModeChange(option.id))}
+                                        onClick={() => chooseMode(option.id)}
                                         className={cn(
                                             'flex h-8 items-center gap-1.5 rounded-md px-2 text-[12px] font-medium transition-colors',
                                             mode === option.id
@@ -124,26 +135,28 @@ export function ArrangeMenu({
                         </div>
                     </ArrangeSection>
 
-                    <ArrangeSection label="Group">
-                        <div className="flex flex-wrap gap-1">
-                            {groups.map(option => (
-                                <button
-                                    key={option.id}
-                                    type="button"
-                                    aria-pressed={group === option.id}
-                                    onClick={() => choose(() => onGroupChange(option.id as NotesGroup))}
-                                    className={cn(
-                                        'h-7 rounded-md px-2 text-[11px] font-medium transition-colors',
-                                        group === option.id
-                                            ? 'bg-[var(--app-hover)] text-[var(--app-text)]'
-                                            : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)]'
-                                    )}
-                                >
-                                    {option.label}
-                                </button>
-                            ))}
-                        </div>
-                    </ArrangeSection>
+                    {groups.length > 0 && (
+                        <ArrangeSection label="Group">
+                            <div className="flex flex-wrap gap-1">
+                                {groups.map(option => (
+                                    <button
+                                        key={option.id}
+                                        type="button"
+                                        aria-pressed={group === option.id}
+                                        onClick={() => choose(() => onGroupChange(option.id as NotesGroup))}
+                                        className={cn(
+                                            'h-7 rounded-md px-2 text-[11px] font-medium transition-colors',
+                                            group === option.id
+                                                ? 'bg-[var(--app-hover)] text-[var(--app-text)]'
+                                                : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)]'
+                                        )}
+                                    >
+                                        {option.label}
+                                    </button>
+                                ))}
+                            </div>
+                        </ArrangeSection>
+                    )}
                 </div>
             )}
         </div>

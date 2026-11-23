@@ -71,9 +71,9 @@ export function MetricsTab() {
 
     const getEvidenceIcon = (evidenceClass: FrictionSignal['evidenceClass']) => {
         switch (evidenceClass) {
-            case 'measured': return <ExclamationTriangleIcon className="w-4 h-4 text-red-400" title="Measured — direct user action, sufficient count" />;
+            case 'measured': return <ExclamationTriangleIcon tone="danger" className="w-4 h-4" title="Measured — direct user action, sufficient count" />;
             case 'observed': return <ClockIcon className="w-4 h-4 text-yellow-400" title="Observed — indirect signal" />;
-            case 'hypothesized': return <InformationCircleIcon className="w-4 h-4 text-green-400" title="Hypothesized — start without completion" />;
+            case 'hypothesized': return <InformationCircleIcon tone="success" className="w-4 h-4" title="Hypothesized — start without completion" />;
             default: return <CheckCircleIcon className="w-4 h-4 text-[var(--app-muted)]" title="Asserted" />;
         }
     };

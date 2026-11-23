@@ -1,6 +1,6 @@
 # TODO.31 — The Note Is the Page
 
-**Status:** done. W31.0–W31.9 landed. Supersedes the previous `TODO31.md`
+**Status:** done. W31.0–W31.9 and the follow-up pass landed. Supersedes the previous `TODO31.md`
 draft (“Consolidation, Surface by Surface”).
 **Continues:** TODO.30 and the one-workspace pass.
 **Non-goals:** matching semantics, transports, AI models, persistence formats,
@@ -12,43 +12,42 @@ command. Do not add a surface to solve a crowded surface.
 
 ## Progress
 
-Last updated after the settings pass. The gallery still has 47 scenes;
+Last updated after the follow-up pass. The gallery still has 47 scenes;
 `note/compose` replaces `capture/composer` and `editor/property-edit`
 replaces `editor/property-inspector`.
 
 | Workstream | State | Landed | Still open |
 | :--- | :--- | :--- | :--- |
-| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel`, `SurfaceTabs` extraction; `KitGallery`; layer check has no per-file baseline |
-| W31.1 The page | **Done** | Full-bleed page, editable 30 px title in the page, one 3 rem bar, focus-only formatting row, saved + word count at page end, 17 px body, 88ch left-aligned measure, `PageSurface` / `PageHeader` / `PageTitle` / `PageMeta` | `PageSurface` is not yet exercised by a kit gallery |
-| W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, mobile list/page swap, subset/arrangement/order persist | Pure `selectIndex` selector and its unit test; group axis only affects Board, not Timeline |
-| W31.3 New note is a page | **Done** | `New note` creates and focuses a blank page; capture modal and hero omnibox deleted; `Cmd/Ctrl+N` creates a page; paste-to-capture writes into a page | Extraction preview is the existing `Describe it` composer, not a line under the title |
-| W31.4 Details in the page | **Done** | Floating inspector and bar `Details` removed; inline chips edit through `PropertyEditor`; page `+ Add detail` uses the same form; imported details with no inline node show in the page and edit in one popup; pointer-down opening keeps the popup stable after the first edit | None |
+| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop, `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel`, `SurfaceTabs` extraction; layer check has no per-file baseline |
+| W31.1 The page | **Done** | Full-bleed page, editable 30 px title in the page, one 3 rem bar, focus-only formatting row, saved + word count at page end, 17 px body, 88ch left-aligned measure, `PageSurface` / `PageHeader` / `PageTitle` / `PageMeta`; `KitGallery` exercises the page patterns | None |
+| W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, mobile list/page swap, subset/arrangement/order persist, pure `selectIndex` + tests, group axis scoped to Board | None |
+| W31.3 New note is a page | **Done** | `New note` creates and focuses a blank page; capture modal and hero omnibox deleted; `Cmd/Ctrl+N` creates a page; paste-to-capture writes into a page | None |
+| W31.4 Details in the page | **Done** | Floating inspector and bar `Details` removed; inline chips edit through `PropertyEditor`; page `+ Add detail` uses the same form; imported details with no inline node show in the page and edit in one popup; chips are keyboard reachable and focus returns after close | None |
 | W31.5 One context rail | **Done** | Four top-level tabs (`Next`, `Matches`, `Replies`, `Chat`), nested toggle removed, rail closed when empty, auto-open when context exists, percentage share and resizer, `Context` control with count | Mobile uses a bottom pane, not a labelled bottom sheet with a drag handle |
-| W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing | Group section offers status/none; Timeline grouping is not wired |
+| W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing, Board groups by status or none | None |
 | W31.7 Explore, search, chat | **Done** | `IdentityStrip` / `FeedRow` patterns; relay health is a chip with a click-to-open panel; one filter row (domains + input, no label, no tag row); feed rows with one property line and one action row; read-only feed is one line; chat list uses `FeedRow`, conversation carries app typography and one composer; palette scopes come from `PALETTE_SCOPES`; `RelayStatusBanner` and `DiscoveredProperties` deleted | None |
-| W31.8 Settings, overlays, status | **Done** | `SettingsDirectory` + `SettingsSection` patterns; `SettingsView` is directory + panel + tab switch; one `SectionHeader` at 15 px (optional 14 px icon) for every tab; tab cards and `animate-fade-in` removed; settings surfaces and copy on tokens with no `neutral-*`; `styles/tone.ts` tone map used by `Chip`, `Toast`, `ConnectivityBanner`, and `DegradedModeBanner`; one primary per tab; dead `EnhancedCommandPalette`, `VirtualizedList`, `PrivacyControl` and their tests deleted | `PropertyPalette`, `UnifiedSelector`, and `SkillApprovalDialog` still hand-roll a backdrop; `Popover` keeps a legacy neutral surface; accent icon colors are not yet tone tokens |
-| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7 | No further CSS |
+| W31.8 Settings, overlays, status | **Done** | `SettingsDirectory` + `SettingsSection` patterns; `SettingsView` is directory + panel + tab switch; one `SectionHeader` at 15 px (optional 14 px icon) for every tab; tab cards and `animate-fade-in` removed; settings surfaces and copy on tokens with no `neutral-*`; `styles/tone.ts` tone map used by `Chip`, `Toast`, `ConnectivityBanner`, `DegradedModeBanner`, and icons; dead `Popover`, `Drawer`, `Dropdown`, `CommandPalette`, `ConfirmationDialog`, `EnhancedCommandPalette`, `VirtualizedList`, `PrivacyControl` and their tests deleted | One dozen literal `text-blue-*` / `text-purple-*` hover and body labels remain in settings; route them when a text-tone helper lands |
+| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7 | Screenshots predate the modal and icon-tone follow-ups; recapture at the next visual milestone |
 
 ### Next order
 
 No workstream is open. The remaining items are follow-ups, in value order:
 
-1. **Overlay hygiene** — `PropertyPalette`, `UnifiedSelector`, and
-   `SkillApprovalDialog` still draw their own backdrop. Move each to `Modal`
-   once `Popover` drops its legacy neutral surface.
-2. **W31.2/W31.4 follow-ups** — pure `selectIndex` + tests, timeline grouping,
-   and the inline-chip DOM fallback.
-3. **W31.0 follow-ups** — extract `ListRow`, `Field`, `ContextPanel`, and
-   `SurfaceTabs` only where a second use exists; add a `KitGallery` scene that
-   renders every primitive and pattern.
-4. **Tone coverage** — accent icon colors (`text-blue-400`, `text-purple-400`)
-   in settings bodies are still literal. Route them through `styles/tone.ts`
-   when the icon set gains a tone prop.
-5. **Audit measurement** — `task-first` now runs one test per viewport and
+1. **Audit measurement** — `task-first` now runs one test per viewport and
    waits on real selectors (`data-testid="notes-list-items"`,
    `notes-grid-items`, `page-surface`). It still scans `main` only, so the
    top-bar `New note` reads as no primary. Widen the scan to the shell when
    the metric becomes a gate.
+2. **W31.0 extraction** — extract `ListRow`, `Field`, `ContextPanel`, and
+   `SurfaceTabs` only where a second use exists. `KitGallery` is the gallery
+   entry when that second use appears; do not extract a one-off.
+3. **Tone text literals** — icons now accept `tone`; the remaining
+   `text-blue-*` / `text-purple-*` hover and body labels need a text-tone
+   helper. Do not add a second tone map for them.
+4. **Evidence refresh** — regenerate the gallery after the next visual
+   milestone. Modal surfaces, icon tones, and the new `#/kit` route mean the
+   current captures are older than the code.
+
 
 ---
 
@@ -514,12 +513,12 @@ Do not add a new global context for layout. Do not put note logic in the shell.
 
 ### Composition gallery
 
-Add `ui/dev/KitGallery.tsx` as a dev-only route. It renders:
+`ui/src/dev/KitGallery.tsx`, available at `#/kit` or `?kit=1`. It renders:
 
 - tokens and sample type at three widths;
 - primitives and states: default, hover, focus, disabled, error, loading;
-- patterns and presentational surfaces: `WorkspaceFrame`, `PageSurface`,
-  `NoteIndexPanel`, `ListRow`, `ArrangeMenu`, `ContextPanel`;
+- patterns and presentational surfaces: `PageSurface`, `PageTitle`, `PageMeta`,
+  `DetailChips`, `FeedRow`, `IdentityStrip`, `ArrangeMenu`, `SettingsSection`;
 - both themes and both densities.
 
 No app state, no router, no notes store. Fixed fixtures. Use it to compose the

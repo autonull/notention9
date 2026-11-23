@@ -180,12 +180,12 @@ export function RelayDiscoverySection({settings, setSettings}: RelayDiscoverySec
                                                 </span>
                                             )}
                                             {relay.source === 'builtin' && (
-                                                <span className="text-xs text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">
+                                                <span className="text-xs text-[var(--app-accent-text)] bg-[var(--app-accent-soft)] px-1.5 py-0.5 rounded">
                                                     Built-in
                                                 </span>
                                             )}
                                             {relay.source === 'user' && (
-                                                <span className="text-xs text-purple-400 bg-purple-500/10 px-1.5 py-0.5 rounded">
+                                                <span className="text-xs text-[var(--app-accent-text)] bg-[var(--app-accent-soft)] px-1.5 py-0.5 rounded">
                                                     User
                                                 </span>
                                             )}

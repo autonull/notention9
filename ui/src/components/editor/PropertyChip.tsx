@@ -59,9 +59,20 @@ export function PropertyChip({node}: PropertyViewProps) {
     const invalidClasses = "bg-red-900/30 border-red-700/50 hover:bg-red-900/50 hover:border-red-600 text-red-100";
     const customClasses = "bg-amber-900/20 border-amber-700/40 hover:bg-amber-900/40 hover:border-amber-600/60 text-amber-100";
 
+    const openEditor = (event: React.SyntheticEvent) => {
+        event.preventDefault();
+        event.stopPropagation();
+        window.dispatchEvent(new CustomEvent('edit-property', {
+            detail: {propertyId, key: name, operator, value, icon},
+        }));
+    };
+
     return (
         <NodeViewWrapper
             as="span"
+            role="button"
+            tabIndex={0}
+            aria-label={`Edit detail ${name} ${operator} ${value}`}
             className={`${baseClasses} ${!validation.isValid && !customValue ? invalidClasses : customValue ? customClasses : validClasses}`}
             data-property-id={propertyId ?? undefined}
             onPointerDown={(event: React.PointerEvent) => {
@@ -73,11 +84,11 @@ export function PropertyChip({node}: PropertyViewProps) {
             }}
             onClick={(event: React.MouseEvent) => {
                 if (event.detail !== 0) return;
-                event.preventDefault();
-                event.stopPropagation();
-                window.dispatchEvent(new CustomEvent('edit-property', {
-                    detail: {propertyId, key: name, operator, value, icon},
-                }));
+                openEditor(event);
+            }}
+            onKeyDown={(event: React.KeyboardEvent) => {
+                if (event.key !== 'Enter' && event.key !== ' ') return;
+                openEditor(event);
             }}
             title={
                 !validation.isValid && !customValue

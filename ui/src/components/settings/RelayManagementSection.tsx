@@ -138,7 +138,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
     return (
         <div className="border-t border-[var(--app-line)] pt-6">
             <h2 className="text-[15px] font-semibold tracking-[-0.01em] text-[var(--app-text)] mb-4 flex items-center gap-3">
-                <NetworkIcon className="h-6 w-6 text-purple-400"/>
+                <NetworkIcon tone="accent" className="h-6 w-6"/>
                 Network Relays
             </h2>
             <div className="space-y-4 max-w-lg">

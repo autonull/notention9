@@ -92,9 +92,14 @@ export function usePropertyInsertion() {
     };
 
     const handleClosePropertyModal = () => {
+        const id = editingPropertyId;
         setIsPropertyModalOpen(false);
         setEditingPropertyId(null);
         setInitialModalData(undefined);
+        if (!id) return;
+        requestAnimationFrame(() => {
+            document.querySelector<HTMLElement>(`[data-property-id="${CSS.escape(id)}"]`)?.focus();
+        });
     };
 
     const handlePrepareNewProperty = () => {

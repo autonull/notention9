@@ -34,11 +34,15 @@ if (!rootElement) {
     throw new Error('Could not find root element to mount to');
 }
 
+const KitGallery = React.lazy(() => import('./dev/KitGallery'));
+const kitRequested = typeof window !== 'undefined' &&
+    (window.location.hash === '#/kit' || new URLSearchParams(window.location.search).get('kit') === '1');
+
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-    <UIProvider>
-        <App/>
-    </UIProvider>
+    kitRequested
+        ? <React.Suspense fallback={null}><KitGallery/></React.Suspense>
+        : <UIProvider><App/></UIProvider>
 );
 
 // Enhanced focus management for keyboard navigation

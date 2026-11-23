@@ -74,7 +74,7 @@ export function AccessibilityTab() {
                 </p>
                 <div className="flex items-center justify-between p-4 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]/50">
                     <div className="flex items-center gap-3">
-                        <div className="p-2 bg-[var(--app-raised)] rounded-lg text-blue-400">
+                        <div className="p-2 bg-[var(--app-raised)] rounded-lg text-[var(--app-accent-text)]">
                             <SparklesIcon className="w-5 h-5" />
                         </div>
                         <div>
@@ -155,7 +155,7 @@ export function AccessibilityTab() {
                         { label: 'High confidence', icon: <CheckIcon className="w-4 h-4" />, color: 'text-green-400', bg: 'bg-green-900/30', border: 'border-green-700/50' },
                         { label: 'Medium confidence', icon: <MinusIcon className="w-4 h-4" />, color: 'text-yellow-400', bg: 'bg-yellow-900/30', border: 'border-yellow-700/50' },
                         { label: 'Low confidence', icon: <SparklesIcon className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-900/30', border: 'border-red-700/50' },
-                        { label: 'Focus source', icon: <ShieldIcon className="w-4 h-4" />, color: 'text-blue-400', bg: 'bg-blue-900/30', border: 'border-blue-700/50' },
+                        { label: 'Focus source', icon: <ShieldIcon className="w-4 h-4" />, color: 'text-[var(--app-accent-text)]', bg: 'bg-blue-900/30', border: 'border-blue-700/50' },
                     ].map((item, i) => (
                         <div key={i} className={`px-3 py-2 rounded-lg border ${item.bg} ${item.border} flex items-center gap-2`}>
                             <span className={item.color}>{item.icon}</span>

@@ -157,7 +157,7 @@ export function DataTab() {
             {quotaInfo && quotaInfo.percentUsed >= 80 && (
                 <div className="border-t border-[var(--app-line)] pt-6">
                     <div className="flex items-center gap-3 p-4 bg-amber-900/30 border border-amber-700 rounded-lg">
-                        <ExclamationTriangleIcon className="h-6 w-6 text-amber-400 flex-shrink-0"/>
+                        <ExclamationTriangleIcon tone="warning" className="h-6 w-6 flex-shrink-0"/>
                         <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-amber-300">Storage quota warning</p>
                             <p className="text-xs text-amber-500 mt-1">

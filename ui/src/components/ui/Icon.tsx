@@ -1,18 +1,28 @@
 import React from 'react';
+import type {Tone} from '../../styles/tone';
 
-export type IconProps = React.SVGProps<SVGSVGElement> & { title?: string };
+export type IconProps = React.SVGProps<SVGSVGElement> & { title?: string; tone?: Tone };
+
+const TONE_TEXT: Record<Tone, string> = {
+    neutral: 'text-[var(--app-muted)]',
+    accent: 'text-[var(--app-accent-text)]',
+    success: 'text-emerald-400',
+    warning: 'text-amber-400',
+    danger: 'text-red-400',
+};
 
 export function BaseIcon({
-                                                                                                                  className,
-                                                                                                                  children,
-                                                                                                                  fill = "none",
-                                                                                                                  stroke = "currentColor",
-                                                                                                                  viewBox = "0 0 24 24",
-                                                                                                                  ...props
-                                                                                                              }: IconProps & { children: React.ReactNode; fill?: string; stroke?: string }) { return (
+    className,
+    children,
+    tone,
+    fill = "none",
+    stroke = "currentColor",
+    viewBox = "0 0 24 24",
+    ...props
+}: IconProps & { children: React.ReactNode; fill?: string; stroke?: string }) { return (
     <svg
         xmlns="http://www.w3.org/2000/svg"
-        className={className}
+        className={[tone ? TONE_TEXT[tone] : '', className].filter(Boolean).join(' ')}
         fill={fill}
         viewBox={viewBox}
         stroke={stroke}

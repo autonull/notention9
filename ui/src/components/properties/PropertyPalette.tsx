@@ -2,6 +2,7 @@ import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {OntologyNode, SuggestedAttribute} from '@notention/core';
 import {SearchIcon, SparklesIcon, PlusIcon, TagIcon} from '../ui/icons';
 import {Input} from '../ui/Input';
+import {Modal} from '../ui/Modal';
 import {useListNavigation} from '../../hooks/useListNavigation';
 import {buildPropertyOptions, filterPropertyOptions, renderPropertyOption} from './propertyUtils';
 
@@ -76,80 +77,82 @@ export function PropertyPalette({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-[110] flex items-start justify-center pt-[20vh] bg-transparent" onClick={onClose}>
-            <div
-                className="bg-neutral-800 rounded-xl shadow-2xl border border-neutral-700 w-80 overflow-hidden flex flex-col transform transition-all animate-fade-in-up"
-                onClick={e => e.stopPropagation()}
-                style={{maxHeight: '400px'}}
-            >
-                <div className="p-3 border-b border-neutral-700 bg-neutral-800/95 backdrop-blur">
-                    <Input
-                        ref={inputRef}
-                        type="text"
-                        value={filter}
-                        onChange={(e) => {
-                            setFilter(e.target.value);
-                            setSelectedIndex(0);
-                        }}
-                        onKeyDown={handleKeyDown}
-                        placeholder="Search properties..."
-                        icon={SearchIcon}
-                        className="w-full text-sm"
-                        autoFocus
-                    />
-                </div>
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            placement="top"
+            size="sm"
+            showCloseButton={false}
+            className="w-80 max-w-[calc(100vw-2rem)]"
+            bodyVariant="flush"
+        >
+            <div className="border-b border-[var(--app-line)] p-3">
+                <Input
+                    ref={inputRef}
+                    type="text"
+                    value={filter}
+                    onChange={(e) => {
+                        setFilter(e.target.value);
+                        setSelectedIndex(0);
+                    }}
+                    onKeyDown={handleKeyDown}
+                    placeholder="Search properties..."
+                    icon={SearchIcon}
+                    className="w-full text-sm"
+                    autoFocus
+                />
+            </div>
 
-                <div className="overflow-y-auto flex-1 p-1 custom-scrollbar">
-                    {filtered.map((prop, i) => (
-                        <button
-                            key={prop.key}
-                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${i === selectedIndex ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'}`}
-                            onClick={() => handleSelect(prop.key)}
-                            onMouseEnter={() => setSelectedIndex(i)}
-                        >
-                            <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
-                                {prop.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : prop.icon || <TagIcon className="w-4 h-4 text-neutral-400" />}
-                            </span>
-                            <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between">
-                                    <span className="font-medium truncate text-sm">{prop.key}</span>
-                                    {prop.isLearned && prop.frequency && (
-                                        <span className="text-xs bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
-                                            {prop.frequency}
-                                        </span>
-                                    )}
-                                </div>
-                                {prop.description && (
-                                    <div className="text-xs text-neutral-400 truncate">{prop.description}</div>
+            <div className="max-h-[400px] overflow-y-auto p-1 custom-scrollbar">
+                {filtered.map((prop, i) => (
+                    <button
+                        key={prop.key}
+                        className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors border ${i === selectedIndex ? 'bg-[var(--app-accent-soft)] text-[var(--app-accent-text)] border-[var(--app-accent-line)]' : 'text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)] border-transparent'}`}
+                        onClick={() => handleSelect(prop.key)}
+                        onMouseEnter={() => setSelectedIndex(i)}
+                    >
+                        <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
+                            {prop.isLearned ? <SparklesIcon className="w-4 h-4 text-[var(--app-accent-text)]" /> : prop.icon || <TagIcon className="w-4 h-4 text-[var(--app-faint)]" />}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between">
+                                <span className="font-medium truncate text-sm">{prop.key}</span>
+                                {prop.isLearned && prop.frequency && (
+                                    <span className="text-xs bg-[var(--app-accent-soft)] text-[var(--app-accent-text)] px-1.5 py-0.5 rounded-full border border-[var(--app-accent-line)]">
+                                        {prop.frequency}
+                                    </span>
                                 )}
                             </div>
-                        </button>
-                    ))}
-
-                    {filter && (
-                        <button
-                            className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${selectedIndex === filtered.length ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30' : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'}`}
-                            onClick={() => handleSelect(filter)}
-                            onMouseEnter={() => setSelectedIndex(filtered.length)}
-                        >
-                            <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
-                                <PlusIcon className="w-4 h-4 text-green-400" />
-                            </span>
-                            <div className="flex-1 min-w-0">
-                                <div className="font-medium truncate text-sm text-green-400">Create "{filter}"</div>
-                                <div className="text-xs text-neutral-400 truncate">Add as new custom property</div>
-                            </div>
-                        </button>
-                    )}
-
-                    {filtered.length === 0 && !filter && (
-                        <div className="flex flex-col items-center justify-center py-8 text-neutral-400 gap-2">
-                            <SearchIcon className="w-6 h-6 opacity-30" />
-                            <span className="text-xs">Type to search...</span>
+                            {prop.description && (
+                                <div className="text-xs text-[var(--app-muted)] truncate">{prop.description}</div>
+                            )}
                         </div>
-                    )}
-                </div>
+                    </button>
+                ))}
+
+                {filter && (
+                    <button
+                        className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors border ${selectedIndex === filtered.length ? 'bg-[var(--app-accent-soft)] text-[var(--app-accent-text)] border-[var(--app-accent-line)]' : 'text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)] border-transparent'}`}
+                        onClick={() => handleSelect(filter)}
+                        onMouseEnter={() => setSelectedIndex(filtered.length)}
+                    >
+                        <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center">
+                            <PlusIcon className="w-4 h-4 text-[var(--app-accent-text)]" />
+                        </span>
+                        <div className="flex-1 min-w-0">
+                            <div className="font-medium truncate text-sm text-[var(--app-accent-text)]">Create "{filter}"</div>
+                            <div className="text-xs text-[var(--app-muted)] truncate">Add as new custom property</div>
+                        </div>
+                    </button>
+                )}
+
+                {filtered.length === 0 && !filter && (
+                    <div className="flex flex-col items-center justify-center gap-2 py-8 text-[var(--app-muted)]">
+                        <SearchIcon className="w-6 h-6 opacity-30" />
+                        <span className="text-xs">Type to search...</span>
+                    </div>
+                )}
             </div>
-        </div>
+        </Modal>
     );
 }

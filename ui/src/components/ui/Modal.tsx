@@ -9,9 +9,12 @@ export interface ModalProps {
     title?: string;
     description?: string;
     children: React.ReactNode;
+    footer?: React.ReactNode;
     size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+    placement?: 'center' | 'top';
     closeOnOverlayClick?: boolean;
     showCloseButton?: boolean;
+    bodyVariant?: 'default' | 'flush';
     className?: string;
 }
 
@@ -21,10 +24,13 @@ export function Modal({
     title,
     description,
     children,
+    footer,
     size = 'md',
+    placement = 'center',
     closeOnOverlayClick = true,
     showCloseButton = true,
     className = '',
+    bodyVariant = 'default',
 }: ModalProps) {
     const contentRef = useFocusTrap(isOpen, onClose);
     const tokens = componentTokens.modal;
@@ -44,7 +50,10 @@ export function Modal({
 
     return (
         <div
-            className="fixed inset-0 z-[500] flex items-center justify-center p-4"
+            className={cn(
+                'fixed inset-0 z-[500] flex justify-center p-4',
+                placement === 'top' ? 'items-start pt-[15vh]' : 'items-center',
+            )}
             role="dialog"
             aria-modal="true"
             aria-labelledby={title ? 'modal-title' : undefined}
@@ -68,12 +77,12 @@ export function Modal({
                     <div className={tokens.header}>
                         <div>
                             {title && (
-                                <h2 id="modal-title" className="text-lg font-semibold text-white">
+                                <h2 id="modal-title" className="text-lg font-semibold text-[var(--app-text)]">
                                     {title}
                                 </h2>
                             )}
                             {description && (
-                                <p id="modal-description" className="mt-1 text-sm text-neutral-400">
+                                <p id="modal-description" className="mt-1 text-sm text-[var(--app-muted)]">
                                     {description}
                                 </p>
                             )}
@@ -91,9 +100,14 @@ export function Modal({
                         )}
                     </div>
                 )}
-                <div className={tokens.body}>
+                <div className={bodyVariant === 'flush' ? tokens.bodyFlush : tokens.body}>
                     {children}
                 </div>
+                {footer && (
+                    <div className={tokens.footer}>
+                        {footer}
+                    </div>
+                )}
             </div>
         </div>
     );

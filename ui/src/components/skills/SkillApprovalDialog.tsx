@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { XIcon, CheckCircleIcon, ExclamationTriangleIcon, ShieldIcon, GlobeIcon, KeyIcon } from '../ui/icons';
-import { Button } from '../ui/Button';
-import { cn } from '../../utils/ui';
+import React, {useState} from 'react';
+import {CheckCircleIcon, ExclamationTriangleIcon, ShieldIcon, GlobeIcon, KeyIcon} from '../ui/icons';
+import {Button} from '../ui/Button';
+import {Modal} from '../ui/Modal';
 
 export interface SkillApprovalDialogProps {
     isOpen: boolean;
@@ -22,6 +22,8 @@ export interface SkillApprovalDialogProps {
     preview?: string;
 }
 
+const PANEL = 'rounded-lg border border-[var(--app-line)] bg-[var(--app-raised)] p-3';
+
 export function SkillApprovalDialog({
     isOpen,
     onClose,
@@ -36,209 +38,148 @@ export function SkillApprovalDialog({
     preview
 }: SkillApprovalDialogProps) {
     const [autoExecute, setAutoExecute] = useState(false);
-    const [focusedElement, setFocusedElement] = useState<'approve' | 'reject' | 'autoExecute' | null>(null);
-
-    useEffect(() => {
-        if (isOpen) {
-            document.body.style.overflow = 'hidden';
-            setFocusedElement('reject');
-        } else {
-            document.body.style.overflow = '';
-        }
-        return () => {
-            document.body.style.overflow = '';
-        };
-    }, [isOpen]);
-
-    useEffect(() => {
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!isOpen) return;
-            
-            if (e.key === 'Escape') {
-                e.preventDefault();
-                onClose();
-            } else if (e.key === 'Enter' && focusedElement) {
-                if (focusedElement === 'approve') {
-                    onApprove(autoExecute);
-                } else if (focusedElement === 'reject') {
-                    onReject();
-                }
-            } else if (e.key === 'Tab') {
-                e.preventDefault();
-                const elements = ['reject', 'autoExecute', 'approve'] as const;
-                const currentIndex = focusedElement ? elements.indexOf(focusedElement) : -1;
-                const nextIndex = (currentIndex + 1) % elements.length;
-                setFocusedElement(elements[nextIndex]);
-            }
-        };
-
-        document.addEventListener('keydown', handleKeyDown);
-        return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [isOpen, focusedElement, autoExecute, onApprove, onReject, onClose]);
-
-    if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="approval-title">
-            <div className="w-full max-w-2xl bg-neutral-900 border border-neutral-700 rounded-xl shadow-2xl overflow-hidden animate-slide-up">
-                <div className="flex items-start justify-between p-4 border-b border-neutral-700 bg-neutral-800/50">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-yellow-500/20 text-yellow-400">
-                            <ExclamationTriangleIcon className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <h2 id="approval-title" className="text-lg font-bold text-white">Approval Required</h2>
-                            <p className="text-sm text-neutral-400">{skillName} wants to perform actions</p>
-                        </div>
-                    </div>
-                    <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={onClose}
-                        className="text-neutral-400 hover:text-white hover:bg-neutral-700"
-                        aria-label="Close dialog"
-                    >
-                        <XIcon className="w-5 h-5" />
-                    </Button>
-                </div>
-
-                <div className="max-h-[70vh] overflow-y-auto p-4 space-y-4">
-                    <div className="space-y-2">
-                        <h3 className="font-medium text-white">{skillName}</h3>
-                        <p className="text-sm text-neutral-400">{skillDescription}</p>
-                    </div>
-
-                    {preview && (
-                        <div className="p-3 bg-neutral-800 rounded-lg border border-neutral-700">
-                            <h4 className="font-medium text-neutral-300 mb-2 flex items-center gap-2">
-                                <ShieldIcon className="w-4 h-4 text-blue-400" />
-                                What will happen
-                            </h4>
-                            <p className="text-sm text-neutral-400 whitespace-pre-wrap">{preview}</p>
-                        </div>
-                    )}
-
-                    <div className="space-y-3">
-                        <h4 className="font-medium text-neutral-300 flex items-center gap-2">
-                            <GlobeIcon className="w-4 h-4 text-purple-400" />
-                            Capability Scope
-                        </h4>
-                        
-                        <div className="grid gap-2 sm:grid-cols-2">
-                            <div className="p-3 bg-neutral-800 rounded-lg border border-neutral-700">
-                                <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
-                                    <GlobeIcon className="w-3 h-3" /> External Domains
-                                </div>
-                                <div className="text-sm text-neutral-300">
-                                    {domains.length > 0 ? (
-                                        <ul className="space-y-1">
-                                            {domains.map(domain => (
-                                                <li key={domain} className="flex items-center gap-1">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-purple-500" />
-                                                    {domain}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    ) : (
-                                        <span className="text-neutral-400">None (local only)</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="p-3 bg-neutral-800 rounded-lg border border-neutral-700">
-                                <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
-                                    <KeyIcon className="w-3 h-3" /> Authentication
-                                </div>
-                                <div className="text-sm">
-                                    {requiresAuth ? (
-                                        <span className="text-yellow-400 flex items-center gap-1">
-                                            <ShieldIcon className="w-3 h-3" /> Required
-                                        </span>
-                                    ) : (
-                                        <span className="text-green-400">Not required</span>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="p-3 bg-neutral-800 rounded-lg border border-neutral-700 sm:col-span-2">
-                                <div className="flex items-center gap-2 text-xs text-neutral-400 mb-1">
-                                    <CheckCircleIcon className="w-3 h-3" /> Expected Outcome
-                                </div>
-                                <div className="text-sm text-neutral-300">{expectedOutcome || 'No specific outcome described'}</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="space-y-3">
-                        <h4 className="font-medium text-neutral-300 flex items-center gap-2">
-                            <ShieldIcon className="w-4 h-4 text-green-400" />
-                            Actions to Execute
-                        </h4>
-                        <div className="space-y-2 max-h-60 overflow-y-auto">
-                            {actions.map((action, index) => (
-                                <div key={index} className="p-3 bg-neutral-800 rounded-lg border border-neutral-700 flex items-start gap-3">
-                                    <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center">
-                                        <span className="text-xs font-mono text-blue-400">{index + 1}</span>
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="font-medium text-neutral-200 capitalize">{action.type}</div>
-                                        <div className="text-sm text-neutral-400 truncate">{action.description}</div>
-                                        {action.url && (
-                                            <div className="text-xs text-blue-400 truncate mt-1">{action.url}</div>
-                                        )}
-                                        {action.selector && (
-                                            <div className="text-xs text-neutral-400 font-mono mt-1">{action.selector}</div>
-                                        )}
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-4 border-t border-neutral-700 bg-neutral-800/50 space-y-3">
-                    <label className="flex items-center gap-3 cursor-pointer">
+        <Modal
+            isOpen={isOpen}
+            onClose={onClose}
+            title="Approval Required"
+            description={`${skillName} wants to perform actions`}
+            size="xl"
+            closeOnOverlayClick={false}
+            footer={
+                <div className="space-y-3">
+                    <label className="flex cursor-pointer items-center gap-3">
                         <input
                             type="checkbox"
                             checked={autoExecute}
                             onChange={e => setAutoExecute(e.target.checked)}
-                            className="w-4 h-4 rounded border-neutral-600 bg-neutral-800 text-blue-500 focus:ring-blue-500"
+                            className="h-4 w-4 rounded border-[var(--app-line-strong)] bg-[var(--app-panel)] accent-[var(--app-accent)]"
                             id="auto-execute"
                         />
-                        <span className="text-sm text-neutral-300">
+                        <span className="text-sm text-[var(--app-text-secondary)]">
                             Remember this choice and auto-execute in the future
                         </span>
                     </label>
 
-                    <div className="flex justify-end gap-3 pt-2">
-                        <Button
-                            variant="secondary"
-                            onClick={onReject}
-                            ref={el => { if (focusedElement === 'reject') el?.focus(); }}
-                            className={cn(focusedElement === 'reject' && 'ring-2 ring-blue-500')}
-                        >
+                    <div className="flex justify-end gap-3 pt-1">
+                        <Button variant="secondary" onClick={onReject}>
                             Reject
                         </Button>
                         <Button
                             variant="ghost"
                             size="sm"
-                            onClick={() => setAutoExecute(!autoExecute)}
-                            ref={el => { if (focusedElement === 'autoExecute') el?.focus(); }}
-                            className={cn(focusedElement === 'autoExecute' && 'ring-2 ring-blue-500')}
+                            onClick={() => setAutoExecute(value => !value)}
                         >
                             {autoExecute ? '✓' : '☐'} Auto-execute
                         </Button>
-                        <Button
-                            variant="primary"
-                            onClick={() => onApprove(autoExecute)}
-                            ref={el => { if (focusedElement === 'approve') el?.focus(); }}
-                            className={cn(focusedElement === 'approve' && 'ring-2 ring-blue-500')}
-                        >
-                            Approve & Execute
+                        <Button variant="primary" onClick={() => onApprove(autoExecute)}>
+                            Approve &amp; Execute
                         </Button>
                     </div>
                 </div>
+            }
+        >
+            <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                    <div className="rounded-lg bg-amber-500/10 p-2 text-amber-400">
+                        <ExclamationTriangleIcon className="h-5 w-5"/>
+                    </div>
+                    <div className="space-y-1">
+                        <h3 className="font-medium text-[var(--app-text)]">{skillName}</h3>
+                        <p className="text-sm text-[var(--app-muted)]">{skillDescription}</p>
+                    </div>
+                </div>
+
+                {preview && (
+                    <div className={PANEL}>
+                        <h4 className="mb-2 flex items-center gap-2 font-medium text-[var(--app-text-secondary)]">
+                            <ShieldIcon className="h-4 w-4 text-[var(--app-accent-text)]"/>
+                            What will happen
+                        </h4>
+                        <p className="whitespace-pre-wrap text-sm text-[var(--app-muted)]">{preview}</p>
+                    </div>
+                )}
+
+                <div className="space-y-3">
+                    <h4 className="flex items-center gap-2 font-medium text-[var(--app-text-secondary)]">
+                        <GlobeIcon className="h-4 w-4 text-[var(--app-accent-text)]"/>
+                        Capability Scope
+                    </h4>
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                        <div className={PANEL}>
+                            <div className="mb-1 flex items-center gap-2 text-xs text-[var(--app-muted)]">
+                                <GlobeIcon className="h-3 w-3"/> External Domains
+                            </div>
+                            <div className="text-sm text-[var(--app-text-secondary)]">
+                                {domains.length > 0 ? (
+                                    <ul className="space-y-1">
+                                        {domains.map(domain => (
+                                            <li key={domain} className="flex items-center gap-1">
+                                                <span className="h-1.5 w-1.5 rounded-full bg-[var(--app-accent)]"/>
+                                                {domain}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <span className="text-[var(--app-muted)]">None (local only)</span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={PANEL}>
+                            <div className="mb-1 flex items-center gap-2 text-xs text-[var(--app-muted)]">
+                                <KeyIcon className="h-3 w-3"/> Authentication
+                            </div>
+                            <div className="text-sm">
+                                {requiresAuth ? (
+                                    <span className="flex items-center gap-1 text-amber-400">
+                                        <ShieldIcon className="h-3 w-3"/> Required
+                                    </span>
+                                ) : (
+                                    <span className="text-emerald-400">Not required</span>
+                                )}
+                            </div>
+                        </div>
+
+                        <div className={`${PANEL} sm:col-span-2`}>
+                            <div className="mb-1 flex items-center gap-2 text-xs text-[var(--app-muted)]">
+                                <CheckCircleIcon className="h-3 w-3"/> Expected Outcome
+                            </div>
+                            <div className="text-sm text-[var(--app-text-secondary)]">
+                                {expectedOutcome || 'No specific outcome described'}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <h4 className="flex items-center gap-2 font-medium text-[var(--app-text-secondary)]">
+                        <ShieldIcon className="h-4 w-4 text-emerald-400"/>
+                        Actions to Execute
+                    </h4>
+                    <div className="max-h-60 space-y-2 overflow-y-auto custom-scrollbar">
+                        {actions.map((action, index) => (
+                            <div key={index} className={`${PANEL} flex items-start gap-3`}>
+                                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg bg-[var(--app-accent-soft)]">
+                                    <span className="font-mono text-xs text-[var(--app-accent-text)]">{index + 1}</span>
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                    <div className="font-medium capitalize text-[var(--app-text)]">{action.type}</div>
+                                    <div className="truncate text-sm text-[var(--app-muted)]">{action.description}</div>
+                                    {action.url && (
+                                        <div className="mt-1 truncate text-xs text-[var(--app-accent-text)]">{action.url}</div>
+                                    )}
+                                    {action.selector && (
+                                        <div className="mt-1 truncate font-mono text-xs text-[var(--app-muted)]">{action.selector}</div>
+                                    )}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
-        </div>
+        </Modal>
     );
 }
