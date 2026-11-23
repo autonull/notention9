@@ -257,7 +257,7 @@ export function RelayDiscoverySection({settings, setSettings}: RelayDiscoverySec
                     <Button
                         onClick={handleAddRelay}
                         disabled={!newRelay}
-                        className="bg-purple-600 hover:bg-purple-500 text-[var(--app-text)]"
+                        className="bg-[var(--app-accent)] hover:opacity-90 text-[var(--app-text)]"
                         icon={PlusIcon}
                     >
                         Add Custom Relay

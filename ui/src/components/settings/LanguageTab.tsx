@@ -74,7 +74,7 @@ export function LanguageTab() {
                             key={lang.code}
                             className={`p-3 rounded-lg border transition-all ${
                                 language === lang.code
-                                    ? 'bg-blue-900/30 border-blue-500/50'
+                                    ? 'bg-[var(--app-accent-soft)] border-[var(--app-accent-line)]'
                                     : 'bg-[var(--app-raised)] border-[var(--app-line)]/50 hover:border-[var(--app-line-strong)]'
                             }`}
                         >

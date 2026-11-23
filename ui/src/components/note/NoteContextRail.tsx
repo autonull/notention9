@@ -8,6 +8,7 @@ import type {UseNextStepsReturn} from '../../hooks/useNextSteps';
 import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
 import {SendIcon, SparklesIcon} from '../ui/icons';
+import {Tabs} from '../ui/kit';
 import {cn} from '../../utils/ui';
 import {NextStepStrip} from '../next-steps';
 import {MatchItem} from '../match/MatchItem';
@@ -72,35 +73,17 @@ export function NoteContextRail({
             className={cn('flex h-full min-h-0 flex-col bg-[var(--app-panel)]', className)}
             aria-label="Note context"
         >
-            <div
-                className="flex h-9 shrink-0 items-center gap-0.5 overflow-x-auto border-b border-[var(--app-line)] px-1.5"
-                role="tablist"
-                aria-label="Note context"
-            >
-                {NOTE_RAIL_TABS.map(tab => {
-                    const count = tab.id === 'matches' ? matches.length : tab.id === 'replies' ? replies.length : 0;
-                    return (
-                        <button
-                            key={tab.id}
-                            type="button"
-                            role="tab"
-                            aria-selected={noteTab === tab.id}
-                            onClick={() => setNoteTab(tab.id)}
-                            className={cn(
-                                'relative flex h-full shrink-0 items-center gap-1 border-b-2 px-1.5 text-[12px] font-medium transition-colors',
-                                noteTab === tab.id
-                                    ? 'border-[var(--app-accent)] text-[var(--app-text)]'
-                                    : 'border-transparent text-[var(--app-muted)] hover:text-[var(--app-text-secondary)]'
-                            )}
-                        >
-                            {tab.label}
-                            {count > 0 && (
-                                <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{count}</span>
-                            )}
-                        </button>
-                    );
-                })}
-            </div>
+            <Tabs
+                options={NOTE_RAIL_TABS.map(tab => ({
+                    ...tab,
+                    count: tab.id === 'matches' ? matches.length : tab.id === 'replies' ? replies.length : undefined,
+                }))}
+                value={noteTab}
+                onChange={setNoteTab}
+                label="Note context"
+                size="sm"
+                className="h-9 shrink-0 gap-1 border-b border-[var(--app-line)] px-1.5"
+            />
 
             <div className="min-h-0 flex-1 overflow-y-auto p-3 custom-scrollbar">
                 {noteTab === 'next' && (

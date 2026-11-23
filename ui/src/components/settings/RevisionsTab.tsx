@@ -7,12 +7,12 @@ import {SectionHeader} from '../ui/kit';
 const STATUS_COLORS: Record<string, string> = {
     draft: 'text-[var(--app-muted)] bg-[var(--app-raised)]',
     evaluating: 'text-yellow-400 bg-yellow-900/30',
-    evaluated: 'text-blue-400 bg-blue-900/30',
+    evaluated: 'text-[var(--app-accent-text)] bg-[var(--app-accent-soft)]',
     'awaiting-consent': 'text-orange-400 bg-orange-900/30',
     consented: 'text-green-400 bg-green-900/30',
     active: 'text-green-300 bg-green-900/40',
     'rolled-back': 'text-red-400 bg-red-900/30',
-    superseded: 'text-purple-400 bg-purple-900/30',
+    superseded: 'text-[var(--app-accent-text)] bg-[var(--app-accent-soft)]',
     rejected: 'text-red-400 bg-red-900/30',
 };
 
@@ -77,7 +77,7 @@ function renderVerdictSummary(verdict?: VerdictSummary) {
     
     return (
         <details className="group">
-            <summary className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+            <summary className="cursor-pointer text-sm text-[var(--app-accent-text)] hover:text-[var(--app-text)] flex items-center gap-1">
                 <span>Verdict Summary</span>
                 <span className="text-[var(--app-muted)]">▼</span>
             </summary>
@@ -212,7 +212,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                 <select
                     value={selectedSeam}
                     onChange={e => setSelectedSeam(e.target.value)}
-                    className="flex-1 max-w-xs px-3 py-2 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg text-[var(--app-text)] text-sm focus:outline-none focus:border-blue-500"
+                    className="flex-1 max-w-xs px-3 py-2 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg text-[var(--app-text)] text-sm focus:outline-none focus:border-[var(--app-accent-line)]"
                 >
                     {seamRoles.map(role => (
                         <option key={role} value={role}>&{role.charAt(0).toUpperCase() + role.slice(1)}</option>
@@ -276,7 +276,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
 
                                 <div className="flex items-center gap-2 flex-wrap">
                                     <details className="group">
-                                        <summary className="cursor-pointer text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
+                                        <summary className="cursor-pointer text-sm text-[var(--app-accent-text)] hover:text-[var(--app-text)] flex items-center gap-1">
                                             <span>Params</span>
                                             <span className="text-[var(--app-muted)]">▼</span>
                                         </summary>
@@ -305,7 +305,7 @@ export function RevisionsTab({ userId = 'default-user' }: RevisionsTabProps) {
                                     {revision.status === 'consented' && (
                                         <button
                                             onClick={() => handleActivate(revision.id)}
-                                            className="px-3 py-1.5 text-sm bg-blue-900/50 border border-blue-500 text-blue-300 rounded-lg hover:bg-blue-900 transition-colors"
+                                            className="px-3 py-1.5 text-sm bg-[var(--app-accent-soft)] border border-[var(--app-accent-line)] text-[var(--app-accent-text)] rounded-lg hover:bg-[var(--app-hover)] transition-colors"
                                         >
                                             Activate
                                         </button>

@@ -44,13 +44,13 @@ export function AutomationTab() {
 
             {enabled && (
                 <div className="space-y-4">
-                    <div className="p-3 bg-purple-900/20 border border-purple-800 rounded-lg flex gap-3">
+                    <div className="p-3 bg-[var(--app-accent-soft)] border border-[var(--app-accent-line)] rounded-lg flex gap-3">
                         <CpuChipIcon tone="accent" className="w-6 h-6 flex-shrink-0 mt-0.5"/>
                         <div className="flex-1">
-                            <p className="text-sm text-purple-200 font-medium">Automation Active</p>
-                            <p className="text-xs text-purple-400 mt-1">
+                            <p className="text-sm text-[var(--app-accent-text)] font-medium">Automation Active</p>
+                            <p className="text-xs text-[var(--app-accent-text)] mt-1">
                                 The assistant will process notes in the background. You can create automation rules in the
-                                <span className="text-blue-400 underline">Actions</span> view.
+                                <span className="text-[var(--app-accent-text)] underline">Actions</span> view.
                             </p>
                         </div>
                     </div>
@@ -113,7 +113,7 @@ export function AutomationTab() {
                             <div className="p-3 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)]">
                                 <h4 className="font-medium text-[var(--app-text)] mb-2">Automation Rules</h4>
                                 <p className="text-[12px] text-[var(--app-muted)] mb-3">
-                                    Create <code className="text-blue-400">if/then</code> rules that run automatically on your notes.
+                                    Create <code className="text-[var(--app-accent-text)]">if/then</code> rules that run automatically on your notes.
                                 </p>
                                 <Button
                                     variant="secondary"

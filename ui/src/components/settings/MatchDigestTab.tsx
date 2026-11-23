@@ -316,7 +316,7 @@ export function MatchDigestTab() {
                                 onClick={() => setActiveView('text')}
                                 className={cn(
                                     'px-2 py-1 text-xs rounded text-[var(--app-muted)] hover:text-[var(--app-text)]',
-                                    activeView === 'text' && 'bg-blue-900/30 text-blue-400'
+                                    activeView === 'text' && 'bg-[var(--app-accent-soft)] text-[var(--app-accent-text)]'
                                 )}
                             >
                                 Text
@@ -325,7 +325,7 @@ export function MatchDigestTab() {
                                 onClick={() => setActiveView('json')}
                                 className={cn(
                                     'px-2 py-1 text-xs rounded text-[var(--app-muted)] hover:text-[var(--app-text)]',
-                                    activeView === 'json' && 'bg-blue-900/30 text-blue-400'
+                                    activeView === 'json' && 'bg-[var(--app-accent-soft)] text-[var(--app-accent-text)]'
                                 )}
                             >
                                 JSON

@@ -90,7 +90,7 @@ export function AITab({settings, setSettings}: AITabProps) {
                         />
 
                         <div
-                            className="p-3 bg-blue-900/20 border border-blue-800 rounded-lg text-sm text-blue-200 flex gap-2">
+                            className="p-3 bg-[var(--app-accent-soft)] border border-[var(--app-accent-line)] rounded-lg text-sm text-[var(--app-accent-text)] flex gap-2">
                             <CpuChipIcon className="w-5 h-5 flex-shrink-0"/>
                             <div>
                                 <p className="font-bold mb-1">Local Processing</p>

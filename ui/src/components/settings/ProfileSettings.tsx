@@ -161,7 +161,7 @@ export function ProfileSettings() {
                             key={profile.id}
                             className={`p-3 rounded-lg border ${
                                 profile.id === activeProfileId
-                                    ? 'border-blue-500 bg-blue-500/10'
+                                    ? 'border-[var(--app-accent-line)] bg-[var(--app-accent-soft)]'
                                     : 'border-[var(--app-line)]'
                             }`}
                         >

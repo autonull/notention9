@@ -26,7 +26,7 @@ export function OntologyTab() {
                     <h3 className="text-[13px] font-semibold text-[var(--app-text)]">Ontology Graph</h3>
                     <button
                         onClick={handleAddNode}
-                        className="bg-blue-600 hover:bg-blue-700 text-[var(--app-text)] px-3 py-1 rounded text-sm"
+                        className="bg-[var(--app-accent)] hover:opacity-90 text-[var(--app-text)] px-3 py-1 rounded text-sm"
                     >
                         Add Node
                     </button>
@@ -45,7 +45,7 @@ export function OntologyTab() {
                             <div className="mt-2 max-h-60 overflow-y-auto">
                                 {ontology.map((node, index) => (
                                     <div key={node.id} className="py-2 border-b border-[var(--app-line)] last:border-0">
-                                        <div className="font-medium text-blue-300">{node.label}</div>
+                                        <div className="font-medium text-[var(--app-accent-text)]">{node.label}</div>
                                         <div className="text-xs text-[var(--app-muted)]">{node.description}</div>
                                     </div>
                                 ))}

@@ -254,7 +254,7 @@ export function ShortcutsTab() {
                                                             }}
                                                             placeholder="Press keys..."
                                                             autoFocus
-                                                            className="w-48 bg-[var(--app-raised)] border border-blue-500/50 rounded px-2 py-1 text-[var(--app-text)] text-sm focus:outline-none focus:ring-1 focus:ring-blue-500/20"
+                                                            className="w-48 bg-[var(--app-raised)] border border-[var(--app-accent-line)] rounded px-2 py-1 text-[var(--app-text)] text-sm focus:outline-none focus:ring-1 focus:ring-[var(--app-accent)]/20"
                                                         />
                                                         <Button variant="ghost" size="sm" onClick={() => handleSaveEdit(action.id)} className="text-green-400">
                                                             ✓
@@ -274,7 +274,7 @@ export function ShortcutsTab() {
                                                                     onClick={() => handleStartEdit(action)}
                                                                     variant="ghost"
                                                                     size="sm"
-                                                                    className="text-[var(--app-muted)] hover:text-blue-400"
+                                                                    className="text-[var(--app-muted)] hover:text-[var(--app-accent-text)]"
                                                                     aria-label={`Edit shortcut for ${action.label}`}
                                                                     icon={EditIcon}
                                                                 />
@@ -292,7 +292,7 @@ export function ShortcutsTab() {
                                                                 variant="ghost"
                                                                 size="sm"
                                                                 onClick={() => handleStartEdit(action)}
-                                                                className="text-[var(--app-muted)] hover:text-blue-400 px-3 py-1"
+                                                                className="text-[var(--app-muted)] hover:text-[var(--app-accent-text)] px-3 py-1"
                                                             >
                                                                 + Add Shortcut
                                                             </Button>
@@ -336,7 +336,7 @@ export function ShortcutsTab() {
                 <textarea
                     value={importJson}
                     onChange={(e) => setImportJson(e.target.value)}
-                    className="w-full h-32 bg-[var(--app-raised)] border border-[var(--app-line-strong)] rounded px-3 py-2 text-[var(--app-text)] text-sm font-mono focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20"
+                    className="w-full h-32 bg-[var(--app-raised)] border border-[var(--app-line-strong)] rounded px-3 py-2 text-[var(--app-text)] text-sm font-mono focus:outline-none focus:border-[var(--app-accent-line)] focus:ring-1 focus:ring-[var(--app-accent)]/20"
                     placeholder='{"version":1,"shortcuts":[{"actionId":"nav.goToInbox","shortcut":{"key":"1","ctrl":true}}]}'
                 />
             </ConfirmationModal>

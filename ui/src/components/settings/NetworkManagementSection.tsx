@@ -168,7 +168,7 @@ export function NetworkManagementSection() {
                                 <div className="min-w-0 flex-1">
                                     <h4 className="truncate text-sm font-medium text-[var(--app-text)]">{provider.name}</h4>
                                     <p className="mt-0.5 flex items-center gap-1.5 truncate text-meta text-[var(--app-muted)]">
-                                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-blue-400' : 'bg-[var(--app-faint)]'}`}/>
+                                        <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${status.connected ? 'bg-green-500' : provider.enabled ? 'bg-[var(--app-accent)]' : 'bg-[var(--app-faint)]'}`}/>
                                         <span>{statusLabel}</span>
                                         <span className="text-[var(--app-faint)]">·</span>
                                         <span>{publishEnabled ? 'Publishing enabled' : 'Publishing off'}</span>
@@ -196,7 +196,7 @@ export function NetworkManagementSection() {
                                         aria-label={`Enable ${provider.name}`}
                                         aria-checked={provider.enabled}
                                     />
-                                    <div className="h-6 w-11 rounded-full bg-[var(--app-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-[var(--app-line-strong)] after:bg-white after:transition-all after:content-[''] peer-checked:bg-blue-600 peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"/>
+                                    <div className="h-6 w-11 rounded-full bg-[var(--app-raised)] after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-[var(--app-line-strong)] after:bg-white after:transition-all after:content-[''] peer-checked:bg-[var(--app-accent)] peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"/>
                                 </label>
                             </div>
                             {provider.enabled && provider.id === 'meshtastic' && (
@@ -237,7 +237,7 @@ export function NetworkManagementSection() {
                                                     <input
                                                         type="checkbox"
                                                         id="auto-save"
-                                                        className="rounded border-[var(--app-line)] bg-[var(--app-surface)] text-blue-600 focus:ring-blue-500"
+                                                        className="rounded border-[var(--app-line)] bg-[var(--app-surface)] text-[var(--app-accent)] focus:ring-[var(--app-accent)]"
                                                         checked={meshtasticSettings.saveReceivedNotes}
                                                         onChange={(event) => {
                                                             const saveReceivedNotes = event.target.checked;

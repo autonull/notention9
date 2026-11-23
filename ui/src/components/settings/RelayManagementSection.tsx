@@ -173,7 +173,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                                                 disabled={testingRelay === relay}
                                                 variant="ghost"
                                                 size="sm"
-                                                className="text-[var(--app-muted)] hover:text-blue-400"
+                                                className="text-[var(--app-muted)] hover:text-[var(--app-accent-text)]"
                                                 title="Test Relay"
                                                 icon={ArrowPathIcon}
                                             />
@@ -209,7 +209,7 @@ export function RelayManagementSection({settings, setSettings}: RelayManagementS
                     <Button
                         onClick={handleAddRelay}
                         disabled={!newRelay}
-                        className="bg-purple-600 hover:bg-purple-500 text-[var(--app-text)]"
+                        className="bg-[var(--app-accent)] hover:opacity-90 text-[var(--app-text)]"
                         icon={PlusIcon}
                     >
                         Add

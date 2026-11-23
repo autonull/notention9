@@ -109,7 +109,7 @@ export function MetricsTab() {
                         type="checkbox"
                         checked={consent}
                         onChange={(e) => handleConsentChange(e.target.checked)}
-                        className="h-4 w-4 rounded border-[var(--app-line-strong)] text-purple-500 focus:ring-purple-500"
+                        className="h-4 w-4 rounded border-[var(--app-line-strong)] text-[var(--app-accent)] focus:ring-[var(--app-accent)]"
                     />
                     <span className="text-[var(--app-text)]">Enable anonymous metrics collection</span>
                 </label>

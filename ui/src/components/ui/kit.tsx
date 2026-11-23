@@ -90,11 +90,12 @@ interface TabsProps<T extends string> {
     value: T;
     onChange: (id: T) => void;
     label: string;
+    size?: 'sm' | 'md';
     disabled?: (id: T) => boolean;
     className?: string;
 }
 
-export function Tabs<T extends string>({options, value, onChange, label, disabled, className}: TabsProps<T>) {
+export function Tabs<T extends string>({options, value, onChange, label, size = 'md', disabled, className}: TabsProps<T>) {
     return (
         <div
             className={cn('flex min-w-0 items-center gap-4 overflow-x-auto', className)}
@@ -110,7 +111,8 @@ export function Tabs<T extends string>({options, value, onChange, label, disable
                     disabled={disabled?.(option.id)}
                     onClick={() => onChange(option.id)}
                     className={cn(
-                        'relative -mb-px flex h-9 shrink-0 items-center gap-1.5 border-b-2 px-0.5 text-[13px] font-medium transition-colors disabled:opacity-30',
+                        'relative -mb-px flex h-9 shrink-0 items-center gap-1.5 border-b-2 px-0.5 font-medium transition-colors disabled:opacity-30',
+                        size === 'sm' ? 'text-[12px]' : 'text-[13px]',
                         value === option.id
                             ? 'border-[var(--app-accent)] text-[var(--app-text)]'
                             : 'border-transparent text-[var(--app-muted)] hover:text-[var(--app-text-secondary)]'

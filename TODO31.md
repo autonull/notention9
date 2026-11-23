@@ -18,7 +18,7 @@ replaces `editor/property-inspector`.
 
 | Workstream | State | Landed | Still open |
 | :--- | :--- | :--- | :--- |
-| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop, `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel`, `SurfaceTabs` extraction; layer check has no per-file baseline |
+| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop, `Tabs` size variant, `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel` extraction only when a second use exists; layer check has no per-file baseline |
 | W31.1 The page | **Done** | Full-bleed page, editable 30 px title in the page, one 3 rem bar, focus-only formatting row, saved + word count at page end, 17 px body, 88ch left-aligned measure, `PageSurface` / `PageHeader` / `PageTitle` / `PageMeta`; `KitGallery` exercises the page patterns | None |
 | W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, mobile list/page swap, subset/arrangement/order persist, pure `selectIndex` + tests, group axis scoped to Board | None |
 | W31.3 New note is a page | **Done** | `New note` creates and focuses a blank page; capture modal and hero omnibox deleted; `Cmd/Ctrl+N` creates a page; paste-to-capture writes into a page | None |
@@ -26,7 +26,7 @@ replaces `editor/property-inspector`.
 | W31.5 One context rail | **Done** | Four top-level tabs (`Next`, `Matches`, `Replies`, `Chat`), nested toggle removed, rail closed when empty, auto-open when context exists, percentage share and resizer, `Context` control with count | Mobile uses a bottom pane, not a labelled bottom sheet with a drag handle |
 | W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing, Board groups by status or none | None |
 | W31.7 Explore, search, chat | **Done** | `IdentityStrip` / `FeedRow` patterns; relay health is a chip with a click-to-open panel; one filter row (domains + input, no label, no tag row); feed rows with one property line and one action row; read-only feed is one line; chat list uses `FeedRow`, conversation carries app typography and one composer; palette scopes come from `PALETTE_SCOPES`; `RelayStatusBanner` and `DiscoveredProperties` deleted | None |
-| W31.8 Settings, overlays, status | **Done** | `SettingsDirectory` + `SettingsSection` patterns; `SettingsView` is directory + panel + tab switch; one `SectionHeader` at 15 px (optional 14 px icon) for every tab; tab cards and `animate-fade-in` removed; settings surfaces and copy on tokens with no `neutral-*`; `styles/tone.ts` tone map used by `Chip`, `Toast`, `ConnectivityBanner`, `DegradedModeBanner`, and icons; dead `Popover`, `Drawer`, `Dropdown`, `CommandPalette`, `ConfirmationDialog`, `EnhancedCommandPalette`, `VirtualizedList`, `PrivacyControl` and their tests deleted | One dozen literal `text-blue-*` / `text-purple-*` hover and body labels remain in settings; route them when a text-tone helper lands |
+| W31.8 Settings, overlays, status | **Done** | `SettingsDirectory` + `SettingsSection` patterns; `SettingsView` is directory + panel + tab switch; one `SectionHeader` at 15 px (optional 14 px icon) for every tab; tab cards and `animate-fade-in` removed; every settings surface, control, and copy is on tokens with no `blue-*`, `purple-*`, `neutral-*`, or `text-white`; `styles/tone.ts` tone map used by `Chip`, `Toast`, `ConnectivityBanner`, `DegradedModeBanner`, and icons; dead `Popover`, `Drawer`, `Dropdown`, `CommandPalette`, `ConfirmationDialog`, `EnhancedCommandPalette`, `VirtualizedList`, `PrivacyControl` and their tests deleted | None |
 | W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7 | Screenshots predate the modal and icon-tone follow-ups; recapture at the next visual milestone |
 
 ### Next order
@@ -38,15 +38,18 @@ No workstream is open. The remaining items are follow-ups, in value order:
    `notes-grid-items`, `page-surface`). It still scans `main` only, so the
    top-bar `New note` reads as no primary. Widen the scan to the shell when
    the metric becomes a gate.
-2. **W31.0 extraction** — extract `ListRow`, `Field`, `ContextPanel`, and
-   `SurfaceTabs` only where a second use exists. `KitGallery` is the gallery
-   entry when that second use appears; do not extract a one-off.
-3. **Tone text literals** — icons now accept `tone`; the remaining
-   `text-blue-*` / `text-purple-*` hover and body labels need a text-tone
-   helper. Do not add a second tone map for them.
+2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
+   where a second use exists. `SurfaceTabs` is now the `Tabs` primitive with a
+   `size` variant, used by the rail and ontology. `KitGallery` is the gallery
+   entry when another second use appears; do not extract a one-off.
+3. **Tone outside settings** — settings no longer carry `blue-*`, `purple-*`,
+   or `neutral-*`; icons accept `tone`. Forty-four literal accent classes
+   remain in editor, navigation, agent, and property surfaces. Route them when
+   each surface is touched; keep semantic category colors in `PropertyBlock`
+   unless the category axis is replaced.
 4. **Evidence refresh** — regenerate the gallery after the next visual
-   milestone. Modal surfaces, icon tones, and the new `#/kit` route mean the
-   current captures are older than the code.
+   milestone. Modal surfaces, icon tones, the rail `Tabs`, and the new `#/kit`
+   route mean the current captures are older than the code.
 
 
 ---

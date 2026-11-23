@@ -122,9 +122,9 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
                                             <ShieldIcon tone="success" className="h-5 w-5 flex-shrink-0"/>
                                             <div className="min-w-0">
                                                 <div className="flex items-center gap-2 text-sm">
-                                                    <code className="text-blue-300 font-mono text-xs bg-[var(--app-surface)] px-1.5 py-0.5 rounded">{formatCapability(grant.permission.type)}</code>
+                                                    <code className="text-[var(--app-accent-text)] font-mono text-xs bg-[var(--app-surface)] px-1.5 py-0.5 rounded">{formatCapability(grant.permission.type)}</code>
                                                     <span className="text-[var(--app-muted)]">→</span>
-                                                    <code className="text-purple-300 font-mono text-xs bg-[var(--app-surface)] px-1.5 py-0.5 rounded">{grant.permission.scope}</code>
+                                                    <code className="text-[var(--app-accent-text)] font-mono text-xs bg-[var(--app-surface)] px-1.5 py-0.5 rounded">{grant.permission.scope}</code>
                                                 </div>
                                                 <div className="text-xs text-[var(--app-muted)] mt-1">
                                                     Granted: {new Date(grant.permission.grantedAt).toLocaleString()}
@@ -159,7 +159,7 @@ export function CapabilitiesPanel({onGrantViewed, onRevoked}: CapabilitiesPanelP
                     setRevokeConfirm(null);
                 }}
                 title="Revoke Capability Grant?"
-                message={`Remove the grant for <code className="text-blue-300">{revokeConfirm ? formatCapability(revokeConfirm.permission.type) : ''}</code> → <code className="text-purple-300">{revokeConfirm?.permission.scope || ''}</code> from note "<strong>{revokeConfirm?.noteTitle}</strong>"? This takes effect immediately.`}
+                message={`Remove the grant for <code className="text-[var(--app-accent-text)]">{revokeConfirm ? formatCapability(revokeConfirm.permission.type) : ''}</code> → <code className="text-[var(--app-accent-text)]">{revokeConfirm?.permission.scope || ''}</code> from note "<strong>{revokeConfirm?.noteTitle}</strong>"? This takes effect immediately.`}
                 confirmLabel="Revoke"
                 isDestructive
             />

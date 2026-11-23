@@ -149,7 +149,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                         type="checkbox"
                         checked={autoBackup.enabled}
                         onChange={(e) => updateAutoBackup({enabled: e.target.checked})}
-                        className="w-4 h-4 text-blue-500 border-[var(--app-line-strong)] rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-[var(--app-accent)] border-[var(--app-line-strong)] rounded focus:ring-[var(--app-accent)]"
                     />
                     <span className="text-[13px] text-[var(--app-text-secondary)]">Enable automatic backup reminders</span>
                 </label>
@@ -162,7 +162,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                             <select
                                 value={autoBackup.frequency}
                                 onChange={(e) => updateAutoBackup({frequency: e.target.value as any})}
-                                className="w-full md:w-48 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg px-3 py-2 text-sm text-[var(--app-text)] focus:outline-none focus:border-blue-500"
+                                className="w-full md:w-48 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg px-3 py-2 text-sm text-[var(--app-text)] focus:outline-none focus:border-[var(--app-accent-line)]"
                             >
                                 <option value="daily">Daily</option>
                                 <option value="weekly">Weekly</option>
@@ -178,7 +178,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                     type="checkbox"
                                     checked={autoBackup.encrypt}
                                     onChange={(e) => updateAutoBackup({encrypt: e.target.checked})}
-                                    className="w-4 h-4 text-blue-500 border-[var(--app-line-strong)] rounded focus:ring-blue-500"
+                                    className="w-4 h-4 text-[var(--app-accent)] border-[var(--app-line-strong)] rounded focus:ring-[var(--app-accent)]"
                                 />
                                 <span className="text-[13px] text-[var(--app-text-secondary)]">Encrypt backups (recommended)</span>
                                 <LockIcon className="h-4 w-4 text-[var(--app-muted)]"/>
@@ -193,7 +193,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                             value={passphrase}
                                             onChange={(e) => setPassphrase(e.target.value)}
                                             placeholder="Enter passphrase for encryption"
-                                            className="flex-1 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg px-3 py-2 text-sm text-[var(--app-text)] focus:outline-none focus:border-blue-500"
+                                            className="flex-1 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg px-3 py-2 text-sm text-[var(--app-text)] focus:outline-none focus:border-[var(--app-accent-line)]"
                                         />
                                         <Button
                                             variant="secondary"
@@ -222,7 +222,7 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                                 max="30"
                                 value={autoBackup.rotationCount}
                                 onChange={(e) => updateAutoBackup({rotationCount: parseInt(e.target.value)})}
-                                className="w-full md:w-64 h-2 bg-[var(--app-raised)] rounded-lg appearance-none accent-blue-500"
+                                className="w-full md:w-64 h-2 bg-[var(--app-raised)] rounded-lg appearance-none accent-[var(--app-accent)]"
                             />
                             <p className="text-xs text-[var(--app-muted)] mt-1">
                                 Old backups beyond this count will be purged on next backup.
@@ -310,15 +310,15 @@ export function AutoBackupSection({onBackupDue}: AutoBackupSectionProps) {
                         )}
 
                         {showPassphrase && (
-                            <div className="pl-7 p-3 bg-blue-900/30 border border-blue-700 rounded-lg">
-                                <p className="text-sm text-blue-300 mb-2">Enter passphrase to proceed with backup:</p>
+                            <div className="pl-7 p-3 bg-[var(--app-accent-soft)] border border-[var(--app-accent-line)] rounded-lg">
+                                <p className="text-sm text-[var(--app-accent-text)] mb-2">Enter passphrase to proceed with backup:</p>
                                 <div className="flex gap-2">
                                     <input
                                         type="password"
                                         value={passphrase}
                                         onChange={(e) => setPassphrase(e.target.value)}
                                         placeholder="Passphrase"
-                                        className="flex-1 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg px-3 py-2 text-sm text-[var(--app-text)] focus:outline-none focus:border-blue-500"
+                                        className="flex-1 bg-[var(--app-raised)] border border-[var(--app-line)] rounded-lg px-3 py-2 text-sm text-[var(--app-text)] focus:outline-none focus:border-[var(--app-accent-line)]"
                                         onKeyDown={(e) => e.key === 'Enter' && handlePassphraseConfirm()}
                                     />
                                     <Button variant="primary" size="sm" onClick={handlePassphraseConfirm}>

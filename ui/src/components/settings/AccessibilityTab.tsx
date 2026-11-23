@@ -155,7 +155,7 @@ export function AccessibilityTab() {
                         { label: 'High confidence', icon: <CheckIcon className="w-4 h-4" />, color: 'text-green-400', bg: 'bg-green-900/30', border: 'border-green-700/50' },
                         { label: 'Medium confidence', icon: <MinusIcon className="w-4 h-4" />, color: 'text-yellow-400', bg: 'bg-yellow-900/30', border: 'border-yellow-700/50' },
                         { label: 'Low confidence', icon: <SparklesIcon className="w-4 h-4" />, color: 'text-red-400', bg: 'bg-red-900/30', border: 'border-red-700/50' },
-                        { label: 'Focus source', icon: <ShieldIcon className="w-4 h-4" />, color: 'text-[var(--app-accent-text)]', bg: 'bg-blue-900/30', border: 'border-blue-700/50' },
+                        { label: 'Focus source', icon: <ShieldIcon className="w-4 h-4" />, color: 'text-[var(--app-accent-text)]', bg: 'bg-[var(--app-accent-soft)]', border: 'border-[var(--app-accent-line)]' },
                     ].map((item, i) => (
                         <div key={i} className={`px-3 py-2 rounded-lg border ${item.bg} ${item.border} flex items-center gap-2`}>
                             <span className={item.color}>{item.icon}</span>
