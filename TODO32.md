@@ -236,10 +236,10 @@ identical manifests.
 
 ### W32.2 — Scan the whole space; detect drift; declare coverage (P0)
 **Goal:** the graph cannot silently go stale, and completeness is a contract, not a claim.
-- [ ] `uisg scan`: read `uiSurfaces.ts`, `navigation.ts`, `seams.ts`, `journeys.ts`,
+- [x] `uisg scan`: read `uiSurfaces.ts`, `navigation.ts`, `seams.ts`, `journeys.ts`,
       `ui/src/strategies`, component imports, `data/loop/{taxonomy,golden-cases}.json`, the newest
       `data/loop/runs/run-*`; write `doc/uisg/scan.json`; `--discover` runs `pnpm loop discover`.
-- [ ] Coverage contract: `doc/uisg/coverage.json` (§3.4) with generators, applicability,
+- [x] Coverage contract: `doc/uisg/coverage.json` (§3.4) with generators, applicability,
       exceptions, materialization, review policy, dimensions and denominators; `scan` proposes
       candidates, never auto-promotes.
 - [ ] Analyzer families (each finding: severity, IDs, evidence, suggested fix):
@@ -257,7 +257,7 @@ identical manifests.
       - consistency/ergonomics: inconsistent labels/placement, navigation depth, dense branching
         for high-risk contexts, duplicate confirmations without risk rationale, keyboard parity
         gaps, long forms/repeated entry, inconsistent loading/empty/error patterns.
-- [ ] `sync`: compare the graph with code and propose repairs (stale bindings, new routes,
+- [x] `sync`: compare the graph with code and propose repairs (stale bindings, new routes,
       contract changes) — never overwrite hand-authored files.
 - [ ] Seeded regression catalogue `doc/uisg/regressions.json` (fixture graph, expected diagnostic,
       severity, oracle) covering the §13.2 anti-patterns.

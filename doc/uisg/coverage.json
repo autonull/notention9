@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-23T19:30:00.000Z",
+  "generators": [
+    {
+      "id": "scan-surfaces",
+      "name": "Surface scanner",
+      "description": "Scans ui/src for exported React components ending in Surface/View/Panel/Dialog/Modal",
+      "applicability": "all",
+      "denominator": "total-components-scanned",
+      "output": "surface"
+    },
+    {
+      "id": "scan-navigation",
+      "name": "Navigation scanner",
+      "description": "Extracts route patterns from router/navigation files",
+      "applicability": "all",
+      "denominator": "total-routes-found",
+      "output": "navigation"
+    },
+    {
+      "id": "scan-seams",
+      "name": "Seam scanner",
+      "description": "Reads seam roles from core/src/constants/seams.ts and strategy configs",
+      "applicability": "all",
+      "denominator": "total-seam-roles-defined",
+      "output": "seam"
+    },
+    {
+      "id": "scan-journeys",
+      "name": "Journey scanner",
+      "description": "Parses knownJourneys.ts and journey imports for registered journeys",
+      "applicability": "implemented-flows",
+      "denominator": "total-flows-in-graph",
+      "output": "journey"
+    },
+    {
+      "id": "scan-strategies",
+      "name": "Strategy scanner",
+      "description": "Finds Strategy components in ui/src/strategies",
+      "applicability": "all",
+      "denominator": "total-strategy-files",
+      "output": "strategy"
+    },
+    {
+      "id": "graph-coverage",
+      "name": "Graph-based coverage",
+      "description": "Compares graph nodes against scan results to identify gaps",
+      "applicability": "all",
+      "denominator": "graph-nodes-by-type",
+      "output": "coverage-report"
+    }
+  ],
+  "dimensions": [
+    {
+      "id": "viewport",
+      "values": ["desktop-1440", "mobile-390"],
+      "description": "Viewport size for journey execution"
+    },
+    {
+      "id": "theme",
+      "values": ["dark", "light"],
+      "description": "UI theme"
+    },
+    {
+      "id": "modality",
+      "values": ["pointer", "keyboard", "voice"],
+      "description": "Input modality"
+    },
+    {
+      "id": "profile",
+      "values": ["default", "minimal", "full"],
+      "description": "Capability profile"
+    },
+    {
+      "id": "connectivity",
+      "values": ["online", "offline", "degraded"],
+      "description": "Network connectivity"
+    }
+  ],
+  "denominators": {
+    "surfaces": "Total UI surfaces in graph (type=surface)",
+    "flows": "Total flows in graph (type=flow, status!=idea, status!=removed)",
+    "capabilities": "Total capabilities in graph (type=capability, status=existing)",
+    "journeys": "Total registered journeys in registry",
+    "strategies": "Total strategy components found",
+    "seams": "Total seam roles defined in constants"
+  },
+  "exceptions": [
+    {
+      "generator": "scan-surfaces",
+      "pattern": "surface.*",
+      "reason": "Component not yet implemented in UI",
+      "reviewPolicy": "flag-for-implementation"
+    }
+  ],
+  "materialization": {
+    "rule": "A scan candidate is materialized in the graph only after human review and explicit promotion via 'uisg sync --apply'",
+    "autoPromote": false
+  },
+  "reviewPolicy": {
+    "requiredReviewers": 1,
+    "maxAgeDays": 30,
+    "escalation": "flag-in-inventory"
+  }
+}

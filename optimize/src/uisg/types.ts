@@ -2,16 +2,18 @@ import type { SeamRole } from '@notention/core/ui/strategy';
 import type { Step, Target } from '../journey.js';
 
 export type UisgStatus = 'existing' | 'partial' | 'planned' | 'idea' | 'removed';
-export type UisgNodeType = 'intent' | 'capability' | 'flow' | 'step' | 'surface';
+export type UisgNodeType = 'intent' | 'capability' | 'flow' | 'step' | 'surface' | 'predicate' | 'effect';
 export type UisgEdgeType =
     | 'supports' | 'uses' | 'invokes' | 'contains' | 'renders'
-    | 'next' | 'alternative' | 'implementedBy';
+    | 'next' | 'alternative' | 'implementedBy' | 'guards' | 'effects';
 export type UisgConfidence = 'high' | 'medium' | 'low';
 export type UisgRisk = 'normal' | 'caution' | 'destructive';
 export type UisgStepKind = 'show' | 'action' | 'choice' | 'confirm' | 'result';
 export type UisgAction = Extract<Step, { kind: 'act' }>['action'];
+export type UisgReversibility = 'reversible' | 'compensatable' | 'irreversible' | 'unknown';
+export type UisgEffectRisk = 'normal' | 'caution' | 'destructive' | 'consequential';
 
-interface UisgBaseNode {
+export interface UisgBaseNode {
     id: string;
     name: string;
     status: UisgStatus;
@@ -32,6 +34,7 @@ export interface UisgCapability extends UisgBaseNode {
     strategy?: string;
     skill?: string;
     risk?: UisgRisk;
+    effect?: string;
 }
 
 export interface UisgFlow extends UisgBaseNode {
@@ -49,6 +52,7 @@ export interface UisgStep extends UisgBaseNode {
     value?: string;
     statePath?: string;
     stateEquals?: unknown;
+    guard?: string;
 }
 
 export interface UisgSurface extends UisgBaseNode {
@@ -59,7 +63,22 @@ export interface UisgSurface extends UisgBaseNode {
     seam?: SeamRole;
 }
 
-export type UisgNode = UisgIntent | UisgCapability | UisgFlow | UisgStep | UisgSurface;
+export interface UisgPredicate extends UisgBaseNode {
+    type: 'predicate';
+    expression: string;
+    registryId: string;
+}
+
+export interface UisgEffect extends UisgBaseNode {
+    type: 'effect';
+    reversibility: UisgReversibility;
+    risk: UisgEffectRisk;
+    confirmationRequired: boolean;
+    failureModes: string[];
+    registryId: string;
+}
+
+export type UisgNode = UisgIntent | UisgCapability | UisgFlow | UisgStep | UisgSurface | UisgPredicate | UisgEffect;
 
 export interface UisgEdge {
     from: string;
