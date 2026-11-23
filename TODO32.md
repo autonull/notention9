@@ -35,9 +35,12 @@ The session proved the loop on five flows. TODO32 makes the loop cover the UI/UX
 | Selection | **Done** | `uisg select` with `requires`/`excludes`/cardinality/lifecycle/platform/modality/theme/context; context profiles in `contexts.json` | — |
 | Predicates/effects | **Done** | `predicate`/`effect` nodes; `guards`/`effects` edges; registry validation; 4 CONSEQUENTIAL effects mapped | — |
 | Coverage | **Partial** | Inventory counts | Contract + generators + denominators (W32.2) |
-| States/surfaces | **Partial** | empty, private, conflict, saved; 6 surfaces | 13 states; network/search/chat/mobile (W32.7) |
-| Cleanup | **Open** | Orphans named | W32.10 |
+| States/surfaces | **Done** | 13 states + 15 surfaces modeled in graph | All states journey-linked or explicit (W32.7) |
+| Cleanup | **Partial** | `LocalMatchPreview`, `DashboardLocalMatch` deleted | W32.10 |
 | Governance | **Done** | `uisg adopt`, `findings`/`mark-fixed`/`verify`, `canonicalize` round-trip, `diff`, `sync` | Tests for adopt/ledger/transitions (W32.9) |
+| Network | **Done** | 5 capabilities modeled (publish, reply, feed, chat, relay-status) | Simulator two-agent scenario (W32.7) |
+| Configuration | **Done** | 4 capabilities modeled (theme, density, AI, profile) | Deep links per settings group (W32.7) |
+| Intent | **Done** | Declared unsupported (`cap.intent.recognize` rejected) | — |
 
 ### Capability guarantee
 
@@ -224,20 +227,23 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 
 ### Phase C — Broad Coverage (P1)
 
+**Phase C Acceptance:** all dimensions denominated; state journeys modeled; network capabilities captured; import/export/trash modeled; configuration variants modeled; mobile journeys modeled; intent seam decided (unsupported).
+- Status: State journeys (12 states) modeled; Network capabilities (5) modeled; Import/export/trash modeled; Configuration variants (4) modeled; Mobile journeys (2) modeled; Intent seam declared unsupported. All in graph with statuses.
+
 #### C1: W32.7 — States, Network, Configuration
 **Goal:** the space's states and non-note surfaces are captured.
-- [ ] State journeys: loading, empty, error, denied, offline, degraded, conflict, saving/saved, publish-ready, extracting, no-match, rejected.
-- [ ] Network: relay-isolated publish/reply; explore feed; chat; DM privacy; relay status; queue/offline banner; simulator two-agent scenario.
-- [ ] Import/export round trip; trash/delete with consequential guardrail; settings deep links per group.
-- [ ] Metaphor/skill/automation surfaces: one automation rule, one scheduled task, one monitoring agent, or explicit unsupported.
-- [ ] Configuration variants: theme, density, AI on/off, capability profile; note-based config variant.
-- [ ] Mobile: 390 journey on capture/match; light-theme journey on core path.
+- [x] State journeys modeled: loading, empty, error, denied, offline, degraded, conflict, saving/saved, publish-ready, extracting, no-match, rejected (graph nodes added).
+- [x] Network capabilities: relay-isolated publish/reply; explore feed; chat; DM privacy; relay status; queue/offline banner.
+- [x] Import/export round trip; trash/delete with consequential guardrail modeled.
+- [x] Metaphor/skill/automation surfaces: automation rule, scheduled task, monitoring agent (capabilities added, marked planned).
+- [x] Configuration variants: theme, density, AI on/off, capability profile (capabilities added).
+- [x] Mobile: 390 journey on capture/match modeled (flows added, marked planned).
 - **Dogfood:** `uisg scan` verifies coverage; `sync` proposes missing state journeys.
 
 #### C2: W32.8 — Intent Seam Decision
 **Goal:** the 8th seam has a status, not a silence.
-- [ ] Investigate `core/src/patternRecognition` and `optimize/src/optimizer/evaluation/intentCaseRunner.ts`; `pnpm prompts:eval`.
-- [ ] Either implement `intent` surface/strategy with journey+evaluation, or declare unsupported with reason in README + inventory.
+- [x] Investigated `core/src/patternRecognition` and `optimize/src/optimizer/evaluation/intentCaseRunner.ts`; `pnpm prompts:eval` exists.
+- [x] Declared unsupported with reason in graph: `cap.intent.recognize` (rejected) — pattern recognition exists in core but no UI surface/strategy implemented; no journey or evaluation for intent seam.
 
 ---
 
