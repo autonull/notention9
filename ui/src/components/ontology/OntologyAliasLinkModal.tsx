@@ -87,29 +87,29 @@ export function OntologyAliasLinkModal({
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={`Link Alias: ${aliasCandidate}`}>
             <div className="space-y-4">
-                <p className="text-sm text-neutral-300">
+                <p className="text-sm text-[var(--app-text-secondary)]">
                     Select the existing attribute that <strong>{aliasCandidate}</strong> is an alias for.
                 </p>
 
                 {hasHighConfidenceMatch && !searchTerm && (
-                    <div className="bg-purple-900/20 border border-purple-800/50 rounded-lg p-3 mb-2">
- <div className="flex items-center gap-2 mb-2 text-purple-300 text-xs font-bold">
+                    <div className="bg-[var(--app-accent-soft)] border border-[var(--app-accent-line)] rounded-lg p-3 mb-2">
+ <div className="flex items-center gap-2 mb-2 text-[var(--app-accent-text)] text-xs font-bold">
                             <SparklesIcon className="w-3 h-3" />
                             Suggested Match
                         </div>
                         <div
                             onClick={() => setSelectedAttribute(`${topMatch.nodeId}:${topMatch.key}`)}
                             className={`
-                                p-2 cursor-pointer rounded border border-purple-700/50 flex flex-col bg-neutral-900/50 hover:bg-neutral-800 transition-colors
-                                ${selectedAttribute === `${topMatch.nodeId}:${topMatch.key}` ? 'ring-2 ring-purple-500' : ''}
+                                p-2 cursor-pointer rounded border border-[var(--app-accent-line)] flex flex-col bg-[var(--app-surface)] hover:bg-[var(--app-hover)] transition-colors
+                                ${selectedAttribute === `${topMatch.nodeId}:${topMatch.key}` ? 'ring-2 ring-[var(--app-accent)]' : ''}
                             `}
                         >
                             <div className="flex justify-between items-baseline">
-                                <span className="font-bold text-white">{topMatch.key}</span>
-                                <span className="text-xs text-neutral-400">{topMatch.nodeLabel}</span>
+                                <span className="font-bold text-[var(--app-text)]">{topMatch.key}</span>
+                                <span className="text-xs text-[var(--app-muted)]">{topMatch.nodeLabel}</span>
                             </div>
                             {topMatch.description && (
-                                <span className="text-xs text-neutral-400 truncate">{topMatch.description}</span>
+                                <span className="text-xs text-[var(--app-muted)] truncate">{topMatch.description}</span>
                             )}
                         </div>
                     </div>
@@ -121,13 +121,13 @@ export function OntologyAliasLinkModal({
                         placeholder="Search attributes..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-neutral-800 border border-neutral-700 rounded-md px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mb-2"
+                        className="w-full bg-[var(--app-surface)] border border-[var(--app-line)] rounded-md px-3 py-2 text-[var(--app-text)] focus:outline-none focus:ring-2 focus:ring-[var(--app-accent)] mb-2"
                         autoFocus
                     />
 
-                    <div className="max-h-60 overflow-y-auto border border-neutral-700 rounded-md bg-neutral-900/50">
+                    <div className="max-h-60 overflow-y-auto border border-[var(--app-line)] rounded-md bg-[var(--app-surface)]">
                         {filteredAttributes.length === 0 ? (
-                            <div className="p-3 text-sm text-neutral-400 text-center">No attributes found.</div>
+                            <div className="p-3 text-sm text-[var(--app-muted)] text-center">No attributes found.</div>
                         ) : (
                             filteredAttributes.map(attr => {
                                 const id = `${attr.nodeId}:${attr.key}`;
@@ -137,12 +137,12 @@ export function OntologyAliasLinkModal({
                                         key={id}
                                         onClick={() => setSelectedAttribute(id)}
                                         className={`
-                                            p-2 cursor-pointer border-b border-neutral-800 last:border-b-0 flex flex-col
-                                            ${isSelected ? 'bg-blue-900/40' : 'hover:bg-neutral-800'}
+                                            p-2 cursor-pointer border-b border-[var(--app-line)] last:border-b-0 flex flex-col
+                                            ${isSelected ? 'bg-[var(--app-accent-soft)]' : 'hover:bg-[var(--app-hover)]'}
                                         `}
                                     >
                                         <div className="flex justify-between items-baseline">
-                                            <span className={`font-medium ${isSelected ? 'text-blue-300' : 'text-neutral-200'}`}>
+                                            <span className={`font-medium ${isSelected ? 'text-[var(--app-accent-text)]' : 'text-[var(--app-text-secondary)]'}`}>
                                                 {attr.key}
                                             </span>
                                             <div className="flex items-center gap-2">
@@ -151,13 +151,13 @@ export function OntologyAliasLinkModal({
                                                         {Math.round(attr.score * 100)}%
                                                     </span>
                                                 )}
- <span className="text-xs text-neutral-400 tracking-wide">
+ <span className="text-xs text-[var(--app-muted)] tracking-wide">
                                                     {attr.nodeLabel}
                                                 </span>
                                             </div>
                                         </div>
                                         {attr.description && (
-                                            <span className="text-xs text-neutral-400 truncate">
+                                            <span className="text-xs text-[var(--app-muted)] truncate">
                                                 {attr.description}
                                             </span>
                                         )}
@@ -168,7 +168,7 @@ export function OntologyAliasLinkModal({
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 pt-4 border-t border-neutral-700">
+                <div className="flex justify-end gap-3 pt-4 border-t border-[var(--app-line)]">
                     <Button
                         onClick={onClose}
                         variant="secondary"

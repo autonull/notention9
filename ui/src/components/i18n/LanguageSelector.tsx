@@ -28,10 +28,10 @@ export function LanguageSelector({
                         onClick={() => setLanguage(lang.code)}
                         className={cn(
                             'px-3 py-1.5 text-sm font-medium rounded-lg transition-all duration-150',
-                            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
+                            'focus:outline-none focus:ring-2 focus:ring-[var(--app-accent)] focus:ring-offset-2',
                             language === lang.code
-                                ? 'bg-blue-600 text-white shadow-md'
-                                : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-300 dark:hover:bg-neutral-700'
+                                ? 'bg-[var(--app-accent)] text-[#ffffff] shadow-sm'
+                                : 'bg-[var(--app-raised)] text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)]'
                         )}
                         aria-pressed={language === lang.code}
                         aria-label={`${lang.nativeName} (${lang.name})`}
@@ -55,9 +55,9 @@ export function LanguageSelector({
                 }}
                 className={cn(
                     'flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-colors',
-                    'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2',
-                    'bg-white dark:bg-neutral-800 border-neutral-300 dark:border-neutral-600',
-                    'hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                    'focus:outline-none focus:ring-2 focus:ring-[var(--app-accent)] focus:ring-offset-2',
+                    'bg-[var(--app-surface)] border-[var(--app-line-strong)]',
+                    'hover:bg-[var(--app-hover)]'
                 )}
                 aria-haspopup="listbox"
                 aria-expanded="false"
@@ -78,7 +78,7 @@ export function LanguageSelector({
                 aria-orientation="vertical"
                 className={cn(
                     'absolute mt-1 w-48 origin-top-right rounded-lg shadow-lg border',
-                    'bg-white dark:bg-neutral-800 border-neutral-200 dark:border-neutral-700',
+                    'bg-[var(--app-surface)] border-[var(--app-line)]',
                     'py-1 z-50 animate-in fade-in-0 zoom-in-95 duration-150',
                     direction === 'rtl' ? 'left-0 right-auto' : 'right-0 left-auto'
                 )}
@@ -97,16 +97,16 @@ export function LanguageSelector({
                         className={cn(
                             'w-full px-3 py-2 text-sm transition-colors',
                             direction === 'rtl' ? 'text-right' : 'text-left',
-                            'focus:outline-none focus:bg-blue-50 dark:focus:bg-blue-900/30',
+                            'focus:outline-none focus:bg-[var(--app-hover)]',
                             language === lang.code
-                                ? 'bg-blue-50 dark:bg-blue-900/30 font-medium text-blue-700 dark:text-blue-300'
-                                : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                                ? 'bg-[var(--app-accent-soft)] font-medium text-[var(--app-accent-text)]'
+                                : 'text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)]'
                         )}
                     >
                         <div className="flex items-center justify-between">
                             <span>{lang.nativeName}</span>
                             {showNativeName && lang.name !== lang.nativeName && (
-                                <span className={`text-xs text-neutral-400 dark:text-neutral-400 ${direction === 'rtl' ? 'mr-2' : 'ml-2'}`}>
+                                <span className={`text-xs text-[var(--app-muted)] ${direction === 'rtl' ? 'mr-2' : 'ml-2'}`}>
                                     {lang.name}
                                 </span>
                             )}

@@ -49,20 +49,22 @@ No workstream is open. This pass landed three follow-ups:
   box are on tokens; the `editor` group is recaptured.
 - Agent status panels, metrics, and capability chips are on tokens; the
   disabled and connecting states match.
+- Ontology alias, attribute, and conflict surfaces are on tokens, as are empty
+  states and the language selector; `notes/empty` and the suggestions empty
+  state are recaptured.
 - `RelatedNotesPanel`, the root `SuggestionItem`, and `ExtractionReview` (with
   its test block) are deleted; no references remained.
 
 The remaining items are follow-ups, in value order:
 
 1. **Tone outside settings** — settings, the header, the help dialog, the
-   ontology surface, the property editor, and agent status are on tokens.
-   Literal `neutral-*`, `blue-*`, and `purple-*` remain in dashboard
-   (`LocalMatchPreview`, `QuickCapture`), properties (`NicheSelectors`,
-   `propertyUtils`), ontology (`OntologyAliasLinkModal`,
-   `AttributeEditorModal`, `ConflictGroup`), `EmptyState`, `LanguageSelector`,
-   and the metaphor and describe-it surfaces. Route them when each surface is
-   touched; keep semantic category colors in `PropertyBlock` unless the
-   category axis is replaced.
+   ontology dialogs, the property editor, agent status, empty states, and the
+   language selector are on tokens. Literal `neutral-*`, `blue-*`, and
+   `purple-*` remain in dashboard (`LocalMatchPreview`, `QuickCapture`,
+   `AutomationsView`), properties (`NicheSelectors`, `propertyUtils`),
+   `OntologyNodeItem`, `PrivacyConfirmModal`, and `DescribeItComposer`.
+   Route them when each surface is touched; keep semantic category colors in
+   `PropertyBlock` unless the category axis is replaced.
 2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
    where a second use exists. `KitGallery` is the gallery entry when another
    second use appears; do not extract a one-off.

@@ -109,30 +109,30 @@ export function EmptyState({
                 </div>
             )}
             {hint && (
-                <div className="mb-6 hidden md:block p-3 bg-neutral-800/50 rounded-lg border border-neutral-700/50 max-w-xs text-left animate-fade-in-up">
-                    <p className="text-xs text-neutral-300 mb-1">{hint}</p>
+                <div className="mb-6 hidden md:block p-3 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] max-w-xs text-left animate-fade-in-up">
+                    <p className="text-xs text-[var(--app-text-secondary)] mb-1">{hint}</p>
                 </div>
             )}
             {showSearchSuggestion && searchTerm && (
-                <div className="mb-6 p-3 bg-neutral-800/50 rounded-lg border border-neutral-700/50 max-w-xs text-left animate-fade-in-up">
-                    <p className="text-xs text-neutral-400 mb-1">Try searching for:</p>
-                    <code className="text-sm text-blue-400 font-mono">#{searchTerm}</code>
-                    <p className="text-xs text-neutral-400 mt-1">or</p>
-                    <code className="text-sm text-blue-400 font-mono">{searchTerm}</code>
+                <div className="mb-6 p-3 bg-[var(--app-raised)] rounded-lg border border-[var(--app-line)] max-w-xs text-left animate-fade-in-up">
+                    <p className="text-xs text-[var(--app-muted)] mb-1">Try searching for:</p>
+                    <code className="text-sm text-[var(--app-accent-text)] font-mono">#{searchTerm}</code>
+                    <p className="text-xs text-[var(--app-muted)] mt-1">or</p>
+                    <code className="text-sm text-[var(--app-accent-text)] font-mono">{searchTerm}</code>
                 </div>
             )}
             {action && <div className="flex flex-wrap items-center justify-center gap-2">{action}</div>}
             {secondaryAction && <div className="mt-2 flex flex-wrap items-center justify-center gap-2">{secondaryAction}</div>}
             {showShortcuts && contextShortcuts.length > 0 && (
-                <div className="mt-6 pt-6 border-t border-neutral-700/50 w-full max-w-xs animate-fade-in-up">
-                    <p className="text-xs text-neutral-400 mb-2 flex items-center gap-1">
+                <div className="mt-6 pt-6 border-t border-[var(--app-line)] w-full max-w-xs animate-fade-in-up">
+                    <p className="text-xs text-[var(--app-muted)] mb-2 flex items-center gap-1">
                         <HelpIcon className="w-3 h-3" /> Quick shortcuts:
                     </p>
                     <div className="flex flex-wrap gap-1.5">
                         {contextShortcuts.map((sc, i) => (
-                            <kbd key={i} className="text-xs font-mono px-2 py-1 bg-neutral-800 text-neutral-300 rounded border border-neutral-700/50 whitespace-nowrap">
+                            <kbd key={i} className="text-xs font-mono px-2 py-1 bg-[var(--app-panel)] text-[var(--app-text-secondary)] rounded border border-[var(--app-line)] whitespace-nowrap">
                                 {sc.keys}
-                                <span className="ml-1 text-neutral-400">{sc.label}</span>
+                                <span className="ml-1 text-[var(--app-muted)]">{sc.label}</span>
                             </kbd>
                         ))}
                     </div>
@@ -144,7 +144,7 @@ export function EmptyState({
 
 export function EmptyStateIllustration({children}: {children: React.ReactNode}) {
     return (
-        <svg className="w-28 h-28 text-neutral-700/50" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <svg className="w-28 h-28 text-[var(--app-line-strong)]" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
             <defs>
                 <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
                     <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.1"/>
