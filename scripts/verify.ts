@@ -1,12 +1,10 @@
 #!/usr/bin/env node
-// scripts/verify.ts - One-command full verification (L0 + L1 + L2)
+// scripts/verify.ts - One-command full verification (L0 + L1 + L2 + L3)
 import {execSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {dirname, resolve} from 'node:path';
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const rootDir = resolve(__dirname, '..');
-
 function run(cmd: string, description: string): void {
     console.log(`\n🔄 ${description}...`);
     console.log(`   $ ${cmd}`);
@@ -18,7 +16,6 @@ function run(cmd: string, description: string): void {
         process.exit(1);
     }
 }
-
 async function main(): Promise<void> {
     console.log('🚀 Starting full verification (pnpm verify)');
     console.log('==========================================');
@@ -43,18 +40,20 @@ async function main(): Promise<void> {
     // L1: Param visibility check
     run('pnpm exec tsx scripts/verify-param-visibility.ts', 'L1: Strategy param visibility check');
 
-    // L2: Optimize browser journey. Currently failing in test environment (pre-existing).
-    // run('pnpm optimize optimize capture-and-edit', 'L2: Optimize E2E smoke test (capture-and-edit)');
-    console.log('\n⚠️  L2: Optimize E2E smoke test (capture-and-edit) - SKIPPED (pre-existing test env issue)');
+    // L2: UISG browser journey - capture-and-edit
+    run('pnpm uisg run flow.capture-and-edit', 'L2: UISG E2E journey (capture-and-edit)');
 
-    // L3: Golden path acceptance test. Currently failing in test environment (pre-existing).
-    // run('pnpm exec playwright test --config ui/test/playwright.config.ts ui/test/journeys/compose-match.spec.ts ui/test/journeys/golden-demo.spec.ts ui/test/journeys/seeded-workspace.spec.ts ui/test/journeys/export-import.spec.ts', 'L3: Golden path and measurement handoff acceptance test');
-    console.log('\n⚠️  L3: Golden path acceptance test - SKIPPED (pre-existing test env issue)');
+    // L3: UISG golden path journeys
+    run('pnpm uisg run flow.golden-path', 'L3: UISG journey (golden-path)');
+    run('pnpm uisg run flow.publish-gate', 'L3: UISG journey (publish-gate)');
+    run('pnpm uisg run flow.ontology-conflict', 'L3: UISG journey (ontology-conflict)');
+
+    // Performance budget
+    run('pnpm optimize perf:budget', 'L3: Performance budget check');
 
     console.log('\n✨ All verification steps passed!');
     console.log('==========================================');
 }
-
 main().catch((err) => {
     console.error('Verification failed:', err);
     process.exit(1);

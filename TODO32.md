@@ -197,15 +197,15 @@ On user report: add friction, re-rank, model a flow. Before release: `pnpm verif
 
 ### W32.0 — Unskip the gates, then guard them (P0)
 **Goal:** `pnpm verify` runs every layer it advertises, and CI proves it.
-- [ ] `scripts/verify.ts`: delete skipped L2/L3; L2 = `pnpm uisg run flow.capture-and-edit`;
+- [x] `scripts/verify.ts`: delete skipped L2/L3; L2 = `pnpm uisg run flow.capture-and-edit`;
       L3 = `pnpm uisg run flow.golden-path`, `flow.publish-gate`, `flow.ontology-conflict`.
-- [ ] Delete the never-existing L3 specs (`compose-match`, `golden-demo`, `seeded-workspace`).
-- [ ] Root `uisg:check`: `validate` + `analyze --strict` (fails on any high finding).
-- [ ] CI `verify.yml`: Chromium before L2/L3; `uisg:check`; build cache; one worker; upload
+- [x] Delete the never-existing L3 specs (`compose-match`, `golden-demo`, `seeded-workspace`) — never existed.
+- [x] Root `uisg:check`: `validate` + `analyze --strict` (fails on any high finding).
+- [x] CI `verify.yml`: Chromium before L2/L3; `uisg:check`; build cache; one worker; upload
       bundles on failure.
-- [ ] Add `ui/test/audit/space.spec.ts` and `task-first.spec.ts` to the CI gate set; surface
+- [x] Add `ui/test/audit/space.spec.ts` and `task-first.spec.ts` to the CI gate set; surface
       duplicate-primary findings to `uisg analyze`.
-- [ ] Add `pnpm optimize perf:budget` to `verify`; record the budget in the log.
+- [x] Add `pnpm optimize perf:budget` to `verify`; record the budget in the log.
 **Acceptance:** local and CI `pnpm verify` green without skips; a deliberately broken graph or
 wrapper fails `uisg:check`; the log lists every layer and duration.
 

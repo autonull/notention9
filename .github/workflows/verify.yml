@@ -16,7 +16,7 @@ jobs:
   verify:
     name: Verify
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,17 +35,29 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run verify script
+      - name: Build @notention/optimize
+        run: pnpm --filter @notention/optimize build
+
+      - name: UISG check (validate + analyze --strict)
+        run: pnpm uisg validate && pnpm uisg analyze --strict
+
+      - name: Install Playwright Chromium
+        run: pnpm --filter @notention/ui exec playwright install --with-deps chromium
+
+      - name: Run verify script (L0-L3)
         run: pnpm verify
 
       - name: Typecheck UI
         run: pnpm --filter @notention/ui typecheck
 
-      - name: Install Playwright Chromium
-        run: pnpm --filter @notention/ui exec playwright install --with-deps chromium
-
       - name: Check UI
         run: pnpm check:ui
+
+      - name: Audit space spec (Playwright)
+        run: pnpm --filter @notention/ui exec playwright test --config test/playwright.config.ts test/audit/space.spec.ts
+
+      - name: Audit task-first spec (Playwright)
+        run: pnpm --filter @notention/ui exec playwright test --config test/playwright.config.ts test/audit/task-first.spec.ts
 
       - name: Lint fabricated paths
         run: pnpm lint:fabricated
@@ -73,4 +85,13 @@ jobs:
           name: ux-evaluation-report
           path: |
             **/ux-evaluation-report.json
+          retention-days: 7
+
+      - name: Upload UISG bundles on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: uisg-bundles
+          path: |
+            **/optimize/test-results/**/bundle.json
           retention-days: 7

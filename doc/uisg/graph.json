@@ -1,0 +1,895 @@
+{
+  "version": 1,
+  "nodes": [
+    {
+      "id": "intent.structured-note",
+      "type": "intent",
+      "name": "Capture a note and edit its properties",
+      "status": "existing",
+      "outcome": "The note carries structured, ontology-backed details."
+    },
+    {
+      "id": "cap.property.edit",
+      "type": "capability",
+      "name": "Edit note properties",
+      "status": "existing",
+      "seam": "elicit",
+      "strategy": "property-form",
+      "source": [
+        "ui/src/components/editor/PropertyEditor.tsx",
+        "ui/src/strategies/PropertyFormStrategy.tsx"
+      ]
+    },
+    {
+      "id": "flow.capture-and-edit",
+      "type": "flow",
+      "name": "Capture and edit",
+      "status": "existing",
+      "entry": "step.detail.open",
+      "outcome": "Property indexed and shown as a chip.",
+      "journey": "capture-and-edit",
+      "source": [
+        "optimize/src/journeys.ts"
+      ]
+    },
+    {
+      "id": "step.detail.open",
+      "type": "step",
+      "name": "Open Add detail",
+      "status": "existing",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "testId": "page-add-detail"
+      }
+    },
+    {
+      "id": "step.detail.fill",
+      "type": "step",
+      "name": "Enter key, operator, value",
+      "status": "existing",
+      "kind": "action",
+      "action": "fill",
+      "target": {
+        "testId": "property-key-input",
+        "modal": "Add detail"
+      },
+      "value": "framework"
+    },
+    {
+      "id": "step.detail.confirm",
+      "type": "step",
+      "name": "Confirm the detail",
+      "status": "existing",
+      "kind": "confirm",
+      "action": "click",
+      "target": {
+        "role": "button",
+        "name": "Add detail",
+        "modal": "Add detail"
+      }
+    },
+    {
+      "id": "step.detail.done",
+      "type": "step",
+      "name": "Property indexed",
+      "status": "existing",
+      "kind": "result",
+      "statePath": "note.propertyIndex.framework",
+      "stateEquals": [
+        "Next.js"
+      ],
+      "summary": "assertState note.propertyIndex.framework"
+    },
+    {
+      "id": "surface.editor",
+      "type": "surface",
+      "name": "Note editor",
+      "status": "existing",
+      "component": "EditorManager",
+      "route": "#/notes/:noteId"
+    },
+    {
+      "id": "surface.property-editor",
+      "type": "surface",
+      "name": "Add detail popup",
+      "status": "existing",
+      "component": "PropertyEditor"
+    },
+    {
+      "id": "flow.inline-detail",
+      "type": "flow",
+      "name": "Inline detail entry",
+      "status": "idea",
+      "entry": "step.inline.write",
+      "outcome": "Detail added without leaving prose.",
+      "confidence": "low",
+      "summary": "Alternative elicit surface: inline property entry instead of a popup."
+    },
+    {
+      "id": "step.inline.write",
+      "type": "step",
+      "name": "Type property syntax inline",
+      "status": "idea",
+      "kind": "action",
+      "confidence": "low",
+      "summary": "Extraction confirms the detail; no popup interrupt."
+    },
+    {
+      "id": "intent.express-need",
+      "type": "intent",
+      "name": "Express a need and understand a match",
+      "status": "existing",
+      "outcome": "A relevant local match is visible after capturing request and offer.",
+      "source": [
+        "optimize/src/journeys.ts"
+      ]
+    },
+    {
+      "id": "intent.publish-safely",
+      "type": "intent",
+      "name": "Publish without leaking private content",
+      "status": "existing",
+      "outcome": "Publish requires confirmation; cancel keeps the note private.",
+      "source": [
+        "optimize/src/journeys.ts"
+      ]
+    },
+    {
+      "id": "cap.note.capture",
+      "type": "capability",
+      "name": "Capture a note from prose",
+      "status": "existing",
+      "seam": "capture",
+      "source": [
+        "ui/src/components/layout/Header.tsx",
+        "ui/src/components/editor/EditorManager.tsx"
+      ]
+    },
+    {
+      "id": "cap.match.display",
+      "type": "capability",
+      "name": "Show local matches",
+      "status": "existing",
+      "seam": "match",
+      "source": [
+        "ui/src/components/note/NoteContextRail.tsx",
+        "ui/src/components/match/MatchItem.tsx"
+      ]
+    },
+    {
+      "id": "cap.note.publish",
+      "type": "capability",
+      "name": "Publish note",
+      "status": "existing",
+      "risk": "destructive",
+      "summary": "publish_note is CONSEQUENTIAL in optimize/src/policy.ts.",
+      "source": [
+        "optimize/src/policy.ts",
+        "ui/src/components/ui/ConfirmationModal.tsx"
+      ]
+    },
+    {
+      "id": "flow.golden-path",
+      "type": "flow",
+      "name": "First match golden path",
+      "status": "existing",
+      "entry": "step.gp.new-request",
+      "outcome": "Request and offer captured; a match appears in the note rail.",
+      "journey": "golden-path",
+      "source": [
+        "optimize/src/journeys.ts"
+      ]
+    },
+    {
+      "id": "surface.quick-capture",
+      "type": "surface",
+      "name": "Quick capture",
+      "status": "partial",
+      "component": "QuickCapture",
+      "source": [
+        "ui/src/components/dashboard/QuickCapture.tsx"
+      ],
+      "summary": "quick-capture seam strategy component; not rendered in the default first-run flow."
+    },
+    {
+      "id": "surface.notes.list",
+      "type": "surface",
+      "name": "Notes list",
+      "status": "existing",
+      "component": "NotesView",
+      "route": "#/notes",
+      "configKey": "NOTE_BROWSE_MODES"
+    },
+    {
+      "id": "surface.local-match",
+      "type": "surface",
+      "name": "Local match card",
+      "status": "existing",
+      "component": "DashboardLocalMatch",
+      "source": [
+        "ui/src/components/dashboard/DashboardLocalMatch.tsx"
+      ]
+    },
+    {
+      "id": "flow.publish-gate",
+      "type": "flow",
+      "name": "Publish gate",
+      "status": "existing",
+      "entry": "step.pub.open",
+      "outcome": "Cancelling publish keeps the note private.",
+      "journey": "publish-gate",
+      "source": [
+        "optimize/src/journeys.ts"
+      ]
+    },
+    {
+      "id": "step.pub.open",
+      "type": "step",
+      "name": "Attempt publish",
+      "status": "existing",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "role": "button",
+        "name": "Publish",
+        "exact": true
+      }
+    },
+    {
+      "id": "step.pub.decide",
+      "type": "step",
+      "name": "Confirmation decision",
+      "status": "existing",
+      "kind": "confirm",
+      "action": "click",
+      "target": {
+        "role": "button",
+        "name": "Cancel"
+      },
+      "summary": "Modal gates the consequential publish; journey exercises cancel."
+    },
+    {
+      "id": "step.pub.private",
+      "type": "step",
+      "name": "Note stays private",
+      "status": "existing",
+      "kind": "result",
+      "statePath": "note.privacy",
+      "stateEquals": "private"
+    },
+    {
+      "id": "step.pub.published",
+      "type": "step",
+      "name": "Note published",
+      "status": "partial",
+      "confidence": "low",
+      "kind": "result",
+      "statePath": "note.privacy",
+      "stateEquals": "public",
+      "summary": "Confirmed branch not covered by the registered journey."
+    },
+    {
+      "id": "surface.confirmation-dialog",
+      "type": "surface",
+      "name": "Confirmation dialog",
+      "status": "existing",
+      "component": "ConfirmationModal",
+      "source": [
+        "ui/src/components/ui/ConfirmationModal.tsx"
+      ]
+    },
+    {
+      "id": "flow.capture-and-edit-keyboard",
+      "type": "flow",
+      "name": "Capture and edit (keyboard only)",
+      "status": "existing",
+      "entry": "step.detail.open",
+      "outcome": "Same outcome without pointer input.",
+      "journey": "capture-and-edit-keyboard",
+      "source": [
+        "optimize/src/journeys.ts"
+      ]
+    },
+    {
+      "id": "step.gp.new-request",
+      "type": "step",
+      "name": "Start request note",
+      "status": "existing",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "role": "button",
+        "name": "New note"
+      }
+    },
+    {
+      "id": "step.gp.request",
+      "type": "step",
+      "name": "Write request",
+      "status": "existing",
+      "kind": "action",
+      "action": "fill",
+      "target": {
+        "role": "textbox",
+        "name": "Note body"
+      },
+      "value": "need a React developer in Berlin with TypeScript #request",
+      "summary": "Coarse model; journey also fills Note title."
+    },
+    {
+      "id": "step.gp.new-offer",
+      "type": "step",
+      "name": "Start offer note",
+      "status": "existing",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "role": "button",
+        "name": "New note"
+      }
+    },
+    {
+      "id": "step.gp.offer",
+      "type": "step",
+      "name": "Write offer",
+      "status": "existing",
+      "kind": "action",
+      "action": "fill",
+      "target": {
+        "role": "textbox",
+        "name": "Note body"
+      },
+      "value": "I am a React developer in Berlin with TypeScript #offer"
+    },
+    {
+      "id": "step.gp.match",
+      "type": "step",
+      "name": "Match visible in rail",
+      "status": "existing",
+      "kind": "show",
+      "target": {
+        "testId": "match-item"
+      }
+    },
+    {
+      "id": "step.gp.done",
+      "type": "step",
+      "name": "One local match",
+      "status": "existing",
+      "kind": "result",
+      "statePath": "matches.length",
+      "stateEquals": 1
+    },
+    {
+      "id": "surface.match-rail",
+      "type": "surface",
+      "name": "Note context rail, Matches tab",
+      "status": "existing",
+      "component": "NoteContextRail",
+      "configKey": "NOTE_RAIL_TABS",
+      "source": [
+        "ui/src/components/note/NoteContextRail.tsx"
+      ]
+    },
+    {
+      "id": "intent.manage-ontology",
+      "type": "intent",
+      "name": "Keep the ontology consistent",
+      "status": "existing",
+      "outcome": "Conflicts are detected and resolvable.",
+      "source": [
+        "ui/src/components/views/OntologyView.tsx"
+      ]
+    },
+    {
+      "id": "cap.ontology.conflict",
+      "type": "capability",
+      "name": "Detect ontology conflicts",
+      "status": "existing",
+      "seam": "ontology",
+      "source": [
+        "ui/src/components/views/OntologyView.tsx",
+        "ui/src/components/ontology/OntologyConflicts.tsx"
+      ],
+      "confidence": "high"
+    },
+    {
+      "id": "cap.match.explain",
+      "type": "capability",
+      "name": "Explain a match",
+      "status": "existing",
+      "seam": "explain",
+      "confidence": "high",
+      "summary": "Reason badges explain matches (PropertyMatch.reason); matched keys appear in SemanticState.",
+      "source": [
+        "ui/src/components/match/MatchItem.tsx"
+      ]
+    },
+    {
+      "id": "cap.notes.display",
+      "type": "capability",
+      "name": "Display notes in five modes",
+      "status": "existing",
+      "seam": "display",
+      "source": [
+        "ui/src/components/views/NotesView.tsx",
+        "ui/src/config/uiSurfaces.ts"
+      ]
+    },
+    {
+      "id": "cap.layout.rails",
+      "type": "capability",
+      "name": "Arrange rails and panes",
+      "status": "existing",
+      "seam": "layout",
+      "source": [
+        "ui/src/components/AppShell.tsx",
+        "doc/UI_COMPOSITION.md"
+      ]
+    },
+    {
+      "id": "cap.property.inline",
+      "type": "capability",
+      "name": "Edit details inline",
+      "status": "planned",
+      "seam": "elicit",
+      "confidence": "low",
+      "summary": "Inline detail entry variant; candidate for synthesis.",
+      "source": [
+        "ui/src/strategies/PropertyFormStrategy.tsx"
+      ]
+    },
+    {
+      "id": "flow.ontology-conflict",
+      "type": "flow",
+      "name": "Detect an ontology conflict",
+      "status": "existing",
+      "confidence": "high",
+      "entry": "step.oc.open",
+      "outcome": "The conflicting capacity property is listed in the ontology view.",
+      "journey": "ontology-conflict",
+      "source": [
+        "optimize/src/journeys.ts"
+      ]
+    },
+    {
+      "id": "surface.ontology-view",
+      "type": "surface",
+      "name": "Ontology settings",
+      "status": "existing",
+      "component": "OntologyView",
+      "route": "#/settings/ontology",
+      "configKey": "SETTINGS_GROUPS",
+      "source": [
+        "ui/src/components/views/OntologyView.tsx"
+      ]
+    },
+    {
+      "id": "surface.match-explanation",
+      "type": "surface",
+      "name": "Match explanation panel",
+      "status": "existing",
+      "confidence": "high",
+      "component": "MatchItem",
+      "source": [
+        "ui/src/components/match/MatchItem.tsx"
+      ],
+      "summary": "Reason badges in the rail; the richer expandable preview stays orphaned."
+    },
+    {
+      "id": "step.oc.open",
+      "type": "step",
+      "name": "Open Conflicts tab",
+      "status": "existing",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "role": "tab",
+        "name": "Conflicts"
+      }
+    },
+    {
+      "id": "step.oc.visible",
+      "type": "step",
+      "name": "Conflict listed",
+      "status": "existing",
+      "kind": "result",
+      "statePath": "conflicts.0.propertyKey",
+      "stateEquals": "capacity"
+    },
+    {
+      "id": "step.gp.explain",
+      "type": "step",
+      "name": "Match explanation asserted",
+      "status": "existing",
+      "kind": "result",
+      "statePath": "matches.0.matched",
+      "stateEquals": [
+        "role",
+        "careRequirements"
+      ],
+      "summary": "Matched keys explain the match."
+    }
+  ],
+  "edges": [
+    {
+      "from": "cap.property.edit",
+      "type": "supports",
+      "to": "intent.structured-note"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "uses",
+      "to": "cap.property.edit"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.detail.open"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.detail.fill"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.detail.confirm"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.detail.done"
+    },
+    {
+      "from": "step.detail.open",
+      "type": "renders",
+      "to": "surface.editor"
+    },
+    {
+      "from": "step.detail.open",
+      "type": "next",
+      "to": "step.detail.fill",
+      "when": "opened"
+    },
+    {
+      "from": "step.detail.fill",
+      "type": "renders",
+      "to": "surface.property-editor"
+    },
+    {
+      "from": "step.detail.fill",
+      "type": "next",
+      "to": "step.detail.confirm",
+      "when": "filled"
+    },
+    {
+      "from": "step.detail.confirm",
+      "type": "invokes",
+      "to": "cap.property.edit"
+    },
+    {
+      "from": "step.detail.confirm",
+      "type": "renders",
+      "to": "surface.property-editor"
+    },
+    {
+      "from": "step.detail.confirm",
+      "type": "next",
+      "to": "step.detail.done",
+      "when": "saved"
+    },
+    {
+      "from": "step.detail.done",
+      "type": "renders",
+      "to": "surface.editor"
+    },
+    {
+      "from": "flow.inline-detail",
+      "type": "contains",
+      "to": "step.inline.write"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "alternative",
+      "to": "flow.inline-detail",
+      "notes": "elicit seam variant: popup vs inline"
+    },
+    {
+      "from": "cap.note.capture",
+      "type": "supports",
+      "to": "intent.express-need"
+    },
+    {
+      "from": "cap.match.display",
+      "type": "supports",
+      "to": "intent.express-need"
+    },
+    {
+      "from": "cap.note.publish",
+      "type": "supports",
+      "to": "intent.publish-safely"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "uses",
+      "to": "cap.note.capture"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "uses",
+      "to": "cap.match.display"
+    },
+    {
+      "from": "flow.publish-gate",
+      "type": "uses",
+      "to": "cap.note.publish"
+    },
+    {
+      "from": "flow.publish-gate",
+      "type": "contains",
+      "to": "step.pub.open"
+    },
+    {
+      "from": "flow.publish-gate",
+      "type": "contains",
+      "to": "step.pub.decide"
+    },
+    {
+      "from": "flow.publish-gate",
+      "type": "contains",
+      "to": "step.pub.private"
+    },
+    {
+      "from": "flow.publish-gate",
+      "type": "contains",
+      "to": "step.pub.published"
+    },
+    {
+      "from": "step.pub.open",
+      "type": "renders",
+      "to": "surface.editor"
+    },
+    {
+      "from": "step.pub.open",
+      "type": "next",
+      "to": "step.pub.decide",
+      "when": "gated"
+    },
+    {
+      "from": "step.pub.decide",
+      "type": "invokes",
+      "to": "cap.note.publish"
+    },
+    {
+      "from": "step.pub.decide",
+      "type": "renders",
+      "to": "surface.confirmation-dialog"
+    },
+    {
+      "from": "step.pub.decide",
+      "type": "next",
+      "to": "step.pub.private",
+      "when": "cancelled"
+    },
+    {
+      "from": "step.pub.decide",
+      "type": "next",
+      "to": "step.pub.published",
+      "when": "confirmed"
+    },
+    {
+      "from": "step.pub.private",
+      "type": "renders",
+      "to": "surface.editor"
+    },
+    {
+      "from": "step.pub.published",
+      "type": "renders",
+      "to": "surface.editor"
+    },
+    {
+      "from": "flow.capture-and-edit-keyboard",
+      "type": "contains",
+      "to": "step.detail.open"
+    },
+    {
+      "from": "flow.capture-and-edit-keyboard",
+      "type": "contains",
+      "to": "step.detail.fill"
+    },
+    {
+      "from": "flow.capture-and-edit-keyboard",
+      "type": "contains",
+      "to": "step.detail.confirm"
+    },
+    {
+      "from": "flow.capture-and-edit-keyboard",
+      "type": "contains",
+      "to": "step.detail.done"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "alternative",
+      "to": "flow.capture-and-edit-keyboard",
+      "notes": "keyboard-only path, same steps"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "contains",
+      "to": "step.gp.new-request"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "contains",
+      "to": "step.gp.request"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "contains",
+      "to": "step.gp.new-offer"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "contains",
+      "to": "step.gp.offer"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "contains",
+      "to": "step.gp.match"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "contains",
+      "to": "step.gp.done"
+    },
+    {
+      "from": "step.gp.new-request",
+      "type": "invokes",
+      "to": "cap.note.capture"
+    },
+    {
+      "from": "step.gp.new-request",
+      "type": "renders",
+      "to": "surface.notes.list"
+    },
+    {
+      "from": "step.gp.new-request",
+      "type": "next",
+      "to": "step.gp.request",
+      "when": "opened"
+    },
+    {
+      "from": "step.gp.request",
+      "type": "renders",
+      "to": "surface.editor"
+    },
+    {
+      "from": "step.gp.request",
+      "type": "next",
+      "to": "step.gp.new-offer",
+      "when": "saved"
+    },
+    {
+      "from": "step.gp.new-offer",
+      "type": "invokes",
+      "to": "cap.note.capture"
+    },
+    {
+      "from": "step.gp.new-offer",
+      "type": "renders",
+      "to": "surface.notes.list"
+    },
+    {
+      "from": "step.gp.new-offer",
+      "type": "next",
+      "to": "step.gp.offer",
+      "when": "opened"
+    },
+    {
+      "from": "step.gp.offer",
+      "type": "renders",
+      "to": "surface.editor"
+    },
+    {
+      "from": "step.gp.offer",
+      "type": "next",
+      "to": "step.gp.match",
+      "when": "saved"
+    },
+    {
+      "from": "step.gp.match",
+      "type": "renders",
+      "to": "surface.match-rail"
+    },
+    {
+      "from": "step.gp.done",
+      "type": "renders",
+      "to": "surface.match-rail"
+    },
+    {
+      "from": "cap.ontology.conflict",
+      "type": "supports",
+      "to": "intent.manage-ontology"
+    },
+    {
+      "from": "cap.match.explain",
+      "type": "supports",
+      "to": "intent.express-need"
+    },
+    {
+      "from": "cap.notes.display",
+      "type": "supports",
+      "to": "intent.express-need"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "uses",
+      "to": "cap.notes.display"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "uses",
+      "to": "cap.match.explain"
+    },
+    {
+      "from": "flow.ontology-conflict",
+      "type": "uses",
+      "to": "cap.ontology.conflict"
+    },
+    {
+      "from": "flow.inline-detail",
+      "type": "uses",
+      "to": "cap.property.inline"
+    },
+    {
+      "from": "flow.ontology-conflict",
+      "type": "contains",
+      "to": "step.oc.open"
+    },
+    {
+      "from": "flow.ontology-conflict",
+      "type": "contains",
+      "to": "step.oc.visible"
+    },
+    {
+      "from": "step.oc.open",
+      "type": "renders",
+      "to": "surface.ontology-view"
+    },
+    {
+      "from": "step.oc.open",
+      "type": "next",
+      "to": "step.oc.visible",
+      "when": "tabbed"
+    },
+    {
+      "from": "step.oc.visible",
+      "type": "renders",
+      "to": "surface.ontology-view"
+    },
+    {
+      "from": "flow.golden-path",
+      "type": "contains",
+      "to": "step.gp.explain"
+    },
+    {
+      "from": "step.gp.match",
+      "type": "next",
+      "to": "step.gp.explain"
+    },
+    {
+      "from": "step.gp.explain",
+      "type": "next",
+      "to": "step.gp.done"
+    },
+    {
+      "from": "step.gp.explain",
+      "type": "renders",
+      "to": "surface.match-rail"
+    }
+  ]
+}
