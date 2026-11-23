@@ -98,7 +98,7 @@ interface TabsProps<T extends string> {
 export function Tabs<T extends string>({options, value, onChange, label, size = 'md', disabled, className}: TabsProps<T>) {
     return (
         <div
-            className={cn('flex min-w-0 items-center gap-4 overflow-x-auto', className)}
+            className={cn('flex min-w-0 items-center overflow-x-auto', size === 'sm' ? 'gap-1' : 'gap-4', className)}
             role="tablist"
             aria-label={label}
         >

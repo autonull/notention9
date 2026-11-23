@@ -82,7 +82,7 @@ export function NoteContextRail({
                 onChange={setNoteTab}
                 label="Note context"
                 size="sm"
-                className="h-9 shrink-0 gap-1 border-b border-[var(--app-line)] px-1.5"
+                className="h-9 shrink-0 border-b border-[var(--app-line)] px-1.5"
             />
 
             <div className="min-h-0 flex-1 overflow-y-auto p-3 custom-scrollbar">
