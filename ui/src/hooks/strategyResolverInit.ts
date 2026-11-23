@@ -17,8 +17,6 @@ import { PropertyEditor } from '../components/editor/PropertyEditor';
 import { DescribeItComposer } from '../components/editor/DescribeItComposer';
 import { TemplateSelector } from '../components/editor/TemplateSelector';
 import { TagInput } from '../components/editor/TagInput';
-import { LocalMatchPreview } from '../components/dashboard/LocalMatchPreview';
-import { DashboardLocalMatch } from '../components/dashboard/DashboardLocalMatch';
 import { LocalMatchesPanel } from '../components/assistant/LocalMatchesPanel';
 
 // Use STRATEGY_CONFIGS_UI directly (synchronous, no async loading)
@@ -46,18 +44,6 @@ type InsertPropertyModalComponent = React.ComponentType<{
     isEditing?: boolean;
     onPickLocation?: () => Promise<string>;
     suggestions?: any[];
-}>;
-
-type LocalMatchPreviewComponent = React.ComponentType<{
-    match: any;
-    onSelectNote: (noteId: string) => void;
-    onRejectMatch: (matchId: string) => void;
-    onReviseRequest: () => void;
-}>;
-
-type DashboardLocalMatchComponent = React.ComponentType<{
-    notes: any[];
-    onSelectNote: (noteId: string) => void;
 }>;
 
 type LocalMatchesPanelComponent = React.ComponentType<{
@@ -112,8 +98,7 @@ export async function registerUIStrategies(): Promise<void> {
         'property-form': PropertyEditor,
         'template-selector': TemplateSelector,
         'quick-capture': QuickCapture,
-        'local-match-preview': LocalMatchPreview,
-        'dashboard-local-match': DashboardLocalMatch,
+        'inline-detail': () => null, // placeholder - component registered via InlineDetailStrategy
         'local-matches-panel': LocalMatchesPanel,
     };
 

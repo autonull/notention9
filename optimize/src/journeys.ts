@@ -86,7 +86,7 @@ const publishGate: JourneySpec = {
 
 const ontologyConflict: JourneySpec = {
     id: 'ontology-conflict',
-    version: 2,
+    version: 3,
     intent: 'verify ontology conflict detection and resolution',
     journeysTouched: ['ontology', 'conflict-resolution'],
     seed: { notes: [conflictNote], settings: { ...baseSettings, ontology: DEFAULT_ONTOLOGY } },
@@ -97,6 +97,11 @@ const ontologyConflict: JourneySpec = {
         { kind: 'waitForState', path: 'conflicts.0.propertyKey', equals: 'capacity', timeoutMs: 5000 },
         { kind: 'assertState', path: 'conflicts.length', equals: 1 },
         { kind: 'capture', label: 'conflict-visible' },
+        // Resolution: select conflict and update the value to fix it
+        { kind: 'act', target: { testId: 'conflict-resolve-capacity' }, action: 'click' },
+        { kind: 'waitForState', path: 'conflicts.length', equals: 0, timeoutMs: 5000 },
+        { kind: 'assertState', path: 'conflicts.length', equals: 0 },
+        { kind: 'capture', label: 'conflict-resolved' },
     ],
     status: 'ready',
 };

@@ -10,7 +10,6 @@ export const componentMap: Record<string, { path: string; name: string }> = {
     'describe-it-composer': { path: '../components/editor/DescribeItComposer', name: 'DescribeItComposer' },
     'template-selector': { path: '../components/editor/TemplateSelector', name: 'TemplateSelector' },
     'tag-input': { path: '../components/editor/TagInput', name: 'TagInput' },
-    'local-match-preview': { path: '../components/dashboard/LocalMatchPreview', name: 'LocalMatchPreview' },
-    'dashboard-local-match': { path: '../components/dashboard/DashboardLocalMatch', name: 'DashboardLocalMatch' },
+    'inline-detail': { path: '../strategies/InlineDetailStrategy', name: 'InlineDetailStrategy' },
     'local-matches-panel': { path: '../components/assistant/LocalMatchesPanel', name: 'LocalMatchesPanel' },
 };

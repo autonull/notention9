@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScoredMatch, PropertyMatch } from '@notention/core';
+import React, {useState} from 'react';
+import { ScoredMatch, PropertyMatch, MatchDetails } from '@notention/core';
 import {
     SparklesIcon,
     TagIcon,
@@ -11,7 +11,8 @@ import {
     ExclamationTriangleIcon,
     XMarkIcon,
     QuestionMarkCircleIcon,
-    ArrowRightIcon
+    ArrowRightIcon,
+    ChevronDownIcon,
 } from '../ui/icons';
 import {Button} from '../ui/Button';
 import {formatPropertyRange, formatPropertyValue} from '../../utils/propertyDisplay';
@@ -24,6 +25,24 @@ interface MatchItemProps {
     onConnect?: () => void;
     onChat?: () => void;
     onRespond?: () => void;
+    onView?: () => void;
+    onExplanation?: (action: 'explained' | 'dismissed') => void;
+    onRejectMatch?: (requestId: string, noteId: string) => void;
+    onReviseRequest?: (requestId: string) => void;
+}
+
+function getMatchTypeLabel(details?: MatchDetails): string {
+    if (!details) return 'Matched';
+    switch (details.type) {
+        case 'exact': return 'Exact match';
+        case 'alias': return 'Alias match';
+        case 'fuzzy': return 'Fuzzy match';
+        case 'range': return 'Range match';
+        case 'partial': return 'Partial match';
+        case 'geo': return 'Geographic match';
+        case 'date': return 'Date match';
+        default: return 'Matched';
+    }
 }
 
 export function MatchItem({
@@ -33,10 +52,21 @@ export function MatchItem({
     onClick,
     onConnect,
     onChat,
-    onRespond
+    onRespond,
+    onView,
+    onExplanation,
+    onRejectMatch,
+    onReviseRequest,
 }: MatchItemProps) {
     const { note, result, direction } = match;
     const score = Math.round(result.score * 100);
+    const [explanationsOpen, setExplanationsOpen] = useState(false);
+    const [showRecovery, setShowRecovery] = useState(false);
+
+    const handleExplanationToggle = (open: boolean) => {
+        setExplanationsOpen(open);
+        onExplanation?.(open ? 'explained' : 'dismissed');
+    };
 
     return (
         <div
@@ -103,37 +133,162 @@ export function MatchItem({
                 ))}
             </div>
 
-            <div className="flex gap-1.5">
-                {isLocal ? (
-                    <Button
-                        size="xs"
-                        variant="secondary"
-                        onClick={(e) => { e.stopPropagation(); onRespond?.(); }}
-                        icon={ArrowRightIcon}
-                        data-testid="match-respond-button"
-                    >
-                        Respond
-                    </Button>
-                ) : isContact ? (
-                    <Button
-                        size="xs"
-                        variant="secondary"
-                        onClick={(e) => { e.stopPropagation(); onChat?.(); }}
-                        icon={ChatIcon}
-                    >
-                        Chat
-                    </Button>
-                ) : (
-                    <Button
-                        size="xs"
-                        variant="secondary"
-                        onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
-                        icon={UserPlusIcon}
-                    >
-                        Connect
-                    </Button>
-                )}
+            <div className="flex items-center justify-between">
+                <Button
+                    size="xs"
+                    variant="ghost"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        handleExplanationToggle(!explanationsOpen);
+                    }}
+                    icon={explanationsOpen ? ChevronDownIcon : ArrowRightIcon}
+                    className="text-[var(--app-faint)] hover:text-[var(--app-text)]"
+                    data-testid="match-explanation-toggle"
+                    aria-expanded={explanationsOpen}
+                >
+                    {explanationsOpen ? 'Hide details' : 'Why this match?'}
+                </Button>
+
+                <div className="flex gap-1.5">
+                    {isLocal ? (
+                        <Button
+                            size="xs"
+                            variant="secondary"
+                            onClick={(e) => { e.stopPropagation(); onRespond?.(); }}
+                            icon={ArrowRightIcon}
+                            data-testid="match-respond-button"
+                        >
+                            Respond
+                        </Button>
+                    ) : isContact ? (
+                        <Button
+                            size="xs"
+                            variant="secondary"
+                            onClick={(e) => { e.stopPropagation(); onChat?.(); }}
+                            icon={ChatIcon}
+                        >
+                            Chat
+                        </Button>
+                    ) : (
+                        <Button
+                            size="xs"
+                            variant="secondary"
+                            onClick={(e) => { e.stopPropagation(); onConnect?.(); }}
+                            icon={UserPlusIcon}
+                        >
+                            Connect
+                        </Button>
+                    )}
+                </div>
             </div>
+
+            {explanationsOpen && (
+                <div className="animate-slide-in-down space-y-3 border-t border-[var(--app-line)] pt-3" data-testid="match-explanation-details">
+                    <div className="space-y-2">
+                        {result.matches.map((m, i) => (
+                            <MatchDetail key={`detail-${i}`} match={m} index={i} />
+                        ))}
+                    </div>
+
+                    {result.conflicts && result.conflicts.length > 0 && (
+                        <div className="space-y-2">
+                            <div className="text-[12px] font-medium text-[var(--app-text-secondary)]">Conflicts</div>
+                            {result.conflicts.map((m, i) => (
+                                <div
+                                    key={`conflict-detail-${i}`}
+                                    className="rounded border border-red-500/20 bg-red-500/5 p-2 text-[11px] text-red-300"
+                                >
+                                    <div className="flex items-center gap-1">
+                                        <XMarkIcon className="h-3 w-3" />
+                                        <span>{m.reason}</span>
+                                    </div>
+                                    <div className="text-[10px] text-[var(--app-faint)] ml-4">
+                                        Request: {m.requestProp.key} {m.requestProp.operator} {m.requestProp.values.join(', ')}
+                                    </div>
+                                    <div className="text-[10px] text-[var(--app-faint)] ml-4">
+                                        Offer: {m.offerProp.key} {m.offerProp.operator} {m.offerProp.values.join(', ')}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {result.missing && result.missing.length > 0 && (
+                        <div className="space-y-2">
+                            <div className="text-[12px] font-medium text-[var(--app-text-secondary)]">Missing properties</div>
+                            {result.missing.map((p, i) => (
+                                <div
+                                    key={`missing-detail-${i}`}
+                                    className="rounded border border-dashed border-[var(--app-line-strong)] bg-[var(--app-surface)] p-2 text-[11px] text-[var(--app-faint)]"
+                                >
+                                    <div className="flex items-center gap-1">
+                                        <QuestionMarkCircleIcon className="h-3 w-3" />
+                                        Missing: {p.key}
+                                    </div>
+                                    <div className="text-[10px] text-[var(--app-faint)] ml-4">
+                                        Request expected: {p.key} {p.operator} {p.values.join(', ')}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
+                    {isLocal && onRejectMatch && onReviseRequest && (
+                        <div className="pt-2 border-t border-[var(--app-line)]">
+                            <Button
+                                size="sm"
+                                variant="secondary"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setShowRecovery(true);
+                                }}
+                                className="text-yellow-400 hover:text-yellow-300"
+                                title="This match isn't right - help me correct it"
+                                icon={XMarkIcon}
+                            >
+                                Not a match
+                            </Button>
+
+                            {showRecovery && (
+                                <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl animate-slide-in-down">
+                                    <div className="text-xs text-yellow-300 mb-2">This match isn't right. What would you like to do?</div>
+                                    <div className="flex flex-wrap gap-2">
+                                        <Button
+                                            size="sm"
+                                            variant="secondary"
+                                            onClick={() => {
+                                                onRejectMatch(match.request.id, match.note.id);
+                                                setShowRecovery(false);
+                                            }}
+                                            icon={XMarkIcon}
+                                        >
+                                            Reject this match
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            variant="primary"
+                                            onClick={() => {
+                                                onReviseRequest(match.request.id);
+                                                setShowRecovery(false);
+                                            }}
+                                            icon={ArrowRightIcon}
+                                        >
+                                            Revise request
+                                        </Button>
+                                        <Button
+                                            size="sm"
+                                            variant="ghost"
+                                            onClick={() => setShowRecovery(false)}
+                                        >
+                                            Try different match
+                                        </Button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }
@@ -191,5 +346,69 @@ const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
             {icon}
             <span className="truncate">{text}</span>
         </span>
+    );
+};
+
+const MatchDetail: React.FC<{ match: PropertyMatch; index: number }> = ({ match, index }) => {
+    const type = match.details?.type || 'unknown';
+    const key = match.requestProp.key;
+    const offerValue = formatPropertyValue(match.offerProp.values[0] ?? '');
+    const requestRange = formatPropertyRange(match.requestProp.values);
+    let icon: React.ReactNode = null;
+    let typeLabel = getMatchTypeLabel(match.details);
+    let detailText = match.reason;
+
+    switch (type) {
+        case 'alias':
+            icon = <TagIcon className="h-3.5 w-3.5" />;
+            detailText = `${key} matches via alias: ${offerValue}`;
+            break;
+        case 'fuzzy':
+            icon = <SparklesIcon className="h-3.5 w-3.5" />;
+            detailText = `${key} fuzzy matches: ${offerValue}`;
+            break;
+        case 'range':
+            detailText = `${key} is ${match.details?.valueMatch === 'out' ? 'outside' : 'within'} ${requestRange} (offer: ${offerValue})`;
+            break;
+        case 'date':
+            icon = <ClockIcon className="h-3.5 w-3.5" />;
+            detailText = `${key} date match: ${offerValue}`;
+            break;
+        case 'partial':
+            icon = <ExclamationTriangleIcon className="h-3.5 w-3.5" />;
+            detailText = match.requestProp.operator === 'contains'
+                ? `${key} contains ${offerValue}`
+                : match.requestProp.operator === 'excludes'
+                    ? `${key} excludes ${offerValue}`
+                    : `${key}: ${offerValue}`;
+            break;
+        case 'substring':
+            icon = <ExclamationTriangleIcon className="h-3.5 w-3.5" />;
+            detailText = match.requestProp.operator === 'contains'
+                ? `${key} contains ${offerValue}`
+                : `${key}: ${offerValue}`;
+            break;
+        case 'exact':
+            icon = <CheckCircleIcon className="h-3.5 w-3.5" />;
+            detailText = `${key} exact match: ${offerValue}`;
+            break;
+    }
+
+    return (
+        <div className="flex items-start gap-2 p-2 rounded border border-[var(--app-line)] bg-[var(--app-raised)]">
+            {icon && <span className="shrink-0 mt-0.5">{icon}</span>}
+            <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-1.5">
+                    <span className="text-[11px] font-medium text-[var(--app-text-secondary)]">{typeLabel}</span>
+                    <span className="text-[10px] text-[var(--app-faint)] uppercase">{type}</span>
+                </div>
+                <div className="text-[12px] text-[var(--app-muted)] mt-0.5">{detailText}</div>
+                <div className="text-[10px] text-[var(--app-faint)] mt-1 font-mono">
+                    Request: {match.requestProp.key} {match.requestProp.operator} {match.requestProp.values.join(', ')}
+                    {' · '}
+                    Offer: {match.offerProp.key} {match.offerProp.operator} {match.offerProp.values.join(', ')}
+                </div>
+            </div>
+        </div>
     );
 };

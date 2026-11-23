@@ -72,8 +72,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-10T12:43:32.604Z",
-        "updatedAt": "2026-11-10T12:43:32.604Z"
+        "createdAt": "2026-11-23T20:52:03.922Z",
+        "updatedAt": "2026-11-23T20:52:03.922Z"
     },
     {
         "id": "extraction-0",
@@ -118,8 +118,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-10T12:43:32.604Z",
-        "updatedAt": "2026-11-10T12:43:32.604Z"
+        "createdAt": "2026-11-23T20:52:03.922Z",
+        "updatedAt": "2026-11-23T20:52:03.922Z"
     },
     {
         "id": "template-0",
@@ -153,8 +153,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-10T12:43:32.604Z",
-        "updatedAt": "2026-11-10T12:43:32.604Z"
+        "createdAt": "2026-11-23T20:52:03.922Z",
+        "updatedAt": "2026-11-23T20:52:03.922Z"
     },
     {
         "id": "elicit-0",
@@ -173,12 +173,13 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "suggestions": "any[]"
         },
         "components": [
-            "TagInput"
+            "TagInput",
+            "InlineDetailStrategy"
         ],
         "paramSpec": {
             "autoFocus": {
                 "type": "boolean",
-                "description": "Whether to auto-focus the tag input",
+                "description": "Whether to auto-focus the key input on open",
                 "default": false
             }
         },
@@ -204,80 +205,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-10T12:43:32.604Z",
-        "updatedAt": "2026-11-10T12:43:32.604Z"
-    },
-    {
-        "id": "match-0",
-        "name": "Match Display",
-        "description": "Match explanation and selection interface",
-        "role": "match",
-        "propsShape": {
-            "match": "any",
-            "onSelectNote": "(noteId: string) => void",
-            "onRejectMatch": "(matchId: string) => void",
-            "onReviseRequest": "() => void",
-            "notes": "any[]"
-        },
-        "components": [
-            "LocalMatchPreview",
-            "DashboardLocalMatch"
-        ],
-        "paramSpec": {
-            "showScore": {
-                "type": "boolean",
-                "description": "Show match score percentage",
-                "default": true
-            },
-            "showDetails": {
-                "type": "boolean",
-                "description": "Show detailed match explanations by default",
-                "default": false
-            },
-            "compactMode": {
-                "type": "boolean",
-                "description": "Use compact layout for dashboard",
-                "default": false
-            },
-            "minScore": {
-                "type": "number",
-                "description": "Minimum score to show a match",
-                "default": 0.4,
-                "min": 0,
-                "max": 1
-            },
-            "maxResults": {
-                "type": "number",
-                "description": "Maximum number of matches to display",
-                "default": 5,
-                "min": 1,
-                "max": 20
-            }
-        },
-        "evaluator": {
-            "type": "match",
-            "qualityFamily": "match",
-            "metrics": [
-                "recall",
-                "precision",
-                "f1"
-            ],
-            "primaryMetric": "f1",
-            "mde": {
-                "f1": 0.05
-            },
-            "floors": {
-                "f1": 0.6
-            }
-        },
-        "governanceLevel": "config",
-        "evidenceClasses": [
-            "measured",
-            "observed"
-        ],
-        "version": "1.0.0",
-        "createdAt": "2026-11-10T12:43:32.604Z",
-        "updatedAt": "2026-11-10T12:43:32.604Z"
+        "createdAt": "2026-11-23T20:52:03.922Z",
+        "updatedAt": "2026-11-23T20:52:03.922Z"
     },
     {
         "id": "matches-panel-0",
@@ -311,8 +240,8 @@ export const SEAM_DEFINITIONS: SeamDefinition[] = [
             "observed"
         ],
         "version": "1.0.0",
-        "createdAt": "2026-11-10T12:43:32.604Z",
-        "updatedAt": "2026-11-10T12:43:32.604Z"
+        "createdAt": "2026-11-23T20:52:03.922Z",
+        "updatedAt": "2026-11-23T20:52:03.922Z"
     }
 ];
 
@@ -445,57 +374,23 @@ export const STRATEGY_CONFIGS = [
         }
     },
     {
-        "id": "local-match-preview",
-        "seamId": "match-0",
-        "seamName": "Match Display",
-        "seamRole": "match",
+        "id": "inline-detail",
+        "seamId": "elicit-0",
+        "seamName": "Elicit",
+        "seamRole": "elicit",
         "version": "1.0.0",
-        "componentPath": "../components/dashboard/LocalMatchPreview",
-        "componentName": "LocalMatchPreview",
+        "componentPath": "../strategies/InlineDetailStrategy",
+        "componentName": "InlineDetailStrategy",
         "paramSpec": {
-            "showScore": {
+            "autoFocus": {
                 "type": "boolean",
-                "description": "Show match score percentage",
-                "default": true
-            },
-            "showDetails": {
-                "type": "boolean",
-                "description": "Show detailed match explanations by default",
-                "default": false
-            },
-            "compactMode": {
-                "type": "boolean",
-                "description": "Use compact layout for dashboard",
+                "description": "Whether to auto-focus the key input on open",
                 "default": false
             }
         },
-        "defaultProps": {}
-    },
-    {
-        "id": "dashboard-local-match",
-        "seamId": "match-0",
-        "seamName": "Match Display",
-        "seamRole": "match",
-        "version": "1.0.0",
-        "componentPath": "../components/dashboard/DashboardLocalMatch",
-        "componentName": "DashboardLocalMatch",
-        "paramSpec": {
-            "minScore": {
-                "type": "number",
-                "description": "Minimum score to show a match",
-                "default": 0.4,
-                "min": 0,
-                "max": 1
-            },
-            "maxResults": {
-                "type": "number",
-                "description": "Maximum number of matches to display",
-                "default": 5,
-                "min": 1,
-                "max": 20
-            }
-        },
-        "defaultProps": {}
+        "defaultProps": {
+            "autoFocus": false
+        }
     },
     {
         "id": "local-matches-panel",

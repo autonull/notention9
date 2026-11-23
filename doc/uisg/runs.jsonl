@@ -1,0 +1,4 @@
+{"flowId":"flow.capture-and-edit","runId":"run_1795466622841_h4avml1","bundlePath":"data/loop/runs/run-run_1795466622841_h4avml1/bundle.json","status":"passed","timestamp":"2026-11-23T20:43:58.124Z","dimensions":{}}
+{"flowId":"flow.golden-path","runId":"run_1795466641505_nkya9af","bundlePath":"data/loop/runs/run-run_1795466641505_nkya9af/bundle.json","status":"passed","timestamp":"2026-11-23T20:44:13.274Z","dimensions":{}}
+{"flowId":"flow.publish-gate","runId":"run_1795466656262_7xekbtd","bundlePath":"data/loop/runs/run-run_1795466656262_7xekbtd/bundle.json","status":"passed","timestamp":"2026-11-23T20:44:24.635Z","dimensions":{}}
+{"flowId":"flow.ontology-conflict","runId":"run_1795466667645_u04hr3o","bundlePath":"data/loop/runs/run-run_1795466667645_u04hr3o/bundle.json","status":"passed","timestamp":"2026-11-23T20:44:35.962Z","dimensions":{}}

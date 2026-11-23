@@ -111,45 +111,13 @@ export const tagInputParamSpec: ParamSpec = {
     },
 };
 
-/** LocalMatchPreview - match display configuration */
-export const localMatchPreviewParamSpec: ParamSpec = {
-    showScore: { 
+/** InlineDetail - inline property entry in editor */
+export const inlineDetailParamSpec: ParamSpec = {
+    autoFocus: { 
         type: 'boolean', 
-        description: 'Show match score percentage', 
-        default: true,
-        mechanism: 'LocalMatchPreview.tsx conditionally renders score badge when true. Affects: user trust calibration, decision time for match acceptance/rejection.'
-    },
-    showDetails: { 
-        type: 'boolean', 
-        description: 'Show detailed match explanations by default', 
+        description: 'Whether to auto-focus the key input on open', 
         default: false,
-        mechanism: 'LocalMatchPreview.tsx toggles expansion of match detail accordion on mount. Affects: information density, cognitive load, match verification accuracy.'
-    },
-    compactMode: { 
-        type: 'boolean', 
-        description: 'Use compact layout for dashboard', 
-        default: false,
-        mechanism: 'LocalMatchPreview.tsx applies compact CSS class reducing padding/font-size. Affects: scan density on dashboard, match discovery rate per unit time.'
-    },
-};
-
-/** DashboardLocalMatch */
-export const dashboardLocalMatchParamSpec: ParamSpec = {
-    minScore: { 
-        type: 'number', 
-        description: 'Minimum score to show a match', 
-        default: 0.4, 
-        min: 0, 
-        max: 1,
-        mechanism: 'DashboardLocalMatch.tsx filters match engine results client-side before rendering. Affects: precision/recall tradeoff directly - higher = fewer false positives but more missed matches.'
-    },
-    maxResults: { 
-        type: 'number', 
-        description: 'Maximum number of matches to display', 
-        default: 5, 
-        min: 1, 
-        max: 20,
-        mechanism: 'DashboardLocalMatch.tsx slices sorted match array after minScore filter. Affects: dashboard clutter, user attention allocation, discovery of lower-ranked matches.'
+        mechanism: 'InlineDetailStrategy.tsx useEffect on mount calls inputRef.current?.focus() when true. Affects: property entry latency, UX friction.'
     },
 };
 
@@ -210,22 +178,15 @@ export const STRATEGY_PARAM_CONFIGS: StrategyParamConfig[] = [
         { autoFocus: false },
         tagInputParamSpec
     ),
+    createStrategyParamConfig(
+        'inline-detail',
+        elicitSpec,
+        '1.0.0',
+        { autoFocus: false },
+        inlineDetailParamSpec
+    ),
 
-    // Match strategies
-    createStrategyParamConfig(
-        'local-match-preview',
-        matchSpec,
-        '1.0.0',
-        {},
-        localMatchPreviewParamSpec
-    ),
-    createStrategyParamConfig(
-        'dashboard-local-match',
-        matchSpec,
-        '1.0.0',
-        {},
-        dashboardLocalMatchParamSpec
-    ),
+    // Match strategies (consolidated into MatchItem)
 
     // Layout strategies
     createStrategyParamConfig(

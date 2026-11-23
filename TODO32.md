@@ -195,7 +195,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 
 #### B1: W32.4 — Seam Experiments
 **Goal:** every seam with a real alternative is evaluated, not assumed.
-- [ ] Elicit: inline detail vs popup (`flow.inline-detail`); strategy registered, selected by profile/experiment; a11y/keyboard parity.
+- [x] Elicit: inline detail vs popup (`flow.inline-detail`); strategy registered (`InlineDetailStrategy`), selected by profile/experiment; a11y/keyboard parity.
 - [ ] Capture: quick-capture strategy vs page `New note`; steps vs comprehension.
 - [ ] Match: reason badges vs expandable details; explanations found/understood?
 - [ ] Display/layout: list vs board defaults, rail share, density (config variants only).
@@ -206,18 +206,19 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 
 #### B2: W32.5 — Explain Consolidation
 **Goal:** the golden path's explained match is complete and singular.
-- [ ] Move expandable "Why this match?" details into `MatchItem` (shared pattern); keep badges.
-- [ ] Delete/rehome `LocalMatchPreview` and `DashboardLocalMatch`; update orphan baseline.
+- [x] Move expandable "Why this match?" details into `MatchItem` (shared pattern); keep badges.
+- [x] Delete/rehome `LocalMatchPreview` and `DashboardLocalMatch`; update orphan baseline.
 - [ ] Journey asserts explanation visibility + reason text (`assertVisible`).
 - [ ] axe dark/light on note with rail open.
 
 #### B3: W32.6 — Conflict Resolution & Ontology Health
 **Goal:** detection leads to resolution.
-- [ ] Extend conflict journey: select, resolve (update/remove/merge), assert `conflicts.length === 0` with data preserved.
+- [x] Extend conflict journey: select, resolve (update/remove/merge), assert `conflicts.length === 0` with data preserved.
 - [ ] State paths for suggestions/resolution; capability "Resolve ontology conflict"; steps/surfaces updated.
 - [ ] Gardener/merge flow coverage; `ontology:audit` output linked to graph.
 
 **Phase B Acceptance:** ≥1 evaluated experiment per seam with 2 strategies; every decision recorded; no variant without evidence bundle; `check:ui` green; resolution journey green; detection+resolution capabilities; no silent data loss.
+- Status: Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended. Remaining: Capture/Match/Display experiments, gardener/merge flow, journey assertions for explanations.
 
 ---
 
