@@ -133,7 +133,8 @@ export function MapPickerModal({
             isOpen={isOpen}
             onClose={onClose}
             title="Select a Location"
-            className="max-w-4xl h-[80vh]"
+            size="full"
+            className="h-[80vh]"
         >
             <div className="flex flex-col h-full gap-3">
                 <form onSubmit={handleSearch} className="flex gap-2 relative">

@@ -94,7 +94,7 @@ export function useEditorLogic({ note, onSave }: UseEditorLogicProps) {
         dirtyNote,
         handleNoteUpdate,
         isPublishing,
-        handleTitleChange: useCallback((e: React.ChangeEvent<HTMLInputElement>) =>
+        handleTitleChange: useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
             setDirtyNote(prev => ({ ...prev, title: e.target.value })), [setDirtyNote]),
         handleTagsChange,
         handlePublish,

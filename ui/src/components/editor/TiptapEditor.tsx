@@ -1,7 +1,6 @@
 import React, {forwardRef, useEffect, useImperativeHandle, useMemo, useState} from 'react';
 import {Editor, EditorContent as EditorContentComponent} from '@tiptap/react';
 import type {Note, OntologyNode, Template} from '@notention/core';
-import {TiptapToolbar} from './TiptapToolbar';
 import {sanitizeHTML} from '../../utils/sanitize';
 import {prettyPrintHtml} from '../../utils/html';
 import {useTiptapConfig} from './useTiptapConfig';
@@ -26,9 +25,7 @@ interface TiptapEditorProps {
     ontology: OntologyNode[];
     templates?: Template[];
     minimal?: boolean;
-    showToolbar?: boolean;
     onMagic?: () => void;
-    onTemplates?: () => void;
     notes?: Note[];
     onPickLocation?: () => Promise<string>;
     saveStatus?: 'saved' | 'saving' | 'error';
@@ -51,9 +48,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                                                                                 ontology,
                                                                                 templates,
                                                                                 minimal = false,
-                                                                                showToolbar = true,
                                                                                 onMagic,
-                                                                                onTemplates,
                                                                                 notes = [],
                                                                                 onPickLocation,
                                                                                 saveStatus,
@@ -63,7 +58,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     const [viewMode, setViewMode] = useState<'rich' | 'code'>('rich');
     const [isDescribeOpen, setIsDescribeOpen] = useState(false);
     const [editorReady, setEditorReady] = useState(false);
-    const [isEditorFocused, setIsEditorFocused] = useState(false);
 
     const {setSearchTerm, setActiveView, setSelectedNoteId} = useView();
     const {addToast} = useToast();
@@ -158,18 +152,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
     }, [handleOpenPropertyModal]);
 
     useEffect(() => {
-        if (!editor || editor.isDestroyed) return;
-        const onFocus = () => setIsEditorFocused(true);
-        const onBlur = () => setIsEditorFocused(false);
-        editor.on('focus', onFocus);
-        editor.on('blur', onBlur);
-        return () => {
-            editor.off('focus', onFocus);
-            editor.off('blur', onBlur);
-        };
-    }, [editor]);
-
-    useEffect(() => {
         const handleSaveEvent = () => {
             if (editor && !editor.isDestroyed) {
                 onSave(editor.getHTML());
@@ -228,16 +210,6 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
     return (
         <div className="flex flex-1 min-h-0 flex-col">
-            {!minimal && showToolbar && isEditorFocused && (
-                <TiptapToolbar
-                    editor={editor}
-                    viewMode={viewMode}
-                    toggleViewMode={toggleViewMode}
-                    onMagic={onMagic}
-                    onTemplates={onTemplates}
-                    onDescribe={() => setIsDescribeOpen(true)}
-                />
-            )}
             <DescribeItComposer
                 isOpen={isDescribeOpen}
                 onClose={() => setIsDescribeOpen(false)}
@@ -282,7 +254,12 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
             {!minimal && (
                 <div className="shrink-0 border-t border-[var(--app-line)] px-[var(--page-pad)] py-2">
                     <PageMeta>
-                        <EditorStatusBar editor={editor} saveStatus={saveStatus}/>
+                        <EditorStatusBar
+                            editor={editor}
+                            saveStatus={saveStatus}
+                            viewMode={viewMode}
+                            onToggleViewMode={toggleViewMode}
+                        />
                     </PageMeta>
                 </div>
             )}

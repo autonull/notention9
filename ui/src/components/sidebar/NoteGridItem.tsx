@@ -1,10 +1,11 @@
 import React from 'react';
 import type {Note} from '@notention/core';
-import {DownloadIcon, PinIcon, WorldIcon} from '../ui/icons';
+import {PinIcon, WorldIcon} from '../ui/icons';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {useNoteDisplay} from './useNoteDisplay';
 import {cn} from '../../utils/ui';
 import {noteAccentClass} from '../../utils/noteAccent';
+import {formatPropertyValue} from '../../utils/propertyDisplay';
 
 interface NoteGridItemProps {
     note: Note;
@@ -18,7 +19,6 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
         relativeTime,
         displayProperties,
         isPublic,
-        isImported,
         isPinned,
         isLowPriority,
         isVeryLowPriority,
@@ -27,7 +27,7 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
     const primary = displayProperties[0];
     const primaryValue = primary?.values[0]?.trim();
     const label = primaryValue
-        ? primaryValue.replace(/[-_]/g, ' ')
+        ? formatPropertyValue(primaryValue)
         : note.tags[0] ? `#${note.tags[0]}` : '';
 
     return (
@@ -57,7 +57,6 @@ export function NoteGridItem({note, isSelected, onSelect}: NoteGridItemProps) {
                 <span className="truncate capitalize">{label || 'note'}</span>
                 <span className="ml-auto flex shrink-0 items-center gap-1.5 text-[var(--app-faint)]">
                     {isPinned && <PinIcon className="h-3 w-3" aria-label="Pinned"/>}
-                    {isImported && <DownloadIcon className="h-3 w-3" aria-label="Imported"/>}
                     {isPublic ? <WorldIcon className="h-3 w-3" aria-label="Public"/> : null}
                 </span>
             </div>

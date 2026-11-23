@@ -168,7 +168,7 @@ Tasks grouped into status columns.
 
 ### notes / empty
 
-First run: an empty history and a blank page entry point.
+First run: a blank page entry point and one primary action.
 
 ![notes / empty](notes/empty.png)
 
@@ -222,7 +222,7 @@ Five settings groups, one open at a time.
 
 ### settings / labels
 
-Labels remain a settings tab, reachable by deep link.
+Edit labels, open the page for a new one, and confirm removal.
 
 ![settings / labels](settings/labels.png)
 

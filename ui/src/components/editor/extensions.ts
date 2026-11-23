@@ -4,6 +4,7 @@ import Mention, {MentionNodeAttrs} from '@tiptap/extension-mention';
 import {PropertyNode} from './PropertyNode';
 import {GhostTextExtension} from './GhostTextExtension';
 import {configureSuggestions} from './configureSuggestions';
+import {applyFormat, type FormatAction} from './formatCommands';
 import type {Note, Template} from '@notention/core';
 
 interface GetExtensionsProps {
@@ -70,6 +71,19 @@ export const getExtensions = ({
         }),
         createMentionConfig('slashCommand', 'suggestion-slash', '/', (query) => {
             const lower = query.toLowerCase();
+            const formatItems = [
+                {id: 'h1', label: 'Heading 1', description: 'Large section title'},
+                {id: 'h2', label: 'Heading 2', description: 'Section title'},
+                {id: 'h3', label: 'Heading 3', description: 'Subsection title'},
+                {id: 'bullet', label: 'Bullet list', description: 'Unordered list'},
+                {id: 'numbered', label: 'Numbered list', description: 'Ordered list'},
+                {id: 'quote', label: 'Quote', description: 'Quoted passage'},
+                {id: 'code', label: 'Code block', description: 'Preformatted block'},
+                {id: 'divider', label: 'Divider', description: 'Horizontal rule'},
+            ]
+                .filter(item => !lower || item.label.toLowerCase().includes(lower) || item.description.toLowerCase().includes(lower))
+                .map(item => ({...item, type: 'format'}));
+
             const templateItems = getTemplates().filter(t => t.label.toLowerCase().includes(lower))
                 .sort((a, b) => (a.label.toLowerCase().startsWith(lower) ? -1 : 1))
                 .map(t => ({ id: t.content, label: t.label, description: 'Template', type: 'template' }));
@@ -82,11 +96,15 @@ export const getExtensions = ({
             if ('current date'.includes(lower)) commandItems.push({ id: 'date', label: 'Current Date', description: new Date().toISOString().split('T')[0], type: 'command' });
             if ('current time'.includes(lower)) commandItems.push({ id: 'time', label: 'Current Time', description: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), type: 'command' });
 
-            return [...commandItems, ...templateItems, ...propertyItems].slice(0, 10);
+            return [...formatItems, ...commandItems, ...templateItems, ...propertyItems].slice(0, 10);
         }, ({ editor, range, props }: any) => {
             editor.chain().focus().deleteRange(range).run();
             const p = props as SlashCommandAttrs;
             if (p.type === 'property' && onOpenPropertyModal && p.label) return onOpenPropertyModal(p.label);
+            if (p.type === 'format') {
+                applyFormat(editor, p.id as FormatAction);
+                return;
+            }
             if (p.type === 'command') {
                 if (p.id === 'magic') onMagic?.();
                 else if (p.id === 'date') editor.chain().focus().insertContent(new Date().toISOString().split('T')[0]).run();

@@ -7,7 +7,6 @@ export interface Route {
     section: NotesSection;
     tab: NoteTab;
     settingsTab: SettingsTab;
-    capture: boolean;
     explore: boolean;
     search: boolean;
     chat: boolean;
@@ -20,7 +19,6 @@ export const DEFAULT_ROUTE: Route = {
     section: 'all',
     tab: 'next',
     settingsTab: 'general',
-    capture: false,
     explore: false,
     search: false,
     chat: false,
@@ -42,8 +40,8 @@ const includes = <T extends string>(values: readonly T[], value: string | null |
 
 /** Old hash segments. Each entry names the one destination that owns the capability. */
 export const LEGACY_REDIRECTS: Record<string, Partial<Route>> = {
-    inbox: {view: 'notes', capture: true},
-    capture: {view: 'notes', capture: true},
+    inbox: {view: 'notes'},
+    capture: {view: 'notes'},
     dashboard: {view: 'notes'},
     actions: {view: 'notes', mode: 'board'},
     map: {view: 'notes', mode: 'map'},
@@ -52,7 +50,6 @@ export const LEGACY_REDIRECTS: Record<string, Partial<Route>> = {
     network: {view: 'notes', explore: true},
     connections: {view: 'notes', explore: true},
     chat: {view: 'notes', tab: 'chat', chat: true},
-    responses: {view: 'notes', tab: 'replies'},
     labels: {view: 'settings', settingsTab: 'labels'},
     ontology: {view: 'settings', settingsTab: 'ontology'},
     skills: {view: 'settings', settingsTab: 'skills'},
@@ -76,7 +73,6 @@ export function parseRoute(hash: string): Route {
             mode: includes(NOTE_MODES, params.get('mode')) ? params.get('mode') as NoteMode : 'list',
             section: includes(NOTES_SECTIONS, params.get('filter')) ? params.get('filter') as NotesSection : 'all',
             tab: includes(NOTE_TABS, params.get('tab')) ? params.get('tab') as NoteTab : 'next',
-            capture: params.get('capture') === '1',
             explore: params.get('explore') === '1',
             search: params.get('search') === '1',
             chat: params.get('chat') === '1',
@@ -118,7 +114,6 @@ export function routeToHash(route: Route): string {
     const params = new URLSearchParams();
     if (route.mode !== 'list') params.set('mode', route.mode);
     if (route.section !== 'all') params.set('filter', route.section);
-    if (route.capture) params.set('capture', '1');
     if (route.explore) params.set('explore', '1');
     if (route.search) params.set('search', '1');
     if (route.chat) params.set('chat', '1');

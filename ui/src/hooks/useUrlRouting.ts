@@ -2,12 +2,6 @@ import {useCallback, useEffect, useRef} from 'react';
 import {useView} from './useViewContext';
 import {parseRoute, routeToHash, type Route} from '../utils/navigation';
 
-const focusCapture = () => {
-    requestAnimationFrame(() => {
-        window.dispatchEvent(new CustomEvent('focus-capture'));
-    });
-};
-
 export function useUrlRouting() {
     const {
         activeView,
@@ -35,7 +29,6 @@ export function useUrlRouting() {
         setNotesSection(route.section);
         setSettingsTab(route.settingsTab);
         setNoteTab(route.tab);
-        if (route.capture) focusCapture();
         if (route.search) {
             setIsPaletteOpen(true);
             requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('open-search')));
@@ -77,7 +70,6 @@ export function useUrlRouting() {
             section: notesSection,
             tab: noteTab,
             settingsTab,
-            capture: false,
             explore: false,
             search: false,
             chat: false,

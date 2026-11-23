@@ -156,11 +156,11 @@ export const NoteListItem = React.memo(({
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
-            role="button"
-            tabIndex={tabIndex}
-            aria-current={isSelected ? 'true' : undefined}
-            onClick={onSelect}
-            onKeyDown={handleKeyDown}
+            role={isTrash ? undefined : 'button'}
+            tabIndex={isTrash ? undefined : tabIndex}
+            aria-current={!isTrash && isSelected ? 'true' : undefined}
+            onClick={isTrash ? undefined : onSelect}
+            onKeyDown={isTrash ? undefined : handleKeyDown}
             className={cn(itemClasses, noteAccentClass(note))}
         >
             <span

@@ -11,7 +11,7 @@ interface NextStepStripProps {
 }
 
 function DrawerButton({count, onOpenDrawer}: {count: number; onOpenDrawer?: () => void}) {
-  if (!onOpenDrawer) return null;
+  if (!onOpenDrawer || count <= 1) return null;
   return (
     <button
       type="button"
@@ -19,7 +19,7 @@ function DrawerButton({count, onOpenDrawer}: {count: number; onOpenDrawer?: () =
       onClick={onOpenDrawer}
       aria-label={`Open next steps (${count})`}
     >
-      {count > 1 ? `${count - 1} more` : 'All'}
+      {count - 1} more
       <ChevronRightIcon className="w-3.5 h-3.5"/>
     </button>
   );

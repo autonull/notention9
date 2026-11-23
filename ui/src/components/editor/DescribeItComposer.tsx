@@ -69,7 +69,7 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
 
     return (
         <>
-            <Modal isOpen={isOpen} onClose={handleClose} title="Describe it" className="max-w-xl">
+            <Modal isOpen={isOpen} onClose={handleClose} title="Describe it" size="xl">
                 <div className="space-y-4">
                     <p className="text-sm text-[var(--app-muted)]">
                         Describe the note in your own words. Suggestions stay proposals until you accept them.

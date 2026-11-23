@@ -6,6 +6,7 @@ import {useSettings} from '../../hooks/useSettingsContext';
 import {useOntologyIndex} from '../../hooks/useOntologyIndex';
 import {validateAttributeValue} from '@notention/core';
 import {isCustomEnumValue} from '../../utils/propertyValidation';
+import {formatPropertyValue} from '../../utils/propertyDisplay';
 
 const NodeViewWrapper = NodeViewWrapperComponent as any;
 
@@ -32,6 +33,7 @@ interface PropertyViewProps {
     node: {attrs: PropertyAttrs};
 }
 
+/** A detail in prose reads as one quiet chip. Validation is the only accent. */
 export function PropertyChip({node}: PropertyViewProps) {
     const {name, operator, value, icon, propertyId} = node.attrs;
 
@@ -45,19 +47,18 @@ export function PropertyChip({node}: PropertyViewProps) {
     const effectiveIcon = definition?.icon || icon;
     const IconComponent = effectiveIcon && effectiveIcon in ICON_MAP ? ICON_MAP[effectiveIcon] : TagIcon;
 
-    const isAlias = false;
-
     const validation = useMemo(() => {
         return validateAttributeValue(name, operator, value, definition);
     }, [name, operator, value, definition]);
 
     const customValue = isCustomEnumValue(definition, value);
+    const displayValue = formatPropertyValue(value);
 
-    // Styling
-    const baseClasses = "node-property inline-flex items-center gap-1.5 px-2 py-0.5 mx-1 border rounded-md select-none cursor-pointer transition-colors text-sm";
-    const validClasses = "bg-blue-900/30 border-blue-700/50 hover:bg-blue-900/50 hover:border-blue-600 text-blue-100";
-    const invalidClasses = "bg-red-900/30 border-red-700/50 hover:bg-red-900/50 hover:border-red-600 text-red-100";
-    const customClasses = "bg-amber-900/20 border-amber-700/40 hover:bg-amber-900/40 hover:border-amber-600/60 text-amber-100";
+    const stateClasses = !validation.isValid && !customValue
+        ? "border-red-500/30 bg-red-500/10 text-red-200 hover:border-red-400/50"
+        : customValue
+        ? "border-amber-500/30 bg-amber-500/10 text-amber-200 hover:border-amber-400/50"
+        : "border-[var(--app-line)] bg-[var(--app-raised)] text-[var(--app-muted)] hover:border-[var(--app-line-strong)] hover:text-[var(--app-text-secondary)]";
 
     const openEditor = (event: React.SyntheticEvent) => {
         event.preventDefault();
@@ -73,7 +74,7 @@ export function PropertyChip({node}: PropertyViewProps) {
             role="button"
             tabIndex={0}
             aria-label={`Edit detail ${name} ${operator} ${value}`}
-            className={`${baseClasses} ${!validation.isValid && !customValue ? invalidClasses : customValue ? customClasses : validClasses}`}
+            className={`node-property mx-0.5 inline-flex max-w-full cursor-pointer select-none items-center gap-1 rounded-md border px-1.5 py-0.5 align-baseline text-[12px] leading-5 transition-colors ${stateClasses}`}
             data-property-id={propertyId ?? undefined}
             onPointerDown={(event: React.PointerEvent) => {
                 event.preventDefault();
@@ -95,20 +96,14 @@ export function PropertyChip({node}: PropertyViewProps) {
                     ? validation.message
                     : customValue
                     ? `Custom value; ontology expects: ${definition?.options?.join(', ')}`
-                    : "Click to edit"
+                    : displayValue === value ? 'Click to edit' : `${value} — click to edit`
             }
         >
-            <IconComponent className={`w-3.5 h-3.5 ${!validation.isValid && !customValue ? 'text-red-400' : customValue ? 'text-amber-400' : 'text-blue-400'}`}/>
-            <span className={`font-semibold ${!validation.isValid && !customValue ? 'text-red-300' : customValue ? 'text-amber-200' : 'text-blue-300'} flex items-center gap-1`}>
-                {name}
-            </span>
-            <span
-                className={`${!validation.isValid && !customValue ? 'text-red-500' : customValue ? 'text-amber-400' : 'text-blue-500'} text-xs font-medium`}
-                title={operator}
-            >{OPERATOR_GLYPH[operator] ?? operator}</span>
-            <span
-                className={`font-mono px-1 rounded ${!validation.isValid && !customValue ? 'bg-red-900/50 text-red-200' : customValue ? 'bg-amber-900/40 text-amber-200' : 'bg-blue-900/50 text-blue-200'}`}>{value}</span>
-            {!validation.isValid && !customValue && <ExclamationTriangleIcon className="w-3.5 h-3.5 text-red-400 ml-1"/>}
+            <IconComponent className="h-3 w-3 shrink-0 opacity-70"/>
+            <span className="font-medium">{name}</span>
+            <span className="text-[var(--app-faint)]" title={operator}>{OPERATOR_GLYPH[operator] ?? operator}</span>
+            <span className="max-w-48 truncate text-[var(--app-text-secondary)]">{displayValue}</span>
+            {!validation.isValid && !customValue && <ExclamationTriangleIcon className="ml-0.5 h-3 w-3 shrink-0"/>}
         </NodeViewWrapper>
     );
 }

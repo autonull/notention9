@@ -2,7 +2,7 @@ import {test, expect} from '@playwright/test';
 import {generateSecretKey} from 'nostr-tools';
 import {seed} from '../support/seed';
 import {isolateNetwork} from '../fixtures/routes';
-import {defaultSettings, demoNotes} from '../fixtures/workspace';
+import {defaultSettings, demoNotes, noteWithDetails} from '../fixtures/workspace';
 
 const open = async (page: import('@playwright/test').Page, hash: string) => {
     await page.evaluate((value) => {
@@ -93,6 +93,19 @@ test('the top bar has one entry and no Inbox or Connections tabs', async ({page}
     await expect(page.getByRole('button', {name: 'Settings'})).toHaveCount(1);
 });
 
+test('the text style menu formats a block', async ({page}) => {
+    await seed(page, {notes: [noteWithDetails()], settings: defaultSettings(), hash: '#/notes/scene-editor-note'});
+    await page.locator('.ProseMirror').click();
+    await page.keyboard.press('Control+End');
+    await page.keyboard.press('Enter');
+    await page.keyboard.type('A new section');
+
+    await page.getByRole('button', {name: 'Text style'}).click();
+    await page.getByRole('menuitem', {name: 'Heading 2'}).click();
+
+    await expect(page.getByRole('heading', {name: 'A new section'})).toBeVisible();
+});
+
 test('settings deep link opens the named tab', async ({page}) => {
     await seed(page, {notes: demoNotes(), settings: defaultSettings({nostr: {privkey: Buffer.from(generateSecretKey()).toString('hex'), relays: ['ws://localhost:7000']}}), hash: '#/settings/skills'});
 
@@ -112,13 +125,13 @@ test('chat and public notes stay reachable from the one overlay', async ({page})
     await expect(dialog).toBeVisible();
     await expect(dialog.getByRole('button', {name: 'Chat'})).toHaveAttribute('aria-pressed', 'true');
 
-    await dialog.getByRole('button', {name: 'Explore public notes'}).click();
+    await dialog.getByRole('button', {name: 'Public'}).click();
     await expect(dialog.getByText(/No network notes found|Connect an identity/)).toBeVisible({timeout: 15_000});
 });
 
 test('legacy hashes redirect to one canonical destination', async ({page}) => {
     const cases: Array<[string, RegExp]> = [
-        ['#inbox', /#\/notes\?capture=1/],
+        ['#inbox', /#\/notes$/],
         ['#network', /#\/notes\?explore=1/],
         ['#connections', /#\/notes\?explore=1/],
         ['#actions', /#\/notes\?mode=board/],

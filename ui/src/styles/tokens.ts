@@ -300,12 +300,13 @@ export const componentTokens = {
   },
   modal: {
     backdrop: "fixed inset-0 bg-black/55 backdrop-blur-sm animate-fade-in",
-    container: "relative z-10 flex max-h-[90vh] flex-col overflow-hidden rounded-2xl border border-[var(--app-line)] bg-[var(--app-panel)] shadow-[var(--app-shadow)] animate-scale-in",
+    container: "relative z-10 flex w-full max-h-[90vh] flex-col overflow-hidden rounded-2xl border border-[var(--app-line)] bg-[var(--app-panel)] shadow-[var(--app-shadow)] animate-scale-in focus:outline-none focus-visible:outline-none",
     sizes: {
       sm: "max-w-sm",
       md: "max-w-md",
       lg: "max-w-lg",
       xl: "max-w-xl",
+      "2xl": "max-w-2xl",
       full: "max-w-4xl",
     },
     header: "flex items-start justify-between gap-4 border-b border-[var(--app-line)] p-4",

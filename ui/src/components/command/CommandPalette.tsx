@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { actionRegistry } from '@notention/core/ui';
 import type { ActionContext, RegisteredAction } from '@notention/core/ui/actionRegistry';
 import { Button } from '../ui/Button';
-import { KeyIcon, SearchIcon, SearchSparkleIcon, MenuIcon, ChevronRightIcon, type LucideIcon } from '../ui/icons';
+import { KeyIcon, SearchIcon, SearchSparkleIcon, MenuIcon, NoteIcon, ChevronRightIcon, type LucideIcon } from '../ui/icons';
 import { useView } from '../../hooks/useViewContext';
 import { useNotes } from '../../hooks/useNotes';
 import { modShortcut } from '../../utils/platform';
@@ -13,6 +13,7 @@ import { NetworkView } from '../views/NetworkView';
 import { ChatPanel } from '../chat/ChatPanel';
 import { NotePreview } from './NotePreview';
 import { PALETTE_SCOPES } from '../../config/uiSurfaces';
+import { scoreMatch } from '../../utils/searchScore';
 
 interface CommandPaletteProps {
     isOpen: boolean;
@@ -45,30 +46,6 @@ function formatShortcut(shortcut?: { key: string; ctrl?: boolean; meta?: boolean
     return parts.join('+');
 }
 
-/** First letters of each word, e.g. "Open Settings" → "os". */
-function wordInitials(text: string): string {
-    return text.split(/[^\p{L}\p{N}]+/u).filter(Boolean).map(word => word[0].toLowerCase()).join('');
-}
-
-/**
- * Predictable relevance: contiguous label match, then acronym, then body text.
- * Scattered-letter matches are too noisy for a result list.
- */
-function scoreMatch(query: string, action: RegisteredAction): number | null {
-    const base = action.priority ?? 0;
-    if (!query) return base;
-
-    const q = query.toLowerCase();
-    const label = action.label.toLowerCase();
-    const description = (action.description ?? '').toLowerCase();
-
-    if (label.startsWith(q)) return 3000 + base;
-    if (label.includes(q)) return 2000 + base;
-    if (wordInitials(action.label).startsWith(q)) return 1500 + base;
-    if (description.includes(q)) return 1000 + base;
-    return null;
-}
-
 function highlightMatch(text: string, query: string): React.ReactNode {
     const term = query.trim().toLowerCase();
     const index = term ? text.toLowerCase().indexOf(term) : -1;
@@ -91,6 +68,7 @@ interface ScoredAction {
 export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProps) {
     const { setActiveView } = useView();
     const { notes } = useNotes();
+    const paletteRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
     const listRef = useRef<HTMLDivElement>(null);
     const [query, setQuery] = useState('');
@@ -110,13 +88,17 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
         return notes.slice(0, 50).map(note => ({
             id: `note:${note.id}`,
             label: note.title || 'Untitled',
-            description: getTextFromHtml(note.content).slice(0, 100),
+            description: getTextFromHtml(note.content),
             category: 'Notes',
             run: () => {
                 window.dispatchEvent(new CustomEvent('action:openNote', { detail: { noteId: note.id } }));
             },
             priority: 10,
-            tags: ['note', ...note.tags],
+            tags: [
+                'note',
+                ...note.tags,
+                ...note.properties.flatMap(property => [property.key, ...property.values]),
+            ],
             inPalette: true,
         }));
     }, [notes]);
@@ -146,9 +128,19 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
         if (isOpen) {
             setQuery('');
             setSelectedIndex(0);
-            setTimeout(() => inputRef.current?.focus(), 0);
         }
     }, [isOpen]);
+
+    useEffect(() => {
+        if (!isOpen) return;
+        const timer = setTimeout(() => {
+            const target = scope === 'search'
+                ? inputRef.current
+                : paletteRef.current?.querySelector<HTMLElement>('[role="tab"][aria-selected="true"]') ?? paletteRef.current;
+            target?.focus();
+        }, 0);
+        return () => clearTimeout(timer);
+    }, [isOpen, scope]);
 
     useEffect(() => {
         const openSearch = () => setScope('search');
@@ -245,23 +237,25 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
             />
 
             {/* Palette */}
-            <div className={cn('relative w-full overflow-hidden rounded-xl border border-[var(--app-line)] bg-[var(--app-panel)] shadow-[var(--app-shadow)] animate-slide-in-down', scope === 'explore' || previewNote ? 'max-w-5xl' : 'max-w-[640px]')}>
-                <div className="flex h-12 items-center gap-2.5 border-b border-[var(--app-line)] px-4">
-                    <SearchIcon className="h-4 w-4 shrink-0 text-[var(--app-faint)]" aria-hidden="true" />
-                    <input
-                        ref={inputRef}
-                        type="text"
-                        value={query}
-                        onChange={handleInputChange}
-                        placeholder="Search notes, details, tags, and commands…"
-                        className="h-11 min-w-0 flex-1 bg-transparent px-0 text-[14px] text-[var(--app-text)] placeholder:text-[var(--app-faint)] outline-none focus:outline-none focus-visible:outline-none"
-                        autoComplete="off"
-                        spellCheck={false}
-                    />
-                    <kbd className="shrink-0 rounded border border-[var(--app-line)] bg-[var(--app-bg)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--app-faint)]">
-                        {modShortcut('K')}
-                    </kbd>
-                </div>
+            <div ref={paletteRef} tabIndex={-1} className={cn('relative w-full overflow-hidden rounded-xl border border-[var(--app-line)] bg-[var(--app-panel)] shadow-[var(--app-shadow)] animate-slide-in-down focus:outline-none focus-visible:outline-none', scope === 'explore' || previewNote ? 'max-w-5xl' : 'max-w-[640px]')}>
+                {scope === 'search' && (
+                    <div className="flex h-12 items-center gap-2.5 border-b border-[var(--app-line)] px-4">
+                        <SearchIcon className="h-4 w-4 shrink-0 text-[var(--app-faint)]" aria-hidden="true" />
+                        <input
+                            ref={inputRef}
+                            type="text"
+                            value={query}
+                            onChange={handleInputChange}
+                            placeholder="Search notes, details, tags, and commands…"
+                            className="h-11 min-w-0 flex-1 bg-transparent px-0 text-[14px] text-[var(--app-text)] placeholder:text-[var(--app-faint)] outline-none focus:outline-none focus-visible:outline-none"
+                            autoComplete="off"
+                            spellCheck={false}
+                        />
+                        <kbd className="shrink-0 rounded border border-[var(--app-line)] bg-[var(--app-bg)] px-1.5 py-0.5 font-mono text-[11px] text-[var(--app-faint)]">
+                            {modShortcut('K')}
+                        </kbd>
+                    </div>
+                )}
 
                 <div className="flex h-10 items-center gap-1 border-b border-[var(--app-line)] px-3">
                     {PALETTE_SCOPES.map(item => (
@@ -310,6 +304,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                                 const categoryInfo = getCategoryInfo(action.category);
                                 const isSelected = index === selectedIndex;
                                 const isNote = action.id.startsWith('note:');
+                                const RowIcon = isNote ? NoteIcon : categoryInfo.icon;
 
                                 return (
                                     <button
@@ -326,7 +321,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                                         role="option"
                                         aria-selected={isSelected}
                                     >
-                                        <categoryInfo.icon className={cn('h-4 w-4 shrink-0', isSelected ? 'text-[var(--app-accent-text)]' : 'text-[var(--app-faint)]')} aria-hidden="true" />
+                                        <RowIcon className={cn('h-4 w-4 shrink-0', isSelected ? 'text-[var(--app-accent-text)]' : 'text-[var(--app-faint)]')} aria-hidden="true" />
                                         <div className="flex-1 min-w-0">
                                             <div className="flex items-center gap-2 truncate">
                                                 <span className="truncate text-[13px] font-medium">

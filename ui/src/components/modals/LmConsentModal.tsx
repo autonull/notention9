@@ -19,14 +19,14 @@ export function LmConsentModal({isOpen, onClose, onAllow, onDecline, providerNam
     return (
         <Modal isOpen={isOpen} onClose={onClose} title="Send this text to a remote model?">
             <div className="space-y-4">
-                <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-sm text-yellow-100">
+                <div className="rounded-xl border border-[var(--color-warning-line)] bg-[var(--color-warning-bg)] p-4 text-sm text-[var(--color-warning-text)]">
                     The text below will leave this device and be sent to <strong>{providerName}</strong>. You are asked
                     once; the choice is remembered and can be revoked in Settings → AI.
                 </div>
 
                 <div>
- <div className="text-xs font-bold tracking-widest text-neutral-400 mb-2">What will be sent</div>
-                    <p className="rounded-xl border border-neutral-700 bg-neutral-900/70 p-3 text-sm text-neutral-300 whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">
+ <div className="mb-2 text-xs font-bold tracking-widest text-[var(--app-muted)]">What will be sent</div>
+                    <p className="max-h-40 overflow-y-auto whitespace-pre-wrap rounded-xl border border-[var(--app-line)] bg-[var(--app-raised)] p-3 text-sm text-[var(--app-text-secondary)] custom-scrollbar">
                         {text.trim()}
                     </p>
                 </div>

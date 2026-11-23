@@ -16,14 +16,12 @@ interface EditorContentProps {
     editorRef: React.RefObject<TiptapEditorRef | null>;
     dirtyNote: Note;
     title: string;
-    onTitleChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    onTitleChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
     onSave: (content: string) => void;
     onNoteUpdate: (note: Partial<Note>) => void;
     ontology: OntologyNode[];
     templates: Template[];
-    showToolbar: boolean;
     onMagic: () => void;
-    onTemplates: () => void;
     notes: Note[];
     saveStatus: 'saved' | 'saving' | 'error' | undefined;
     isTemplateSelectorOpen: boolean;
@@ -49,9 +47,7 @@ export function EditorContent({
     onNoteUpdate,
     ontology,
     templates,
-    showToolbar,
     onMagic,
-    onTemplates,
     notes,
     saveStatus,
     isTemplateSelectorOpen,
@@ -80,9 +76,7 @@ export function EditorContent({
                     onNoteUpdate={onNoteUpdate}
                     ontology={ontology}
                     templates={templates}
-                    showToolbar={showToolbar}
                     onMagic={onMagic}
-                    onTemplates={onTemplates}
                     notes={notes}
                     onPickLocation={onPickLocation}
                     saveStatus={saveStatus}
@@ -94,19 +88,20 @@ export function EditorContent({
                                 autoFocus={!title && !readOnly}
                                 readOnly={readOnly}
                             >
-                                <DetailChips
-                                    note={dirtyNote}
-                                    onEdit={onEditDetail}
-                                    onAdd={onAddDetail}
-                                    readOnly={readOnly}
-                                />
-                                <div className="mt-3 flex flex-wrap items-center gap-2">
+                                <div className="mt-3 flex flex-wrap items-center gap-x-1 gap-y-1.5">
+                                    <DetailChips
+                                        note={dirtyNote}
+                                        onEdit={onEditDetail}
+                                        onAdd={onAddDetail}
+                                        readOnly={readOnly}
+                                        className="mt-0"
+                                    />
                                     {!readOnly && (
                                         <button
                                             type="button"
                                             data-testid="describe-it"
                                             onClick={onDescribe}
-                                            className="inline-flex h-7 items-center gap-1.5 rounded-md px-1.5 text-[12px] font-medium text-[var(--app-muted)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]"
+                                            className="inline-flex h-6 items-center gap-1.5 rounded-md px-1.5 text-[12px] font-medium text-[var(--app-muted)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]"
                                         >
                                             <LightBulbIcon className="h-3.5 w-3.5"/>
                                             Describe it

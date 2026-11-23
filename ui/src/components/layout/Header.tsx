@@ -13,6 +13,7 @@ export function Header() {
         selectedNoteId,
         setSelectedNoteId,
         setIsPaletteOpen,
+        notesMode,
     } = useView();
     const {notes, addNote} = useNotes();
 
@@ -34,6 +35,10 @@ export function Header() {
 
     if (selectedNoteId) return null;
 
+    const activeCount = notes.filter(note => !note.deletedAt).length;
+    const isFirstRun = activeView === 'notes' && notes.length === 0;
+    const notesAreTheTask = activeView === 'notes' && notesMode !== 'map';
+
     const actions = (
         <div className="ml-auto flex shrink-0 items-center gap-1">
             <IconButton
@@ -45,18 +50,20 @@ export function Header() {
                 size="sm"
                 aria-label="Search notes, details, tags, and commands"
             />
-            <Button
-                type="button"
-                onClick={createNote}
-                aria-label="New note"
-                variant="primary"
-                size="sm"
-                touchTarget={false}
-                className="gap-1.5 px-2.5"
-            >
-                <PlusIcon className="h-4 w-4"/>
-                <span className="hidden md:inline">New note</span>
-            </Button>
+            {!isFirstRun && (
+                <Button
+                    type="button"
+                    onClick={createNote}
+                    aria-label="New note"
+                    variant={notesAreTheTask ? 'primary' : 'secondary'}
+                    size="sm"
+                    touchTarget={false}
+                    className="gap-1.5 px-2.5"
+                >
+                    <PlusIcon className="h-4 w-4"/>
+                    <span className="hidden md:inline">New note</span>
+                </Button>
+            )}
             <IconButton
                 onClick={() => setActiveView('settings')}
                 tooltip="Settings"
@@ -73,7 +80,15 @@ export function Header() {
     if (activeView === 'settings') {
         return (
             <header className="flex h-12 shrink-0 items-center gap-2 border-b border-[var(--app-line)] bg-[var(--app-bg)] px-3 md:px-4">
-                <BrandMark onClick={openNotes}/>
+                <BrandMark onClick={openNotes} label="Notention — back to notes"/>
+                <button
+                    type="button"
+                    onClick={openNotes}
+                    className="text-[13px] font-medium text-[var(--app-muted)] transition-colors hover:text-[var(--app-text)]"
+                >
+                    Notes
+                </button>
+                <span aria-hidden="true" className="text-[11px] text-[var(--app-faint)]">/</span>
                 <h1 className="text-[14px] font-semibold text-[var(--app-text)]">Settings</h1>
                 {actions}
             </header>
@@ -84,7 +99,9 @@ export function Header() {
         <header className="flex h-12 shrink-0 items-center gap-2 border-b border-[var(--app-line)] bg-[var(--app-bg)] px-3 md:px-4">
             <BrandMark onClick={openNotes}/>
             <h1 className="text-[13px] font-semibold text-[var(--app-text)]">Notes</h1>
-            <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{notes.filter(note => !note.deletedAt).length}</span>
+            {activeCount > 0 && (
+                <span className="text-[11px] tabular-nums text-[var(--app-faint)]">{activeCount}</span>
+            )}
             {actions}
         </header>
     );

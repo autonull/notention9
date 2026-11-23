@@ -6,11 +6,12 @@ import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 import {useNotes} from '../../hooks/useNotes';
 import {useView} from '../../hooks/useViewContext';
-import {MapPinIcon} from '../ui/icons';
+import {ChevronRightIcon, MapPinIcon} from '../ui/icons';
 import {haversineDistance, parseGeoFromValues} from '@notention/core';
 import {Skeleton} from '../ui/Skeleton';
 import {EmptyState} from '../ui/Primitives';
 import {Button} from '../ui/Button';
+import {useMediaQuery} from '../../hooks/useMediaQuery';
 
 const locales = {
     'en-US': enUS,
@@ -41,7 +42,9 @@ export function TimelineView() {
     const [filterRadius, setFilterRadius] = useState<number>(50); // km
     const [date, setDate] = useState(() => new Date());
     const [view, setView] = useState<View>('month');
+    const [compactView, setCompactView] = useState<'list' | 'calendar'>('list');
     const anchored = useRef(false);
+    const compact = useMediaQuery('(max-width: 767px)');
 
     // Get all notes that have a location property
     const locationNotes = useMemo(() => {
@@ -143,7 +146,7 @@ export function TimelineView() {
 
     if (loading) {
         return (
-            <div className="flex h-[calc(100dvh-15rem)] min-h-[520px] flex-col overflow-hidden">
+            <div className="flex h-full min-h-0 flex-col overflow-hidden">
                 <div className="flex flex-wrap items-center gap-4 mb-4 bg-neutral-800 p-2 rounded-lg border border-neutral-700">
                     <Skeleton variant="rectangular" height={40} width={120} className="rounded-lg"/>
                     <Skeleton variant="rectangular" height={40} width={160} className="rounded-lg"/>
@@ -161,7 +164,7 @@ export function TimelineView() {
     }
 
     return (
-        <div className="flex h-[calc(100dvh-15rem)] min-h-[520px] flex-col overflow-hidden">
+        <div className="flex h-full min-h-0 flex-col overflow-hidden">
             <div className="mb-3 flex flex-none flex-wrap items-center gap-x-3 gap-y-2 text-[12px] text-[var(--app-muted)]">
                 <div
                     className="flex items-center gap-1.5 rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] pl-2 pr-1"
@@ -202,18 +205,25 @@ export function TimelineView() {
                         <span>
                             {events.length} dated note{events.length === 1 ? '' : 's'}
                         </span>
-                        <span className="min-w-0 truncate">
+                        <span className="hidden min-w-0 truncate sm:inline">
                             {nextEvent
                                 ? `Next: ${nextEvent.title} — ${format(nextEvent.start, 'MMM d, HH:mm')}`
                                 : latestEvent && `Latest: ${format(latestEvent.start, 'MMM d, yyyy')}`}
                         </span>
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => anchorDate && setDate(anchorDate)}
-                        >
-                            {nextEvent ? 'Jump to next' : 'Jump to latest'}
-                        </Button>
+                        {(!compact || compactView === 'calendar') && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => anchorDate && setDate(anchorDate)}
+                            >
+                                {nextEvent ? 'Jump to next' : 'Jump to latest'}
+                            </Button>
+                        )}
+                        {compact && (
+                            <Button variant="ghost" size="sm" onClick={() => setCompactView(value => value === 'list' ? 'calendar' : 'list')}>
+                                {compactView === 'list' ? 'Calendar' : 'List'}
+                            </Button>
+                        )}
                     </>
                 )}
             </div>
@@ -225,6 +235,28 @@ export function TimelineView() {
                     description="Add a start or deadline detail to a note to see it on the calendar."
                     action={<Button variant="primary" onClick={() => setActiveView('notes')}>Go to capture</Button>}
                 />
+            ) : compact && compactView === 'list' ? (
+                <ol className="min-h-0 flex-1 divide-y divide-[var(--app-line)] overflow-y-auto rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] custom-scrollbar">
+                    {[...orderedEvents].reverse().map(event => (
+                        <li key={event.id}>
+                            <button
+                                type="button"
+                                onClick={() => handleSelectEvent(event)}
+                                className="flex w-full items-center gap-3 px-3 py-3 text-left transition-colors hover:bg-[var(--app-hover)]"
+                            >
+                                <span className="w-14 shrink-0">
+                                    <span className="block text-[12px] font-semibold text-[var(--app-text)]">{format(event.start, 'MMM d')}</span>
+                                    <span className="block text-[11px] tabular-nums text-[var(--app-faint)]">{format(event.start, 'HH:mm')}</span>
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                    <span className="block truncate text-[13px] font-medium text-[var(--app-text)]">{event.title}</span>
+                                    {event.location && <span className="block truncate text-[11px] text-[var(--app-faint)]">{event.location}</span>}
+                                </span>
+                                <ChevronRightIcon className="h-3.5 w-3.5 shrink-0 text-[var(--app-faint)]"/>
+                            </button>
+                        </li>
+                    ))}
+                </ol>
             ) : (
                 <div className="min-h-0 flex-1 overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2">
                     <Calendar

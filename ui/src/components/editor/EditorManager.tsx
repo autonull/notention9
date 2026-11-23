@@ -22,6 +22,7 @@ import {NoteContextRail} from '../note/NoteContextRail';
 import {SkillApprovalDialog} from '../skills/SkillApprovalDialog';
 import {useMatches} from '../../hooks/useMatches';
 import {cn} from '../../utils/ui';
+import {applyFormat, type FormatAction} from './formatCommands';
 
 interface EditorManagerProps {
     note: Note;
@@ -223,6 +224,18 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
     const contextCount = (nextStepsModel.topNextStep ? 1 : 0) + matches.length + replyCount + (contact ? 1 : 0);
     const autoOpenedFor = useRef<string | null>(null);
 
+    const requestMagic = useCallback(() => {
+        if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
+            addToast('Loading local model... this may take a while.', 'info');
+        }
+        handleMagic();
+    }, [settings.aiProvider, settings.aiEnabled, addToast, handleMagic]);
+
+    const handleFormat = useCallback((action: FormatAction) => {
+        const editor = editorRef.current?.editor;
+        if (editor && !editor.isDestroyed) applyFormat(editor, action);
+    }, []);
+
     useEffect(() => {
         if (contextCount > 0 && autoOpenedFor.current !== note.id) {
             autoOpenedFor.current = note.id;
@@ -244,6 +257,9 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                 onSaveTemplate={() => setIsSaveTemplateModalOpen(true)}
                 onExport={handleExport}
                 onCopyContent={handleCopyContent}
+                onMagic={requestMagic}
+                onInsertTemplate={() => setIsTemplateSelectorOpen(!isTemplateSelectorOpen)}
+                onFormat={handleFormat}
                 canUndo={canUndo}
                 canRedo={canRedo}
                 onUndo={handleUndo}
@@ -268,14 +284,7 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                         onNoteUpdate={handleNoteUpdate}
                         ontology={settings.ontology ?? []}
                         templates={settings.customTemplates ?? []}
-                        showToolbar
-                        onMagic={() => {
-                            if (settings.aiProvider === 'webllm' && settings.aiEnabled) {
-                                addToast('Loading local model... this may take a while.', 'info');
-                            }
-                            handleMagic();
-                        }}
-                        onTemplates={() => setIsTemplateSelectorOpen(!isTemplateSelectorOpen)}
+                        onMagic={requestMagic}
                         notes={notes}
                         saveStatus={saveStatus}
                         isTemplateSelectorOpen={isTemplateSelectorOpen}
@@ -302,8 +311,8 @@ export function EditorManager({note, onSave, sortedNotes}: EditorManagerProps) {
                             edge="left"
                             label="Resize context"
                             value={contextShare}
-                            min={15}
-                            max={26}
+                            min={18}
+                            max={30}
                             defaultValue={20}
                             onChange={setContextShare}
                             className="absolute inset-y-0 left-0 order-first border-t-0 lg:border-t"

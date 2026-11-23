@@ -12,7 +12,7 @@ test.beforeEach(async ({page}) => {
 
 const gallery = async (
     page: import('@playwright/test').Page,
-    options: {name: string; hash: string; description: string; notes?: boolean; viewport?: 'desktop' | 'mobile'; contextOpen?: boolean}
+    options: {name: string; hash: string; description: string; notes?: boolean; viewport?: 'desktop' | 'mobile'; contextOpen?: boolean; waitFor?: string}
 ) => {
     await seed(page, {
         notes: options.notes === false ? [] : demoNotes(),
@@ -20,6 +20,9 @@ const gallery = async (
         hash: options.hash,
         storage: options.contextOpen ? {[STORAGE_KEYS.contextOpen]: true} : undefined,
     });
+    if (options.waitFor) {
+        await page.getByText(options.waitFor, {exact: false}).first().waitFor({timeout: 15_000});
+    }
     await snap(page, {
         area: options.name.split('/')[0],
         state: options.name.split('/')[1],
@@ -33,7 +36,7 @@ test('notes-empty', async ({page}) => {
         name: 'notes/empty',
         hash: '#/notes',
         notes: false,
-        description: 'First run: an empty history and a blank page entry point.',
+        description: 'First run: a blank page entry point and one primary action.',
     });
 });
 
@@ -118,6 +121,7 @@ test('search-explore', async ({page}) => {
         name: 'search/explore',
         hash: '#/notes?explore=1',
         description: 'Public notes stay reachable from the one search overlay.',
+        waitFor: 'No network notes found',
     });
 });
 
@@ -133,7 +137,7 @@ test('settings-labels', async ({page}) => {
     await gallery(page, {
         name: 'settings/labels',
         hash: '#/settings/labels',
-        description: 'Labels remain a settings tab, reachable by deep link.',
+        description: 'Edit labels, open the page for a new one, and confirm removal.',
     });
 });
 

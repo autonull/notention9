@@ -31,9 +31,9 @@ test.describe('Keyboard Navigation', () => {
         await expect(focused).toBeVisible();
     });
 
-    test('Ctrl+N opens the one composer', async ({page}) => {
+    test('Ctrl+N opens a blank page and focuses its title', async ({page}) => {
         await page.keyboard.press('Control+N');
-        await expect(page.getByTestId('capture-composer-input')).toBeFocused();
+        await expect(page.locator('#note-title-input')).toBeFocused();
     });
 
     test('Search overlay opens with Ctrl+K', async ({page}) => {
@@ -64,19 +64,20 @@ test.describe('Keyboard Navigation', () => {
         await expect(focused).toBeVisible();
     });
 
-    test('Capture flow: composer -> Keep note (keyboard only)', async ({page}) => {
+    test('Capture flow: blank page -> typed sentence (keyboard only)', async ({page}) => {
         await page.keyboard.press('Control+N');
-        const composer = page.getByTestId('capture-composer-input');
-        await expect(composer).toBeFocused();
+        const title = page.locator('#note-title-input');
+        await expect(title).toBeFocused();
         await page.keyboard.type('Test note for keyboard navigation');
-        await page.keyboard.press('Control+Enter');
+        await page.keyboard.press('Enter');
+        await page.keyboard.type('One sentence is enough.');
 
         const editor = page.locator('[contenteditable="true"]');
         await expect(editor).toBeVisible();
-        await expect(editor).toContainText('Test note for keyboard navigation');
+        await expect(editor).toContainText('One sentence is enough.');
 
         await page.keyboard.press('Control+S');
-        await expect(editor).toContainText('Test note for keyboard navigation');
+        await expect(editor).toContainText('One sentence is enough.');
     });
 
     test('Focus visible on all interactive elements', async ({page}) => {

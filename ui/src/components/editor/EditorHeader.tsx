@@ -2,8 +2,10 @@ import React from 'react';
 import {ArrowLeftIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
 import {EditorControls} from './EditorControls';
+import {FormatMenu} from './FormatMenu';
 import {SkillExecutionIndicator} from '../notes/SkillExecutionIndicator';
 import {SaveState} from './SaveState';
+import type {FormatAction} from './formatCommands';
 
 interface EditorHeaderProps {
     id?: string;
@@ -16,6 +18,9 @@ interface EditorHeaderProps {
     onSaveTemplate?: () => void;
     onExport?: () => void;
     onCopyContent?: () => void;
+    onMagic?: () => void;
+    onInsertTemplate?: () => void;
+    onFormat?: (action: FormatAction) => void;
     canUndo?: boolean;
     canRedo?: boolean;
     onUndo?: () => void;
@@ -37,6 +42,9 @@ export function EditorHeader({
     onSaveTemplate,
     onExport,
     onCopyContent,
+    onMagic,
+    onInsertTemplate,
+    onFormat,
     canUndo = false,
     canRedo = false,
     onUndo,
@@ -64,6 +72,7 @@ export function EditorHeader({
             <SaveState status={saveStatus} className="hidden sm:flex"/>
 
             <div className="ml-auto flex min-w-0 shrink-0 items-center gap-1">
+                <FormatMenu onFormat={onFormat}/>
                 {onToggleContext && (
                     <button
                         type="button"
@@ -89,6 +98,8 @@ export function EditorHeader({
                     onSaveTemplate={onSaveTemplate}
                     onExport={onExport}
                     onCopyContent={onCopyContent}
+                    onMagic={onMagic}
+                    onInsertTemplate={onInsertTemplate}
                     canUndo={canUndo}
                     canRedo={canRedo}
                     onUndo={onUndo}

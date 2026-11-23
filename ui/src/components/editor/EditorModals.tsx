@@ -70,7 +70,7 @@ export function EditorModals({
                     onClose={onPrivacyCancel}
                     onConfirm={onPrivacyConfirm}
                     noteTitle={dirtyNote.title}
-                    destination="Nostr network"
+                    destination="the Nostr network"
                     note={dirtyNote}
                 />
             )}

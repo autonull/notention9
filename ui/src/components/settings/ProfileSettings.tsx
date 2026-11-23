@@ -85,12 +85,15 @@ export function ProfileSettings() {
 
             {/* Strategy Overrides */}
             <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                    <label className="block text-[12px] font-medium text-[var(--app-muted)]">Strategy overrides</label>
-                    <Button variant="ghost" size="sm" onClick={() => setShowOverrides(!showOverrides)}>
-                        {showOverrides ? <ChevronUpIcon className="w-4 h-4" /> : <ChevronDownIcon className="w-4 h-4" />}
-                    </Button>
-                </div>
+                <button
+                    type="button"
+                    onClick={() => setShowOverrides(!showOverrides)}
+                    aria-expanded={showOverrides}
+                    className="flex h-8 w-full items-center justify-between rounded-md text-[12px] font-medium text-[var(--app-muted)] transition-colors hover:text-[var(--app-text-secondary)]"
+                >
+                    <span>Strategy overrides</span>
+                    {showOverrides ? <ChevronUpIcon className="w-4 h-4"/> : <ChevronDownIcon className="w-4 h-4"/>}
+                </button>
 
                 {showOverrides && (
                     <div className="space-y-3 pl-4 border-l-2 border-[var(--app-line)]">

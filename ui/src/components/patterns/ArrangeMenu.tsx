@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import type {NoteMode, NotesGroup, SortOrder} from '@notention/core';
 import {ARRANGE_GROUPS, browseModeLabel, sortOrderLabel, type UiOption} from '../../config/uiSurfaces';
 import {cn} from '../../utils/ui';
-import {ChevronDownIcon} from '../ui/icons';
+import {ChevronDownIcon, ArrowDownIcon, ArrowUpIcon} from '../ui/icons';
 
 interface ArrangeMenuProps {
     mode: NoteMode;
@@ -51,6 +51,8 @@ export function ArrangeMenu({
 
     const layouts = optionsFor<NoteMode>('layout');
     const orders = optionsFor<SortOrder>('order');
+    const activeOrder = orders.find(option => option.id === sortOrder);
+    const DirectionIcon = activeOrder?.direction === 'asc' ? ArrowUpIcon : activeOrder?.direction === 'desc' ? ArrowDownIcon : null;
     // Grouping belongs to the arrangement: Board groups by status. Timeline
     // groups by date, Map by location, and List by the active order already.
     const groups = mode === 'board'
@@ -76,10 +78,11 @@ export function ArrangeMenu({
                 onClick={() => setIsOpen(open => !open)}
                 aria-haspopup="dialog"
                 aria-expanded={isOpen}
-                aria-label={`Arrange notes: ${browseModeLabel(mode)}, ${sortOrderLabel(sortOrder)}`}
+                aria-label={`Arrange notes: ${browseModeLabel(mode)}, ${sortOrderLabel(sortOrder)}${activeOrder?.direction ? `, ${activeOrder.direction === 'asc' ? 'ascending' : 'descending'}` : ''}`}
                 className="inline-flex h-7 max-w-full items-center gap-1 rounded-md border border-[var(--app-line)] bg-[var(--app-surface)] px-2 text-[12px] font-medium text-[var(--app-text-secondary)] transition-colors hover:border-[var(--app-line-strong)] hover:text-[var(--app-text)]"
             >
                 <span className="truncate">{browseModeLabel(mode)} · {sortOrderLabel(sortOrder)}</span>
+                {DirectionIcon && <DirectionIcon className="h-3 w-3 shrink-0 text-[var(--app-faint)]"/>}
                 <ChevronDownIcon className="h-3.5 w-3.5 shrink-0 text-[var(--app-faint)]"/>
             </button>
 
@@ -129,7 +132,14 @@ export function ArrangeMenu({
                                             : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)]'
                                     )}
                                 >
-                                    <span className="truncate">{option.label}</span>
+                                    <span className="flex min-w-0 items-center gap-1">
+                                        <span className="truncate">{option.label}</span>
+                                        {option.direction && (
+                                            option.direction === 'asc'
+                                                ? <ArrowUpIcon className="h-3 w-3 shrink-0 text-[var(--app-faint)]"/>
+                                                : <ArrowDownIcon className="h-3 w-3 shrink-0 text-[var(--app-faint)]"/>
+                                        )}
+                                    </span>
                                 </button>
                             ))}
                         </div>

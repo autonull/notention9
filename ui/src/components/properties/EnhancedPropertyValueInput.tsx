@@ -1,6 +1,7 @@
 import React from 'react';
 import type {OntologyAttribute} from '@notention/core';
 import {Input} from '../ui/Input';
+import {Select} from '../ui/Select';
 import {Button} from '../ui/Button';
 import {MapIcon} from '../ui/icons';
 
@@ -38,22 +39,23 @@ export function EnhancedPropertyValueInput({
 
     if (type === 'enum' && (attrDef?.options || selectOptions)) {
         const options = attrDef?.options || selectOptions || [];
+        // Keep an imported or custom value visible and selectable.
+        const choices = value && !options.includes(value) ? [value, ...options] : options;
         return (
-            <select
-                className="w-full bg-neutral-900/50 border border-neutral-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+            <Select
                 value={value}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={(event) => onChange(event.target.value)}
                 autoFocus={!!attributeDef}
                 disabled={readonly}
                 data-testid={testId}
             >
-                <option value="">Select an option...</option>
-                {options.map((opt) => (
-                    <option key={opt} value={opt}>
-                        {opt}
+                <option value="">Select an option…</option>
+                {choices.map((option) => (
+                    <option key={option} value={option}>
+                        {option}
                     </option>
                 ))}
-            </select>
+            </Select>
         );
     }
 
@@ -105,18 +107,17 @@ export function EnhancedPropertyValueInput({
 
     if (type === 'boolean') {
         return (
-            <select
-                className="w-full bg-neutral-900/50 border border-neutral-700/50 rounded-lg px-3 py-2.5 text-white focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
+            <Select
                 value={value}
-                onChange={(e) => onChange(e.target.value)}
+                onChange={(event) => onChange(event.target.value)}
                 autoFocus={!!attributeDef}
                 disabled={readonly}
                 data-testid={testId}
             >
-                <option value="">Select...</option>
+                <option value="">Select…</option>
                 <option value="true">True</option>
                 <option value="false">False</option>
-            </select>
+            </Select>
         );
     }
 
@@ -160,11 +161,11 @@ export function EnhancedPropertyValueInput({
                         <button
                             key={emoji}
                             onClick={() => !readonly && onChange(emoji)}
-                            className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all border flex-shrink-0 ${
+                            className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border text-2xl transition-colors ${
                                 value === emoji
-                                    ? 'bg-blue-600/20 border-blue-500/30 text-blue-200 scale-110'
-                                    : 'bg-neutral-700/30 border-neutral-600/30 text-neutral-300 hover:bg-neutral-700/50'
-                            } ${readonly ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                    ? 'border-[var(--app-accent-line)] bg-[var(--app-accent-soft)] text-[var(--app-text)] ring-1 ring-[var(--app-accent-line)]'
+                                    : 'border-[var(--app-line)] bg-[var(--app-surface)] text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)]'
+                            } ${readonly ? 'cursor-not-allowed opacity-50' : ''}`}
                             disabled={readonly}
                         >
                             {emoji}

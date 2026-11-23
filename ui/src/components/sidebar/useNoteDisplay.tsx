@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { Note } from '@notention/core';
 import { getTextFromHtml } from '../../utils/html';
 import { formatDistanceToNowStrict } from 'date-fns';
+import { formatPropertyValue } from '../../utils/propertyDisplay';
 
 const formatCompactRelativeTime = (date: Date): string =>
     formatDistanceToNowStrict(date, { addSuffix: true })
@@ -17,6 +18,11 @@ const formatCompactRelativeTime = (date: Date): string =>
         .replace(' year', 'y')
         .replace(' seconds', 's')
         .replace(' second', 's');
+
+const formatRecentTime = (date: Date): string => {
+    const seconds = Math.round((Date.now() - date.getTime()) / 1000);
+    return seconds < 45 ? 'now' : formatCompactRelativeTime(date);
+};
 
 export interface NoteDisplayState {
     contentPreview: string;
@@ -42,7 +48,7 @@ export function useNoteDisplay(note: Note): NoteDisplayState {
 
     const relativeTime = useMemo(() => {
         try {
-            return formatCompactRelativeTime(new Date(note.updatedAt));
+            return formatRecentTime(new Date(note.updatedAt));
         } catch {
             return '';
         }
@@ -129,9 +135,7 @@ export function useHighlightedPreview(preview: string, searchTerm: string): Reac
  */
 export function formatPropertyChip(property: {key: string; values: string[]}): string {
     const primaryValue = (property.values[0] ?? '').trim();
-    const value = primaryValue.includes('/')
-        ? primaryValue.split('/').pop()!.replace(/[-_]/g, ' ')
-        : primaryValue;
+    const value = formatPropertyValue(primaryValue);
     const compactKeys = new Set(['intent', 'type', 'status']);
     if (!value) return property.key;
     return compactKeys.has(property.key) ? value : `${property.key} ${value}`;

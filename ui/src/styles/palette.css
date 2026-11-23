@@ -21,6 +21,9 @@
     --color-success: var(--success);
     --color-error: var(--danger);
     --color-warning: #fbbf24;
+    --color-warning-text: #f0d49a;
+    --color-warning-bg: color-mix(in srgb, var(--color-warning) 12%, transparent);
+    --color-warning-line: color-mix(in srgb, var(--color-warning) 36%, transparent);
 }
 
 /*
@@ -43,6 +46,11 @@
     --color-surface: var(--surface);
     --color-surface-raised: var(--surface-2);
     --color-surface-hover: #f5f5f5;
+
+    --color-warning: #b45309;
+    --color-warning-text: #7c4a03;
+    --color-warning-bg: #fdf4e1;
+    --color-warning-line: #e9d3a4;
 
     --color-white: #171717;
     --color-neutral-50: #0a0a0a;

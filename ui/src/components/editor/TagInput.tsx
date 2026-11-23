@@ -1,5 +1,5 @@
 import React, {KeyboardEvent, useState, useRef, useEffect} from 'react';
-import {LoadingSpinner, SparklesIcon, TagIcon, XCircleIcon, PlusIcon} from '../ui/icons';
+import {LoadingSpinner, SparklesIcon, TagIcon, XMarkIcon, PlusIcon} from '../ui/icons';
 
 interface TagInputProps {
     tags: string[];
@@ -69,7 +69,7 @@ export function TagInput({
                         className="text-[var(--app-faint)] transition-colors hover:text-[var(--app-text)]"
                         aria-label={`Remove tag ${tag}`}
                     >
-                        <XCircleIcon className="h-3 w-3"/>
+                        <XMarkIcon className="h-3 w-3"/>
                     </button>
                 </span>
             ))}

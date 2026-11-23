@@ -1,10 +1,11 @@
 import React, {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
+import {cn} from '../../utils/ui';
 
 export interface SuggestionItem {
     id: string; // The text to insert
     label: string; // The display text
     description?: string;
-    type?: 'tag' | 'property' | 'template';
+    type?: 'tag' | 'property' | 'template' | 'format' | 'command';
 }
 
 interface SuggestionListProps {
@@ -59,18 +60,24 @@ export const SuggestionList = forwardRef((props: SuggestionListProps, ref) => {
     }
 
     return (
-        <div className="bg-neutral-800 border border-neutral-700 rounded-lg shadow-xl overflow-hidden min-w-[200px] z-50">
+        <div className="z-50 min-w-[200px] overflow-hidden rounded-xl border border-[var(--app-line)] bg-[var(--app-panel)] shadow-[var(--app-shadow)]">
             {props.items.map((item, index) => (
                 <button
-                    key={index}
-                    className={`block w-full text-left px-4 py-2 text-sm ${
-                        index === selectedIndex ? 'bg-blue-600 text-white' : 'text-neutral-300 hover:bg-neutral-700'
-                    }`}
+                    key={`${item.label}-${index}`}
+                    type="button"
+                    className={cn(
+                        'block w-full px-3 py-2 text-left transition-colors',
+                        index === selectedIndex
+                            ? 'bg-[var(--app-raised)]'
+                            : 'hover:bg-[var(--app-hover)]'
+                    )}
                     onClick={() => selectItem(index)}
                 >
-                    <div className="font-medium">{item.label}</div>
+                    <div className={cn('text-[13px] font-medium', index === selectedIndex ? 'text-[var(--app-text)]' : 'text-[var(--app-text-secondary)]')}>
+                        {item.label}
+                    </div>
                     {item.description && (
-                        <div className={`text-xs ${index === selectedIndex ? 'text-blue-200' : 'text-neutral-400'}`}>
+                        <div className="text-[11px] text-[var(--app-muted)]">
                             {item.description}
                         </div>
                     )}

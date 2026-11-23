@@ -673,11 +673,7 @@ export function CubeTransparentIcon(props: IconProps) { return (
 
 export function TagIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
-        <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M5.25 8.25h13.5m-13.5 7.5h13.5m-1.875-11.25a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zM19.5 8.25a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0zM19.5 15.75a1.875 1.875 0 11-3.75 0 1.875 1.875 0 013.75 0z"
-        />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 4v16M14 4v16M4.5 9h15M4.5 15h15"/>
     </OutlineIcon>
 ); }
 

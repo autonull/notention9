@@ -30,10 +30,10 @@ export const NOTE_BROWSE_MODES: Array<UiOption<NoteMode>> = [
 export const NOTE_MODES = NOTE_BROWSE_MODES;
 
 export const NOTE_SORT_ORDERS: Array<UiOption<SortOrder>> = [
-    {id: 'updatedAt_desc', label: 'Updated ↓', direction: 'desc'},
-    {id: 'updatedAt_asc', label: 'Updated ↑', direction: 'asc'},
-    {id: 'createdAt_desc', label: 'Created ↓', direction: 'desc'},
-    {id: 'createdAt_asc', label: 'Created ↑', direction: 'asc'},
+    {id: 'updatedAt_desc', label: 'Updated', direction: 'desc'},
+    {id: 'updatedAt_asc', label: 'Updated', direction: 'asc'},
+    {id: 'createdAt_desc', label: 'Created', direction: 'desc'},
+    {id: 'createdAt_asc', label: 'Created', direction: 'asc'},
     {id: 'title_asc', label: 'Title A–Z', direction: 'asc'},
     {id: 'title_desc', label: 'Title Z–A', direction: 'desc'},
     {id: 'soonest', label: 'Soonest', direction: 'asc'},
@@ -71,7 +71,7 @@ export const ARRANGE_GROUPS: ArrangeGroup[] = [
 ];
 
 export const sortOrderLabel = (order: SortOrder): string =>
-    NOTE_SORT_ORDERS.find(option => option.id === order)?.label ?? 'Updated ↓';
+    NOTE_SORT_ORDERS.find(option => option.id === order)?.label ?? 'Updated';
 
 export const browseModeLabel = (mode: NoteMode): string =>
     NOTE_BROWSE_MODES.find(option => option.id === mode)?.label ?? 'List';
@@ -87,7 +87,7 @@ export type PaletteScope = 'search' | 'explore' | 'chat';
 
 export const PALETTE_SCOPES: Array<UiOption<PaletteScope>> = [
     {id: 'search', label: 'Search'},
-    {id: 'explore', label: 'Explore public notes'},
+    {id: 'explore', label: 'Public'},
     {id: 'chat', label: 'Chat'},
 ];
 

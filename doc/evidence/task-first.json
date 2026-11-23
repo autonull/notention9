@@ -1,27 +1,27 @@
 {
-  "generatedAt": "2026-11-23T00:54:21.105Z",
+  "generatedAt": "2026-11-23T14:11:58.901Z",
   "cases": [
     {
-      "view": "inbox",
+      "view": "notes",
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
         "primaries": [
           {
             "label": "New note",
-            "top": 8,
-            "tabStops": 2,
+            "top": 550,
+            "tabStops": 3,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 4,
+        "firstContentTop": null,
+        "tabStopsToContent": null
       }
     },
     {
-      "view": "inbox",
+      "view": "notes",
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
@@ -40,7 +40,7 @@
       }
     },
     {
-      "view": "notes",
+      "view": "note",
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
@@ -48,12 +48,12 @@
           {
             "label": "Publish",
             "top": 0,
-            "tabStops": 10,
+            "tabStops": 11,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 34,
+        "focusableCount": 35,
         "firstContentTop": 12,
         "tabStopsToContent": 0
       }
@@ -72,7 +72,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 13,
+        "focusableCount": 30,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -91,7 +91,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 13,
+        "focusableCount": 11,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -110,7 +110,7 @@
           },
           {
             "label": "Month",
-            "top": 162,
+            "top": 134,
             "tabStops": 17,
             "visible": true
           }
@@ -122,7 +122,7 @@
       }
     },
     {
-      "view": "actions",
+      "view": "notes",
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
@@ -141,22 +141,22 @@
       }
     },
     {
-      "view": "responses",
-      "state": "empty",
+      "view": "note",
+      "state": "populated",
       "viewport": "desktop",
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
+            "label": "Publish",
+            "top": 0,
+            "tabStops": 11,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 13,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 30,
+        "firstContentTop": 12,
+        "tabStopsToContent": 0
       }
     },
     {
@@ -166,22 +166,16 @@
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
-            "visible": true
-          },
-          {
             "label": "Add",
-            "top": 145,
-            "tabStops": 6,
+            "top": 136,
+            "tabStops": 7,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 32,
-        "firstContentTop": 162,
-        "tabStopsToContent": 5
+        "focusableCount": 33,
+        "firstContentTop": 136,
+        "tabStopsToContent": 6
       }
     },
     {
@@ -191,20 +185,14 @@
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
-            "visible": true
-          },
-          {
             "label": "Update Ontology",
             "top": 109,
-            "tabStops": 9,
+            "tabStops": 10,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
+        "focusableCount": 12,
         "firstContentTop": 290,
         "tabStopsToContent": -1
       }
@@ -216,14 +204,8 @@
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
-            "visible": true
-          },
-          {
             "label": "Drop a pin to capture a location",
-            "top": 105,
+            "top": 77,
             "tabStops": 23,
             "visible": true
           }
@@ -239,16 +221,9 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [
-          {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 7,
+        "focusableCount": 8,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -267,7 +242,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 18,
+        "focusableCount": 17,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -281,18 +256,18 @@
           {
             "label": "Publish",
             "top": 0,
-            "tabStops": 10,
+            "tabStops": 11,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 27,
+        "focusableCount": 29,
         "firstContentTop": 12,
         "tabStopsToContent": 0
       }
     },
     {
-      "view": "network",
+      "view": "explore",
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
@@ -305,32 +280,32 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 28,
+        "focusableCount": 27,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
     },
     {
-      "view": "inbox",
+      "view": "notes",
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
         "primaries": [
           {
             "label": "New note",
-            "top": 8,
-            "tabStops": 2,
+            "top": 458,
+            "tabStops": 3,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 10,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 4,
+        "firstContentTop": null,
+        "tabStopsToContent": null
       }
     },
     {
-      "view": "inbox",
+      "view": "notes",
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
@@ -349,7 +324,7 @@
       }
     },
     {
-      "view": "notes",
+      "view": "note",
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
@@ -357,12 +332,12 @@
           {
             "label": "Publish",
             "top": 0,
-            "tabStops": 2,
+            "tabStops": 3,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 25,
+        "focusableCount": 26,
         "firstContentTop": 0,
         "tabStopsToContent": -1
       }
@@ -381,9 +356,9 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 10,
+        "firstContentTop": 0,
+        "tabStopsToContent": -1
       }
     },
     {
@@ -400,7 +375,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
+        "focusableCount": 10,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -419,13 +394,13 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 18,
+        "firstContentTop": 0,
+        "tabStopsToContent": -1
       }
     },
     {
-      "view": "actions",
+      "view": "notes",
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
@@ -438,28 +413,28 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 21,
+        "firstContentTop": 0,
+        "tabStopsToContent": -1
       }
     },
     {
-      "view": "responses",
-      "state": "empty",
+      "view": "note",
+      "state": "populated",
       "viewport": "mobile",
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
+            "label": "Publish",
+            "top": 0,
+            "tabStops": 3,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 21,
+        "firstContentTop": 0,
+        "tabStopsToContent": -1
       }
     },
     {
@@ -469,22 +444,16 @@
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
-            "visible": true
-          },
-          {
             "label": "Add",
-            "top": 229,
-            "tabStops": 6,
+            "top": 220,
+            "tabStops": 7,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 20,
-        "firstContentTop": 246,
-        "tabStopsToContent": 5
+        "focusableCount": 25,
+        "firstContentTop": 220,
+        "tabStopsToContent": 6
       }
     },
     {
@@ -494,20 +463,14 @@
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
-            "visible": true
-          },
-          {
             "label": "Update Ontology",
             "top": 259,
-            "tabStops": 9,
+            "tabStops": 10,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
+        "focusableCount": 12,
         "firstContentTop": 440,
         "tabStopsToContent": -1
       }
@@ -519,16 +482,16 @@
       "metrics": {
         "primaries": [
           {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
+            "label": "Drop a pin to capture a location",
+            "top": 121,
+            "tabStops": 16,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 11,
-        "firstContentTop": 60,
-        "tabStopsToContent": 4
+        "focusableCount": 17,
+        "firstContentTop": 0,
+        "tabStopsToContent": -1
       }
     },
     {
@@ -536,16 +499,9 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [
-          {
-            "label": "New note",
-            "top": 8,
-            "tabStops": 2,
-            "visible": true
-          }
-        ],
+        "primaries": [],
         "duplicateLabels": [],
-        "focusableCount": 7,
+        "focusableCount": 8,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -564,7 +520,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 16,
+        "focusableCount": 15,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -578,18 +534,18 @@
           {
             "label": "Publish",
             "top": 0,
-            "tabStops": 2,
+            "tabStops": 3,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 18,
+        "focusableCount": 20,
         "firstContentTop": 0,
         "tabStopsToContent": -1
       }
     },
     {
-      "view": "network",
+      "view": "explore",
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
@@ -602,7 +558,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 26,
+        "focusableCount": 25,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }

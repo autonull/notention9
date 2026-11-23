@@ -20,12 +20,14 @@ const BubbleButton = ({
 }) => (
     <button
         onClick={onClick}
-        className={`p-1.5 transition-all first:rounded-l-md last:rounded-r-md ${
+        className={`grid h-7 w-7 place-items-center transition-colors ${
             isActive
-                ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20'
-                : 'bg-neutral-900 text-neutral-400 hover:text-neutral-200 hover:bg-neutral-800'
+                ? 'bg-[var(--app-accent-soft)] text-[var(--app-accent-text)]'
+                : 'text-[var(--app-muted)] hover:bg-[var(--app-hover)] hover:text-[var(--app-text)]'
         }`}
         title={title}
+        aria-label={title}
+        aria-pressed={isActive}
         type="button"
     >
         <Icon className="h-3.5 w-3.5"/>
@@ -40,7 +42,7 @@ export function EditorBubbleMenu({editor}: EditorBubbleMenuProps) {
     return (
         <BubbleMenu
             editor={editor}
-            className="flex items-center rounded-md shadow-2xl border border-neutral-800 overflow-hidden bg-neutral-900 ring-1 ring-white/5"
+            className="flex items-center gap-0.5 overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-raised)] p-1 shadow-[var(--app-shadow)]"
         >
             <BubbleButton
                 onClick={() => editor.chain().focus().toggleBold().run()}
@@ -60,7 +62,7 @@ export function EditorBubbleMenu({editor}: EditorBubbleMenuProps) {
                 icon={StrikethroughIcon}
                 title="Strikethrough"
             />
-            <div className="w-px h-8 bg-neutral-700"/>
+            <div className="mx-0.5 h-4 w-px bg-[var(--app-line)]"/>
             <BubbleButton
                 onClick={() => editor.chain().focus().toggleCode().run()}
                 isActive={editor.isActive('code')}

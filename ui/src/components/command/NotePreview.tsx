@@ -1,6 +1,7 @@
 import React from 'react';
 import type {Note} from '@notention/core';
 import {getTextFromHtml} from '@notention/core';
+import {formatPropertyValues} from '../../utils/propertyDisplay';
 
 export function NotePreview({note}: {note: Note}) {
     const content = getTextFromHtml(note.content).trim();
@@ -32,7 +33,7 @@ export function NotePreview({note}: {note: Note}) {
                     {note.properties.slice(0, 5).map(property => (
                         <div key={property.key} className="flex gap-2 text-meta">
                             <dt className="text-[var(--app-muted)]">{property.key}</dt>
-                            <dd className="truncate text-[var(--app-text-secondary)]">{property.values.join(', ')}</dd>
+                            <dd className="truncate text-[var(--app-text-secondary)]" title={property.values.join(', ')}>{formatPropertyValues(property.values)}</dd>
                         </div>
                     ))}
                 </dl>

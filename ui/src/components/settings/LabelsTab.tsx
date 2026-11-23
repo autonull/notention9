@@ -1,21 +1,22 @@
 import React, {useState, useMemo, useCallback} from 'react';
 import {useNotes} from '../../hooks/useNotes';
-import {useSettings} from '../../hooks/useSettingsContext';
+import {useView} from '../../hooks/useViewContext';
 import {useToast} from '../../hooks/useToast';
-import {TagIcon, PencilIcon, TrashIcon, PlusIcon, CheckIcon, XIcon} from '../ui/icons';
+import {TagIcon, PencilIcon, TrashIcon, PlusIcon, CheckIcon, XIcon, CogIcon, ArrowRightIcon} from '../ui/icons';
 import {Button} from '../ui/Button';
 import {Input} from '../ui/Input';
-import {EmptyState} from '../ui/Primitives';
+import {ConfirmationModal, EmptyState} from '../ui/Primitives';
 import {SectionHeader} from '../ui/kit';
 
 export function LabelsTab() {
-    const {notes, updateNote} = useNotes();
-    const {settings, setSettings} = useSettings();
+    const {notes, updateNote, addNote} = useNotes();
+    const {setActiveView, setSelectedNoteId, setSettingsTab} = useView();
     const {addToast} = useToast();
 
     const [editingTag, setEditingTag] = useState<string | null>(null);
     const [editValue, setEditValue] = useState('');
     const [newTagInput, setNewTagInput] = useState('');
+    const [tagToDelete, setTagToDelete] = useState<string | null>(null);
 
     const tagCounts = useMemo(() => {
         const counts: Record<string, number> = {};
@@ -38,7 +39,7 @@ export function LabelsTab() {
 
         const normalizedNewTag = newTag.trim().toLowerCase();
         if (tagCounts[normalizedNewTag] && normalizedNewTag !== oldTag.toLowerCase()) {
-            addToast(`Tag "${normalizedNewTag}" already exists`, 'error');
+            addToast(`#${normalizedNewTag} is already in use`, 'error');
             return;
         }
 
@@ -66,18 +67,31 @@ export function LabelsTab() {
                 });
             }
         });
-        addToast(`Deleted tag "${tag}"`, 'success');
+        addToast(`Removed label #${tag}`, 'success');
     }, [notes, updateNote, addToast]);
 
     const handleCreateTag = () => {
-        const tag = newTagInput.trim().toLowerCase();
+        const tag = newTagInput.trim().toLowerCase().replace(/^#/, '');
         if (!tag) return;
         if (tagCounts[tag]) {
-            addToast(`Tag "${tag}" already exists`, 'error');
+            addToast(`#${tag} is already in use`, 'error');
             return;
         }
-        addToast(`Created tag "${tag}". It will appear when used in a note.`, 'success');
+        const note = addNote({title: '', content: '', tags: [tag]});
         setNewTagInput('');
+        setActiveView('notes');
+        setSelectedNoteId(note.id);
+        addToast(`Created #${tag}. Write the note it belongs to.`, 'success');
+    };
+
+    const confirmDeleteTag = () => {
+        if (tagToDelete) handleDeleteTag(tagToDelete);
+        setTagToDelete(null);
+    };
+
+    const openOntology = () => {
+        setActiveView('settings');
+        setSettingsTab('ontology');
     };
 
     const handleStartEdit = (tag: string) => {
@@ -105,41 +119,38 @@ export function LabelsTab() {
             />
 
             <div className="grid gap-4 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
-                <div className="flex flex-col gap-4">
-                    <div className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
-                        <div className="flex gap-2 items-center mb-4">
-                            <div className="flex-1">
-                                <Input
-                                    label="Create new label"
-                                    value={newTagInput}
-                                    onChange={(e) => setNewTagInput(e.target.value)}
-                                    placeholder="e.g. project, urgent, personal"
-                                    onKeyDown={(e) => e.key === 'Enter' && handleCreateTag()}
-                                />
-                            </div>
-                            <Button onClick={handleCreateTag} variant="primary" icon={PlusIcon}>
+                <div className="flex flex-col gap-2">
+                    <div className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-3">
+                        <div className="flex items-center gap-2">
+                            <Input
+                                aria-label="New label"
+                                value={newTagInput}
+                                onChange={(e) => setNewTagInput(e.target.value)}
+                                placeholder="New label, e.g. project"
+                                onKeyDown={(e) => e.key === 'Enter' && handleCreateTag()}
+                                fullWidth={false}
+                                wrapperClassName="min-w-0 flex-1"
+                                className="h-[44px]"
+                            />
+                            <Button onClick={handleCreateTag} variant="primary" size="md" touchTarget={false} icon={PlusIcon} className="h-[44px] shrink-0">
                                 Add
                             </Button>
                         </div>
 
-                        <p className="text-[11px] text-[var(--app-faint)]">
-                            {sortedTags.length} label{sortedTags.length !== 1 ? 's' : ''} in use across {notes.length} note{notes.length !== 1 ? 's' : ''}
+                        <p className="mt-2 text-[11px] text-[var(--app-faint)]">
+                            {sortedTags.length} label{sortedTags.length !== 1 ? 's' : ''} across {notes.length} note{notes.length !== 1 ? 's' : ''}. New labels open a page.
                         </p>
                     </div>
 
-                    <div className="rounded-lg border border-dashed border-[var(--app-line)] p-3">
-                        <h3 className="mb-1 text-[12px] font-medium text-[var(--app-text-secondary)]">Advanced</h3>
-                        <p className="text-[11px] leading-5 text-[var(--app-muted)]">
-                            For full ontology editing (custom attributes, types, relationships), use the{' '}
-                            <button
-                                onClick={() => setSettings(prev => ({...prev, activeView: 'ontology'}))}
-                                className="text-[var(--app-accent-text)] hover:underline"
-                            >
-                                Ontology Editor
-                            </button>
-                            .
-                        </p>
-                    </div>
+                    <button
+                        type="button"
+                        onClick={openOntology}
+                        className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-[12px] text-[var(--app-muted)] transition-colors hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)]"
+                    >
+                        <CogIcon className="h-3.5 w-3.5 shrink-0"/>
+                        <span className="min-w-0 flex-1">Advanced: attributes, types, and relationships</span>
+                        <ArrowRightIcon className="h-3.5 w-3.5 shrink-0"/>
+                    </button>
                 </div>
 
                 <div className="lg:overflow-y-auto custom-scrollbar">
@@ -190,7 +201,7 @@ export function LabelsTab() {
                                                 <Button
                                                     variant="ghost"
                                                     size="sm"
-                                                    onClick={() => handleDeleteTag(tag)}
+                                                    onClick={() => setTagToDelete(tag)}
                                                     aria-label={`Delete ${tag}`}
                                                     className="text-[var(--app-muted)] hover:text-red-400"
                                                 >
@@ -205,6 +216,16 @@ export function LabelsTab() {
                     )}
                 </div>
             </div>
+
+            <ConfirmationModal
+                isOpen={!!tagToDelete}
+                onClose={() => setTagToDelete(null)}
+                onConfirm={confirmDeleteTag}
+                title={`Remove #${tagToDelete ?? ''}?`}
+                message={`This removes the label from ${tagToDelete ? (tagCounts[tagToDelete] ?? 0) : 0} note${tagToDelete && tagCounts[tagToDelete] === 1 ? '' : 's'}. The notes stay.`}
+                confirmLabel="Remove label"
+                isDestructive
+            />
         </div>
     );
 }

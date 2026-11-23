@@ -7,6 +7,8 @@ import {
     ArrowUpTrayIcon,
     ArrowLeftIcon,
     ArrowRightIcon,
+    CubeIcon,
+    MagicWandIcon,
 } from '../ui/icons';
 import {IconButton, Button} from '../ui/Button';
 import {DropdownMenu, DropdownMenuItem} from '../ui/Primitives';
@@ -19,6 +21,8 @@ export interface EditorControlsProps {
     onSaveTemplate?: () => void;
     onExport?: () => void;
     onCopyContent?: () => void;
+    onMagic?: () => void;
+    onInsertTemplate?: () => void;
     canUndo?: boolean;
     canRedo?: boolean;
     onUndo?: () => void;
@@ -36,6 +40,8 @@ export function EditorControls({
     onSaveTemplate,
     onExport,
     onCopyContent,
+    onMagic,
+    onInsertTemplate,
     canUndo = false,
     canRedo = false,
     onUndo,
@@ -44,6 +50,16 @@ export function EditorControls({
     isAutoTagging,
 }: EditorControlsProps) {
     const menuItems: DropdownMenuItem[] = [
+        ...(onInsertTemplate ? [{
+            label: 'Insert template',
+            icon: CubeIcon,
+            onClick: onInsertTemplate,
+        }] : []),
+        ...(onMagic ? [{
+            label: 'Magic align',
+            icon: MagicWandIcon,
+            onClick: onMagic,
+        }] : []),
         ...(onSaveTemplate ? [{
             label: 'Save as template',
             icon: DocumentDuplicateIcon,

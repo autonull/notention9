@@ -1,9 +1,9 @@
 {
-  "generatedAt": "2026-11-22T23:27:11.315Z",
+  "generatedAt": "2026-11-23T14:09:12.607Z",
   "cases": [
     {
-      "id": "inbox-empty",
-      "view": "inbox",
+      "id": "notes-empty",
+      "view": "notes",
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
@@ -12,48 +12,38 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.947,
+        "contentRatio": 0.099,
         "wastedSpace": 0,
         "wastedRatio": 0,
-        "trailingSpace": 0,
-        "contentHeight": 852,
+        "trailingSpace": 303,
+        "contentHeight": 118,
         "root": "main",
         "overflowX": 0,
-        "stretchDefects": [],
+        "stretchDefects": [
+          {
+            "element": "div[data-testid=\"\"]:flex h-full min-h-0 items-center justify-center overflow-y-a",
+            "height": 852,
+            "childHeight": 279
+          }
+        ],
         "emptyState": {
           "element": "mx-auto flex max-w-md flex-col items-center justify-center p",
-          "height": 231,
-          "footprint": 0.257
+          "height": 279,
+          "footprint": 0.31
         },
-        "density": 7,
+        "density": 8.5,
         "actions": [
           {
-            "label": "Search notes",
-            "top": 60
-          },
-          {
-            "label": "Arrange notes: List, Updated ↓",
-            "top": 64
-          },
-          {
-            "label": "All0",
-            "top": 104
-          },
-          {
-            "label": "Tasks0",
-            "top": 104
-          },
-          {
-            "label": "Tags0",
-            "top": 104
+            "label": "New note",
+            "top": 550
           }
         ],
         "facts": 0
       }
     },
     {
-      "id": "inbox-populated",
-      "view": "inbox",
+      "id": "notes-populated",
+      "view": "notes",
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
@@ -71,14 +61,14 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 28.2,
+        "density": 29.3,
         "actions": [
           {
             "label": "Search notes",
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {
@@ -98,8 +88,8 @@
       }
     },
     {
-      "id": "notes-list",
-      "view": "notes",
+      "id": "note-page",
+      "view": "note",
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
@@ -117,14 +107,14 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 44.4,
+        "density": 45.6,
         "actions": [
           {
             "label": "Search notes",
             "top": 12
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 16
           },
           {
@@ -163,14 +153,14 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 28.2,
+        "density": 17.6,
         "actions": [
           {
             "label": "Search notes",
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: Canvas, Updated, descendi",
             "top": 64
           },
           {
@@ -216,7 +206,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {
@@ -262,7 +252,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: Timeline, Updated ↓",
+            "label": "Arrange notes: Timeline, Updated, descen",
             "top": 64
           },
           {
@@ -282,8 +272,8 @@
       }
     },
     {
-      "id": "actions",
-      "view": "actions",
+      "id": "notes-board",
+      "view": "notes",
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
@@ -308,7 +298,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: Board, Updated ↓",
+            "label": "Arrange notes: Board, Updated, descendin",
             "top": 64
           },
           {
@@ -328,9 +318,9 @@
       }
     },
     {
-      "id": "responses",
-      "view": "responses",
-      "state": "empty",
+      "id": "note-replies",
+      "view": "note",
+      "state": "populated",
       "viewport": "desktop",
       "metrics": {
         "viewport": {
@@ -338,36 +328,36 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.947,
+        "contentRatio": 1,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 852,
+        "contentHeight": 900,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 28.2,
+        "density": 27.8,
         "actions": [
           {
             "label": "Search notes",
-            "top": 60
+            "top": 12
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
-            "top": 64
+            "label": "Arrange notes: List, Updated, descending",
+            "top": 16
           },
           {
-            "label": "All20",
-            "top": 104
+            "label": "All1",
+            "top": 56
           },
           {
-            "label": "Tasks1",
-            "top": 104
+            "label": "Tasks0",
+            "top": 56
           },
           {
-            "label": "Tags20",
-            "top": 104
+            "label": "Tags1",
+            "top": 56
           }
         ],
         "facts": 0
@@ -384,7 +374,7 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.882,
+        "contentRatio": 0.892,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 6,
@@ -393,7 +383,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 52,
+        "density": 53.2,
         "actions": [
           {
             "label": "Profile",
@@ -430,7 +420,7 @@
           "height": 900
         },
         "scrollHeight": 900,
-        "contentRatio": 0.904,
+        "contentRatio": 0.919,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
@@ -439,7 +429,7 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 46.9,
+        "density": 49.3,
         "actions": [
           {
             "label": "Profile",
@@ -462,7 +452,7 @@
             "top": 207
           }
         ],
-        "facts": 17
+        "facts": 19
       }
     },
     {
@@ -492,7 +482,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: Map, Updated ↓",
+            "label": "Arrange notes: Map, Updated, descending",
             "top": 64
           },
           {
@@ -577,14 +567,14 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 28.2,
+        "density": 29.3,
         "actions": [
           {
             "label": "Search notes",
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {
@@ -623,14 +613,14 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 24.4,
+        "density": 26.7,
         "actions": [
           {
             "label": "Search notes",
             "top": 12
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 16
           },
           {
@@ -650,8 +640,8 @@
       }
     },
     {
-      "id": "network",
-      "view": "network",
+      "id": "explore",
+      "view": "explore",
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
@@ -669,14 +659,14 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 28.2,
+        "density": 29.3,
         "actions": [
           {
             "label": "Search notes",
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {
@@ -696,8 +686,8 @@
       }
     },
     {
-      "id": "inbox-empty",
-      "view": "inbox",
+      "id": "notes-empty",
+      "view": "notes",
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
@@ -706,48 +696,38 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.943,
+        "contentRatio": 0.105,
         "wastedSpace": 0,
         "wastedRatio": 0,
-        "trailingSpace": 0,
-        "contentHeight": 796,
+        "trailingSpace": 339,
+        "contentHeight": 118,
         "root": "main",
         "overflowX": 0,
-        "stretchDefects": [],
+        "stretchDefects": [
+          {
+            "element": "div[data-testid=\"\"]:flex h-full min-h-0 items-center justify-center overflow-y-a",
+            "height": 796,
+            "childHeight": 151
+          }
+        ],
         "emptyState": {
           "element": "mx-auto flex max-w-md flex-col items-center justify-center p",
-          "height": 0,
-          "footprint": 0
+          "height": 151,
+          "footprint": 0.179
         },
-        "density": 7.5,
+        "density": 8.5,
         "actions": [
           {
-            "label": "Search notes",
-            "top": 60
-          },
-          {
-            "label": "Arrange notes: List, Updated ↓",
-            "top": 64
-          },
-          {
-            "label": "All0",
-            "top": 104
-          },
-          {
-            "label": "Tasks0",
-            "top": 104
-          },
-          {
-            "label": "Tags0",
-            "top": 104
+            "label": "New note",
+            "top": 458
           }
         ],
         "facts": 0
       }
     },
     {
-      "id": "inbox-populated",
-      "view": "inbox",
+      "id": "notes-populated",
+      "view": "notes",
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
@@ -772,7 +752,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {
@@ -792,8 +772,8 @@
       }
     },
     {
-      "id": "notes-list",
-      "view": "notes",
+      "id": "note-page",
+      "view": "note",
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
@@ -811,11 +791,15 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 28.4,
+        "density": 29.6,
         "actions": [
           {
             "label": "Back to notes",
             "top": 0
+          },
+          {
+            "label": "Text style",
+            "top": 8
           },
           {
             "label": "Context (4)",
@@ -828,10 +812,6 @@
           {
             "label": "More actions",
             "top": 0
-          },
-          {
-            "label": "Note title",
-            "top": 80
           }
         ],
         "facts": 0
@@ -848,36 +828,20 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.943,
+        "contentRatio": 0.924,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 796,
+        "contentHeight": 797,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 7.5,
+        "density": 1.3,
         "actions": [
           {
-            "label": "Search notes",
-            "top": 60
-          },
-          {
-            "label": "Arrange notes: List, Updated ↓",
-            "top": 64
-          },
-          {
-            "label": "All20",
-            "top": 104
-          },
-          {
-            "label": "Tasks1",
-            "top": 104
-          },
-          {
-            "label": "Tags20",
-            "top": 104
+            "label": "Notes",
+            "top": 48
           }
         ],
         "facts": 0
@@ -910,7 +874,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {
@@ -940,44 +904,44 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.943,
+        "contentRatio": 0.897,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 796,
+        "contentHeight": 797,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 7.5,
+        "density": 17.6,
         "actions": [
           {
-            "label": "Search notes",
-            "top": 60
+            "label": "Notes",
+            "top": 48
           },
           {
-            "label": "Arrange notes: Timeline, Updated ↓",
-            "top": 64
+            "label": "Filter by location",
+            "top": 109
           },
           {
-            "label": "All20",
-            "top": 104
+            "label": "Calendar",
+            "top": 145
           },
           {
-            "label": "Tasks1",
-            "top": 104
+            "label": "Nov 512:00Repair cafeCommunity Workshop,",
+            "top": 206
           },
           {
-            "label": "Tags20",
-            "top": 104
+            "label": "Nov 312:00Seed and plant swapCommunity C",
+            "top": 267
           }
         ],
         "facts": 0
       }
     },
     {
-      "id": "actions",
-      "view": "actions",
+      "id": "notes-board",
+      "view": "notes",
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
@@ -986,45 +950,29 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.943,
+        "contentRatio": 0.924,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 796,
+        "contentHeight": 797,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 7.5,
+        "density": 10,
         "actions": [
           {
-            "label": "Search notes",
-            "top": 60
-          },
-          {
-            "label": "Arrange notes: Board, Updated ↓",
-            "top": 64
-          },
-          {
-            "label": "All24",
-            "top": 104
-          },
-          {
-            "label": "Tasks5",
-            "top": 104
-          },
-          {
-            "label": "Tags24",
-            "top": 104
+            "label": "Notes",
+            "top": 48
           }
         ],
-        "facts": 0
+        "facts": 7
       }
     },
     {
-      "id": "responses",
-      "view": "responses",
-      "state": "empty",
+      "id": "note-replies",
+      "view": "note",
+      "state": "populated",
       "viewport": "mobile",
       "metrics": {
         "viewport": {
@@ -1032,36 +980,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.943,
+        "contentRatio": 1,
         "wastedSpace": 0,
         "wastedRatio": 0,
         "trailingSpace": 0,
-        "contentHeight": 796,
+        "contentHeight": 844,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 7.5,
+        "density": 21.3,
         "actions": [
           {
-            "label": "Search notes",
-            "top": 60
+            "label": "Back to notes",
+            "top": 0
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
-            "top": 64
+            "label": "Text style",
+            "top": 8
           },
           {
-            "label": "All20",
-            "top": 104
+            "label": "Context",
+            "top": 8
           },
           {
-            "label": "Tasks1",
-            "top": 104
+            "label": "Publish",
+            "top": 0
           },
           {
-            "label": "Tags20",
-            "top": 104
+            "label": "More actions",
+            "top": 0
           }
         ],
         "facts": 0
@@ -1078,36 +1026,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.595,
-        "wastedSpace": 63,
-        "wastedRatio": 0.074,
-        "trailingSpace": 11,
-        "contentHeight": 770,
+        "contentRatio": 0.637,
+        "wastedSpace": 23,
+        "wastedRatio": 0.027,
+        "trailingSpace": 0,
+        "contentHeight": 780,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 19.5,
+        "density": 25.6,
         "actions": [
           {
             "label": "ProfileAppearanceLanguage & RegionKeyboa",
             "top": 85
           },
           {
-            "label": "Add",
-            "top": 229
+            "label": "New label",
+            "top": 220
           },
           {
-            "label": "Ontology Editor",
-            "top": 403
+            "label": "Add",
+            "top": 220
+          },
+          {
+            "label": "Advanced: attributes, types, and relatio",
+            "top": 310
           },
           {
             "label": "Rename community",
-            "top": 461
-          },
-          {
-            "label": "Delete community",
-            "top": 461
+            "top": 365
           }
         ],
         "facts": 0
@@ -1124,7 +1072,7 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.715,
+        "contentRatio": 0.728,
         "wastedSpace": 49,
         "wastedRatio": 0.058,
         "trailingSpace": 0,
@@ -1141,19 +1089,19 @@
           },
           {
             "label": "Graph",
-            "top": 213
+            "top": 208
           },
           {
             "label": "Learning1",
-            "top": 213
+            "top": 208
           },
           {
             "label": "Conflicts0",
-            "top": 213
+            "top": 208
           },
           {
             "label": "Update Ontology",
-            "top": 270
+            "top": 259
           }
         ],
         "facts": 13
@@ -1170,36 +1118,36 @@
           "height": 844
         },
         "scrollHeight": 844,
-        "contentRatio": 0.943,
+        "contentRatio": 0.89,
         "wastedSpace": 0,
         "wastedRatio": 0,
-        "trailingSpace": 0,
-        "contentHeight": 796,
+        "trailingSpace": 93,
+        "contentHeight": 751,
         "root": "main",
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 7.5,
+        "density": 8,
         "actions": [
           {
-            "label": "Search notes",
-            "top": 60
+            "label": "Notes",
+            "top": 48
           },
           {
-            "label": "Arrange notes: Map, Updated ↓",
-            "top": 64
+            "label": "Zoom in",
+            "top": 129
           },
           {
-            "label": "All20",
-            "top": 104
+            "label": "Zoom out",
+            "top": 159
           },
           {
-            "label": "Tasks1",
-            "top": 104
+            "label": "Leaflet",
+            "top": 726
           },
           {
-            "label": "Tags20",
-            "top": 104
+            "label": "OpenStreetMap",
+            "top": 726
           }
         ],
         "facts": 0
@@ -1266,7 +1214,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {
@@ -1305,11 +1253,15 @@
         "overflowX": 0,
         "stretchDefects": [],
         "emptyState": null,
-        "density": 17.8,
+        "density": 20.1,
         "actions": [
           {
             "label": "Back to notes",
             "top": 0
+          },
+          {
+            "label": "Text style",
+            "top": 8
           },
           {
             "label": "Context",
@@ -1322,18 +1274,14 @@
           {
             "label": "More actions",
             "top": 0
-          },
-          {
-            "label": "Note title",
-            "top": 80
           }
         ],
         "facts": 0
       }
     },
     {
-      "id": "network",
-      "view": "network",
+      "id": "explore",
+      "view": "explore",
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
@@ -1358,7 +1306,7 @@
             "top": 60
           },
           {
-            "label": "Arrange notes: List, Updated ↓",
+            "label": "Arrange notes: List, Updated, descending",
             "top": 64
           },
           {

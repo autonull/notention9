@@ -38,6 +38,17 @@ test('mobile note detail is full-screen with a context sheet', async ({page}) =>
     expect(overflow).toBeLessThanOrEqual(1);
 });
 
+test('mobile mode surfaces fill the screen and return to the list', async ({page}) => {
+    await seed(page, {notes: demoNotes(), settings: defaultSettings(), hash: '#/notes?mode=canvas'});
+
+    await expect(page.getByTestId('notes-grid-items')).toBeVisible();
+    await expect(page.getByText('Canvas', {exact: true})).toBeVisible();
+    await page.getByRole('button', {name: 'Notes', exact: true}).click();
+
+    await expect(page.getByTestId('note-history-rail')).toBeVisible();
+    await expect(page.getByTestId('notes-grid-items')).toHaveCount(0);
+});
+
 test('mobile capture creates a note on the same screen path', async ({page}) => {
     await seed(page, {notes: [], settings: defaultSettings(), hash: '#/notes'});
 

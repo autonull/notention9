@@ -14,6 +14,7 @@ import {
     ArrowRightIcon
 } from '../ui/icons';
 import {Button} from '../ui/Button';
+import {formatPropertyRange, formatPropertyValue} from '../../utils/propertyDisplay';
 
 interface MatchItemProps {
     match: ScoredMatch;
@@ -53,8 +54,11 @@ export function MatchItem({
                 </span>
                 <span className="text-[11px] text-[var(--app-faint)]">match</span>
                 {direction && (
-                    <span className="text-[11px] text-[var(--app-faint)]">
-                        {direction === 'outgoing' ? 'outgoing' : 'incoming'}
+                    <span
+                        className="text-[11px] text-[var(--app-faint)]"
+                        title={direction === 'outgoing' ? 'Your note matches this one' : 'This note matches yours'}
+                    >
+                        · {direction}
                     </span>
                 )}
                 {note.author && !isLocal && (
@@ -137,32 +141,45 @@ export function MatchItem({
 const MatchBadge: React.FC<{ match: PropertyMatch }> = ({ match }) => {
     const type = match.details?.type || 'unknown';
     const details = match.details;
+    const key = match.requestProp.key;
+    const offerValue = formatPropertyValue(match.offerProp.values[0] ?? '');
+    const requestRange = formatPropertyRange(match.requestProp.values);
     let icon: React.ReactNode = null;
     let text = match.reason;
 
     switch (type) {
         case 'alias':
             icon = <TagIcon className="h-2.5 w-2.5" />;
-            text = `alias ${details?.aliasUsed} ≈ ${match.requestProp.key}`;
+            text = `${key} ≈ ${offerValue}`;
             break;
         case 'fuzzy':
             icon = <SparklesIcon className="h-2.5 w-2.5" />;
-            text = `~ ${match.offerProp.values[0]}`;
+            text = `${key} ≈ ${offerValue}`;
             break;
         case 'range':
-            text = details?.valueMatch === 'out'
-                ? `out of range: ${match.offerProp.values[0]}`
-                : `in range: ${match.offerProp.values[0]}`;
+            text = `${key} ${details?.valueMatch === 'out' ? 'outside' : 'within'} ${requestRange}`;
             break;
         case 'date':
             icon = <ClockIcon className="h-2.5 w-2.5" />;
+            text = `${key} ${offerValue}`;
             break;
         case 'partial':
             icon = <ExclamationTriangleIcon className="h-2.5 w-2.5" />;
+            text = match.requestProp.operator === 'contains'
+                ? `${key} contains ${offerValue}`
+                : match.requestProp.operator === 'excludes'
+                    ? `${key} excludes ${offerValue}`
+                    : `${key}: ${offerValue}`;
+            break;
+        case 'substring':
+            icon = <ExclamationTriangleIcon className="h-2.5 w-2.5" />;
+            text = match.requestProp.operator === 'contains'
+                ? `${key} contains ${offerValue}`
+                : `${key}: ${offerValue}`;
             break;
         case 'exact':
             icon = <CheckCircleIcon className="h-2.5 w-2.5" />;
-            text = `${match.requestProp.key}: ${match.offerProp.values[0]}`;
+            text = `${key}: ${offerValue}`;
             break;
     }
 

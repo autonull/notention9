@@ -325,8 +325,13 @@ export function PropertyEditor({
                 </div>
             )}
 
-            <div className="relative">
-                <label className="block text-xs font-bold text-[var(--app-muted)] mb-2 tracking-wider">Key</label>
+            <div>
+                <div className="mb-2 flex items-center gap-2">
+                    <label className="block text-xs font-bold text-[var(--app-muted)] tracking-wider">Key</label>
+                    {type && !readonly && (
+                        <span className="ml-auto rounded border border-[var(--app-line)] px-1.5 py-0.5 text-[11px] font-medium text-[var(--app-faint)]">{type}</span>
+                    )}
+                </div>
                 <Input
                     list="property-keys"
                     placeholder="Key (e.g. price)"
@@ -348,11 +353,6 @@ export function PropertyEditor({
                         </option>
                     ))}
                 </datalist>
-                {type && !readonly && (
- <span className="absolute right-2 top-3 text-xs bg-[var(--app-panel)] text-[var(--app-text-secondary)] px-1.5 py-0.5 rounded border border-[var(--app-line-strong)]">
-                        {type}
-                    </span>
-                )}
             </div>
 
             {description && (
@@ -441,34 +441,24 @@ export function PropertyEditor({
                 </div>
             )}
 
-            {activeDef && (
-                <div className="bg-[var(--app-accent-soft)] border border-[var(--app-accent-line)] rounded p-2 mb-2 text-xs flex flex-col gap-1">
-                    {activeDef.description && (
-                        <div className="flex items-start gap-1.5 text-[var(--app-accent-text)]">
-                            <InformationCircleIcon className="w-3.5 h-3.5 mt-0.5 flex-shrink-0"/>
-                            <span>{activeDef.description}</span>
-                        </div>
-                    )}
-                    {activeDef.aliases && activeDef.aliases.length > 0 && (
-                        <div className="text-[var(--app-muted)] pl-5">
-                            <span className="italic text-[var(--app-muted)]">Also known as: </span>
-                            {activeDef.aliases.join(', ')}
-                        </div>
-                    )}
+            {activeDef?.aliases && activeDef.aliases.length > 0 && (
+                <div className="mb-2 rounded border border-[var(--app-line)] bg-[var(--app-raised)] p-2 text-xs text-[var(--app-muted)]">
+                    <span className="italic">Also known as: </span>
+                    {activeDef.aliases.join(', ')}
                 </div>
             )}
 
             {touched && !validation.isValid && !customValue && (
-                <div className="bg-red-900/20 border border-red-900/50 rounded p-2 mb-2 flex items-center gap-2 text-red-300 text-xs animate-fadeIn">
+                <div className="mb-2 flex items-center gap-2 rounded border border-[var(--color-error)]/50 bg-[var(--color-error)]/10 p-2 text-xs text-[var(--color-error)] animate-fadeIn">
                     <ExclamationTriangleIcon className="w-4 h-4 flex-shrink-0"/>
                     <span>{validation.message}</span>
                 </div>
             )}
 
             {customValue && (
-                <div className="bg-amber-900/15 border border-amber-900/40 rounded p-2 mb-2 flex items-start gap-2 text-amber-300/90 text-xs">
+                <div className="mb-2 flex items-start gap-2 rounded border border-[var(--color-warning-line)] bg-[var(--color-warning-bg)] p-2 text-xs text-[var(--color-warning-text)]">
                     <InformationCircleIcon className="w-3.5 h-3.5 flex-shrink-0 mt-0.5"/>
-                    <span>Custom value. Ontology suggests: {activeDef?.options?.join(', ')}</span>
+                    <span>Custom value “{value}”. Suggested: {activeDef?.options?.join(', ')}</span>
                 </div>
             )}
 

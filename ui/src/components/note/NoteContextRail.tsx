@@ -74,10 +74,10 @@ export function NoteContextRail({
             aria-label="Note context"
         >
             <Tabs
-                options={NOTE_RAIL_TABS.map(tab => ({
-                    ...tab,
-                    count: tab.id === 'matches' ? matches.length : tab.id === 'replies' ? replies.length : undefined,
-                }))}
+                options={NOTE_RAIL_TABS.map(tab => {
+                    const count = tab.id === 'matches' ? matches.length : tab.id === 'replies' ? replies.length : 0;
+                    return {...tab, count: count > 0 ? count : undefined};
+                })}
                 value={noteTab}
                 onChange={setNoteTab}
                 label="Note context"
@@ -89,7 +89,7 @@ export function NoteContextRail({
                 {noteTab === 'next' && (
                     <div className="space-y-3">
                         <NextStepStrip note={note} model={model} onOpenDrawer={onOpenDrawer}/>
-                        {!model.topNextStep && (
+                        {!model.topNextStep && !model.nextSteps.some(step => step.state === 'stale') && (
                             <p className="px-1 py-2 text-[12px] leading-5 text-[var(--app-muted)]">
                                 No next step yet. Add a detail.
                             </p>
@@ -104,7 +104,7 @@ export function NoteContextRail({
                                 <SparklesIcon className="mt-0.5 h-3.5 w-3.5 shrink-0"/>
                                 <span>No matches yet.</span>
                             </div>
-                        ) : matches.slice(0, 4).map(match => (
+                        ) : matches.map(match => (
                             <MatchItem
                                 key={match.note.id}
                                 match={match}
@@ -147,7 +147,8 @@ export function NoteContextRail({
                                         }
                                     }}
                                     placeholder="Write a reply…"
-                                    className="min-w-0"
+                                    fullWidth={false}
+                                    wrapperClassName="min-w-0 flex-1"
                                 />
                                 <Button
                                     variant="primary"

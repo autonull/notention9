@@ -42,28 +42,28 @@ export function PrivacyConfirmModal({
     }, [note]);
 
     return (
-        <Modal isOpen={isOpen} onClose={onClose} title="Review before publishing" className="max-w-2xl">
-            <div className="space-y-5 overflow-y-auto custom-scrollbar pr-1">
-                <div className="rounded-xl border border-yellow-500/30 bg-yellow-500/5 p-4 text-sm text-yellow-100">
-                    This note will leave your device and be stored on <strong>{destination}</strong>. The same disclosure applies whether the note was private or public.
+        <Modal isOpen={isOpen} onClose={onClose} title="Review before publishing" size="2xl">
+            <div className="space-y-5">
+                <div className="rounded-xl border border-[var(--color-warning-line)] bg-[var(--color-warning-bg)] p-4 text-sm text-[var(--color-warning-text)]">
+                    This note leaves this device and is sent to <strong>{destination}</strong>.
                     {note && note.privacy !== 'public' && (
-                        <p className="mt-2 text-yellow-200/90">
-                            Publishing makes this note <strong>public</strong> on the network.
+                        <p className="mt-2">
+                            It will be visible to everyone on that network.
                         </p>
                     )}
                 </div>
 
                 <div>
- <div className="text-xs font-bold tracking-widest text-[var(--app-muted)] mb-2">What will be shared</div>
-                    <div className="rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)] p-4 space-y-3">
+                    <div className="mb-2 text-xs font-bold tracking-widest text-[var(--app-muted)]">What will be shared</div>
+                    <div className="space-y-3 rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)] p-4">
                         <div className="font-semibold text-[var(--app-text)]">{noteTitle || 'Untitled note'}</div>
-                        <p className="text-sm text-[var(--app-text-secondary)] whitespace-pre-wrap max-h-40 overflow-y-auto custom-scrollbar">{preview?.body || 'No content'}</p>
+                        <p className="max-h-40 overflow-y-auto whitespace-pre-wrap text-sm text-[var(--app-text-secondary)] custom-scrollbar">{preview?.body || 'No content'}</p>
                         <div className="flex flex-wrap gap-1.5">
                             {note?.tags.map(tag => (
-                                <span key={tag} className="rounded-full bg-[var(--app-accent-soft)] px-2 py-0.5 text-xs text-[var(--app-accent-text)]">#{tag}</span>
+                                <span key={tag} className="rounded-full border border-[var(--app-line)] bg-[var(--app-raised)] px-2 py-0.5 text-xs text-[var(--app-text-secondary)]">#{tag}</span>
                             ))}
                             {note?.properties.map(property => (
-                                <span key={`${property.key}-${property.values.join('-')}`} className="rounded-full bg-[var(--app-accent-soft)] px-2 py-0.5 text-xs text-[var(--app-accent-text)]">
+                                <span key={`${property.key}-${property.values.join('-')}`} className="rounded-full border border-[var(--app-line)] bg-[var(--app-raised)] px-2 py-0.5 text-xs text-[var(--app-text-secondary)]">
                                     {property.key} {property.operator} {property.values.join(', ')}
                                 </span>
                             ))}
@@ -72,7 +72,7 @@ export function PrivacyConfirmModal({
                 </div>
 
                 <details className="rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)]">
-                    <summary className="cursor-pointer px-4 py-3 text-sm font-medium text-[var(--app-muted)] select-none">Raw event</summary>
+                    <summary className="cursor-pointer select-none px-4 py-3 text-sm font-medium text-[var(--app-muted)]">Raw event</summary>
                     <pre className="max-h-56 overflow-auto border-t border-[var(--app-line)] p-4 text-xs text-[var(--app-muted)] custom-scrollbar">{JSON.stringify(preview?.raw ?? {}, null, 2)}</pre>
                 </details>
 

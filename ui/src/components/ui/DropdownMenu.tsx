@@ -35,6 +35,17 @@ export function DropdownMenu({trigger, items, align = 'right', className = ''}: 
         };
     }, [isOpen]);
 
+    useEffect(() => {
+        if (!isOpen) return;
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key !== 'Escape') return;
+            event.stopPropagation();
+            setIsOpen(false);
+        };
+        document.addEventListener('keydown', handleKeyDown, true);
+        return () => document.removeEventListener('keydown', handleKeyDown, true);
+    }, [isOpen]);
+
     const handleItemClick = (onClick: () => void) => {
         onClick();
         setIsOpen(false);
@@ -49,8 +60,9 @@ export function DropdownMenu({trigger, items, align = 'right', className = ''}: 
             {isOpen && (
                 <div
                     ref={dropdownRef}
+                    role="menu"
                     className={`
-                        absolute z-[100] mt-2 w-48 rounded-md bg-neutral-800 border border-neutral-700 shadow-xl py-1
+                        absolute z-[100] mt-2 w-48 overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-panel)] py-1 shadow-[var(--app-shadow)]
                         ${align === 'right' ? 'right-0' : 'left-0'}
                         animate-in fade-in zoom-in-95 duration-100
                     `}
@@ -58,15 +70,17 @@ export function DropdownMenu({trigger, items, align = 'right', className = ''}: 
                     {items.map((item, index) => (
                         <button
                             key={index}
+                            type="button"
+                            role="menuitem"
                             onClick={() => !item.disabled && handleItemClick(item.onClick)}
                             disabled={item.disabled}
                             className={`
-                                w-full flex items-center gap-3 px-4 py-2 text-sm transition-colors
-                                ${item.disabled ? 'opacity-30 cursor-not-allowed' : 'hover:bg-neutral-700'}
-                                ${item.variant === 'danger' ? 'text-red-400 hover:bg-red-900/20' : 'text-neutral-200'}
+                                flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] transition-colors
+                                ${item.disabled ? 'cursor-not-allowed opacity-30' : 'hover:bg-[var(--app-hover)]'}
+                                ${item.variant === 'danger' ? 'text-[var(--color-error)] hover:bg-red-500/10' : 'text-[var(--app-text-secondary)] hover:text-[var(--app-text)]'}
                             `}
                         >
-                            {item.icon && <item.icon className="h-4 w-4"/>}
+                            {item.icon && <item.icon className="h-4 w-4 shrink-0"/>}
                             {item.label}
                         </button>
                     ))}

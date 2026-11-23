@@ -89,7 +89,7 @@ function getVerbTitle(suggestion: NoteSuggestion): string {
     'fulfillment-hint': 'Run',
     'related-note': 'Open',
     'skill-match': 'Run',
-    'inferred-constraint': 'Add',
+    'inferred-constraint': 'Widen',
   };
   const verb = verbMap[suggestion.kind] || 'Add';
   const prop = suggestion.proposedChange?.property;
@@ -290,8 +290,15 @@ export function useNextSteps(options: UseNextStepsOptions): UseNextStepsReturn {
             applySuggestion(suggestion.id);
           }
         };
+      } else if (isCounterfactual && onUpdateProperty) {
+        // Counterfactual: apply the widened constraint to the note
+        const key = proposedChange?.previousProperty?.key || proposedChange?.property?.key || '';
+        const operator = proposedChange?.property?.operator || proposedChange?.previousProperty?.operator || 'is';
+        const value = proposedChange?.property?.values?.[0] || '';
+        actionLabel = 'Widen';
+        apply = () => { onUpdateProperty(key, operator, value, proposedChange?.previousProperty); };
       } else if (isCounterfactual) {
-        // Counterfactual: widen the constraint
+        // Counterfactual without an edit path: widen the constraint
         actionLabel = 'Widen match';
         apply = () => { applySuggestion(suggestion.id); };
       } else {

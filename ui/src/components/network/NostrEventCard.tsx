@@ -9,6 +9,7 @@ import {Avatar} from '../ui/Avatar';
 import {Button} from '../ui/Button';
 import {Chip} from '../ui/kit';
 import {FeedRow} from '../patterns/FeedRow';
+import {formatPropertyValues} from '../../utils/propertyDisplay';
 
 // Extend NostrEvent to include a relevance value if available
 export type ScoredNostrEvent = NostrEvent & { score?: number };
@@ -71,7 +72,7 @@ export function NostrEventCard({
                             <Chip key={prop.key} size="xs">
                                 <span className="text-[var(--app-text-secondary)]">{prop.key}</span>
                                 <span className="text-[var(--app-faint)]">{prop.operator === 'is' ? '=' : prop.operator}</span>
-                                <span className="max-w-40 truncate text-[var(--app-muted)]">{prop.values.join(', ')}</span>
+                                <span className="max-w-40 truncate text-[var(--app-muted)]" title={prop.values.join(', ')}>{formatPropertyValues(prop.values)}</span>
                             </Chip>
                         ))}
                         {hashtags.slice(0, Math.max(0, MAX_CHIPS - properties.length)).map(tag => (
@@ -100,9 +101,9 @@ export function NostrEventCard({
                             variant="ghost"
                             size="xs"
                             icon={DocumentDuplicateIcon}
-                            title="Fork this note to your collection"
+                            title="Save a copy to your notes"
                         >
-                            Fork
+                            Save
                         </Button>
                     )}
                     <Button

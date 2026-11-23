@@ -8,11 +8,10 @@ describe('parseRoute', () => {
     });
 
     it('reads note modes, filters, and overlay flags', () => {
-        expect(parseRoute('#/notes?mode=map&filter=trash&capture=1&explore=1&search=1&chat=1')).toMatchObject({
+        expect(parseRoute('#/notes?mode=map&filter=trash&explore=1&search=1&chat=1')).toMatchObject({
             view: 'notes',
             mode: 'map',
             section: 'trash',
-            capture: true,
             explore: true,
             search: true,
             chat: true,

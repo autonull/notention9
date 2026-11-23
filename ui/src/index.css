@@ -25,8 +25,7 @@
     margin: 0;
     flex: 1 1 auto;
     min-height: 100%;
-    padding: var(--page-pad);
-    padding-bottom: 4rem;
+    padding: 1.25rem var(--page-pad) 4rem;
     border-inline: 0;
     background: var(--app-surface);
     box-sizing: border-box;

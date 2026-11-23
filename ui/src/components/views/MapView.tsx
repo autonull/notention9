@@ -27,7 +27,7 @@ export function MapView() {
     }, [onDropPin]);
 
     return (
-        <div className="relative flex h-[calc(100dvh-15rem)] min-h-[520px] w-full flex-col gap-3 overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2">
+        <div className="relative flex h-full min-h-0 w-full flex-col gap-3 overflow-hidden rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2">
             {!hasPoints && (
                 <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--app-bg)]/85 backdrop-blur-sm">
                     <EmptyState

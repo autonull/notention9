@@ -12,6 +12,7 @@ export function BrandMark({onClick, label = 'Notention notes'}: BrandMarkProps) 
             onClick={onClick}
             className="group grid h-7 w-7 shrink-0 place-items-center rounded-[8px] border border-[var(--app-line)] bg-[var(--app-surface)] transition-colors hover:border-[var(--app-line-strong)]"
             aria-label={label}
+            title={label}
         >
             <span
                 aria-hidden="true"
