@@ -47,17 +47,22 @@ No workstream is open. This pass landed three follow-ups:
   action carry no literal accent classes.
 - The property editor's key, extraction, learned-suggestion, and definition
   box are on tokens; the `editor` group is recaptured.
+- Agent status panels, metrics, and capability chips are on tokens; the
+  disabled and connecting states match.
 - `RelatedNotesPanel`, the root `SuggestionItem`, and `ExtractionReview` (with
   its test block) are deleted; no references remained.
 
 The remaining items are follow-ups, in value order:
 
 1. **Tone outside settings** — settings, the header, the help dialog, the
-   ontology surface, and the property editor are on tokens. Literal
-   `neutral-*`, `blue-*`, and `purple-*` remain in agent, property, assistant,
-   dashboard, and editor surfaces (`DescribeItComposer`, `TemplateSelector`,
-   `PropertyChip`). Route them when each surface is touched; keep semantic
-   category colors in `PropertyBlock` unless the category axis is replaced.
+   ontology surface, the property editor, and agent status are on tokens.
+   Literal `neutral-*`, `blue-*`, and `purple-*` remain in dashboard
+   (`LocalMatchPreview`, `QuickCapture`), properties (`NicheSelectors`,
+   `propertyUtils`), ontology (`OntologyAliasLinkModal`,
+   `AttributeEditorModal`, `ConflictGroup`), `EmptyState`, `LanguageSelector`,
+   and the metaphor and describe-it surfaces. Route them when each surface is
+   touched; keep semantic category colors in `PropertyBlock` unless the
+   category axis is replaced.
 2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
    where a second use exists. `KitGallery` is the gallery entry when another
    second use appears; do not extract a one-off.

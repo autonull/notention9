@@ -41,7 +41,7 @@ export function AgentStatus() {
 
     if (!agentService.isEnabled()) {
         return (
-            <div className="bg-neutral-900/50 border border-neutral-700/50 rounded-lg p-4 text-center text-neutral-400 text-sm">
+            <div className="bg-[var(--app-surface)] border border-[var(--app-line)] rounded-lg p-4 text-center text-[var(--app-muted)] text-sm">
                 Local Mode (Agent Disabled)
             </div>
         );
@@ -50,9 +50,9 @@ export function AgentStatus() {
     if (!status) {
         return (
             <div
-                className="flex items-center justify-center p-8 text-neutral-400 bg-neutral-900/50 rounded-lg border border-neutral-700/50">
+                className="flex items-center justify-center p-8 text-[var(--app-muted)] bg-[var(--app-surface)] rounded-lg border border-[var(--app-line)]">
                 <div className="animate-pulse flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-[var(--app-accent)] rounded-full"></div>
                     <span>Connecting to agent...</span>
                 </div>
             </div>
@@ -62,13 +62,13 @@ export function AgentStatus() {
     const isRunning = status.state === 'running';
 
     return (
-        <div className="bg-neutral-900/50 border border-neutral-700/50 rounded-lg overflow-hidden">
+        <div className="bg-[var(--app-surface)] border border-[var(--app-line)] rounded-lg overflow-hidden">
             {/* Header */}
-            <div className="p-4 border-b border-neutral-700/50 flex items-center justify-between bg-neutral-800/30">
+            <div className="p-4 border-b border-[var(--app-line)] flex items-center justify-between bg-[var(--app-panel)]">
                 <div className="flex items-center gap-3">
                     <div
                         className={`w-3 h-3 rounded-full ${isRunning ? 'bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]' : 'bg-red-500'}`}/>
-                    <h3 className="text-lg font-bold text-white tracking-wide">{status.state.toUpperCase()}</h3>
+                    <h3 className="text-lg font-bold text-[var(--app-text)] tracking-wide">{status.state.toUpperCase()}</h3>
                 </div>
                 <Badge variant="outline" size="sm" className="font-mono">v{status.version}</Badge>
             </div>
@@ -78,20 +78,20 @@ export function AgentStatus() {
 
                 {/* Health Metrics */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
- <div className="text-xs text-neutral-400 font-semibold mb-1">Uptime</div>
-                        <div className="text-xl font-mono text-blue-400">{formatUptime(status.uptime)}</div>
+                    <div className="bg-[var(--app-raised)] p-3 rounded-lg border border-[var(--app-line)]">
+                        <div className="text-xs text-[var(--app-muted)] font-semibold mb-1">Uptime</div>
+                        <div className="text-xl font-mono text-[var(--app-accent-text)]">{formatUptime(status.uptime)}</div>
                     </div>
-                    <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
- <div className="text-xs text-neutral-400 font-semibold mb-1">Active Workflows</div>
-                        <div className="text-xl font-mono text-purple-400">{status.health.activeWorkflows}</div>
+                    <div className="bg-[var(--app-raised)] p-3 rounded-lg border border-[var(--app-line)]">
+                        <div className="text-xs text-[var(--app-muted)] font-semibold mb-1">Active Workflows</div>
+                        <div className="text-xl font-mono text-[var(--app-accent-text)]">{status.health.activeWorkflows}</div>
                     </div>
-                    <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
- <div className="text-xs text-neutral-400 font-semibold mb-1">Active Tools</div>
+                    <div className="bg-[var(--app-raised)] p-3 rounded-lg border border-[var(--app-line)]">
+                        <div className="text-xs text-[var(--app-muted)] font-semibold mb-1">Active Tools</div>
                         <div className="text-xl font-mono text-green-400">{status.health.activeTools}</div>
                     </div>
-                    <div className="bg-neutral-800/50 p-3 rounded-lg border border-neutral-700/30">
- <div className="text-xs text-neutral-400 font-semibold mb-1">Memory Usage</div>
+                    <div className="bg-[var(--app-raised)] p-3 rounded-lg border border-[var(--app-line)]">
+                        <div className="text-xs text-[var(--app-muted)] font-semibold mb-1">Memory Usage</div>
                         <div className="text-xl font-mono text-yellow-400">
                             {formatMemory(status.health.memory.used)} / {formatMemory(status.health.memory.available)}
                         </div>
@@ -100,7 +100,7 @@ export function AgentStatus() {
 
                 {/* Capabilities */}
                 <div>
- <h4 className="text-sm font-semibold text-neutral-400 mb-3 tracking-wider">Capabilities</h4>
+                    <h4 className="text-sm font-semibold text-[var(--app-muted)] mb-3 tracking-wider">Capabilities</h4>
                     <div className="flex flex-wrap gap-2">
                         {Object.entries(status.capabilities).map(([feature, enabled]) => (
                             <div
@@ -108,13 +108,13 @@ export function AgentStatus() {
                                 className={`
                                     px-3 py-1.5 rounded-md text-xs font-medium border flex items-center gap-2 transition-colors
                                     ${enabled
-                                    ? 'bg-blue-900/20 border-blue-800/50 text-blue-300'
-                                    : 'bg-neutral-800/50 border-neutral-700 text-neutral-400 line-through decoration-neutral-600'
+                                    ? 'bg-[var(--app-accent-soft)] border-[var(--app-accent-line)] text-[var(--app-accent-text)]'
+                                    : 'bg-[var(--app-raised)] border-[var(--app-line)] text-[var(--app-muted)] line-through decoration-[var(--app-line-strong)]'
                                 }
                                 `}
                             >
                                 <span
-                                    className={`w-1.5 h-1.5 rounded-full ${enabled ? 'bg-blue-400' : 'bg-neutral-600'}`}></span>
+                                    className={`w-1.5 h-1.5 rounded-full ${enabled ? 'bg-[var(--app-accent)]' : 'bg-[var(--app-faint)]'}`}></span>
                                 {feature}
                             </div>
                         ))}
