@@ -20,7 +20,7 @@ replaces `editor/property-inspector`.
 | :--- | :--- | :--- | :--- |
 | W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop; one `Tabs` in `kit` (`TabOption`) after `Navigation` deletion; `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel` extraction only when a second use exists; layer check has no per-file baseline |
 | W31.1 The page | **Done** | Full-bleed page, editable 30 px title in the page, one 3 rem bar, focus-only formatting row, saved + word count at page end, 17 px body, 88ch left-aligned measure, `PageSurface` / `PageHeader` / `PageTitle` / `PageMeta`; `KitGallery` exercises the page patterns | None |
-| W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, mobile list/page swap, subset/arrangement/order persist, pure `selectIndex` + tests, group axis scoped to Board | None |
+| W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, one row tab stop with arrows/Home/End/Enter, mobile list/page swap, subset/arrangement/order persist, pure `selectIndex` + tests, group axis scoped to Board | None |
 | W31.3 New note is a page | **Done** | `New note` creates and focuses a blank page; capture modal and hero omnibox deleted; `Cmd/Ctrl+N` creates a page; paste-to-capture writes into a page | None |
 | W31.4 Details in the page | **Done** | Floating inspector and bar `Details` removed; inline chips edit through `PropertyEditor`; page `+ Add detail` uses the same form; imported details with no inline node show in the page and edit in one popup; chips are keyboard reachable and focus returns after close | None |
 | W31.5 One context rail | **Done** | Four top-level tabs (`Next`, `Matches`, `Replies`, `Chat`), nested toggle removed, rail closed when empty, auto-open when context exists, percentage share and resizer, `Context` control with count | Mobile uses a bottom pane, not a labelled bottom sheet with a drag handle |
@@ -31,7 +31,7 @@ replaces `editor/property-inspector`.
 
 ### Next order
 
-No workstream is open. This pass landed two follow-ups:
+No workstream is open. This pass landed three follow-ups:
 
 - `task-first` scans `[data-testid="app-shell"]`, so the top-bar `New note`
   counts as the primary on list views (8 px from the top, tab stop 2).
@@ -40,6 +40,9 @@ No workstream is open. This pass landed two follow-ups:
 - `ui/Navigation.tsx` is deleted: its unused `Breadcrumb`, `Pagination`,
   `Stepper`, `Nav`, `TabPanel`, and duplicate `Tabs` are gone. `kit` owns the one
   `Tabs` (`TabOption`), and ontology uses it.
+- History rows rove: the selected row, or the first row when the selection is
+  elsewhere, is the list's only tab stop. Arrows move focus, Home/End jump, and
+  Enter/Space opens. `Publish` drops from tab stop 19 to 2.
 
 The remaining items are follow-ups, in value order:
 
@@ -53,10 +56,6 @@ The remaining items are follow-ups, in value order:
    second use appears; do not extract a one-off.
 3. **Evidence refresh** — `settings/ontology` is current; recapture the other
    groups that predate the modal, icon-tone, and tab-merge changes.
-4. **Audit gate** — `task-first` measures the shell now. Make primary reach an
-   assertion when the metric gates merge. Widened, it exposes `Publish` at tab
-   stop 19 behind the history rows; decide between a roving row tab stop and a
-   nearer page action.
 
 
 ---

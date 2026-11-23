@@ -1,4 +1,4 @@
-import React, {useRef, useState, useEffect} from 'react';
+import React, {useState, useEffect} from 'react';
 import type {Note} from '@notention/core';
 import {DocumentDuplicateIcon, PinIcon, TrashIcon} from '../ui/icons';
 import {IconButton} from '../ui/Button';
@@ -16,6 +16,7 @@ interface NoteListItemProps {
     isTrash?: boolean;
     onRestore?: () => void;
     searchTerm?: string;
+    tabIndex?: 0 | -1;
 }
 
 export const NoteListItem = React.memo(({
@@ -26,9 +27,9 @@ export const NoteListItem = React.memo(({
     onPin,
     isTrash = false,
     onRestore,
-    searchTerm = ''
+    searchTerm = '',
+    tabIndex = 0,
 }: NoteListItemProps) => {
-    const itemRef = useRef<HTMLDivElement>(null);
     const [isMobile, setIsMobile] = useState(false);
 
     useEffect(() => {
@@ -100,8 +101,22 @@ export const NoteListItem = React.memo(({
     const onTouchMove = (e: React.TouchEvent<HTMLDivElement>) => handleTouchMove(e as unknown as TouchEvent);
     const onTouchEnd = () => handleTouchEnd();
 
-    const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (e.key === 'Delete' || e.key === 'Backspace') {
+    const moveRowFocus = (e: React.KeyboardEvent<HTMLDivElement>, target: number | 'first' | 'last') => {
+        const rows = Array.from(
+            e.currentTarget.closest('[role="list"]')?.querySelectorAll<HTMLElement>('[data-row]') ?? [],
+        );
+        const index = rows.indexOf(e.currentTarget);
+        const next = target === 'first' ? rows[0] : target === 'last' ? rows.at(-1) : rows[index + target];
+        if (!next) return;
+        e.preventDefault();
+        next.focus();
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            onSelect();
+        } else if (e.key === 'Delete' || e.key === 'Backspace') {
             e.preventDefault();
             e.stopPropagation();
             onDelete?.();
@@ -109,6 +124,14 @@ export const NoteListItem = React.memo(({
             e.preventDefault();
             e.stopPropagation();
             onPin();
+        } else if (e.key === 'ArrowDown') {
+            moveRowFocus(e, 1);
+        } else if (e.key === 'ArrowUp') {
+            moveRowFocus(e, -1);
+        } else if (e.key === 'Home') {
+            moveRowFocus(e, 'first');
+        } else if (e.key === 'End') {
+            moveRowFocus(e, 'last');
         }
     };
 
@@ -134,7 +157,7 @@ export const NoteListItem = React.memo(({
             onTouchMove={onTouchMove}
             onTouchEnd={onTouchEnd}
             role="button"
-            tabIndex={0}
+            tabIndex={tabIndex}
             aria-current={isSelected ? 'true' : undefined}
             onClick={onSelect}
             onKeyDown={handleKeyDown}

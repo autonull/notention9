@@ -10,6 +10,7 @@ import {EditorManager} from '../editor/EditorManager';
 import {NoteListItem} from '../sidebar/NoteListItem';
 import {NoteGridItem} from '../sidebar/NoteGridItem';
 import {NoteHistoryRail} from '../sidebar/NoteHistoryRail';
+import {noteRowTabIndex} from '../sidebar/useNoteDisplay';
 import {MapView} from './MapView';
 import {TimelineView} from './TimelineView';
 import {EmptyState, NotesEmptyIllustration, ConfirmationModal} from '../ui/Primitives';
@@ -164,6 +165,7 @@ export function NotesView() {
                                             isSelected={selectedNoteId === note.id}
                                             onSelect={() => selectNote(note.id)}
                                             searchTerm={searchTerm}
+                                            tabIndex={noteRowTabIndex(filteredNotes, selectedNoteId, note.id)}
                                             isTrash={section === 'trash'}
                                             onRestore={section === 'trash' ? () => restore(note) : undefined}
                                             onDelete={section === 'trash' ? () => setNoteToDelete(note) : undefined}

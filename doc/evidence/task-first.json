@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-23T00:45:07.338Z",
+  "generatedAt": "2026-11-23T00:54:21.105Z",
   "cases": [
     {
       "view": "inbox",
@@ -34,7 +34,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 30,
+        "focusableCount": 13,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -48,12 +48,12 @@
           {
             "label": "Publish",
             "top": 0,
-            "tabStops": 19,
+            "tabStops": 10,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 43,
+        "focusableCount": 34,
         "firstContentTop": 12,
         "tabStopsToContent": 0
       }
@@ -72,7 +72,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 30,
+        "focusableCount": 13,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -111,12 +111,12 @@
           {
             "label": "Month",
             "top": 162,
-            "tabStops": 25,
+            "tabStops": 17,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 64,
+        "focusableCount": 56,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -135,7 +135,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 36,
+        "focusableCount": 28,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -154,7 +154,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 30,
+        "focusableCount": 13,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -224,12 +224,12 @@
           {
             "label": "Drop a pin to capture a location",
             "top": 105,
-            "tabStops": 31,
+            "tabStops": 23,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 32,
+        "focusableCount": 24,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -267,7 +267,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 35,
+        "focusableCount": 18,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -305,7 +305,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 45,
+        "focusableCount": 28,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -343,7 +343,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
+        "focusableCount": 11,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -381,7 +381,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
+        "focusableCount": 11,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -419,7 +419,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
+        "focusableCount": 11,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -438,7 +438,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
+        "focusableCount": 11,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -457,7 +457,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
+        "focusableCount": 11,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -526,7 +526,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 19,
+        "focusableCount": 11,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -564,7 +564,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 24,
+        "focusableCount": 16,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }
@@ -602,7 +602,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 34,
+        "focusableCount": 26,
         "firstContentTop": 60,
         "tabStopsToContent": 4
       }

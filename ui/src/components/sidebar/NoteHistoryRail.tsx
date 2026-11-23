@@ -1,6 +1,7 @@
 import React from 'react';
 import type {Note, NoteMode, NotesGroup, NotesSection, SortOrder} from '@notention/core';
 import {NoteListItem} from './NoteListItem';
+import {noteRowTabIndex} from './useNoteDisplay';
 import {ArrangeMenu} from '../patterns/ArrangeMenu';
 import {PaneResizer} from '../ui/ResizablePane';
 import {Input} from '../ui/Input';
@@ -126,6 +127,7 @@ export function NoteHistoryRail({
                             isSelected={selectedNoteId === note.id}
                             onSelect={() => onSelect(note.id)}
                             searchTerm={searchTerm}
+                            tabIndex={noteRowTabIndex(notes, selectedNoteId, note.id)}
                             isTrash={section === 'trash'}
                             onRestore={onRestore ? () => onRestore(note) : undefined}
                             onDelete={onDelete ? () => onDelete(note) : undefined}

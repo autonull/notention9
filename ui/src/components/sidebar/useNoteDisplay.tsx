@@ -183,3 +183,11 @@ export function getRelativeTimeClasses(isSelected: boolean): string {
         ${isSelected ? "text-[var(--app-muted)]" : "text-[var(--app-faint)] group-hover:text-[var(--app-muted)]"}
     `.trim();
 }
+
+/** One tab stop per list: the selected row, or the first row when it is elsewhere. */
+export function noteRowTabIndex(notes: Note[], selectedNoteId: string | null, noteId: string): 0 | -1 {
+    return noteId === selectedNoteId ||
+        (!notes.some(note => note.id === selectedNoteId) && notes[0]?.id === noteId)
+        ? 0
+        : -1;
+}
