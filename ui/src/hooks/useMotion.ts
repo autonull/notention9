@@ -311,8 +311,8 @@ export function useFocusRing(offset = 2) {
     return {
         className: cn(
             'focus-visible:outline-none',
-            `focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-${offset}`,
-            'focus-visible:ring-offset-neutral-950'
+            `focus-visible:ring-2 focus-visible:ring-[var(--app-accent)] focus-visible:ring-offset-${offset}`,
+            'focus-visible:ring-offset-[var(--app-bg)]'
         ),
     };
 }

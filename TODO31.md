@@ -57,6 +57,9 @@ No workstream is open. The follow-up passes landed:
 - The property palette, niche selectors, note preview, quick capture,
   ontology suggestions, local match, and automation cards are on tokens;
   `search` and `modals/command-palette` are recaptured.
+- Loading fallbacks, icon labels, skip links, confirmation copy, map popups,
+  and the focus ring are on tokens; the tone baseline shrinks to 332 in 45
+  files.
 - `RelatedNotesPanel`, the root `SuggestionItem`, and `ExtractionReview` (with
   its test block) are deleted; no references remained.
 - All 47 scenes are recaptured against the shell, tab, tone, and row changes;
@@ -70,7 +73,7 @@ The remaining items are follow-ups, in value order:
    A long tail of one to six literal classes remains across widget, layout,
    and metaphor files, plus deliberate semantic colors: `PropertyBlock`
    categories, agent status, match types, automation cadence, and suggestion
-   type badges. `pnpm lint:tone` freezes the tail at 342 literals in 52 files:
+   type badges. `pnpm lint:tone` freezes the tail at 332 literals in 45 files:
    new files or higher counts fail; lower counts are reported, and `--update`
    records a deliberate change. Do not sweep the tail; route a file when its
    surface changes, and keep semantic colors unless the axis changes.

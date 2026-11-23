@@ -28,7 +28,7 @@ export function ConfirmationModal({
     return (
         <Modal isOpen={isOpen} onClose={onClose} title={title}>
             <div className="space-y-6">
-                <p className="text-neutral-300 leading-relaxed">{message}</p>
+                <p className="text-[var(--app-text-secondary)] leading-relaxed">{message}</p>
                 {children}
                 <div className="flex justify-end gap-3 pt-2">
                     <Button

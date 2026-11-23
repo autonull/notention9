@@ -235,7 +235,7 @@ export function AppShell() {
                     <ConnectivityBanner/>
                     <DegradedModeBanner/>
                     <main id="main-content" className="relative flex-1 overflow-hidden" tabIndex={-1}>
-                        <Suspense fallback={<div className="flex h-full items-center justify-center text-neutral-400">Loading…</div>}>
+                        <Suspense fallback={<div className="flex h-full items-center justify-center text-[var(--app-muted)]">Loading…</div>}>
                             <MainView loading={notesLoading}/>
                         </Suspense>
                     </main>

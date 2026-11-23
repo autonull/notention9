@@ -20,7 +20,7 @@ export function SkipLink({targetId, label = 'Skip to main content', className = 
                 'z-[9999]',
                 'inline-flex items-center gap-2',
                 'px-4 py-2',
-                'bg-blue-600 text-white',
+                'bg-[var(--app-accent)] text-[#ffffff]',
                 'font-medium',
                 'rounded-lg',
                 'shadow-xl',

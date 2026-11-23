@@ -128,7 +128,7 @@ export function useMapView() {
                 if (point.type === 'local') {
                     const link = document.createElement('a');
                     link.href = '#';
-                    link.className = 'text-blue-400 hover:underline';
+                    link.className = 'text-[var(--app-accent-text)] hover:underline';
                     link.textContent = 'View Note →';
                     link.onclick = (e) => {
                         e.preventDefault();
@@ -137,7 +137,7 @@ export function useMapView() {
                     popupDiv.appendChild(link);
                 } else {
                     const span = document.createElement('span');
-                    span.className = 'text-xs text-neutral-400';
+                    span.className = 'text-xs text-[var(--app-muted)]';
                     span.textContent = 'Remote Match';
                     popupDiv.appendChild(span);
                 }

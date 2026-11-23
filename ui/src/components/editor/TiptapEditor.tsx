@@ -271,7 +271,7 @@ export const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
                         </>
                     ) : (
                         <textarea
-                            className="w-full min-h-[60vh] p-6 bg-neutral-900 text-neutral-300 font-mono focus:outline-none resize-none"
+                            className="w-full min-h-[60vh] p-6 bg-[var(--app-panel)] text-[var(--app-text-secondary)] font-mono focus:outline-none resize-none"
                             value={prettyPrintHtml(note.content)}
                             onChange={handleCodeChange}
                             placeholder="Enter HTML..."
