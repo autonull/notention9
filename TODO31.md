@@ -12,7 +12,7 @@ command. Do not add a surface to solve a crowded surface.
 
 ## Progress
 
-Last updated after the second follow-up pass. The gallery still has 47 scenes;
+Last updated after the third follow-up pass. The gallery still has 47 scenes;
 `note/compose` replaces `capture/composer` and `editor/property-edit`
 replaces `editor/property-inspector`.
 
@@ -27,11 +27,11 @@ replaces `editor/property-inspector`.
 | W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing, Board groups by status or none | None |
 | W31.7 Explore, search, chat | **Done** | `IdentityStrip` / `FeedRow` patterns; relay health is a chip with a click-to-open panel; one filter row (domains + input, no label, no tag row); feed rows with one property line and one action row; read-only feed is one line; chat list uses `FeedRow`, conversation carries app typography and one composer; palette scopes come from `PALETTE_SCOPES`; `RelayStatusBanner` and `DiscoveredProperties` deleted | None |
 | W31.8 Settings, overlays, status | **Done** | `SettingsDirectory` + `SettingsSection` patterns; `SettingsView` is directory + panel + tab switch; one `SectionHeader` at 15 px (optional 14 px icon) for every tab; tab cards and `animate-fade-in` removed; every settings surface, control, and copy is on tokens with no `blue-*`, `purple-*`, `neutral-*`, or `text-white`; `styles/tone.ts` tone map used by `Chip`, `Toast`, `ConnectivityBanner`, `DegradedModeBanner`, and icons; dead `Popover`, `Drawer`, `Dropdown`, `CommandPalette`, `ConfirmationDialog`, `EnhancedCommandPalette`, `VirtualizedList`, `PrivacyControl` and their tests deleted | None |
-| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7; audit evidence refreshed from the shell scan; ontology, help, and editor captures refreshed; dead `RelatedNotesPanel`, root `SuggestionItem`, and `ExtractionReview` with its test block deleted | Remaining gallery groups predate the modal, icon-tone, and tab-merge passes; recapture at the next visual milestone |
+| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; manifest and README updated; journeys rewritten for the page; audit evidence refreshed from the shell scan; dead `RelatedNotesPanel`, root `SuggestionItem`, and `ExtractionReview` with its test block deleted; all 47 scenes recaptured against the shell, tab, tone, and row changes | None |
 
 ### Next order
 
-No workstream is open. This pass landed three follow-ups:
+No workstream is open. The follow-up passes landed:
 
 - `task-first` scans `[data-testid="app-shell"]`, so the top-bar `New note`
   counts as the primary on list views (8 px from the top, tab stop 2).
@@ -59,6 +59,8 @@ No workstream is open. This pass landed three follow-ups:
   `search` and `modals/command-palette` are recaptured.
 - `RelatedNotesPanel`, the root `SuggestionItem`, and `ExtractionReview` (with
   its test block) are deleted; no references remained.
+- All 47 scenes are recaptured against the shell, tab, tone, and row changes;
+  audit evidence is current.
 
 The remaining items are follow-ups, in value order:
 
@@ -73,8 +75,6 @@ The remaining items are follow-ups, in value order:
 2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
    where a second use exists. `KitGallery` is the gallery entry when another
    second use appears; do not extract a one-off.
-3. **Evidence refresh** — `settings/ontology` is current; recapture the other
-   groups that predate the modal, icon-tone, and tab-merge changes.
 
 
 ---
