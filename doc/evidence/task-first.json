@@ -1,16 +1,23 @@
 {
-  "generatedAt": "2026-11-22T23:50:28.719Z",
+  "generatedAt": "2026-11-23T00:45:07.338Z",
   "cases": [
     {
       "view": "inbox",
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 7,
+        "focusableCount": 11,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -18,11 +25,18 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 26,
+        "focusableCount": 30,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -49,11 +63,18 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 26,
+        "focusableCount": 30,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -61,11 +82,18 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 9,
+        "focusableCount": 13,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -75,16 +103,22 @@
       "metrics": {
         "primaries": [
           {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          },
+          {
             "label": "Month",
             "top": 162,
-            "tabStops": 21,
+            "tabStops": 25,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 60,
+        "focusableCount": 64,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -92,11 +126,18 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 32,
+        "focusableCount": 36,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -104,11 +145,18 @@
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 26,
+        "focusableCount": 30,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -118,16 +166,22 @@
       "metrics": {
         "primaries": [
           {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          },
+          {
             "label": "Add",
             "top": 145,
-            "tabStops": 2,
+            "tabStops": 6,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 28,
+        "focusableCount": 32,
         "firstContentTop": 162,
-        "tabStopsToContent": 1
+        "tabStopsToContent": 5
       }
     },
     {
@@ -137,15 +191,21 @@
       "metrics": {
         "primaries": [
           {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          },
+          {
             "label": "Update Ontology",
-            "top": 167,
-            "tabStops": 5,
+            "top": 109,
+            "tabStops": 9,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 7,
-        "firstContentTop": 348,
+        "focusableCount": 11,
+        "firstContentTop": 290,
         "tabStopsToContent": -1
       }
     },
@@ -156,16 +216,22 @@
       "metrics": {
         "primaries": [
           {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          },
+          {
             "label": "Drop a pin to capture a location",
             "top": 105,
-            "tabStops": 27,
+            "tabStops": 31,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 28,
+        "focusableCount": 32,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -173,9 +239,16 @@
       "state": "populated",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 3,
+        "focusableCount": 7,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -185,11 +258,18 @@
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 26,
+        "focusableCount": 35,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -206,7 +286,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 25,
+        "focusableCount": 27,
         "firstContentTop": 12,
         "tabStopsToContent": 0
       }
@@ -216,11 +296,18 @@
       "state": "empty",
       "viewport": "desktop",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 26,
+        "focusableCount": 45,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -228,11 +315,18 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 6,
+        "focusableCount": 10,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -240,11 +334,18 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 19,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -271,11 +372,18 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 19,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -283,11 +391,18 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 7,
+        "focusableCount": 11,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -295,11 +410,18 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 19,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -307,11 +429,18 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 19,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -319,11 +448,18 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 19,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -333,16 +469,22 @@
       "metrics": {
         "primaries": [
           {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          },
+          {
             "label": "Add",
             "top": 229,
-            "tabStops": 2,
+            "tabStops": 6,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 16,
+        "focusableCount": 20,
         "firstContentTop": 246,
-        "tabStopsToContent": 1
+        "tabStopsToContent": 5
       }
     },
     {
@@ -352,15 +494,21 @@
       "metrics": {
         "primaries": [
           {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          },
+          {
             "label": "Update Ontology",
-            "top": 270,
-            "tabStops": 5,
+            "top": 259,
+            "tabStops": 9,
             "visible": true
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 7,
-        "firstContentTop": 451,
+        "focusableCount": 11,
+        "firstContentTop": 440,
         "tabStopsToContent": -1
       }
     },
@@ -369,11 +517,18 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 19,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -381,9 +536,16 @@
       "state": "populated",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 3,
+        "focusableCount": 7,
         "firstContentTop": null,
         "tabStopsToContent": null
       }
@@ -393,11 +555,18 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 24,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     },
     {
@@ -414,7 +583,7 @@
           }
         ],
         "duplicateLabels": [],
-        "focusableCount": 16,
+        "focusableCount": 18,
         "firstContentTop": 0,
         "tabStopsToContent": -1
       }
@@ -424,11 +593,18 @@
       "state": "empty",
       "viewport": "mobile",
       "metrics": {
-        "primaries": [],
+        "primaries": [
+          {
+            "label": "New note",
+            "top": 8,
+            "tabStops": 2,
+            "visible": true
+          }
+        ],
         "duplicateLabels": [],
-        "focusableCount": 15,
+        "focusableCount": 34,
         "firstContentTop": 60,
-        "tabStopsToContent": 0
+        "tabStopsToContent": 4
       }
     }
   ]

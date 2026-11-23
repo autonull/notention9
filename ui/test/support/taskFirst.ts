@@ -23,6 +23,7 @@ export interface TaskFirstMetrics {
 export const measureTaskFirst = (page: Page): Promise<TaskFirstMetrics> =>
     page.evaluate(() => {
         const main = document.querySelector('main') ?? document.body;
+        const shell = document.querySelector('[data-testid="app-shell"]') ?? document.body;
         const viewportHeight = window.innerHeight;
         const visible = (element: Element) => {
             const rect = element.getBoundingClientRect();
@@ -38,8 +39,10 @@ export const measureTaskFirst = (page: Page): Promise<TaskFirstMetrics> =>
         };
         const isRow = (element: Element) =>
             !!element.closest('[data-row],[role="listitem"],li,article,.note-list-item,.rbc-event');
+        const isChoice = (element: Element) =>
+            !!element.closest('nav,[role="navigation"],[role="tablist"]');
         const focusable = Array.from(
-            main.querySelectorAll<HTMLElement>(
+            shell.querySelectorAll<HTMLElement>(
                 'button:not([disabled]):not([tabindex="-1"]),a[href],input:not([type="hidden"]):not([disabled]),textarea:not([disabled]),select:not([disabled]),[tabindex]:not([tabindex="-1"])',
             ),
         ).filter(visible);
@@ -57,7 +60,7 @@ export const measureTaskFirst = (page: Page): Promise<TaskFirstMetrics> =>
 
         const counts = new Map<string, number>();
         for (const element of focusable) {
-            if (isRow(element)) continue;
+            if (isRow(element) || isChoice(element)) continue;
             const text = label(element).toLowerCase();
             if (text.length < 3) continue;
             counts.set(text, (counts.get(text) ?? 0) + 1);

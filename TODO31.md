@@ -1,6 +1,6 @@
 # TODO.31 — The Note Is the Page
 
-**Status:** done. W31.0–W31.9 and the follow-up pass landed. Supersedes the previous `TODO31.md`
+**Status:** done. W31.0–W31.9 and the follow-up passes landed. Supersedes the previous `TODO31.md`
 draft (“Consolidation, Surface by Surface”).
 **Continues:** TODO.30 and the one-workspace pass.
 **Non-goals:** matching semantics, transports, AI models, persistence formats,
@@ -12,13 +12,13 @@ command. Do not add a surface to solve a crowded surface.
 
 ## Progress
 
-Last updated after the follow-up pass. The gallery still has 47 scenes;
+Last updated after the second follow-up pass. The gallery still has 47 scenes;
 `note/compose` replaces `capture/composer` and `editor/property-edit`
 replaces `editor/property-inspector`.
 
 | Workstream | State | Landed | Still open |
 | :--- | :--- | :--- | :--- |
-| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop, `Tabs` size variant, `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel` extraction only when a second use exists; layer check has no per-file baseline |
+| W31.0 Grammar, tokens, guards | **Partial** | `NOTE_BROWSE_MODES` (List first), `NOTE_SORT_ORDERS`, `NOTE_RAIL_TABS`, `ARRANGE_GROUPS`, `historyShare`/`contextShare`/`contextOpen` keys, page/chrome tokens, `ResizablePane`, `PageSurface`, `ArrangeMenu`, `Modal` placement/footer slots, `KitGallery` (`#/kit`), icon `tone` prop; one `Tabs` in `kit` (`TabOption`) after `Navigation` deletion; `check-ui-layers` and settings type guards | `ListRow`, `Field`, `ContextPanel` extraction only when a second use exists; layer check has no per-file baseline |
 | W31.1 The page | **Done** | Full-bleed page, editable 30 px title in the page, one 3 rem bar, focus-only formatting row, saved + word count at page end, 17 px body, 88ch left-aligned measure, `PageSurface` / `PageHeader` / `PageTitle` / `PageMeta`; `KitGallery` exercises the page patterns | None |
 | W31.2 History and page | **Done** | Persistent history rail on `lg+`, percentage share with pointer/keyboard resizer, List default, `Arrange` menu, 3-line rows with active edge, mobile list/page swap, subset/arrangement/order persist, pure `selectIndex` + tests, group axis scoped to Board | None |
 | W31.3 New note is a page | **Done** | `New note` creates and focuses a blank page; capture modal and hero omnibox deleted; `Cmd/Ctrl+N` creates a page; paste-to-capture writes into a page | None |
@@ -27,29 +27,36 @@ replaces `editor/property-inspector`.
 | W31.6 List, browse, cards | **Done** | `Arrange` is the only layout/order control, all five arrangements and ten orders reachable, List is default, card chrome quieted, rows share history spacing, Board groups by status or none | None |
 | W31.7 Explore, search, chat | **Done** | `IdentityStrip` / `FeedRow` patterns; relay health is a chip with a click-to-open panel; one filter row (domains + input, no label, no tag row); feed rows with one property line and one action row; read-only feed is one line; chat list uses `FeedRow`, conversation carries app typography and one composer; palette scopes come from `PALETTE_SCOPES`; `RelayStatusBanner` and `DiscoveredProperties` deleted | None |
 | W31.8 Settings, overlays, status | **Done** | `SettingsDirectory` + `SettingsSection` patterns; `SettingsView` is directory + panel + tab switch; one `SectionHeader` at 15 px (optional 14 px icon) for every tab; tab cards and `animate-fade-in` removed; every settings surface, control, and copy is on tokens with no `blue-*`, `purple-*`, `neutral-*`, or `text-white`; `styles/tone.ts` tone map used by `Chip`, `Toast`, `ConnectivityBanner`, `DegradedModeBanner`, and icons; dead `Popover`, `Drawer`, `Dropdown`, `CommandPalette`, `ConfirmationDialog`, `EnhancedCommandPalette`, `VirtualizedList`, `PrivacyControl` and their tests deleted | None |
-| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7 | Screenshots predate the modal and icon-tone follow-ups; recapture at the next visual milestone |
+| W31.9 CSS, tests, evidence | **Done** | `index.css` 234 lines; calendar and leaflet moved to `styles/calendar-leaflet.css`; dead button/card/widget CSS deleted; 47 screenshots regenerated; manifest and README updated; journeys rewritten for the page; network and chat scenes recaptured after W31.7; audit evidence refreshed from the shell scan; `settings/ontology` recaptured after the tab merge | Gallery outside `settings/ontology` predates the modal and icon-tone passes; recapture at the next visual milestone |
 
 ### Next order
 
-No workstream is open. The remaining items are follow-ups, in value order:
+No workstream is open. This pass landed two follow-ups:
 
-1. **Audit measurement** — `task-first` now runs one test per viewport and
-   waits on real selectors (`data-testid="notes-list-items"`,
-   `notes-grid-items`, `page-surface`). It still scans `main` only, so the
-   top-bar `New note` reads as no primary. Widen the scan to the shell when
-   the metric becomes a gate.
+- `task-first` scans `[data-testid="app-shell"]`, so the top-bar `New note`
+  counts as the primary on list views (8 px from the top, tab stop 2).
+  Duplicates ignore navigation and tablists, and the header action carries
+  `data-variant`.
+- `ui/Navigation.tsx` is deleted: its unused `Breadcrumb`, `Pagination`,
+  `Stepper`, `Nav`, `TabPanel`, and duplicate `Tabs` are gone. `kit` owns the one
+  `Tabs` (`TabOption`), and ontology uses it.
+
+The remaining items are follow-ups, in value order:
+
+1. **Tone outside settings** — settings, the header, and the ontology surface
+   are on tokens. Literal `neutral-*`, `blue-*`, and `purple-*` remain in
+   agent, property, assistant, and dashboard surfaces. Route them when each
+   surface is touched; keep semantic category colors in `PropertyBlock` unless
+   the category axis is replaced.
 2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
-   where a second use exists. `SurfaceTabs` is now the `Tabs` primitive with a
-   `size` variant, used by the rail and ontology. `KitGallery` is the gallery
-   entry when another second use appears; do not extract a one-off.
-3. **Tone outside settings** — settings no longer carry `blue-*`, `purple-*`,
-   or `neutral-*`; icons accept `tone`. Forty-four literal accent classes
-   remain in editor, navigation, agent, and property surfaces. Route them when
-   each surface is touched; keep semantic category colors in `PropertyBlock`
-   unless the category axis is replaced.
-4. **Evidence refresh** — regenerate the gallery after the next visual
-   milestone. Modal surfaces, icon tones, the rail `Tabs`, and the new `#/kit`
-   route mean the current captures are older than the code.
+   where a second use exists. `KitGallery` is the gallery entry when another
+   second use appears; do not extract a one-off.
+3. **Evidence refresh** — `settings/ontology` is current; recapture the other
+   groups that predate the modal, icon-tone, and tab-merge changes.
+4. **Audit gate** — `task-first` measures the shell now. Make primary reach an
+   assertion when the metric gates merge. Widened, it exposes `Publish` at tab
+   stop 19 behind the history rows; decide between a roving row tab stop and a
+   nearer page action.
 
 
 ---
@@ -597,7 +604,8 @@ history workstreams need.
   - `ListRow` (history row, feed row, settings row).
   - `Field` (label 11 px, hint 11 px, error 11 px, control 13 px).
   - `ContextPanel` (rail section with a title and one line of help).
-  - `SurfaceTabs` (the rail and compact surfaces).
+  - `SurfaceTabs` (the rail, ontology, and compact surfaces) — shipped as the
+    `kit` `Tabs` primitive with a size variant; no second tab grammar.
   - `ResizablePane` (percentage share, drag handle, keyboard separator,
     double-click reset, persisted value). Use it for history and context.
 - Add composed patterns under `ui/src/components/patterns/`:

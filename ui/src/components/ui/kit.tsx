@@ -85,8 +85,10 @@ export function Segmented<T extends string>({
     );
 }
 
+export type TabOption<T extends string> = UiOption<T> & {count?: number};
+
 interface TabsProps<T extends string> {
-    options: Array<UiOption<T> & {count?: number}>;
+    options: Array<TabOption<T>>;
     value: T;
     onChange: (id: T) => void;
     label: string;

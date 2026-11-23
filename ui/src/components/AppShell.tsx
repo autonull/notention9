@@ -230,7 +230,7 @@ export function AppShell() {
     return (
         <PendingConfirmationsProvider>
             <SelectorRegistryProvider>
-                <div className="flex h-dvh flex-col bg-[var(--app-bg)] text-[var(--app-text)]" data-ready>
+                <div className="flex h-dvh flex-col bg-[var(--app-bg)] text-[var(--app-text)]" data-testid="app-shell" data-ready>
                     <Header/>
                     <ConnectivityBanner/>
                     <DegradedModeBanner/>

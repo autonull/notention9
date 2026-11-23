@@ -1,7 +1,7 @@
 import React from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
-import {IconButton} from '../ui/Button';
+import {Button, IconButton} from '../ui/Button';
 import {BrandMark} from './BrandMark';
 import {PlusIcon, SearchIcon, SettingsIcon} from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
@@ -45,15 +45,18 @@ export function Header() {
                 size="sm"
                 aria-label="Search notes, details, tags, and commands"
             />
-            <button
+            <Button
                 type="button"
                 onClick={createNote}
                 aria-label="New note"
-                className="inline-flex h-8 items-center gap-1.5 rounded-lg bg-[var(--app-accent)] px-2.5 text-[13px] font-medium text-[#ffffff] transition-colors hover:bg-[color-mix(in_srgb,var(--app-accent)_88%,black)]"
+                variant="primary"
+                size="sm"
+                touchTarget={false}
+                className="gap-1.5 px-2.5"
             >
                 <PlusIcon className="h-4 w-4"/>
                 <span className="hidden md:inline">New note</span>
-            </button>
+            </Button>
             <IconButton
                 onClick={() => setActiveView('settings')}
                 tooltip="Settings"

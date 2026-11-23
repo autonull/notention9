@@ -1,11 +1,10 @@
 import React, {useState} from 'react';
-import type {TabProps} from '../ui/Navigation';
 
 import {useOntologyView, type OntologyTab} from '../../hooks/useOntologyView';
 import {OntologyNodeItem} from '../ontology/OntologyNodeItem';
 import {OntologyConflicts} from '../ontology/OntologyConflicts';
 import {useView} from '../../hooks/useViewContext';
-import {Tabs} from '../ui/Navigation';
+import {Tabs, type TabOption} from '../ui/kit';
 import {Button} from '../ui/Button';
 import {Toggle} from '../ui/Primitives';
 import {EditIcon, SparklesIcon, PlusIcon} from '../ui/icons';
@@ -93,7 +92,7 @@ export function OntologyView() {
         }
     };
 
-    const tabs: TabProps[] = [
+    const tabs: Array<TabOption<OntologyTab>> = [
         {id: 'graph', label: 'Graph'},
         {id: 'suggestions', label: 'Learning', count: suggestions.length > 0 ? suggestions.length : undefined},
         {id: 'conflicts', label: 'Conflicts', count: conflicts.length}
@@ -124,10 +123,10 @@ export function OntologyView() {
 
                         <div className="overflow-x-auto">
                             <Tabs
-                                tabs={tabs}
-                                activeTab={safeActiveTab}
-                                onChange={(id: string) => setActiveTab(id as OntologyTab)}
-                                className="bg-neutral-800 p-1 rounded-lg"
+                                options={tabs}
+                                value={safeActiveTab}
+                                onChange={id => setActiveTab(id)}
+                                label="Ontology sections"
                             />
                         </div>
                     </div>
@@ -217,9 +216,9 @@ export function OntologyView() {
                             </div>
                         )}
 
-                        <div className="bg-neutral-900/70 p-6 rounded-lg border border-neutral-700/50">
+                        <div className="rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-6">
                             {ontology.length === 0 ? (
-                                <div className="text-center text-neutral-400 py-12">
+                                <div className="py-12 text-center text-[var(--app-muted)]">
                                     <p>Ontology is empty.</p>
                                     <p className="text-sm mt-2">Start writing notes with properties to seed the
                                         graph.</p>
