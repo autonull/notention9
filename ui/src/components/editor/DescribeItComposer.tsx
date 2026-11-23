@@ -71,7 +71,7 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
         <>
             <Modal isOpen={isOpen} onClose={handleClose} title="Describe it" className="max-w-xl">
                 <div className="space-y-4">
-                    <p className="text-sm text-neutral-400">
+                    <p className="text-sm text-[var(--app-muted)]">
                         Describe the note in your own words. Suggestions stay proposals until you accept them.
                     </p>
 
@@ -82,11 +82,11 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
                         placeholder={placeholder ?? "e.g. I need a React developer for two weeks, up to 900 USD, starting next week"}
                         rows={4}
                         autoFocus={autoFocus}
-                        className="w-full rounded-xl border border-neutral-700 bg-neutral-900/70 p-3 text-sm text-white focus:outline-none focus:border-blue-500/50 resize-none"
+                        className="w-full rounded-xl border border-[var(--app-line)] bg-[var(--app-surface)] p-3 text-sm text-[var(--app-text)] focus:outline-none focus:border-[var(--app-accent-line)] resize-none"
                     />
 
                     <div className="flex items-center justify-between gap-3">
-                        <span className="text-xs text-neutral-400" data-testid="describe-it-source">
+                        <span className="text-xs text-[var(--app-muted)]" data-testid="describe-it-source">
                             {SOURCE_LABEL[providerKind] ?? providerName}
                         </span>
                         <Button
@@ -108,7 +108,7 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
 
                     {proposals.length > 0 && (
                         <div className="space-y-2">
- <div className="text-xs font-bold tracking-widest text-neutral-400">Suggestions</div>
+ <div className="text-xs font-bold tracking-widest text-[var(--app-muted)]">Suggestions</div>
                             {proposals.map(proposal => (
                                 <div
                                     key={`${proposal.property.key}-${proposal.property.operator}-${proposal.property.values.join(',')}`}
@@ -116,16 +116,16 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
                                     className={`flex items-center justify-between gap-3 rounded-xl border p-3 ${
                                         proposal.status === 'accepted'
                                             ? 'border-green-500/40 bg-green-500/10'
-                                            : 'border-neutral-700 bg-neutral-900/70'
+                                            : 'border-[var(--app-line)] bg-[var(--app-surface)]'
                                     }`}
                                 >
                                     <div className="min-w-0">
-                                        <div className="text-sm text-white">
+                                        <div className="text-sm text-[var(--app-text)]">
                                             <span className="font-semibold">{proposal.property.key}</span>
-                                            <span className="text-neutral-400"> {proposal.property.operator} </span>
-                                            <span className="text-neutral-200">{proposal.property.values.join(', ')}</span>
+                                            <span className="text-[var(--app-muted)]"> {proposal.property.operator} </span>
+                                            <span className="text-[var(--app-text-secondary)]">{proposal.property.values.join(', ')}</span>
                                         </div>
-                                        <div className="text-xs text-neutral-400">
+                                        <div className="text-xs text-[var(--app-muted)]">
                                             {Math.round(proposal.confidence * 100)}% confidence
                                         </div>
                                     </div>
@@ -144,7 +144,7 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
                                             onClick={() => reject(proposal)}
                                             title={`Reject ${proposal.property.key}`}
                                             aria-label={`Reject ${proposal.property.key}`}
-                                            className="rounded-lg p-1.5 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-300"
+                                            className="rounded-lg p-1.5 text-[var(--app-muted)] hover:bg-[var(--app-hover)] hover:text-[var(--app-text-secondary)]"
                                         >
                                             <XMarkIcon className="w-4 h-4"/>
                                         </button>
@@ -155,7 +155,7 @@ export function DescribeItComposer({isOpen, onClose, onApply, ontology, placehol
                     )}
 
                     {proposals.length === 0 && status === 'idle' && !error && (
-                        <div className="rounded-xl border border-dashed border-neutral-700 bg-neutral-900/40 p-4 text-center text-xs text-neutral-400">
+                        <div className="rounded-xl border border-dashed border-[var(--app-line)] bg-[var(--app-surface)] p-4 text-center text-xs text-[var(--app-muted)]">
                             No suggestions yet. Describe the note and ask for details.
                         </div>
                     )}

@@ -32,7 +32,7 @@ export function OntologyNodeItem({
             {/* Tree connecting lines */}
             {level > 0 && (
                 <div
-                    className="absolute left-0 top-0 bottom-0 w-px bg-neutral-800"
+                    className="absolute left-0 top-0 bottom-0 w-px bg-[var(--app-line)]"
                     style={{ left: `${(level * 1.5) - 0.75}rem` }}
                 />
             )}
@@ -40,14 +40,14 @@ export function OntologyNodeItem({
             <div style={{ paddingLeft: `${level * 1.5}rem` }} className="relative">
                 {level > 0 && (
                     <div
-                        className="absolute left-0 top-3 w-3 h-px bg-neutral-800"
+                        className="absolute left-0 top-3 w-3 h-px bg-[var(--app-line)]"
                         style={{ left: `${(level * 1.5) - 0.75}rem` }}
                     />
                 )}
 
-                <div className="flex items-center py-1.5 group hover:bg-neutral-800/30 rounded-lg transition-colors pr-2 -ml-2 pl-2">
+                <div className="flex items-center py-1.5 group hover:bg-[var(--app-hover)] rounded-lg transition-colors pr-2 -ml-2 pl-2">
                     <div
-                        className={`flex items-center justify-center w-5 h-5 mr-2 rounded cursor-pointer transition-colors ${hasChildren ? 'hover:bg-neutral-700 text-neutral-400 hover:text-white' : ''}`}
+                        className={`flex items-center justify-center w-5 h-5 mr-2 rounded cursor-pointer transition-colors ${hasChildren ? 'hover:bg-[var(--app-hover)] text-[var(--app-muted)] hover:text-[var(--app-text)]' : ''}`}
                         onClick={() => hasChildren && setIsOpen(!isOpen)}
                     >
                         {hasChildren ? (
@@ -55,24 +55,24 @@ export function OntologyNodeItem({
                                 className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? 'rotate-0' : '-rotate-90'}`}
                             />
                         ) : (
-                            <div className="w-1.5 h-1.5 rounded-full bg-neutral-800" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-[var(--app-line)]" />
                         )}
                     </div>
 
                     <div className="flex items-center flex-1 cursor-pointer" onClick={() => hasChildren && setIsOpen(!isOpen)}>
-                        <span className="font-semibold text-blue-300 group-hover:text-blue-200 transition-colors">
+                        <span className="font-semibold text-[var(--app-accent-text)] group-hover:text-[var(--app-accent-text)] transition-colors">
                             {node.label}
                         </span>
 
                         {tagCount > 0 && (
-                            <span className="ml-2 text-xs bg-neutral-800 text-neutral-400 px-1.5 py-0.5 rounded-full border border-neutral-700 font-mono"
+                            <span className="ml-2 text-xs bg-[var(--app-raised)] text-[var(--app-muted)] px-1.5 py-0.5 rounded-full border border-[var(--app-line)] font-mono"
                                   title="Usage count">
                                 {tagCount}
                             </span>
                         )}
 
                         {node.description && (
-                            <span className="ml-3 text-xs text-neutral-400 hidden md:inline group-hover:text-neutral-400 transition-colors">
+                            <span className="ml-3 text-xs text-[var(--app-muted)] hidden md:inline group-hover:text-[var(--app-muted)] transition-colors">
                                 {node.description}
                             </span>
                         )}
@@ -97,7 +97,7 @@ export function OntologyNodeItem({
                                     title="Delete Node"
                                     size="xs"
                                     variant="ghost"
-                                    className="text-neutral-400 hover:text-red-400 hover:bg-red-900/20"
+                                    className="text-[var(--app-muted)] hover:text-red-400 hover:bg-red-900/20"
                                 />
                             )}
                         </div>
