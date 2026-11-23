@@ -13,22 +13,22 @@ export function OntologySuggestionItem({
     onAdd
 }: OntologySuggestionItemProps) {
     return (
-        <div className="bg-neutral-800 p-4 rounded-lg border border-neutral-700 flex justify-between items-center group hover:border-blue-500/50 transition-colors">
+        <div className="bg-[var(--app-surface)] p-4 rounded-lg border border-[var(--app-line)] flex justify-between items-center group hover:border-[var(--app-accent-line)] transition-colors">
             <div>
                 <div className="flex items-center gap-2">
-                    <span className="font-mono text-blue-300 font-bold">{suggestion.key}</span>
+                    <span className="font-mono text-[var(--app-accent-text)] font-bold">{suggestion.key}</span>
  <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
                         suggestion.type === 'number' ? 'bg-orange-900/30 text-orange-300' :
                         suggestion.type === 'date' ? 'bg-purple-900/30 text-purple-300' :
                         suggestion.type === 'geo' ? 'bg-teal-900/30 text-teal-300' :
-                        'bg-neutral-700 text-neutral-400'
+                        'bg-[var(--app-raised)] text-[var(--app-muted)]'
                     }`}>
                         {suggestion.type}
                     </span>
                 </div>
-                <div className="text-sm text-neutral-400 mt-1 flex gap-3 items-center">
+                <div className="text-sm text-[var(--app-muted)] mt-1 flex gap-3 items-center">
                     <span>Used {suggestion.frequency}x</span>
-                    <span className="text-neutral-400">•</span>
+                    <span className="text-[var(--app-muted)]">•</span>
                     <span>Confidence: {Math.round(suggestion.confidence * 100)}%</span>
                 </div>
                 {suggestion.parentContext && (
@@ -44,7 +44,7 @@ export function OntologySuggestionItem({
                     variant="secondary"
                     icon={PlusIcon}
                     onClick={onAdd}
-                    className="hover:bg-blue-900/30 hover:text-blue-200 hover:border-blue-800/50"
+                    className="hover:bg-[var(--app-hover)] hover:text-[var(--app-text)] hover:border-[var(--app-accent-line)]"
                 >
                     Review & Add
                 </Button>

@@ -85,7 +85,7 @@ export function QuickCapture({
     const showExtractionStatus = extractionLoading || extractionFallbackUsed || extractionError;
 
     return (
-        <section className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/50 p-4 animate-fade-in-up stagger-1">
+        <section className="relative overflow-hidden rounded-2xl border border-[var(--app-line)] bg-[var(--app-surface)] p-4 animate-fade-in-up stagger-1">
             <div className="relative z-10 max-w-3xl mx-auto">
                 <form onSubmit={onSubmit} className="relative">
                     <div className="relative">
@@ -164,7 +164,7 @@ export function QuickCapture({
                 )}
 
                 <details className="mt-3 group">
-                    <summary className="cursor-pointer text-xs text-neutral-400 hover:text-neutral-200 list-none flex items-center gap-1.5">
+                    <summary className="cursor-pointer text-xs text-[var(--app-muted)] hover:text-[var(--app-text)] list-none flex items-center gap-1.5">
                         <span className="transition-transform group-open:rotate-90">›</span>
                         More ways to capture
                     </summary>
@@ -189,24 +189,24 @@ export function QuickCapture({
                 </details>
 
                 <details className="group mt-2">
-                    <summary className="flex items-center gap-2 text-neutral-400 text-xs cursor-pointer select-none list-none">
-                        <span className="text-neutral-400">Capture tips</span>
+                    <summary className="flex items-center gap-2 text-[var(--app-muted)] text-xs cursor-pointer select-none list-none">
+                        <span className="text-[var(--app-muted)]">Capture tips</span>
                         <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7"/>
                         </svg>
                     </summary>
-                    <div className="mt-2 p-3 bg-neutral-950/50 rounded-xl border border-neutral-800 text-xs text-neutral-400 space-y-1.5 animate-fade-in">
-                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-neutral-800 rounded text-xs">#tag</kbd><span>Add tags inline</span></div>
-                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-neutral-800 rounded text-xs">key:value</kbd><span>Add properties</span></div>
-                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-neutral-800 rounded text-xs">@mention</kbd><span>Reference other notes</span></div>
-                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-neutral-800 rounded text-xs">[link]</kbd><span>Create wiki-links</span></div>
+                    <div className="mt-2 p-3 bg-[var(--app-panel)] rounded-xl border border-[var(--app-line)] text-xs text-[var(--app-muted)] space-y-1.5 animate-fade-in">
+                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-[var(--app-raised)] rounded text-xs">#tag</kbd><span>Add tags inline</span></div>
+                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-[var(--app-raised)] rounded text-xs">key:value</kbd><span>Add properties</span></div>
+                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-[var(--app-raised)] rounded text-xs">@mention</kbd><span>Reference other notes</span></div>
+                        <div className="flex items-center gap-2"><kbd className="px-1.5 py-0.5 bg-[var(--app-raised)] rounded text-xs">[link]</kbd><span>Create wiki-links</span></div>
                     </div>
                 </details>
             </div>
 
             <div className="absolute inset-0 -z-10 overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-blue-500/5 blur-3xl" />
-                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-purple-500/5 blur-3xl" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-[color-mix(in_srgb,var(--app-accent)_6%,transparent)] blur-3xl" />
+                <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-[color-mix(in_srgb,var(--app-accent)_5%,transparent)] blur-3xl" />
             </div>
         </section>
     );

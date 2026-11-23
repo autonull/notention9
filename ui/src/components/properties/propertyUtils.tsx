@@ -156,23 +156,23 @@ export function renderPropertyOption({
             <div key={option.key}>
                 <button
                     className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-3 transition-colors ${
-                        isExpanded ? 'bg-neutral-700/50' : 'hover:bg-neutral-700/50'
+                        isExpanded ? 'bg-[var(--app-raised)]' : 'hover:bg-[var(--app-hover)]'
                     } border border-transparent`}
                     onClick={onToggleExpand}
                     onMouseEnter={onMouseEnter}
                 >
                     <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
-                        {isExpanded ? <ChevronDownIcon className="w-4 h-4 text-neutral-400" /> : <ChevronRightIcon className="w-4 h-4 text-neutral-400" />}
+                        {isExpanded ? <ChevronDownIcon className="w-4 h-4 text-[var(--app-muted)]" /> : <ChevronRightIcon className="w-4 h-4 text-[var(--app-muted)]" />}
                     </span>
                     <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                            <span className="font-bold text-sm text-neutral-200">{option.nodeLabel}</span>
-                            {option.description && <span className="text-xs text-neutral-400">{option.description}</span>}
+                            <span className="font-bold text-sm text-[var(--app-text-secondary)]">{option.nodeLabel}</span>
+                            {option.description && <span className="text-xs text-[var(--app-muted)]">{option.description}</span>}
                         </div>
                     </div>
                 </button>
                 {isExpanded && (
-                    <div className="pl-8 space-y-1 border-l border-neutral-700/30 ml-2">
+                    <div className="pl-8 space-y-1 border-l border-[var(--app-line)] ml-2">
                         {/* Children rendered by parent */}
                     </div>
                 )}
@@ -186,26 +186,26 @@ export function renderPropertyOption({
             key={option.key}
             className={`w-full text-left px-3 py-2.5 rounded-lg flex items-center gap-3 transition-colors ${
                 isSelected
-                    ? 'bg-blue-600/20 text-blue-200 border border-blue-500/30'
-                    : 'text-neutral-300 hover:bg-neutral-700/50 border border-transparent'
+                    ? 'bg-[var(--app-accent-soft)] text-[var(--app-accent-text)] border border-[var(--app-accent-line)]'
+                    : 'text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)] border border-transparent'
             }`}
             onClick={onSelect}
             onMouseEnter={onMouseEnter}
         >
             <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center text-lg">
-                {option.isLearned ? <SparklesIcon className="w-4 h-4 text-purple-400" /> : option.icon || <TagIcon className="w-4 h-4 text-neutral-400" />}
+                {option.isLearned ? <SparklesIcon className="w-4 h-4 text-[var(--app-accent-text)]" /> : option.icon || <TagIcon className="w-4 h-4 text-[var(--app-muted)]" />}
             </span>
             <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
                     <span className="font-medium truncate text-sm">{option.key}</span>
                     {option.isLearned && option.frequency && (
-                        <span className="text-xs bg-purple-900/30 text-purple-300 px-1.5 py-0.5 rounded-full border border-purple-700/30">
+                        <span className="text-xs bg-[var(--app-accent-soft)] text-[var(--app-accent-text)] px-1.5 py-0.5 rounded-full border border-[var(--app-accent-line)]">
                             {option.frequency}
                         </span>
                     )}
                 </div>
                 {option.description && (
-                    <div className="text-xs text-neutral-400 truncate">{option.description}</div>
+                    <div className="text-xs text-[var(--app-muted)] truncate">{option.description}</div>
                 )}
                 {showTypeBadge && renderTypeBadge && renderTypeBadge(option.attributeDef)}
             </div>

@@ -16,7 +16,7 @@ export const NeedSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
- <div className="text-xs font-bold text-blue-400 tracking-wider">What do you need?</div>
+ <div className="text-xs font-bold text-[var(--app-accent-text)] tracking-wider">What do you need?</div>
             <div className="grid grid-cols-2 gap-2">
                 {['request', 'offer', 'task', 'service', 'product', 'meeting', 'collaboration', 'advice', 'resource', 'funding'].map(opt => (
                     <button
@@ -24,8 +24,8 @@ export const NeedSelector: PropertySelector = {
                         onClick={() => onChange(opt)}
                         className={`px-3 py-2 rounded-lg text-sm font-medium transition-all border ${
                             currentValue === opt
-                                ? 'bg-blue-600 border-blue-500 text-white'
-                                : 'bg-neutral-700 border-neutral-600 text-neutral-300 hover:bg-neutral-600'
+                                ? 'bg-[var(--app-accent)] border-[var(--app-accent-line)] text-[#ffffff]'
+                                : 'bg-[var(--app-raised)] border-[var(--app-line-strong)] text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)]'
                         }`}
                     >
                         {opt}
@@ -53,7 +53,7 @@ export const IdentitySelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology, note}) => (
         <div className="space-y-3">
- <div className="text-xs font-bold text-blue-400 tracking-wider">Select Person / Identity</div>
+ <div className="text-xs font-bold text-[var(--app-accent-text)] tracking-wider">Select Person / Identity</div>
             <div className="space-y-2">
                 {['self', 'team', 'client', 'partner', 'vendor', 'expert', 'mentor', 'friend'].map(opt => (
                     <button
@@ -61,11 +61,11 @@ export const IdentitySelector: PropertySelector = {
                         onClick={() => onChange(opt)}
                         className={`w-full text-left px-3 py-2 rounded-lg flex items-center gap-3 transition-colors border ${
                             currentValue === opt
-                                ? 'bg-blue-600/20 border-blue-500/30 text-blue-200'
-                                : 'bg-neutral-700/30 border-neutral-600/30 text-neutral-300 hover:bg-neutral-700/50'
+                                ? 'bg-[var(--app-accent-soft)] border-[var(--app-accent-line)] text-[var(--app-accent-text)]'
+                                : 'bg-[var(--app-raised)] border-[var(--app-line-strong)] text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)]'
                         }`}
                     >
-                        <UsersIcon className="w-4 h-4 text-neutral-400" />
+                        <UsersIcon className="w-4 h-4 text-[var(--app-muted)]" />
                         <span className="font-medium">{opt}</span>
                     </button>
                 ))}
@@ -91,7 +91,7 @@ export const EmotionSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
- <div className="text-xs font-bold text-blue-400 tracking-wider">How do you feel?</div>
+ <div className="text-xs font-bold text-[var(--app-accent-text)] tracking-wider">How do you feel?</div>
             <div className="flex gap-2 flex-wrap">
                 {['😀', '🙂', '😐', '🙁', '😞', '😍', '😤', '😰', '😴', '🤔'].map(emoji => (
                     <button
@@ -99,16 +99,16 @@ export const EmotionSelector: PropertySelector = {
                         onClick={() => onChange(emoji)}
                         className={`w-12 h-12 rounded-xl text-2xl flex items-center justify-center transition-all border ${
                             currentValue === emoji
-                                ? 'bg-purple-600/30 border-purple-500 scale-110'
-                                : 'bg-neutral-700 border-neutral-600 hover:bg-neutral-600'
+                                ? 'bg-[var(--app-accent-soft)] border-[var(--app-accent-line)] scale-110'
+                                : 'bg-[var(--app-raised)] border-[var(--app-line-strong)] hover:bg-[var(--app-hover)]'
                         }`}
                     >
                         {emoji}
                     </button>
                 ))}
             </div>
-            <div className="pt-2 border-t border-neutral-700">
-                <label className="block text-xs text-neutral-400 mb-1">Intensity: {currentValue || '0'}</label>
+            <div className="pt-2 border-t border-[var(--app-line)]">
+                <label className="block text-xs text-[var(--app-muted)] mb-1">Intensity: {currentValue || '0'}</label>
                 <input
                     type="range"
                     min="-1"
@@ -116,9 +116,9 @@ export const EmotionSelector: PropertySelector = {
                     step="0.1"
                     value={parseFloat(currentValue) || 0}
                     onChange={e => onChange(e.target.value)}
-                    className="w-full h-2 bg-neutral-700 rounded-lg appearance-none accent-purple-500"
+                    className="w-full h-2 bg-[var(--app-line-strong)] rounded-lg appearance-none accent-[var(--app-accent)]"
                 />
-                <div className="flex justify-between text-xs text-neutral-400 mt-1">
+                <div className="flex justify-between text-xs text-[var(--app-muted)] mt-1">
                     <span>Negative</span>
                     <span>Neutral</span>
                     <span>Positive</span>
@@ -139,14 +139,14 @@ export const LocationSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology, note, onPickLocation}) => (
         <div className="space-y-3">
- <div className="text-xs font-bold text-blue-400 tracking-wider">Pick Location</div>
+ <div className="text-xs font-bold text-[var(--app-accent-text)] tracking-wider">Pick Location</div>
             <div className="flex gap-2">
                 <input
                     type="text"
                     placeholder="lat,lng or place name"
                     value={currentValue}
                     onChange={e => onChange(e.target.value)}
-                    className="flex-1 bg-neutral-700 border border-neutral-600 rounded px-3 py-2 text-white"
+                    className="flex-1 bg-[var(--app-surface)] border border-[var(--app-line-strong)] rounded px-3 py-2 text-[var(--app-text)]"
                 />
                 <Button
                     onClick={onPickLocation}
@@ -162,7 +162,7 @@ export const LocationSelector: PropertySelector = {
                     <button
                         key={label}
                         onClick={() => onChange(label)}
-                        className="px-2 py-1 rounded bg-neutral-700 hover:bg-neutral-600 text-neutral-300 text-center"
+                        className="px-2 py-1 rounded bg-[var(--app-raised)] hover:bg-[var(--app-hover)] text-[var(--app-text-secondary)] text-center"
                     >
                         {label}
                     </button>
@@ -182,7 +182,7 @@ export const TemplateSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology}) => (
         <div className="space-y-3">
- <div className="text-xs font-bold text-blue-400 tracking-wider">Choose Template</div>
+ <div className="text-xs font-bold text-[var(--app-accent-text)] tracking-wider">Choose Template</div>
             <div className="space-y-2">
                 {[
                     {id: 'task', label: 'Task', icon: '✅', desc: 'Action item with status'},
@@ -197,14 +197,14 @@ export const TemplateSelector: PropertySelector = {
                         onClick={() => onChange(t.id)}
                         className={`w-full text-left p-3 rounded-lg flex items-center gap-3 transition-colors border ${
                             currentValue === t.id
-                                ? 'bg-blue-600/20 border-blue-500/30 text-blue-200'
-                                : 'bg-neutral-700/30 border-neutral-600/30 text-neutral-300 hover:bg-neutral-700/50'
+                                ? 'bg-[var(--app-accent-soft)] border-[var(--app-accent-line)] text-[var(--app-accent-text)]'
+                                : 'bg-[var(--app-raised)] border-[var(--app-line-strong)] text-[var(--app-text-secondary)] hover:bg-[var(--app-hover)]'
                         }`}
                     >
                         <span className="text-2xl">{t.icon}</span>
                         <div>
                             <div className="font-medium">{t.label}</div>
-                            <div className="text-xs text-neutral-400">{t.desc}</div>
+                            <div className="text-xs text-[var(--app-muted)]">{t.desc}</div>
                         </div>
                     </button>
                 ))}
@@ -224,7 +224,7 @@ export const TimeRangeSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange, ontology, onPickTime}) => (
         <div className="space-y-3">
- <div className="text-xs font-bold text-blue-400 tracking-wider">Select Time</div>
+ <div className="text-xs font-bold text-[var(--app-accent-text)] tracking-wider">Select Time</div>
             <div className="flex gap-2">
                 <Button
                     onClick={() => onPickTime?.(propertyKey)}
@@ -274,14 +274,14 @@ export const MarkdownSelector: PropertySelector = {
     },
     render: ({propertyKey, propertyDef, currentValue, onChange}) => (
         <div className="space-y-2">
- <div className="text-xs font-bold text-blue-400 tracking-wider">Markdown Content</div>
+ <div className="text-xs font-bold text-[var(--app-accent-text)] tracking-wider">Markdown Content</div>
             <textarea
                 value={currentValue}
                 onChange={e => onChange(e.target.value)}
-                className="w-full h-40 bg-neutral-700 border border-neutral-600 rounded px-3 py-2 text-white font-mono text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full h-40 bg-[var(--app-surface)] border border-[var(--app-line-strong)] rounded px-3 py-2 text-[var(--app-text)] font-mono text-sm focus:outline-none focus:ring-2 focus:ring-[var(--app-accent)]"
                 placeholder="Write markdown..."
             />
-            <div className="border border-neutral-700 rounded p-3 bg-neutral-800 prose prose-invert max-w-none">
+            <div className="border border-[var(--app-line)] rounded p-3 bg-[var(--app-surface)] prose prose-invert max-w-none">
                 <div dangerouslySetInnerHTML={{__html: currentValue}} />
             </div>
         </div>

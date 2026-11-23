@@ -54,19 +54,22 @@ No workstream is open. This pass landed three follow-ups:
   state are recaptured.
 - Ontology nodes, privacy confirmation, describe-it, and automations are on
   tokens; `settings/ontology` and the editor group are recaptured.
+- The property palette, niche selectors, note preview, quick capture,
+  ontology suggestions, local match, and automation cards are on tokens;
+  `search` and `modals/command-palette` are recaptured.
 - `RelatedNotesPanel`, the root `SuggestionItem`, and `ExtractionReview` (with
   its test block) are deleted; no references remained.
 
 The remaining items are follow-ups, in value order:
 
-1. **Tone outside settings** — settings, the header, the help dialog, the
-   ontology graph and dialogs, the property editor, agent status, empty states,
-   the language selector, privacy confirmation, describe-it, and automations
-   are on tokens. Literal `neutral-*`, `blue-*`, and `purple-*` remain in
-   dashboard (`LocalMatchPreview`, `QuickCapture`), properties
-   (`NicheSelectors`, `propertyUtils`), and the metaphor plugin. Route them
-   when each surface is touched; keep semantic category colors in
-   `PropertyBlock` unless the category axis is replaced.
+1. **Tone tail** — every high-traffic surface is on tokens: settings,
+   header, help, page/history, editor, property palette and niche selectors,
+   ontology, empty states, command-preview, agent, dashboard, and automation.
+   A long tail of one to six literal classes remains across widget, layout,
+   and metaphor files, plus deliberate semantic colors: `PropertyBlock`
+   categories, agent status, match types, automation cadence, and suggestion
+   type badges. Do not sweep the tail; route a file when its surface changes,
+   and keep semantic colors unless the axis changes.
 2. **W31.0 extraction** — extract `ListRow`, `Field`, and `ContextPanel` only
    where a second use exists. `KitGallery` is the gallery entry when another
    second use appears; do not extract a one-off.
