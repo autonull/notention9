@@ -1,11 +1,12 @@
 import React, {useState, useEffect, useRef} from 'react';
 import {Input} from '../components/ui/Primitives';
 import {Button} from '../components/ui/Button';
+import {Select} from '../components/ui/Select';
 import {useToast} from '../hooks/useToast';
 import {useAnnounce} from '../hooks/useAccessibility';
 import {createBaseStrategy} from '@notention/core/ui';
 import {getStrategyConfig} from './strategyConfigs.js';
-import type {OntologyNode} from '@notention/core';
+import type {OntologyNode, OntologyAttribute} from '@notention/core';
 
 const config = getStrategyConfig('inline-detail');
 if (!config) throw new Error('Strategy config not found: inline-detail');
@@ -67,8 +68,8 @@ export const InlineDetailStrategy = createBaseStrategy<InlineDetailProps>(
         };
 
         const filteredOntology = ontology
-            .flatMap(node => node.attributes ?? [])
-            .filter(attr => attr.key.toLowerCase().includes(key.toLowerCase()))
+            .flatMap((node): [string, OntologyAttribute][] => Object.entries(node.attributes ?? {}))
+            .filter(([attrKey]) => attrKey.toLowerCase().includes(key.toLowerCase()))
             .slice(0, 5);
 
         return (
@@ -91,7 +92,7 @@ export const InlineDetailStrategy = createBaseStrategy<InlineDetailProps>(
                     />
                     <Select
                         value={operator}
-                        onChange={e => setOperator(e.target.value)}
+                        onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setOperator(e.target.value)}
                         options={ALL_OPERATORS}
                         className="inline-detail__operator"
                         data-testid="inline-operator-select"
@@ -112,12 +113,12 @@ export const InlineDetailStrategy = createBaseStrategy<InlineDetailProps>(
                 </div>
                 {showSuggestions && filteredOntology.length > 0 && (
                     <ul id="inline-suggestions" className="inline-detail__suggestions" role="listbox">
-                        {filteredOntology.map(attr => (
-                            <li key={attr.key} role="option" onClick={() => {
-                                setKey(attr.key);
+                        {filteredOntology.map(([attrKey, attr]) => (
+                            <li key={attrKey} role="option" onClick={() => {
+                                setKey(attrKey);
                                 setShowSuggestions(false);
                             }}>
-                                {attr.key} ({attr.type})
+                                {attrKey} ({attr.type})
                             </li>
                         ))}
                     </ul>

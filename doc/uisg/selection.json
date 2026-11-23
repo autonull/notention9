@@ -1,16 +1,11 @@
 {
   "request": {
-    "feature": "capture",
-    "context": "desktop-novice-dark"
+    "feature": "flow.inline-detail"
   },
   "selected": [
-    "intent.structured-note",
-    "flow.capture-and-edit",
-    "cap.note.capture",
-    "surface.quick-capture",
-    "flow.capture-and-edit-keyboard"
+    "flow.inline-detail"
   ],
-  "explanation": "Selected 5 node(s) for \"capture\" under context \"desktop-novice-dark\"",
+  "explanation": "Selected 1 node(s) for \"flow.inline-detail\" under context \"default\"",
   "conflicts": [],
   "satisfied": true
 }

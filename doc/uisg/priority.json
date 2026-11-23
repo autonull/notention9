@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-23T20:37:46.088Z",
+  "generatedAt": "2026-11-23T22:35:58.472Z",
   "weightProfile": "default",
   "items": [
     {
@@ -28,20 +28,324 @@
         "status:planned"
       ],
       "evidence": [
-        "ui/src/strategies/PropertyFormStrategy.tsx"
+        "ui/src/strategies/InlineDetailStrategy.tsx"
       ]
     },
     {
-      "nodeId": "surface.quick-capture",
-      "type": "surface",
-      "name": "Quick capture",
+      "nodeId": "cap.network.reply",
+      "type": "capability",
+      "name": "Reply to note via relay",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.network.explore-feed",
+      "type": "capability",
+      "name": "Explore feed",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.network.chat",
+      "type": "capability",
+      "name": "Chat/DM",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.network.relay-status",
+      "type": "capability",
+      "name": "Relay status monitor",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.data.import",
+      "type": "capability",
+      "name": "Import notes",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.data.export",
+      "type": "capability",
+      "name": "Export notes",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.config.profile",
+      "type": "capability",
+      "name": "Capability profile selection",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.automation.rule",
+      "type": "capability",
+      "name": "Automation rule",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.automation.scheduled",
+      "type": "capability",
+      "name": "Scheduled task",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.automation.monitor",
+      "type": "capability",
+      "name": "Monitoring agent",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.intent.recognize",
+      "type": "capability",
+      "name": "Recognize user intent",
+      "score": 0,
+      "impact": 0,
+      "confidence": 2,
+      "effort": 3,
+      "reasons": [],
+      "evidence": [
+        "core/src/patternRecognition",
+        "optimize/src/optimizer/evaluation/intentCaseRunner.ts"
+      ]
+    },
+    {
+      "nodeId": "cap.elicit.inline-detail",
+      "type": "capability",
+      "name": "Inline detail entry",
       "score": 0,
       "impact": 0,
       "confidence": 1,
-      "effort": 4,
-      "reasons": [],
+      "effort": 5,
+      "reasons": [
+        "status:candidate"
+      ],
       "evidence": [
-        "ui/src/components/dashboard/QuickCapture.tsx"
+        "ui/src/strategies/InlineDetailStrategy.tsx"
+      ]
+    },
+    {
+      "nodeId": "surface.loadingspinner",
+      "type": "surface",
+      "name": "Loading state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.errordisplay",
+      "type": "surface",
+      "name": "Error state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.permissiondenied",
+      "type": "surface",
+      "name": "Denied/permission state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.offlinebanner",
+      "type": "surface",
+      "name": "Offline state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.degradedbanner",
+      "type": "surface",
+      "name": "Degraded connectivity state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.publishready",
+      "type": "surface",
+      "name": "Publish ready state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.nomatch",
+      "type": "surface",
+      "name": "No match state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.rejecteddisplay",
+      "type": "surface",
+      "name": "Rejected state",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.mobilecapture",
+      "type": "surface",
+      "name": "Mobile capture view",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.mobilematchrail",
+      "type": "surface",
+      "name": "Mobile match view",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.pagesurface",
+      "type": "surface",
+      "name": "PageSurface",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "surface.inlinedetailstrategy",
+      "type": "surface",
+      "name": "InlineDetailStrategy",
+      "score": 0,
+      "impact": 0,
+      "confidence": 1,
+      "effort": 5,
+      "reasons": [
+        "status:candidate"
+      ],
+      "evidence": [
+        "ui/src/strategies/InlineDetailStrategy.tsx"
       ]
     },
     {

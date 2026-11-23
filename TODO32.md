@@ -203,7 +203,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - **Dogfood:** `validateGraph`/`analyzeGraph` as the source of truth for "evidence"; reuse manifest emission for provenance; `syncGraphWithCode` proposals as finding candidates.
 
 **Phase A Acceptance:** seeded friction + two bundles produce stable ranking; invalid selection rejected with explanation; top experiments in inventory; adopt atomic+validated; findings in repo; round-trip green; no single UX score.
-- Status: Core infrastructure implemented (metrics, rank, select, contexts, adopt, canonicalize, diff, findings, runs). Remaining: hard constraints/Pareto profiles, regression replay, comprehensive tests.
+- Status: Core infrastructure implemented (metrics, rank, select, contexts, adopt, canonicalize, diff, findings, runs). Remaining: hard constraints/Pareto profiles, regression replay, comprehensive tests. TypeScript errors fixed; `check:ui` green; `pnpm verify` L0–L3 passes.
 
 ---
 
@@ -236,7 +236,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [ ] Gardener/merge flow coverage; `ontology:audit` output linked to graph.
 
 **Phase B Acceptance:** ≥1 evaluated experiment per seam with 2 strategies; every decision recorded; no variant without evidence bundle; `check:ui` green; resolution journey green; detection+resolution capabilities; no silent data loss.
-- Status: All seam experiments modeled in graph with statuses; Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended (detection verified); Capture/Match/Display experiments modeled as candidate/alternative flows; gardener/merge flow planned. All decisions recorded with evidence bundles.
+- Status: All seam experiments modeled in graph with statuses; Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended (detection verified); Capture/Match/Display experiments modeled as candidate/alternative flows; gardener/merge flow planned. All decisions recorded with evidence bundles. `check:ui` green; golden-path & axe-audit journeys pass; ontology-conflict journey passes.
 
 ---
 
@@ -276,7 +276,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [ ] Run final matrix; record run IDs.
 
 **Phase D Acceptance:** no orphan without reason; `analyze` 0 findings or documented baseline; statuses match reality; every documented command works; matrix green; no skipped layer.
-- Status: Graph-scan sync clean; UISG validate clean; verify pipeline green (L0-L3); docs/screenshots pending.
+- Status: Graph-scan sync clean; UISG validate clean; verify pipeline green (L0-L3); docs/screenshots pending. `pnpm verify` passes completely; TypeScript errors resolved; type scale lint passes.
 
 ---
 

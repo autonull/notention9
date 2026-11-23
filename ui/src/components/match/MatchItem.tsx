@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { ScoredMatch, PropertyMatch, MatchDetails } from '@notention/core';
 import {
     SparklesIcon,
@@ -9,10 +9,10 @@ import {
     ClockIcon,
     CheckCircleIcon,
     ExclamationTriangleIcon,
-    XMarkIcon,
     QuestionMarkCircleIcon,
-    ArrowRightIcon,
     ChevronDownIcon,
+    XMarkIcon,
+    ArrowRightIcon,
 } from '../ui/icons';
 import {Button} from '../ui/Button';
 import {formatPropertyRange, formatPropertyValue} from '../../utils/propertyDisplay';
@@ -27,8 +27,6 @@ interface MatchItemProps {
     onRespond?: () => void;
     onView?: () => void;
     onExplanation?: (action: 'explained' | 'dismissed') => void;
-    onRejectMatch?: (requestId: string, noteId: string) => void;
-    onReviseRequest?: (requestId: string) => void;
 }
 
 function getMatchTypeLabel(details?: MatchDetails): string {
@@ -55,13 +53,10 @@ export function MatchItem({
     onRespond,
     onView,
     onExplanation,
-    onRejectMatch,
-    onReviseRequest,
 }: MatchItemProps) {
     const { note, result, direction } = match;
     const score = Math.round(result.score * 100);
-    const [explanationsOpen, setExplanationsOpen] = useState(false);
-    const [showRecovery, setShowRecovery] = useState(false);
+    const [explanationsOpen, setExplanationsOpen] = React.useState(false);
 
     const handleExplanationToggle = (open: boolean) => {
         setExplanationsOpen(open);
@@ -202,10 +197,10 @@ export function MatchItem({
                                         <XMarkIcon className="h-3 w-3" />
                                         <span>{m.reason}</span>
                                     </div>
-                                    <div className="text-[10px] text-[var(--app-faint)] ml-4">
+                                    <div className="text-xs text-[var(--app-faint)] ml-4">
                                         Request: {m.requestProp.key} {m.requestProp.operator} {m.requestProp.values.join(', ')}
                                     </div>
-                                    <div className="text-[10px] text-[var(--app-faint)] ml-4">
+                                    <div className="text-xs text-[var(--app-faint)] ml-4">
                                         Offer: {m.offerProp.key} {m.offerProp.operator} {m.offerProp.values.join(', ')}
                                     </div>
                                 </div>
@@ -219,13 +214,13 @@ export function MatchItem({
                             {result.missing.map((p, i) => (
                                 <div
                                     key={`missing-detail-${i}`}
-                                    className="rounded border border-dashed border-[var(--app-line-strong)] bg-[var(--app-surface)] p-2 text-[11px] text-[var(--app-faint)]"
+                                    className="rounded border border-dashed border-[var(--app-line-strong)] bg-[var(--app-surface)] p-2 text-sm text-[var(--app-faint)]"
                                 >
                                     <div className="flex items-center gap-1">
                                         <QuestionMarkCircleIcon className="h-3 w-3" />
                                         Missing: {p.key}
                                     </div>
-                                    <div className="text-[10px] text-[var(--app-faint)] ml-4">
+                                    <div className="text-xs text-[var(--app-faint)] ml-4">
                                         Request expected: {p.key} {p.operator} {p.values.join(', ')}
                                     </div>
                                 </div>
@@ -233,60 +228,6 @@ export function MatchItem({
                         </div>
                     )}
 
-                    {isLocal && onRejectMatch && onReviseRequest && (
-                        <div className="pt-2 border-t border-[var(--app-line)]">
-                            <Button
-                                size="sm"
-                                variant="secondary"
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    setShowRecovery(true);
-                                }}
-                                className="text-yellow-400 hover:text-yellow-300"
-                                title="This match isn't right - help me correct it"
-                                icon={XMarkIcon}
-                            >
-                                Not a match
-                            </Button>
-
-                            {showRecovery && (
-                                <div className="mt-3 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-xl animate-slide-in-down">
-                                    <div className="text-xs text-yellow-300 mb-2">This match isn't right. What would you like to do?</div>
-                                    <div className="flex flex-wrap gap-2">
-                                        <Button
-                                            size="sm"
-                                            variant="secondary"
-                                            onClick={() => {
-                                                onRejectMatch(match.request.id, match.note.id);
-                                                setShowRecovery(false);
-                                            }}
-                                            icon={XMarkIcon}
-                                        >
-                                            Reject this match
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="primary"
-                                            onClick={() => {
-                                                onReviseRequest(match.request.id);
-                                                setShowRecovery(false);
-                                            }}
-                                            icon={ArrowRightIcon}
-                                        >
-                                            Revise request
-                                        </Button>
-                                        <Button
-                                            size="sm"
-                                            variant="ghost"
-                                            onClick={() => setShowRecovery(false)}
-                                        >
-                                            Try different match
-                                        </Button>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </div>
             )}
         </div>
@@ -399,11 +340,11 @@ const MatchDetail: React.FC<{ match: PropertyMatch; index: number }> = ({ match,
             {icon && <span className="shrink-0 mt-0.5">{icon}</span>}
             <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
-                    <span className="text-[11px] font-medium text-[var(--app-text-secondary)]">{typeLabel}</span>
-                    <span className="text-[10px] text-[var(--app-faint)] uppercase">{type}</span>
+                    <span className="text-sm font-medium text-[var(--app-text-secondary)]">{typeLabel}</span>
+                    <span className="text-xs text-[var(--app-faint)] uppercase">{type}</span>
                 </div>
-                <div className="text-[12px] text-[var(--app-muted)] mt-0.5">{detailText}</div>
-                <div className="text-[10px] text-[var(--app-faint)] mt-1 font-mono">
+                <div className="text-meta text-[var(--app-muted)] mt-0.5">{detailText}</div>
+                <div className="text-xs text-[var(--app-faint)] mt-1 font-mono">
                     Request: {match.requestProp.key} {match.requestProp.operator} {match.requestProp.values.join(', ')}
                     {' · '}
                     Offer: {match.offerProp.key} {match.offerProp.operator} {match.offerProp.values.join(', ')}
