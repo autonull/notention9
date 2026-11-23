@@ -19,7 +19,7 @@ export interface AnalyzeOptions {
 const finding = (severity: GraphFinding['severity'], issue: string, evidence: string[], impact: string, suggestedChange: string, nodeId?: string): GraphFinding =>
     ({ severity, issue, evidence, impact, suggestedChange, nodeId });
 
-const isImplemented = ({ status }: { status: string }) => status === 'existing' || status === 'partial';
+const isImplemented = ({ status }: { status: string }) => status === 'implemented' || status === 'partial';
 
 function recoveryFindings(index: GraphIndex, flow: UisgFlow): GraphFinding[] {
     const steps = edgesFrom(index, flow.id, 'contains')

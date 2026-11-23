@@ -1,7 +1,7 @@
 import type { SeamRole } from '@notention/core/ui/strategy';
 import type { Step, Target } from '../journey.js';
 
-export type UisgStatus = 'existing' | 'partial' | 'planned' | 'idea' | 'removed';
+export type UisgStatus = 'implemented' | 'partial' | 'planned' | 'candidate' | 'experimental' | 'removed' | 'rejected';
 export type UisgNodeType = 'intent' | 'capability' | 'flow' | 'step' | 'surface' | 'predicate' | 'effect';
 export type UisgEdgeType =
     | 'supports' | 'uses' | 'invokes' | 'contains' | 'renders'

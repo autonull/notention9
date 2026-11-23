@@ -5,14 +5,14 @@
       "id": "intent.structured-note",
       "type": "intent",
       "name": "Capture a note and edit its properties",
-      "status": "existing",
+      "status": "implemented",
       "outcome": "The note carries structured, ontology-backed details."
     },
     {
       "id": "cap.property.edit",
       "type": "capability",
       "name": "Edit note properties",
-      "status": "existing",
+      "status": "implemented",
       "seam": "elicit",
       "strategy": "property-form",
       "source": [
@@ -24,7 +24,7 @@
       "id": "flow.capture-and-edit",
       "type": "flow",
       "name": "Capture and edit",
-      "status": "existing",
+      "status": "implemented",
       "entry": "step.detail.open",
       "outcome": "Property indexed and shown as a chip.",
       "journey": "capture-and-edit",
@@ -36,7 +36,7 @@
       "id": "step.detail.open",
       "type": "step",
       "name": "Open Add detail",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "click",
       "target": {
@@ -47,7 +47,7 @@
       "id": "step.detail.fill",
       "type": "step",
       "name": "Enter key, operator, value",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "fill",
       "target": {
@@ -60,7 +60,7 @@
       "id": "step.detail.confirm",
       "type": "step",
       "name": "Confirm the detail",
-      "status": "existing",
+      "status": "implemented",
       "kind": "confirm",
       "action": "click",
       "target": {
@@ -73,7 +73,7 @@
       "id": "step.detail.done",
       "type": "step",
       "name": "Property indexed",
-      "status": "existing",
+      "status": "implemented",
       "kind": "result",
       "statePath": "note.propertyIndex.framework",
       "stateEquals": [
@@ -85,7 +85,7 @@
       "id": "surface.editor",
       "type": "surface",
       "name": "Note editor",
-      "status": "existing",
+      "status": "implemented",
       "component": "EditorManager",
       "route": "#/notes/:noteId"
     },
@@ -93,14 +93,14 @@
       "id": "surface.property-editor",
       "type": "surface",
       "name": "Add detail popup",
-      "status": "existing",
+      "status": "implemented",
       "component": "PropertyEditor"
     },
     {
       "id": "flow.inline-detail",
       "type": "flow",
       "name": "Inline detail entry",
-      "status": "idea",
+      "status": "candidate",
       "entry": "step.inline.write",
       "outcome": "Detail added without leaving prose.",
       "confidence": "low",
@@ -110,7 +110,7 @@
       "id": "step.inline.write",
       "type": "step",
       "name": "Type property syntax inline",
-      "status": "idea",
+      "status": "candidate",
       "kind": "action",
       "confidence": "low",
       "summary": "Extraction confirms the detail; no popup interrupt."
@@ -119,7 +119,7 @@
       "id": "intent.express-need",
       "type": "intent",
       "name": "Express a need and understand a match",
-      "status": "existing",
+      "status": "implemented",
       "outcome": "A relevant local match is visible after capturing request and offer.",
       "source": [
         "optimize/src/journeys.ts"
@@ -129,7 +129,7 @@
       "id": "intent.publish-safely",
       "type": "intent",
       "name": "Publish without leaking private content",
-      "status": "existing",
+      "status": "implemented",
       "outcome": "Publish requires confirmation; cancel keeps the note private.",
       "source": [
         "optimize/src/journeys.ts"
@@ -139,7 +139,7 @@
       "id": "cap.note.capture",
       "type": "capability",
       "name": "Capture a note from prose",
-      "status": "existing",
+      "status": "implemented",
       "seam": "capture",
       "source": [
         "ui/src/components/layout/Header.tsx",
@@ -150,7 +150,7 @@
       "id": "cap.match.display",
       "type": "capability",
       "name": "Show local matches",
-      "status": "existing",
+      "status": "implemented",
       "seam": "match",
       "source": [
         "ui/src/components/note/NoteContextRail.tsx",
@@ -161,7 +161,7 @@
       "id": "cap.note.publish",
       "type": "capability",
       "name": "Publish note",
-      "status": "existing",
+      "status": "implemented",
       "risk": "destructive",
       "summary": "publish_note is CONSEQUENTIAL in optimize/src/policy.ts.",
       "source": [
@@ -173,7 +173,7 @@
       "id": "flow.golden-path",
       "type": "flow",
       "name": "First match golden path",
-      "status": "existing",
+      "status": "implemented",
       "entry": "step.gp.new-request",
       "outcome": "Request and offer captured; a match appears in the note rail.",
       "journey": "golden-path",
@@ -196,7 +196,7 @@
       "id": "surface.notes.list",
       "type": "surface",
       "name": "Notes list",
-      "status": "existing",
+      "status": "implemented",
       "component": "NotesView",
       "route": "#/notes",
       "configKey": "NOTE_BROWSE_MODES"
@@ -205,7 +205,7 @@
       "id": "surface.local-match",
       "type": "surface",
       "name": "Local match card",
-      "status": "existing",
+      "status": "implemented",
       "component": "DashboardLocalMatch",
       "source": [
         "ui/src/components/dashboard/DashboardLocalMatch.tsx"
@@ -215,7 +215,7 @@
       "id": "flow.publish-gate",
       "type": "flow",
       "name": "Publish gate",
-      "status": "existing",
+      "status": "implemented",
       "entry": "step.pub.open",
       "outcome": "Cancelling publish keeps the note private.",
       "journey": "publish-gate",
@@ -227,7 +227,7 @@
       "id": "step.pub.open",
       "type": "step",
       "name": "Attempt publish",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "click",
       "target": {
@@ -240,7 +240,7 @@
       "id": "step.pub.decide",
       "type": "step",
       "name": "Confirmation decision",
-      "status": "existing",
+      "status": "implemented",
       "kind": "confirm",
       "action": "click",
       "target": {
@@ -253,7 +253,7 @@
       "id": "step.pub.private",
       "type": "step",
       "name": "Note stays private",
-      "status": "existing",
+      "status": "implemented",
       "kind": "result",
       "statePath": "note.privacy",
       "stateEquals": "private"
@@ -273,7 +273,7 @@
       "id": "surface.confirmation-dialog",
       "type": "surface",
       "name": "Confirmation dialog",
-      "status": "existing",
+      "status": "implemented",
       "component": "ConfirmationModal",
       "source": [
         "ui/src/components/ui/ConfirmationModal.tsx"
@@ -283,7 +283,7 @@
       "id": "flow.capture-and-edit-keyboard",
       "type": "flow",
       "name": "Capture and edit (keyboard only)",
-      "status": "existing",
+      "status": "implemented",
       "entry": "step.detail.open",
       "outcome": "Same outcome without pointer input.",
       "journey": "capture-and-edit-keyboard",
@@ -295,7 +295,7 @@
       "id": "step.gp.new-request",
       "type": "step",
       "name": "Start request note",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "click",
       "target": {
@@ -307,7 +307,7 @@
       "id": "step.gp.request",
       "type": "step",
       "name": "Write request",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "fill",
       "target": {
@@ -321,7 +321,7 @@
       "id": "step.gp.new-offer",
       "type": "step",
       "name": "Start offer note",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "click",
       "target": {
@@ -333,7 +333,7 @@
       "id": "step.gp.offer",
       "type": "step",
       "name": "Write offer",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "fill",
       "target": {
@@ -346,7 +346,7 @@
       "id": "step.gp.match",
       "type": "step",
       "name": "Match visible in rail",
-      "status": "existing",
+      "status": "implemented",
       "kind": "show",
       "target": {
         "testId": "match-item"
@@ -356,7 +356,7 @@
       "id": "step.gp.done",
       "type": "step",
       "name": "One local match",
-      "status": "existing",
+      "status": "implemented",
       "kind": "result",
       "statePath": "matches.length",
       "stateEquals": 1
@@ -365,7 +365,7 @@
       "id": "surface.match-rail",
       "type": "surface",
       "name": "Note context rail, Matches tab",
-      "status": "existing",
+      "status": "implemented",
       "component": "NoteContextRail",
       "configKey": "NOTE_RAIL_TABS",
       "source": [
@@ -376,7 +376,7 @@
       "id": "intent.manage-ontology",
       "type": "intent",
       "name": "Keep the ontology consistent",
-      "status": "existing",
+      "status": "implemented",
       "outcome": "Conflicts are detected and resolvable.",
       "source": [
         "ui/src/components/views/OntologyView.tsx"
@@ -386,7 +386,7 @@
       "id": "cap.ontology.conflict",
       "type": "capability",
       "name": "Detect ontology conflicts",
-      "status": "existing",
+      "status": "implemented",
       "seam": "ontology",
       "source": [
         "ui/src/components/views/OntologyView.tsx",
@@ -398,7 +398,7 @@
       "id": "cap.match.explain",
       "type": "capability",
       "name": "Explain a match",
-      "status": "existing",
+      "status": "implemented",
       "seam": "explain",
       "confidence": "high",
       "summary": "Reason badges explain matches (PropertyMatch.reason); matched keys appear in SemanticState.",
@@ -410,7 +410,7 @@
       "id": "cap.notes.display",
       "type": "capability",
       "name": "Display notes in five modes",
-      "status": "existing",
+      "status": "implemented",
       "seam": "display",
       "source": [
         "ui/src/components/views/NotesView.tsx",
@@ -421,7 +421,7 @@
       "id": "cap.layout.rails",
       "type": "capability",
       "name": "Arrange rails and panes",
-      "status": "existing",
+      "status": "implemented",
       "seam": "layout",
       "source": [
         "ui/src/components/AppShell.tsx",
@@ -444,7 +444,7 @@
       "id": "flow.ontology-conflict",
       "type": "flow",
       "name": "Detect an ontology conflict",
-      "status": "existing",
+      "status": "implemented",
       "confidence": "high",
       "entry": "step.oc.open",
       "outcome": "The conflicting capacity property is listed in the ontology view.",
@@ -457,7 +457,7 @@
       "id": "surface.ontology-view",
       "type": "surface",
       "name": "Ontology settings",
-      "status": "existing",
+      "status": "implemented",
       "component": "OntologyView",
       "route": "#/settings/ontology",
       "configKey": "SETTINGS_GROUPS",
@@ -469,7 +469,7 @@
       "id": "surface.match-explanation",
       "type": "surface",
       "name": "Match explanation panel",
-      "status": "existing",
+      "status": "implemented",
       "confidence": "high",
       "component": "MatchItem",
       "source": [
@@ -481,7 +481,7 @@
       "id": "step.oc.open",
       "type": "step",
       "name": "Open Conflicts tab",
-      "status": "existing",
+      "status": "implemented",
       "kind": "action",
       "action": "click",
       "target": {
@@ -493,7 +493,7 @@
       "id": "step.oc.visible",
       "type": "step",
       "name": "Conflict listed",
-      "status": "existing",
+      "status": "implemented",
       "kind": "result",
       "statePath": "conflicts.0.propertyKey",
       "stateEquals": "capacity"
@@ -502,7 +502,7 @@
       "id": "step.gp.explain",
       "type": "step",
       "name": "Match explanation asserted",
-      "status": "existing",
+      "status": "implemented",
       "kind": "result",
       "statePath": "matches.0.matched",
       "stateEquals": [
@@ -515,7 +515,7 @@
       "id": "pred.can-publish",
       "type": "predicate",
       "name": "Can publish note",
-      "status": "existing",
+      "status": "implemented",
       "expression": "note.privacy === \"private\" && user.hasPermission(\"publish_note\")",
       "registryId": "can-publish",
       "source": [
@@ -526,7 +526,7 @@
       "id": "pred.can-delete",
       "type": "predicate",
       "name": "Can delete note",
-      "status": "existing",
+      "status": "implemented",
       "expression": "note.privacy === \"private\" && user.hasPermission(\"delete_note\")",
       "registryId": "can-delete",
       "source": [
@@ -537,7 +537,7 @@
       "id": "pred.can-merge-ontology",
       "type": "predicate",
       "name": "Can merge ontology",
-      "status": "existing",
+      "status": "implemented",
       "expression": "user.hasPermission(\"merge_ontology\")",
       "registryId": "can-merge-ontology",
       "source": [
@@ -548,7 +548,7 @@
       "id": "pred.can-grant-permission",
       "type": "predicate",
       "name": "Can grant permission",
-      "status": "existing",
+      "status": "implemented",
       "expression": "user.hasPermission(\"grant_permission\")",
       "registryId": "can-grant-permission",
       "source": [
@@ -559,7 +559,7 @@
       "id": "eff.publish-note",
       "type": "effect",
       "name": "Publish note",
-      "status": "existing",
+      "status": "implemented",
       "reversibility": "irreversible",
       "risk": "consequential",
       "confirmationRequired": true,
@@ -578,7 +578,7 @@
       "id": "eff.delete-note",
       "type": "effect",
       "name": "Delete note",
-      "status": "existing",
+      "status": "implemented",
       "reversibility": "irreversible",
       "risk": "consequential",
       "confirmationRequired": true,
@@ -596,7 +596,7 @@
       "id": "eff.merge-ontology",
       "type": "effect",
       "name": "Merge ontology",
-      "status": "existing",
+      "status": "implemented",
       "reversibility": "compensatable",
       "risk": "consequential",
       "confirmationRequired": true,
@@ -614,7 +614,7 @@
       "id": "eff.grant-permission",
       "type": "effect",
       "name": "Grant permission",
-      "status": "existing",
+      "status": "implemented",
       "reversibility": "reversible",
       "risk": "consequential",
       "confirmationRequired": true,
@@ -632,7 +632,7 @@
       "id": "cap.note.delete",
       "type": "capability",
       "name": "Delete note",
-      "status": "existing",
+      "status": "implemented",
       "seam": "elicit",
       "risk": "destructive",
       "effect": "delete_note",
@@ -645,7 +645,7 @@
       "id": "cap.ontology.merge",
       "type": "capability",
       "name": "Merge ontology",
-      "status": "existing",
+      "status": "implemented",
       "seam": "ontology",
       "risk": "destructive",
       "effect": "merge_ontology",
@@ -658,7 +658,7 @@
       "id": "cap.permission.grant",
       "type": "capability",
       "name": "Grant permission",
-      "status": "existing",
+      "status": "implemented",
       "seam": "ontology",
       "risk": "destructive",
       "effect": "grant_permission",

@@ -11,6 +11,7 @@
  */
 import type { FrictionKind } from '@notention/core/telemetry/journal';
 import type { DiscoveredProblem } from './prioritize.js';
+import type { FrictionEntry } from '../uisg/metrics.js';
 
 export interface FrictionToSeamMapping {
     seamRole: string;
@@ -147,4 +148,185 @@ export function emptyKindCounts(): Record<FrictionKind, number> {
     return Object.fromEntries(
         Object.keys(FRICTION_TO_SEAM_MAP).map(kind => [kind, 0])
     ) as Record<FrictionKind, number>;
+}
+
+// --- New exports for UISG metrics integration ---
+
+export interface FrictionMapping {
+    frictionKind: string;
+    seam: string;
+    params: Record<string, unknown>;
+    weight: number;
+}
+
+export const UISG_FRICTION_MAP: FrictionMapping[] = [
+    // Capture seam friction
+    {
+        frictionKind: 'capture-delay',
+        seam: 'capture',
+        params: { strategy: 'quick-capture' },
+        weight: 1.0,
+    },
+    {
+        frictionKind: 'capture-abandon',
+        seam: 'capture',
+        params: { strategy: 'page-new-note' },
+        weight: 1.2,
+    },
+    {
+        frictionKind: 'empty-state-confusion',
+        seam: 'capture',
+        params: { strategy: 'empty-state-prompt' },
+        weight: 0.8,
+    },
+
+    // Elicit seam friction
+    {
+        frictionKind: 'property-entry-abandon',
+        seam: 'elicit',
+        params: { strategy: 'property-form' },
+        weight: 1.0,
+    },
+    {
+        frictionKind: 'inline-syntax-error',
+        seam: 'elicit',
+        params: { strategy: 'inline-detail' },
+        weight: 1.5,
+    },
+    {
+        frictionKind: 'popup-dismiss',
+        seam: 'elicit',
+        params: { strategy: 'property-form' },
+        weight: 0.7,
+    },
+
+    // Match seam friction
+    {
+        frictionKind: 'no-matches-found',
+        seam: 'match',
+        params: { strategy: 'semantic-match' },
+        weight: 1.5,
+    },
+    {
+        frictionKind: 'irrelevant-matches',
+        seam: 'match',
+        params: { strategy: 'semantic-match' },
+        weight: 1.2,
+    },
+    {
+        frictionKind: 'match-score-confusion',
+        seam: 'match',
+        params: { strategy: 'explain-badge' },
+        weight: 0.9,
+    },
+
+    // Display seam friction
+    {
+        frictionKind: 'rail-overcrowded',
+        seam: 'display',
+        params: { strategy: 'list' },
+        weight: 0.8,
+    },
+    {
+        frictionKind: 'board-navigation-confusion',
+        seam: 'display',
+        params: { strategy: 'board' },
+        weight: 1.0,
+    },
+
+    // Layout seam friction
+    {
+        frictionKind: 'density-complaint',
+        seam: 'layout',
+        params: { strategy: 'compact' },
+        weight: 0.6,
+    },
+    {
+        frictionKind: 'rail-width-issue',
+        seam: 'layout',
+        params: { strategy: 'rail-share' },
+        weight: 0.7,
+    },
+
+    // Explain seam friction
+    {
+        frictionKind: 'explanation-not-found',
+        seam: 'explain',
+        params: { strategy: 'reason-badges' },
+        weight: 1.0,
+    },
+    {
+        frictionKind: 'explanation-not-understood',
+        seam: 'explain',
+        params: { strategy: 'expandable-details' },
+        weight: 1.2,
+    },
+
+    // Ontology seam friction
+    {
+        frictionKind: 'conflict-not-noticed',
+        seam: 'ontology',
+        params: { strategy: 'conflicts-tab' },
+        weight: 1.3,
+    },
+    {
+        frictionKind: 'conflict-resolution-abandon',
+        seam: 'ontology',
+        params: { strategy: 'merge-flow' },
+        weight: 1.5,
+    },
+
+    // Intent seam friction (currently unsupported)
+    {
+        frictionKind: 'intent-not-recognized',
+        seam: 'intent',
+        params: { strategy: 'pattern-recognition' },
+        weight: 1.0,
+    },
+    {
+        frictionKind: 'suggestion-irrelevant',
+        seam: 'intent',
+        params: { strategy: 'predictive-suggestions' },
+        weight: 1.2,
+    },
+];
+
+export function mapFrictionToSeam(friction: FrictionEntry): FrictionMapping[] {
+    return UISG_FRICTION_MAP.filter(m => m.frictionKind === friction.kind);
+}
+
+export function getSeamFriction(seam: string, frictionEntries: FrictionEntry[]): FrictionEntry[] {
+    const mappings = UISG_FRICTION_MAP.filter(m => m.seam === seam);
+    const kinds = new Set(mappings.map(m => m.frictionKind));
+    return frictionEntries.filter(f => kinds.has(f.kind));
+}
+
+export function getTopFrictionKinds(frictionEntries: FrictionEntry[], limit: number = 10): FrictionEntry[] {
+    // Filter out positive kinds (those indicating success)
+    const negativeKinds = frictionEntries.filter(f =>
+        !f.kind.includes('success') &&
+        !f.kind.includes('complete') &&
+        !f.kind.includes('satisfied')
+    );
+    return negativeKinds
+        .sort((a, b) => {
+            const severityWeight = { high: 3, medium: 2, low: 1 };
+            const aWeight = (severityWeight[a.severity] ?? 1) * a.count;
+            const bWeight = (severityWeight[b.severity] ?? 1) * b.count;
+            return bWeight - aWeight;
+        })
+        .slice(0, limit);
+}
+
+export function getFrictionBySeam(frictionEntries: FrictionEntry[]): Map<string, FrictionEntry[]> {
+    const bySeam = new Map<string, FrictionEntry[]>();
+    for (const entry of frictionEntries) {
+        const mappings = mapFrictionToSeam(entry);
+        for (const mapping of mappings) {
+            const existing = bySeam.get(mapping.seam) ?? [];
+            existing.push({ ...entry, seam: mapping.seam, params: mapping.params });
+            bySeam.set(mapping.seam, existing);
+        }
+    }
+    return bySeam;
 }

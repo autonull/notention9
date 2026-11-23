@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import type { UisgEdgeType, UisgGraph, UisgNode, UisgNodeType, UisgReversibility, UisgEffectRisk } from './types.js';
 
-const StatusSchema = z.enum(['existing', 'partial', 'planned', 'idea', 'removed']);
+const StatusSchema = z.enum(['implemented', 'partial', 'planned', 'candidate', 'experimental', 'removed', 'rejected']);
 const ConfidenceSchema = z.enum(['high', 'medium', 'low']);
 const SeamRoleSchema = z.enum(['capture', 'elicit', 'match', 'display', 'layout', 'explain', 'ontology', 'intent']);
 const ReversibilitySchema = z.enum(['reversible', 'compensatable', 'irreversible', 'unknown']);
@@ -107,7 +107,7 @@ function semanticIssues(graph: UisgGraph): GraphIssue[] {
         const entry = byId.get(node.entry);
         if (!entry || entry.type !== 'step') issues.push(issue('error', 'bad-entry', `Flow ${node.id} entry ${node.entry} is not a step`, node.id));
         else if (!steps.has(node.entry)) issues.push(issue('error', 'bad-entry', `Flow ${node.id} entry ${node.entry} is not contained in the flow`, node.id));
-        if (node.status === 'idea' || node.status === 'planned' || node.status === 'removed') continue;
+        if (node.status === 'candidate' || node.status === 'experimental' || node.status === 'planned' || node.status === 'removed') continue;
         const reached = new Set<string>();
         const queue = steps.has(node.entry) ? [node.entry] : [];
         while (queue.length) {

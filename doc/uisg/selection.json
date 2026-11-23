@@ -1,0 +1,16 @@
+{
+  "request": {
+    "feature": "capture",
+    "context": "desktop-novice-dark"
+  },
+  "selected": [
+    "intent.structured-note",
+    "flow.capture-and-edit",
+    "cap.note.capture",
+    "surface.quick-capture",
+    "flow.capture-and-edit-keyboard"
+  ],
+  "explanation": "Selected 5 node(s) for \"capture\" under context \"desktop-novice-dark\"",
+  "conflicts": [],
+  "satisfied": true
+}

@@ -133,7 +133,7 @@ export function syncGraphWithCode(graph: UisgGraph, apply: boolean = false): Syn
 
     // Check for stale surfaces in graph not in scan
     for (const [id, graphSurface] of graphSurfaces) {
-        if (graphSurface.status === 'existing' || graphSurface.status === 'partial') {
+        if (graphSurface.status === 'implemented' || graphSurface.status === 'partial') {
             const exists = scan.surfaces.some(s => s.component === graphSurface.component);
             if (!exists && graphSurface.component) {
                 proposals.push({

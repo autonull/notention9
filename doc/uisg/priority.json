@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "generatedAt": "2026-11-23T20:37:46.088Z",
+  "weightProfile": "default",
+  "items": [
+    {
+      "nodeId": "flow.inline-detail",
+      "type": "flow",
+      "name": "Inline detail entry",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 5,
+      "reasons": [
+        "status:candidate"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "cap.property.inline",
+      "type": "capability",
+      "name": "Edit details inline",
+      "score": 0,
+      "impact": 0,
+      "confidence": 1,
+      "effort": 5,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": [
+        "ui/src/strategies/PropertyFormStrategy.tsx"
+      ]
+    },
+    {
+      "nodeId": "surface.quick-capture",
+      "type": "surface",
+      "name": "Quick capture",
+      "score": 0,
+      "impact": 0,
+      "confidence": 1,
+      "effort": 4,
+      "reasons": [],
+      "evidence": [
+        "ui/src/components/dashboard/QuickCapture.tsx"
+      ]
+    },
+    {
+      "nodeId": "step.inline.write",
+      "type": "step",
+      "name": "Type property syntax inline",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 4,
+      "reasons": [
+        "status:candidate"
+      ],
+      "evidence": []
+    },
+    {
+      "nodeId": "step.pub.published",
+      "type": "step",
+      "name": "Note published",
+      "score": 0,
+      "impact": 0,
+      "confidence": 0.1,
+      "effort": 3,
+      "reasons": [],
+      "evidence": []
+    }
+  ]
+}

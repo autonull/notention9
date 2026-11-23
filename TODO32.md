@@ -30,13 +30,14 @@ The session proved the loop on five flows. TODO32 makes the loop cover the UI/UX
 | Conflict detection | **Done** | `capacity: many`; Conflicts tab; `SemanticState.conflicts`; 3.3 s (`run_1795449006711_yqj7jp2`) | Resolution (W32.6) |
 | Wrappers | **Done** | `runJourneyTest(id)`; stale `test.skip` replaced; `uisg run` builds dist | Drift (W32.2) |
 | Verify pipeline | **Done** | `pnpm verify` L0–L3 green; `uisg:check` in CI; audit specs gated; perf:budget recorded | — |
-| Measurement | **Open** | `loop latency`, `friction:digest`, `probe`, `eval:match`, `ux-evaluate` exist | Not ingested (W32.3) |
-| Records | **Partial** | One `status`; `source`; `confidence` | lifecycle vs implementation, evidence, provenance, decisions (W32.9) |
-| Selection | **Absent** | — | `requires`/`excludes`/cardinality, context profiles (W32.3) |
+| Measurement | **Done** | `uisg metrics` ingests friction, latency, probe, eval, drift → `metrics.json` | Hard constraints/Pareto profiles (W32.3) |
+| Records | **Done** | `lifecycle` × `implementation`; `evidence` + `provenance`; `decisions.jsonl`; `runs.jsonl` | Regression replay (W32.9) |
+| Selection | **Done** | `uisg select` with `requires`/`excludes`/cardinality/lifecycle/platform/modality/theme/context; context profiles in `contexts.json` | — |
 | Predicates/effects | **Done** | `predicate`/`effect` nodes; `guards`/`effects` edges; registry validation; 4 CONSEQUENTIAL effects mapped | — |
 | Coverage | **Partial** | Inventory counts | Contract + generators + denominators (W32.2) |
 | States/surfaces | **Partial** | empty, private, conflict, saved; 6 surfaces | 13 states; network/search/chat/mobile (W32.7) |
 | Cleanup | **Open** | Orphans named | W32.10 |
+| Governance | **Done** | `uisg adopt`, `findings`/`mark-fixed`/`verify`, `canonicalize` round-trip, `diff`, `sync` | Tests for adopt/ledger/transitions (W32.9) |
 
 ### Capability guarantee
 
@@ -161,29 +162,30 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 
 #### A1: W32.3 — Metrics, Ranking, Selection
 **Goal:** the next change is chosen from evidence under explicit constraints.
-- [ ] `uisg metrics`: ingest `friction:digest`, `loop latency`, `probe`, `eval:match`, `ux-evaluate`, failing assertions, drift findings → `doc/uisg/metrics.json`.
-- [ ] `uisg rank`: score = (impact × confidence) / effort; emit `doc/uisg/priority.json` with reasons linked to graph nodes.
-- [ ] `uisg select`: check `requires`/`excludes`, groups, lifecycle, platform, modality, theme, context; deterministic checker; return request + explanation + minimal conflict set; never silently drop.
-- [ ] Context profiles: `doc/uisg/contexts.json` (actor, expertise, device, connectivity, locale, a11y constraints) as experiment contexts.
+- [x] `uisg metrics`: ingest `friction:digest`, `loop latency`, `probe`, `eval:match`, `ux-evaluate`, failing assertions, drift findings → `doc/uisg/metrics.json`.
+- [x] `uisg rank`: score = (impact × confidence) / effort; emit `doc/uisg/priority.json` with reasons linked to graph nodes.
+- [x] `uisg select`: check `requires`/`excludes`, groups, lifecycle, platform, modality, theme, context; deterministic checker; return request + explanation + minimal conflict set; never silently drop.
+- [x] Context profiles: `doc/uisg/contexts.json` (actor, expertise, device, connectivity, locale, a11y constraints) as experiment contexts.
 - [ ] Hard constraints/Pareto in experiment reports; weight profiles explicit with sensitivity.
-- [ ] Map friction kinds → seams/params via `optimize/src/loop/frictionMap.ts`; ignore positive kinds.
-- [ ] Surface top 3 in `uisg inventory` and verify log.
+- [x] Map friction kinds → seams/params via `optimize/src/loop/frictionMap.ts`; ignore positive kinds.
+- [x] Surface top 3 in `uisg inventory` and verify log.
 - [ ] Tests for ranking, selection conflicts, metric ingestion.
 - **Dogfood:** use `uisg scan` output as denominator for coverage metrics; reuse `analyze` findings as drift evidence.
 
 #### A2: W32.9 — Evidence, Records, Governance
 **Goal:** decisions and findings are recorded, not remembered.
-- [ ] Records: `lifecycle` (implemented/partial/planned/candidate/experimental/removed/rejected) × `implementation` (verified/observed/inferred/unknown); `evidence` + `provenance` (manual/reverse-engineered/test-derived/generated, source, commit, date, confidence); migrations keep IDs.
-- [ ] Lifecycle transitions with actor, time, reason, evidence, impact recorded in `decisions.jsonl`.
-- [ ] `uisg run` appends `{flowId, runId, bundle, status, at}` to `doc/uisg/runs.jsonl`.
-- [ ] `uisg adopt <flowId>`: compare bundles, require evidence, update graph (lifecycle, implementation, provenance, bundle), append decision; validate before write.
-- [ ] Findings repo: `findings`/`mark-fixed`, statuses open/fixed/verified with stable IDs.
-- [ ] Canonicalization: stable field/edge/enum ordering, explicit defaults, schema version, unknown-field policy, deterministic hash; round-trip `canonicalize(parse(serialize(canonicalize(G)))) == canonicalize(G)`; `uisg diff` (revision/variant; semantic vs ordering); `uisg sync` proposes only.
+- [x] Records: `lifecycle` (implemented/partial/planned/candidate/experimental/removed/rejected) × `implementation` (verified/observed/inferred/unknown); `evidence` + `provenance` (manual/reverse-engineered/test-derived/generated, source, commit, date, confidence); migrations keep IDs.
+- [x] Lifecycle transitions with actor, time, reason, evidence, impact recorded in `decisions.jsonl`.
+- [x] `uisg run` appends `{flowId, runId, bundle, status, at}` to `doc/uisg/runs.jsonl`.
+- [x] `uisg adopt <flowId>`: compare bundles, require evidence, update graph (lifecycle, implementation, provenance, bundle), append decision; validate before write.
+- [x] Findings repo: `findings`/`mark-fixed`, statuses open/fixed/verified with stable IDs.
+- [x] Canonicalization: stable field/edge/enum ordering, explicit defaults, schema version, unknown-field policy, deterministic hash; round-trip `canonicalize(parse(serialize(canonicalize(G)))) == canonicalize(G)`; `uisg diff` (revision/variant; semantic vs ordering); `uisg sync` proposes only.
 - [ ] Regression: `pnpm optimize replay` on adopted flows; `pnpm optimize ux-evaluate` metrics linked to graph.
 - [ ] Tests: atomic adopt, ledger append, transition legality, finding status, round-trip, diff.
 - **Dogfood:** `validateGraph`/`analyzeGraph` as the source of truth for "evidence"; reuse manifest emission for provenance; `syncGraphWithCode` proposals as finding candidates.
 
 **Phase A Acceptance:** seeded friction + two bundles produce stable ranking; invalid selection rejected with explanation; top experiments in inventory; adopt atomic+validated; findings in repo; round-trip green; no single UX score.
+- Status: Core infrastructure implemented (metrics, rank, select, contexts, adopt, canonicalize, diff, findings, runs). Remaining: hard constraints/Pareto profiles, regression replay, comprehensive tests.
 
 ---
 

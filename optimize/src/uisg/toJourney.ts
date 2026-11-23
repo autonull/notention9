@@ -48,7 +48,7 @@ export function flowToJourney(graph: UisgGraph, flowId: string, options: ToJourn
     const index = indexGraph(graph);
     const flow = index.byId.get(flowId);
     if (flow?.type !== 'flow') throw new Error(`Flow ${flowId} not found`);
-    if (!['existing', 'partial'].includes(flow.status)) throw new Error(`Flow ${flowId} is ${flow.status}; only implemented flows compile`);
+    if (!['implemented', 'partial'].includes(flow.status)) throw new Error(`Flow ${flowId} is ${flow.status}; only implemented flows compile`);
 
     const contained = new Set(edgesFrom(index, flowId, 'contains').map(({ to }) => to));
     const steps: JourneyStep[] = [{ kind: 'seed', notes: options.seed.notes, settings: options.seed.settings }];

@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { resolve, join } from 'node:path';
 import type { EvidenceBundle } from '../evidence.js';
 
 export interface BundleSummary {
@@ -45,4 +47,9 @@ export function compareBundles(a: EvidenceBundle, b: EvidenceBundle): BundleComp
         kindMismatch: stepDeltas.some(({ kindA, kindB }) => kindA !== kindB),
         stepDeltas,
     };
+}
+
+export function loadBundle(path: string): EvidenceBundle {
+    const file = path.endsWith('.json') ? path : join(path, 'bundle.json');
+    return JSON.parse(readFileSync(file, 'utf8')) as EvidenceBundle;
 }

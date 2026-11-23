@@ -14,12 +14,12 @@ import type { UisgGraph } from './types.js';
 const minimal: UisgGraph = {
     version: 1,
     nodes: [
-        { id: 'intent.test', type: 'intent', name: 'Test intent', status: 'existing' },
-        { id: 'cap.test', type: 'capability', name: 'Test capability', status: 'existing', seam: 'elicit', source: ['optimize/src/uisg/types.ts'] },
-        { id: 'flow.test', type: 'flow', name: 'Test flow', status: 'existing', entry: 'step.act', outcome: 'Done.' },
-        { id: 'step.act', type: 'step', name: 'Act', status: 'existing', kind: 'action', action: 'click', target: { testId: 'go' } },
-        { id: 'step.done', type: 'step', name: 'Done', status: 'existing', kind: 'result', statePath: 'note.title', stateEquals: 'x' },
-        { id: 'surface.test', type: 'surface', name: 'Test surface', status: 'existing', component: 'NotesView', route: '#/notes' },
+        { id: 'intent.test', type: 'intent', name: 'Test intent', status: 'implemented' },
+        { id: 'cap.test', type: 'capability', name: 'Test capability', status: 'implemented', seam: 'elicit', source: ['optimize/src/uisg/types.ts'] },
+        { id: 'flow.test', type: 'flow', name: 'Test flow', status: 'implemented', entry: 'step.act', outcome: 'Done.' },
+        { id: 'step.act', type: 'step', name: 'Act', status: 'implemented', kind: 'action', action: 'click', target: { testId: 'go' } },
+        { id: 'step.done', type: 'step', name: 'Done', status: 'implemented', kind: 'result', statePath: 'note.title', stateEquals: 'x' },
+        { id: 'surface.test', type: 'surface', name: 'Test surface', status: 'implemented', component: 'NotesView', route: '#/notes' },
     ],
     edges: [
         { from: 'cap.test', type: 'supports', to: 'intent.test' },
@@ -60,7 +60,7 @@ describe('validateGraph', () => {
 
     it('warns on unreachable steps and dead ends', () => {
         const graph = clone();
-        graph.nodes.push({ id: 'step.orphan', type: 'step', name: 'Orphan', status: 'existing', kind: 'action' });
+        graph.nodes.push({ id: 'step.orphan', type: 'step', name: 'Orphan', status: 'implemented', kind: 'action' });
         graph.edges.push({ from: 'flow.test', type: 'contains', to: 'step.orphan' });
         const { ok, issues } = validateGraph(graph);
         expect(ok).toBe(true);
@@ -81,7 +81,7 @@ describe('queryGraph', () => {
         expect(queryGraph(index, { type: 'step' }).map(({ id }) => id)).toEqual(['step.act', 'step.done']);
         expect(queryGraph(index, { text: 'capability' }).map(({ id }) => id)).toEqual(['cap.test']);
         expect(queryGraph(index, { seam: 'elicit' }).map(({ id }) => id)).toEqual(['cap.test']);
-        expect(queryGraph(index, { status: 'idea' })).toEqual([]);
+        expect(queryGraph(index, { status: 'candidate' })).toEqual([]);
     });
 
     it('walks flow steps in next order', () => {
@@ -105,13 +105,13 @@ describe('flowToJourney', () => {
         (graph.nodes[3] as { target?: unknown }).target = undefined;
         expect(() => flowToJourney(graph, 'flow.test', { seed })).toThrow(/target and action/);
         const idea = clone();
-        idea.nodes[2] = { ...idea.nodes[2], status: 'idea' } as never;
+        idea.nodes[2] = { ...idea.nodes[2], status: 'candidate' } as never;
         expect(() => flowToJourney(idea, 'flow.test', { seed })).toThrow(/only implemented flows/);
     });
 
     it('requires conditions at branches', () => {
         const graph = clone();
-        graph.nodes.push({ id: 'step.alt', type: 'step', name: 'Alt', status: 'existing', kind: 'result' });
+        graph.nodes.push({ id: 'step.alt', type: 'step', name: 'Alt', status: 'implemented', kind: 'result' });
         graph.edges.push({ from: 'flow.test', type: 'contains', to: 'step.alt' });
         graph.edges.push({ from: 'step.act', type: 'next', to: 'step.alt', when: 'cancelled' });
         expect(() => flowToJourney(graph, 'flow.test', { seed })).toThrow(/conditions/);
