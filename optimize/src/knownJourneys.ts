@@ -132,6 +132,22 @@ export const knownJourneys: Record<string, JourneySpec> = {
         ],
         status: 'ready',
     },
+    'ontology-conflict': {
+        id: 'ontology-conflict',
+        version: 2,
+        intent: 'verify ontology conflict detection',
+        journeysTouched: ['ontology', 'conflict-detection'],
+        seed: { notes: [], settings: { theme: 'dark', ontology: [], developerMode: false, aiEnabled: false, aiProvider: 'local', aiModel: '', googleGeminiApiKey: '', nostr: { privkey: null, relays: [] } } },
+        steps: [
+            { kind: 'seed', notes: [], settings: {} },
+            { kind: 'navigate', hash: 'settings/ontology' },
+            { kind: 'act', target: { role: 'tab', name: 'Conflicts' }, action: 'click' },
+            { kind: 'waitForState', path: 'conflicts.0.propertyKey', equals: 'capacity', timeoutMs: 5000 },
+            { kind: 'assertState', path: 'conflicts.length', equals: 1 },
+            { kind: 'capture', label: 'conflict-visible' },
+        ],
+        status: 'ready',
+    },
 };
 
 export function getKnownJourney(id: string): JourneySpec | undefined {

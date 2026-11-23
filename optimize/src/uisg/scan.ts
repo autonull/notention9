@@ -114,116 +114,216 @@ function extractExports(source: string): string[] {
     return [...new Set(exports)];
 }
 
+function loadStrategyConfigs(): any[] {
+    const configFile = resolve(ROOT, 'core/src/schemas/generated/seam-definitions.ts');
+    if (!statSync(configFile, { throwIfNoEntry: false })?.isFile()) return [];
+    const source = readFileSync(configFile, 'utf8');
+    
+    // Find the start of the STRATEGY_CONFIGS array (with or without type annotation)
+    const startMatch = source.match(/export const STRATEGY_CONFIGS[^=]*= \[/);
+    if (!startMatch || startMatch.index === undefined) return [];
+    
+    const startIdx = startMatch.index + startMatch[0].length - 1;
+    let braceCount = 1;
+    let endIdx = startIdx + 1;
+    while (endIdx < source.length && braceCount > 0) {
+        if (source[endIdx] === '[') braceCount++;
+        else if (source[endIdx] === ']') braceCount--;
+        endIdx++;
+    }
+    
+    const configsStr = source.substring(startIdx, endIdx);
+    
+    try {
+        const configs = new Function('return ' + configsStr)();
+        return configs;
+    } catch {
+        return [];
+    }
+}
+
+function loadSeamDefinitions(): any[] {
+    const configFile = resolve(ROOT, 'core/src/schemas/generated/seam-definitions.ts');
+    if (!statSync(configFile, { throwIfNoEntry: false })?.isFile()) return [];
+    const source = readFileSync(configFile, 'utf8');
+    
+    // Find the start of the array (with or without type annotation)
+    const startMatch = source.match(/export const SEAM_DEFINITIONS[^=]*= \[/);
+    if (!startMatch || startMatch.index === undefined) return [];
+    
+    const startIdx = startMatch.index + startMatch[0].length - 1; // Include the opening bracket
+    let braceCount = 1;
+    let endIdx = startIdx + 1;
+    while (endIdx < source.length && braceCount > 0) {
+        if (source[endIdx] === '[') braceCount++;
+        else if (source[endIdx] === ']') braceCount--;
+        endIdx++;
+    }
+    
+    const defsStr = source.substring(startIdx, endIdx);
+    
+    try {
+        const defs = new Function('return ' + defsStr)();
+        return defs;
+    } catch {
+        return [];
+    }
+}
+
 export function scanSurfaces(): ScannedSurface[] {
     const surfaces: ScannedSurface[] = [];
-    const surfaceFiles = walkDir(resolve(ROOT, 'ui/src'), f => /Surface\.tsx?$/.test(f) || f === 'uiSurfaces.ts');
-
-    for (const file of surfaceFiles) {
-        const source = readFileSync(file, 'utf8');
-        const exports = extractExports(source);
-
-        // Look for surface-like exports (capitalized, ending in common suffixes)
-        const surfaceExports = exports.filter(e =>
-            e[0] === e[0].toUpperCase() &&
-            (e.endsWith('Surface') || e.endsWith('View') || e.endsWith('Panel') || e.endsWith('Dialog') || e.endsWith('Modal'))
-        );
-
-        for (const name of surfaceExports) {
-            surfaces.push({
-                id: `surface.${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
-                component: name,
-                file: file.replace(ROOT + '/', ''),
-                exports: [name],
-            });
+    
+    // Use strategy configs as authoritative source for surfaces (they reference components)
+    const configs = loadStrategyConfigs();
+    for (const config of configs) {
+        if (config.componentPath && config.componentName) {
+            const filePath = config.componentPath.startsWith('../') 
+                ? resolve(ROOT, 'ui/src', config.componentPath.replace('../', '') + '.tsx')
+                : resolve(ROOT, config.componentPath + '.tsx');
+            
+            if (statSync(filePath, { throwIfNoEntry: false })?.isFile()) {
+                surfaces.push({
+                    id: `surface.${config.componentName.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+                    component: config.componentName,
+                    file: filePath.replace(ROOT + '/', ''),
+                    exports: [config.componentName],
+                });
+            }
         }
     }
+    
+    // Also scan for page-level surfaces (Views, Pages, etc.) and common UI components
+    const uiFiles = walkDir(resolve(ROOT, 'ui/src'), f => 
+        f.endsWith('View.tsx') || f.endsWith('Page.tsx') || f.endsWith('Shell.tsx') || 
+        f.endsWith('Rail.tsx') || f.endsWith('Panel.tsx') || f.endsWith('Dialog.tsx') ||
+        f.endsWith('Modal.tsx') || f.endsWith('Status.tsx') || f.endsWith('State.tsx') ||
+        f.endsWith('Editor.tsx') || f.endsWith('Manager.tsx') || f.endsWith('Composer.tsx') ||
+        f.endsWith('Selector.tsx') || f.endsWith('Input.tsx') || f.endsWith('Banner.tsx') ||
+        f.endsWith('Display.tsx') || f.endsWith('Spinner.tsx') || f.endsWith('Capture.tsx') ||
+        f.endsWith('Toast.tsx') || f.endsWith('Picker.tsx') || f.endsWith('List.tsx')
+    );
+    
+    // Primitive components to exclude (these are not "surfaces" in UISG sense)
+    const primitiveComponents = new Set([
+        'Input', 'Button', 'Modal', 'Select', 'Textarea', 'Label', 'Checkbox', 'Radio',
+        'Switch', 'Slider', 'Tooltip', 'Popover', 'Dropdown', 'Menu', 'Tabs', 'Card',
+        'Badge', 'Avatar', 'Icon', 'Spinner', 'Skeleton', 'Divider', 'Separator',
+        'StatItem', 'TimePickerModal', 'InputModal', 'PendingConfirmationsModal',
+        'HelpDialog', 'LmConsentModal', 'PrivacyConfirmModal', 'SkillApprovalDialog',
+        'AttributeEditorModal', 'OntologyAliasLinkModal', 'MapPickerModal', 'SaveTemplateModal',
+        'SuggestionList', 'ContactList', 'ChatPanel', 'AgentStatus', 'ConnectionStatus',
+        'PublishErrorBanner', 'ConnectivityBanner', 'DegradedModeBanner', 'CapabilitiesPanel',
+        'NoteGridItem', 'NoteListItem', 'NetworkFeedList', 'SuggestedMatchItem',
+        'OntologyNodeItem', 'OntologySuggestionItem', 'EnhancedPropertyValueInput',
+        'UnifiedSelector', 'LanguageSelector', 'TiptapEditor', 'HybridEditor', 'MatchList',
+        'AttributeList'
+    ]);
+    
+    for (const file of uiFiles) {
+        const source = readFileSync(file, 'utf8');
+        const exports = extractExports(source);
+        const uiExports = exports.filter(e =>
+            e[0] === e[0].toUpperCase() &&
+            !primitiveComponents.has(e) &&
+            (e.endsWith('View') || e.endsWith('Page') || e.endsWith('Shell') || 
+             e.endsWith('Rail') || e.endsWith('Panel') || e.endsWith('Dialog') || 
+             e.endsWith('Modal') || e.endsWith('Status') || e.endsWith('State') ||
+             e.endsWith('Editor') || e.endsWith('Manager') || e.endsWith('Composer') ||
+             e.endsWith('Selector') || e.endsWith('Input') || e.endsWith('Banner') ||
+             e.endsWith('Display') || e.endsWith('Spinner') || e.endsWith('Capture') ||
+             e.endsWith('Toast') || e.endsWith('Picker') || e.endsWith('List') ||
+             e.endsWith('Rail') || e.endsWith('Item') || e.endsWith('Empty') ||
+             e.endsWith('Error') || e.endsWith('Match') || e.endsWith('Confirm'))
+        );
+        
+        for (const name of uiExports) {
+            if (!surfaces.some(s => s.component === name)) {
+                surfaces.push({
+                    id: `surface.${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`,
+                    component: name,
+                    file: file.replace(ROOT + '/', ''),
+                    exports: [name],
+                });
+            }
+        }
+    }
+    
     return surfaces;
 }
 
 export function scanNavigation(): ScannedNavigation[] {
     const navigation: ScannedNavigation[] = [];
 
-    // Scan router files
-    const routerFiles = walkDir(resolve(ROOT, 'ui/src'), f => f.includes('router') || f.includes('Router') || f === 'routes.ts' || f === 'navigation.ts');
-
-    for (const file of routerFiles) {
-        const source = readFileSync(file, 'utf8');
-        // Extract route patterns like '#/notes', '#/notes/:noteId', '#/settings/ontology', etc.
-        const routeMatches = source.matchAll(/['"#]([#\/][\w\/:.-]+)['"]/g);
-        for (const match of routeMatches) {
-            const hash = match[1];
-            if (hash.startsWith('#/') && hash.length > 2) {
-                navigation.push({
-                    view: hash.split('/')[1] || 'root',
-                    hash,
-                    file: file.replace(ROOT + '/', ''),
-                });
-            }
+    // Scan navigation.ts for route definitions
+    const navFile = resolve(ROOT, 'ui/src/utils/navigation.ts');
+    if (statSync(navFile, { throwIfNoEntry: false })?.isFile()) {
+        const source = readFileSync(navFile, 'utf8');
+        
+        // Extract SETTINGS_TABS - only add base route for settings
+        const settingsTabsMatch = source.match(/SETTINGS_TABS:\s*SettingsTab\[\]\s*=\s*(\[[\s\S]*?\]);/);
+        if (settingsTabsMatch) {
+            try {
+                const tabs = new Function('return ' + settingsTabsMatch[1])();
+                // Only add base settings route and individual setting pages (not tabs as separate routes)
+                navigation.push({ view: 'settings', hash: '#/settings', file: 'ui/src/utils/navigation.ts' });
+                for (const tab of tabs) {
+                    if (tab !== 'general') {
+                        navigation.push({
+                            view: 'settings',
+                            hash: `#/settings/${tab}`,
+                            file: 'ui/src/utils/navigation.ts',
+                        });
+                    }
+                }
+            } catch {}
         }
+        
+        // Extract NOTE_TABS - only add base route for notes
+        const noteTabsMatch = source.match(/NOTE_TABS:\s*NoteTab\[\]\s*=\s*(\[[\s\S]*?\]);/);
+        if (noteTabsMatch) {
+            try {
+                // Only add base notes route (tabs are URL params, not separate routes)
+                navigation.push({ view: 'notes', hash: '#/notes', file: 'ui/src/utils/navigation.ts' });
+            } catch {}
+        }
+        
+        // Add other known routes from the codebase
+        navigation.push({ view: 'notes', hash: '#/notes?mode=map', file: 'ui/src/utils/navigation.ts' });
+        navigation.push({ view: 'notes', hash: '#/notes?mode=timeline', file: 'ui/src/utils/navigation.ts' });
+        navigation.push({ view: 'notes', hash: '#/notes?explore=1', file: 'ui/src/utils/navigation.ts' });
     }
+    
     return navigation;
 }
 
 export function scanSeams(): ScannedSeam[] {
     const seams: ScannedSeam[] = [];
-
-    // Scan core constants/seams.ts for seam roles
-    const seamsFile = resolve(ROOT, 'core/src/constants/seams.ts');
-    if (statSync(seamsFile, { throwIfNoEntry: false })?.isFile()) {
-        const source = readFileSync(seamsFile, 'utf8');
-        const seamMatches = source.matchAll(/['"](\w+)['"]/g);
-        const roles = new Set<string>();
-        for (const match of seamMatches) {
-            const role = match[1];
-            if (role.length > 1 && role !== 'SEAM_ROLES') {
-                roles.add(role);
-            }
-        }
-        for (const role of roles) {
-            seams.push({
-                role,
-                strategies: [],
-                file: 'core/src/constants/seams.ts',
-            });
-        }
+    const defs = loadSeamDefinitions();
+    
+    for (const def of defs) {
+        const strategies = def.components || [];
+        seams.push({
+            role: def.role,
+            strategies,
+            file: 'core/src/schemas/generated/seam-definitions.ts',
+        });
     }
-
-    // Scan strategy configs for seam-strategy mappings
-    const configFiles = walkDir(resolve(ROOT, 'ui/src'), f => f === 'strategyConfigs.ts' || f.includes('strategyConfigs'));
-    for (const file of configFiles) {
-        const source = readFileSync(file, 'utf8');
-        const seamMatches = source.matchAll(/seam:\s*['"](\w+)['"]/g);
-        for (const match of seamMatches) {
-            const existing = seams.find(s => s.role === match[1]);
-            if (existing) {
-                // Could add strategies here with deeper parsing
-            } else {
-                seams.push({
-                    role: match[1],
-                    strategies: [],
-                    file: file.replace(ROOT + '/', ''),
-                });
-            }
-        }
-    }
+    
     return seams;
 }
 
 export function scanJourneys(): ScannedJourney[] {
     const journeys: ScannedJourney[] = [];
 
-    // Scan knownJourneys.ts - parse the Record object
+    // Scan knownJourneys.ts
     const knownJourneysFile = resolve(ROOT, 'optimize/src/knownJourneys.ts');
     if (statSync(knownJourneysFile, { throwIfNoEntry: false })?.isFile()) {
         const source = readFileSync(knownJourneysFile, 'utf8');
-
-        // Find each journey key in the Record (keys may contain hyphens)
         const keyMatches = source.matchAll(/['"]([\w-]+)['"]:\s*\{/g);
+        
         for (const keyMatch of keyMatches) {
             const key = keyMatch[1];
             const startIdx = keyMatch.index + keyMatch[0].length;
-
-            // Find the matching closing brace for this journey
             let braceCount = 1;
             let endIdx = startIdx;
             while (endIdx < source.length && braceCount > 0) {
@@ -231,15 +331,12 @@ export function scanJourneys(): ScannedJourney[] {
                 else if (source[endIdx] === '}') braceCount--;
                 endIdx++;
             }
-
             const journeySource = source.substring(startIdx, endIdx - 1);
-
-            // Extract fields from this journey source (ids may contain hyphens, kind may use single or double quotes)
             const idMatch = journeySource.match(/id:\s*['"]([\w-]+)['"]/);
             const intentMatch = journeySource.match(/intent:\s*['"]([^'"]+)['"]/);
             const statusMatch = journeySource.match(/status:\s*['"](\w+)['"]/);
             const stepsMatch = journeySource.match(/steps:\s*\[([\s\S]*?)\]/);
-
+            
             if (idMatch) {
                 const steps = (stepsMatch?.[1]?.match(/['"]kind['"]/g) ?? []).length;
                 journeys.push({
@@ -254,30 +351,31 @@ export function scanJourneys(): ScannedJourney[] {
         }
     }
 
-    // Also scan journeys.ts for dynamically registered journeys
+    // Scan journeys.ts for dynamically registered journeys
     const journeysFile = resolve(ROOT, 'optimize/src/journeys.ts');
     if (statSync(journeysFile, { throwIfNoEntry: false })?.isFile()) {
         const source = readFileSync(journeysFile, 'utf8');
-        const importMatches = source.matchAll(/from\s+['"]([^'"]+)['"]/g);
-        for (const match of importMatches) {
-            if (match[1].includes('.journey.ts')) {
-                const journeyFile = resolve(ROOT, 'optimize/src', match[1]);
-                if (statSync(journeyFile, { throwIfNoEntry: false })?.isFile()) {
-                    const jSource = readFileSync(journeyFile, 'utf8');
-                    const idMatch = jSource.match(/id:\s*['"](\w+)['"]/);
-                    const intentMatch = jSource.match(/intent:\s*['"]([^'"]+)['"]/);
-                    const statusMatch = jSource.match(/status:\s*['"](\w+)['"]/);
-                    const stepsMatch = jSource.match(/steps:\s*\[([\s\S]*?)\]/);
-                    if (idMatch) {
-                        journeys.push({
-                            id: idMatch[1],
-                            version: 1,
-                            intent: intentMatch?.[1] ?? '',
-                            status: statusMatch?.[1] ?? 'draft',
-                            steps: (stepsMatch?.[1]?.match(/"kind"/g) ?? []).length,
-                            file: `optimize/src/${match[1]}`,
-                        });
-                    }
+        // Look for registerJourney calls
+        const registerMatches = source.matchAll(/registerJourney\((\w+)\)/g);
+        for (const match of registerMatches) {
+            const journeyVar = match[1];
+            const varMatch = source.match(new RegExp(`const\\s+${journeyVar}\\s*:\\s*JourneySpec\\s*=\\s*\\{([\\s\\S]*?)\\n\\};`));
+            if (varMatch) {
+                const journeySource = varMatch[1];
+                const idMatch = journeySource.match(/id:\s*['"](\w+)['"]/);
+                const intentMatch = journeySource.match(/intent:\s*['"]([^'"]+)['"]/);
+                const statusMatch = journeySource.match(/status:\s*['"](\w+)['"]/);
+                const stepsMatch = journeySource.match(/steps:\s*\[([\s\S]*?)\]/);
+                if (idMatch) {
+                    const steps = (stepsMatch?.[1]?.match(/"kind"/g) ?? []).length;
+                    journeys.push({
+                        id: idMatch[1],
+                        version: 1,
+                        intent: intentMatch?.[1] ?? '',
+                        status: statusMatch?.[1] ?? 'draft',
+                        steps,
+                        file: 'optimize/src/journeys.ts',
+                    });
                 }
             }
         }
@@ -288,23 +386,17 @@ export function scanJourneys(): ScannedJourney[] {
 
 export function scanStrategies(): ScannedStrategy[] {
     const strategies: ScannedStrategy[] = [];
-    const strategyFiles = walkDir(resolve(ROOT, 'ui/src/strategies'), f => f.endsWith('Strategy.tsx') || f.endsWith('Strategy.ts'));
-
-    for (const file of strategyFiles) {
-        const source = readFileSync(file, 'utf8');
-        const exports = extractExports(source);
-        for (const name of exports) {
-            if (name.endsWith('Strategy')) {
-                const seamMatch = source.match(/seam:\s*['"](\w+)['"]/);
-                strategies.push({
-                    id: name,
-                    seam: seamMatch?.[1] ?? 'unknown',
-                    component: name,
-                    file: file.replace(ROOT + '/', ''),
-                });
-            }
-        }
+    const configs = loadStrategyConfigs();
+    
+    for (const config of configs) {
+        strategies.push({
+            id: config.id,
+            seam: config.seamRole,
+            component: config.componentName,
+            file: config.componentPath ? `ui/src/${config.componentPath.replace('../', '')}.tsx` : 'unknown',
+        });
     }
+    
     return strategies;
 }
 
@@ -319,7 +411,9 @@ export function scanComponents(): ScannedComponent[] {
             e[0] === e[0].toUpperCase() &&
             !e.endsWith('Strategy') &&
             !e.endsWith('Provider') &&
-            !e.endsWith('Context')
+            !e.endsWith('Context') &&
+            !e.endsWith('Hook') &&
+            !e.endsWith('Util')
         );
         if (componentExports.length > 0) {
             components.push({

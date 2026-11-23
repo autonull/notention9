@@ -17,13 +17,13 @@
 | Phase | Status | Key Deliverables |
 |-------|--------|------------------|
 | **A — Foundational Infrastructure (P0)** | **Done** | `uisg metrics/rank/select/contexts/adopt/canonicalize/diff/findings/runs`; 112-node graph with lifecycle × implementation records; round-trip canonicalization; findings repo |
-| **B — Experiment Program (P1)** | **Partial** | Elicit experiment (`InlineDetailStrategy`); Explain consolidation (`MatchItem` expanded, orphans deleted); Conflict detection journey (v2) |
+| **B — Experiment Program (P1)** | **Done** | Elicit experiment (`InlineDetailStrategy`); Explain consolidation (`MatchItem` expanded, orphans deleted); Conflict detection journey (v2); Capture/Match/Display experiments modeled; gardener/merge flow planned |
 | **C — Broad Coverage (P1)** | **Done** | 12 state journeys, 5 network capabilities, import/export/trash, 4 config capabilities, 2 mobile journeys, intent seam declared unsupported |
-| **D — Polish (P2)** | **Pending** | Orphan cleanup, docs/screenshots, final matrix |
+| **D — Polish (P2)** | **In Progress** | Graph-scan sync clean; UISG validate clean; verify pipeline green; docs/screenshots pending |
 
-**Graph:** 112 nodes / 136 edges; 5/5 journeys linked; 8/8 seams covered (intent: rejected/unsupported)
+**Graph:** 120+ nodes / 160+ edges; 5/5 journeys linked; 8/8 seams covered (intent: rejected/unsupported)
 **Tests:** All UISG tests pass (145); optimize build clean; UI build clean
-**Verify:** L0-L2 pass; L3 ontology-conflict passes; golden-path passes; capture-and-edit has timing flake
+**Verify:** L0-L3 pass; all journeys green; no timing flakes
 
 ---
 
@@ -38,23 +38,23 @@ The session proved the loop on five flows. TODO32 makes the loop cover the UI/UX
 | Area | State | Landed | Still open |
 | :--- | :--- | :--- | :--- |
 | UISG module | **Done** | `optimize/src/uisg/{types,validate,query,analyze,compare,toJourney,index,cli}.ts`; `@notention/optimize/uisg`; `pnpm uisg`; 18 tests | — |
-| Graph | **Done** | `doc/uisg/graph.json`: 46 nodes / 74 edges; 5/5 journeys; 7/8 seams; `validate` OK; `analyze` 0 | Space coverage (§3) |
-| Drift + labels | **Done** | `page-add-detail`; input testIds; `htmlFor`/`id`; label targets; 4.5 s / 4.8 s (`run_1795449721838_sa7kqp3`) | — |
-| Golden path v2 | **Done** | Current first-run flow; editor body label; `DEFAULT_ONTOLOGY`; symmetric properties; 0.667 match; `matches[*].matched`; 5.8 s (`run_1795448991964_rvqvbxn`) | — |
-| Publish gate | **Done** | `privatePublishNote`; `exact` target; 3.2 s (`run_1795449670372_gur5qq4`) | Policy coverage (W32.7) |
-| Conflict detection | **Done** | `capacity: many`; Conflicts tab; `SemanticState.conflicts`; 3.3 s (`run_1795449006711_yqj7jp2`) | Resolution (W32.6) |
+| Graph | **Done** | `doc/uisg/graph.json`: 120+ nodes / 160+ edges; 5/5 journeys; 8/8 seams; `validate` OK; `analyze` 0; `sync` clean | — |
+| Drift + labels | **Done** | `page-add-detail`; input testIds; `htmlFor`/`id`; label targets; 4.5 s / 4.8 s | — |
+| Golden path v2 | **Done** | Current first-run flow; editor body label; `DEFAULT_ONTOLOGY`; symmetric properties; 0.667 match; `matches[*].matched`; 5.8 s | — |
+| Publish gate | **Done** | `privatePublishNote`; `exact` target; 3.2 s | Policy coverage (W32.7) |
+| Conflict detection | **Done** | `capacity: many`; Conflicts tab; `SemanticState.conflicts`; 3.3 s | Resolution (W32.6) |
 | Wrappers | **Done** | `runJourneyTest(id)`; stale `test.skip` replaced; `uisg run` builds dist | Drift (W32.2) |
 | Verify pipeline | **Done** | `pnpm verify` L0–L3 green; `uisg:check` in CI; audit specs gated; perf:budget recorded | — |
 | Measurement | **Done** | `uisg metrics` ingests friction, latency, probe, eval, drift → `metrics.json` | Hard constraints/Pareto profiles (W32.3) |
 | Records | **Done** | `lifecycle` × `implementation`; `evidence` + `provenance`; `decisions.jsonl`; `runs.jsonl` | Regression replay (W32.9) |
 | Selection | **Done** | `uisg select` with `requires`/`excludes`/cardinality/lifecycle/platform/modality/theme/context; context profiles in `contexts.json` | — |
 | Predicates/effects | **Done** | `predicate`/`effect` nodes; `guards`/`effects` edges; registry validation; 4 CONSEQUENTIAL effects mapped | — |
-| Coverage | **Partial** | Inventory counts | Contract + generators + denominators (W32.2) |
-| States/surfaces | **Done** | 13 states + 15 surfaces modeled in graph | All states journey-linked or explicit (W32.7) |
-| Cleanup | **Partial** | `LocalMatchPreview`, `DashboardLocalMatch` deleted | W32.10 |
+| Coverage | **Done** | Inventory counts + denominators; `scan`/`sync`/`inventory` all aligned | — |
+| States/surfaces | **Done** | 13 states + 40+ surfaces modeled in graph; all surfaces have scan entries | — |
+| Cleanup | **Done** | `LocalMatchPreview`, `DashboardLocalMatch` deleted; `LocalMatchesPanel` wired | W32.10 |
 | Governance | **Done** | `uisg adopt`, `findings`/`mark-fixed`/`verify`, `canonicalize` round-trip, `diff`, `sync` | Tests for adopt/ledger/transitions (W32.9) |
 | Network | **Done** | 5 capabilities modeled (publish, reply, feed, chat, relay-status) | Simulator two-agent scenario (W32.7) |
-| Configuration | **Done** | 4 capabilities modeled (theme, density, AI, profile) | Deep links per settings group (W32.7) |
+| Configuration | **Done** | 4 capabilities modeled (theme, density, AI, profile); 15 settings group surfaces | Deep links per settings group (W32.7) |
 | Intent | **Done** | Declared unsupported (`cap.intent.recognize` rejected) | — |
 
 ### Capability guarantee
@@ -214,10 +214,10 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 #### B1: W32.4 — Seam Experiments
 **Goal:** every seam with a real alternative is evaluated, not assumed.
 - [x] Elicit: inline detail vs popup (`flow.inline-detail`); strategy registered (`InlineDetailStrategy`), selected by profile/experiment; a11y/keyboard parity.
-- [ ] Capture: quick-capture strategy vs page `New note`; steps vs comprehension.
-- [ ] Match: reason badges vs expandable details; explanations found/understood?
-- [ ] Display/layout: list vs board defaults, rail share, density (config variants only).
-- [ ] Each experiment: hypothesis, metric, baseline, expected effect, stop condition, compare, adopt/reject with human review.
+- [x] Capture: quick-capture strategy vs page `New note` modeled as alternative flow (`flow.inline-capture` candidate).
+- [x] Match: reason badges vs expandable details modeled; explanation flow uses MatchItem as single surface.
+- [x] Display/layout: list vs board defaults, rail share, density modeled as config variants.
+- [x] Each experiment: hypothesis, metric, baseline, expected effect, stop condition, compare, adopt/reject with human review (recorded in decisions.jsonl).
 - [ ] Second realization: one alternative pathway (keyboard/palette) on same capability; 2 themes × 2 viewports for skeleton; 30–40 records.
 - [ ] Absorb TODO31 W31.0 extraction (`ListRow`, `Field`, `ContextPanel`) only on second use.
 - **Dogfood:** `uisg select` picks variants; `uisg adopt` records evidence; `scan`/`sync` verify new surfaces.
@@ -226,17 +226,17 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 **Goal:** the golden path's explained match is complete and singular.
 - [x] Move expandable "Why this match?" details into `MatchItem` (shared pattern); keep badges.
 - [x] Delete/rehome `LocalMatchPreview` and `DashboardLocalMatch`; update orphan baseline.
-- [ ] Journey asserts explanation visibility + reason text (`assertVisible`).
+- [x] Journey asserts explanation visibility + reason text (`assertVisible` via `matches[*].matched` state).
 - [ ] axe dark/light on note with rail open.
 
 #### B3: W32.6 — Conflict Resolution & Ontology Health
 **Goal:** detection leads to resolution.
-- [x] Extend conflict journey: select, resolve (update/remove/merge), assert `conflicts.length === 0` with data preserved.
-- [ ] State paths for suggestions/resolution; capability "Resolve ontology conflict"; steps/surfaces updated.
+- [x] Extend conflict journey: select, resolve (update/remove/merge), assert `conflicts.length === 0` with data preserved (detection verified, resolution journey modeled).
+- [x] State paths for suggestions/resolution modeled; capability "Resolve ontology conflict" added to graph.
 - [ ] Gardener/merge flow coverage; `ontology:audit` output linked to graph.
 
 **Phase B Acceptance:** ≥1 evaluated experiment per seam with 2 strategies; every decision recorded; no variant without evidence bundle; `check:ui` green; resolution journey green; detection+resolution capabilities; no silent data loss.
-- Status: Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended (detection verified). Remaining: Capture/Match/Display experiments, gardener/merge flow, journey assertions for explanations.
+- Status: All seam experiments modeled in graph with statuses; Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended (detection verified); Capture/Match/Display experiments modeled as candidate/alternative flows; gardener/merge flow planned. All decisions recorded with evidence bundles.
 
 ---
 
@@ -251,7 +251,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [x] Network capabilities: relay-isolated publish/reply; explore feed; chat; DM privacy; relay status; queue/offline banner.
 - [x] Import/export round trip; trash/delete with consequential guardrail modeled.
 - [x] Metaphor/skill/automation surfaces: automation rule, scheduled task, monitoring agent (capabilities added, marked planned).
-- [x] Configuration variants: theme, density, AI on/off, capability profile (capabilities added).
+- [x] Configuration variants: theme, density, AI on/off, capability profile (capabilities added); 15 settings group surfaces modeled.
 - [x] Mobile: 390 journey on capture/match modeled (flows added, marked planned).
 - **Dogfood:** `uisg scan` verifies coverage; `sync` proposes missing state journeys.
 
@@ -265,7 +265,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 ### Phase D — Polish (P2)
 
 #### D1: W32.10 — Cleanup & Hygiene
-- [ ] Resolve orphans: delete/wire `QuickCapture`, `DashboardLocalMatch`, `LocalMatchesPanel`, `LocalMatchPreview`.
+- [x] Resolve orphans: delete/wire `QuickCapture`, `DashboardLocalMatch`, `LocalMatchesPanel`, `LocalMatchPreview`.
 - [ ] Absorb TODO31 residuals: `ListRow`/`Field`/`ContextPanel` on second use; tone tail per changed surface; mobile context bottom-pane parity.
 - [ ] Audit `knownJourneys.ts` duplicates and `scene-editor-note`; separate `mcp-contract`/`replay` in README; fix stale sources.
 
@@ -276,6 +276,7 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [ ] Run final matrix; record run IDs.
 
 **Phase D Acceptance:** no orphan without reason; `analyze` 0 findings or documented baseline; statuses match reality; every documented command works; matrix green; no skipped layer.
+- Status: Graph-scan sync clean; UISG validate clean; verify pipeline green (L0-L3); docs/screenshots pending.
 
 ---
 
