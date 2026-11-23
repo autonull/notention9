@@ -30,7 +30,7 @@ taxonomy is adopted only where notention has a real system to bind it to.
 | Publish gate | **Done** | `privatePublishNote`; `exact` target; 3.2 s (`run_1795449670372_gur5qq4`) | Policy coverage (W32.7) |
 | Conflict detection | **Done** | `capacity: many`; Conflicts tab; `SemanticState.conflicts`; 3.3 s (`run_1795449006711_yqj7jp2`) | Resolution (W32.6) |
 | Wrappers | **Done** | `runJourneyTest(id)`; stale `test.skip` replaced; `uisg run` builds dist | Drift (W32.2) |
-| Verify pipeline | **Open** | `pnpm check:ui` 19/19 | L2/L3 skipped; stale L3 paths (W32.0) |
+| Verify pipeline | **Done** | `pnpm verify` L0–L3 green; `uisg:check` in CI; audit specs gated; perf:budget recorded | — |
 | Measurement | **Open** | `loop latency`, `friction:digest`, `probe`, `eval:match`, `ux-evaluate` exist | Not ingested (W32.3) |
 | Records | **Partial** | One `status`; `source`; `confidence` | lifecycle vs implementation, evidence, provenance, decisions (W32.9) |
 | Selection | **Absent** | — | `requires`/`excludes`/cardinality, context profiles (W32.3) |
