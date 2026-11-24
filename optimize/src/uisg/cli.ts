@@ -25,7 +25,7 @@ import { rankItems, loadPriority } from './rank.js';
 import { selectFeature, loadSelection } from './select.js';
 import { ensureContextsFile, listProfiles, loadContexts } from './contexts.js';
 import { adoptFlow } from './adopt.js';
-import { canonicalize, graphHash, roundTripTest } from './canonicalize.js';
+import { canonicalize, graphHash, migrateGraph, roundTripTest } from './canonicalize.js';
 import { diffGraphsCommand, printDiff } from './diff.js';
 import { appendRunRecord, loadRuns, loadFindings, markFindingFixed, verifyFinding } from './records.js';
 import { loadRegressionCatalogue, runSeededRegressions } from './regressions.js';
@@ -38,7 +38,7 @@ import { flowToReducer, emitReducer } from './flowToReducer.js';
 import { emitSeamProps, writeSeamProps } from './seamProps.js';
 import { emitComponentMap, writeComponentMap } from './componentMap.js';
 import { generateSurface, generateAllSurfaces, checkParity, checkAllParity } from './codegen.js';
-import type { UisgGraph, UisgSurface } from './types.js';
+import type { SurfaceVariantStatus, UisgGraph, UisgSurface } from './types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const USAGE = `Usage: pnpm uisg <command> [args]
@@ -65,6 +65,7 @@ Commands:
   select <feature> [--context <id>] [--modality <m>] [--theme <t>] [--viewport <v>] [--profile <p>]
                                             Check constraints, return selection + conflicts -> doc/uisg/selection.json
   contexts [--list]                         Manage context profiles (doc/uisg/contexts.json)
+  variants <list|create|promote|archive|diff|export>  Variant registry CRUD (doc/uisg/variants.json)
   adopt <flowId> --baseline <runId> --variant <runId> --hypothesis <text> --metric <name> --actor <name>
                                             Compare bundles, update lifecycle, record decision
   canonicalize [--graph <file>] [--check-roundtrip]  Canonicalize graph; verify round-trip
@@ -84,9 +85,11 @@ function parseArgs(argv: string[]) {
     const positionals: string[] = [];
     for (let i = 0; i < argv.length; i++) {
         if (!argv[i].startsWith('--')) { positionals.push(argv[i]); continue; }
-        const key = argv[i].slice(2);
+        const raw = argv[i].slice(2);
+        const equals = raw.indexOf('=');
+        if (equals >= 0) { flags.set(raw.slice(0, equals), raw.slice(equals + 1)); continue; }
         const next = argv[i + 1];
-        flags.set(key, next && !next.startsWith('--') ? argv[++i] : 'true');
+        flags.set(raw, next && !next.startsWith('--') ? argv[++i] : 'true');
     }
     return { flags, positionals };
 }
@@ -98,7 +101,7 @@ export function loadGraph(flags: Map<string, string>): UisgGraph {
         for (const { severity, code, message } of result.issues) console.error(`${severity.toUpperCase()} ${code}: ${message}`);
         throw new Error(`Graph ${file} failed schema validation`);
     }
-    return result.graph;
+    return migrateGraph(result.graph).graph;
 }
 
 export function uiTestIds(): Set<string> {
@@ -704,6 +707,58 @@ async function main(): Promise<number> {
             console.log(`  Comparison: delta=${result.comparison.durationDeltaMs}ms kindMismatch=${result.comparison.kindMismatch}`);
             if (result.error) console.log(`  Error: ${result.error}`);
             return result.success && result.decision === 'adopt' ? 0 : 1;
+        }
+        case 'variants': {
+            const [action, surfaceId, variantId, otherId] = positionals;
+            const { listVariants, createVariant, promoteVariant, archiveVariant, diffVariants, exportVariants } =
+                await import('./variants.js');
+            switch (action) {
+                case 'list': {
+                    const variants = listVariants({ surface: flags.get('surface'), status: flags.get('status') as SurfaceVariantStatus | undefined });
+                    if (!variants.length) { console.log('No variants'); return 0; }
+                    for (const variant of variants) {
+                        console.log(`${variant.surface}/${variant.id} [${variant.status}] ${variant.description}`);
+                    }
+                    return 0;
+                }
+                case 'create': {
+                    if (!surfaceId || !variantId) { console.error('variants create requires <surfaceId> <variantId>'); return 1; }
+                    const patch = flags.get('patch') ? JSON.parse(flags.get('patch')!) : {};
+                    const record = createVariant(surfaceId, variantId, patch, flags.get('from'));
+                    console.log(`Created ${record.surface}/${record.id}`);
+                    return 0;
+                }
+                case 'promote': {
+                    if (!surfaceId || !variantId) { console.error('variants promote requires <surfaceId> <variantId>'); return 1; }
+                    const metrics = flags.get('metrics') ? JSON.parse(flags.get('metrics')!) : undefined;
+                    const record = promoteVariant(surfaceId, variantId, metrics);
+                    console.log(`Promoted ${record.surface}/${record.id}`);
+                    return 0;
+                }
+                case 'archive': {
+                    if (!surfaceId || !variantId) { console.error('variants archive requires <surfaceId> <variantId>'); return 1; }
+                    const record = archiveVariant(surfaceId, variantId);
+                    console.log(`Archived ${record.surface}/${record.id}`);
+                    return 0;
+                }
+                case 'diff': {
+                    if (!surfaceId || !variantId || !otherId) { console.error('variants diff requires <surfaceId> <variantA> <variantB>'); return 1; }
+                    const diff = diffVariants(surfaceId, variantId, otherId);
+                    console.log(`Diff ${diff.surface}: ${diff.from} -> ${diff.to}`);
+                    for (const change of diff.changes) {
+                        console.log(`  ${change.field}: ${JSON.stringify(change.before)} -> ${JSON.stringify(change.after)}`);
+                    }
+                    return diff.changes.length ? 1 : 0;
+                }
+                case 'export': {
+                    if (!surfaceId) { console.error('variants export requires <surfaceId>'); return 1; }
+                    console.log(exportVariants(surfaceId, (flags.get('format') as 'md' | 'json') ?? 'md'));
+                    return 0;
+                }
+                default:
+                    console.error(`Unknown variants action: ${action ?? '(none)'}`);
+                    return 1;
+            }
         }
         case 'canonicalize': {
             const graph = loadGraph(flags);

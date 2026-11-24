@@ -56,6 +56,25 @@ export interface UisgStep extends UisgBaseNode {
     guard?: string;
 }
 
+export type SurfaceVariantStatus = 'experimental' | 'candidate' | 'promoted' | 'archived';
+
+export interface VariantMetrics {
+    bundleKb?: number;
+    f1?: number;
+    taskTimeMs?: number;
+    visualPass?: boolean;
+}
+
+export interface SurfaceVariant {
+    template?: string;
+    propsSchema?: Record<string, ParamDef>;
+    strategyOverrides?: Partial<Record<SeamRole, string>>;
+    description: string;
+    status: SurfaceVariantStatus;
+    promotedAt?: string;
+    metrics?: VariantMetrics;
+}
+
 export interface UisgSurface extends UisgBaseNode {
     type: 'surface';
     component?: string;
@@ -65,6 +84,8 @@ export interface UisgSurface extends UisgBaseNode {
     template?: string;
     propsSchema?: Record<string, ParamDef>;
     generatedFrom?: string;
+    variants?: Record<string, SurfaceVariant>;
+    defaultVariant?: string;
 }
 
 export interface UisgPredicate extends UisgBaseNode {

@@ -1,5 +1,7 @@
 import { createHash } from 'node:crypto';
-import type { UisgGraph, UisgNode, UisgEdge } from './types.js';
+import type { UisgGraph, UisgNode, UisgEdge, SurfaceVariant } from './types.js';
+
+export const CURRENT_SCHEMA_VERSION = 3;
 
 export interface CanonicalizeOptions {
     schemaVersion: number;
@@ -7,9 +9,30 @@ export interface CanonicalizeOptions {
 }
 
 export const DEFAULT_CANONICALIZE_OPTIONS: CanonicalizeOptions = {
-    schemaVersion: 1,
+    schemaVersion: CURRENT_SCHEMA_VERSION,
     unknownFieldPolicy: 'preserve',
 };
+
+export interface GraphMigration {
+    graph: UisgGraph;
+    migrated: boolean;
+    from: number;
+}
+
+export function migrateGraph(graph: UisgGraph): GraphMigration {
+    if (graph.version >= CURRENT_SCHEMA_VERSION) return { graph, migrated: false, from: graph.version };
+    return {
+        graph: {
+            ...graph,
+            version: CURRENT_SCHEMA_VERSION,
+            nodes: graph.nodes.map(node => node.type === 'surface'
+                ? { ...node, variants: node.variants ?? {} }
+                : node),
+        },
+        migrated: true,
+        from: graph.version,
+    };
+}
 
 function stableSort<T>(array: T[], keyFn: (item: T) => string): T[] {
     return [...array].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
@@ -21,11 +44,33 @@ const NODE_FIELDS: Record<UisgNode['type'], readonly string[]> = {
     capability: ['seam', 'strategy', 'skill', 'risk', 'effect'],
     flow: ['entry', 'outcome', 'journey'],
     step: ['kind', 'target', 'action', 'value', 'statePath', 'stateEquals', 'guard'],
-    surface: ['component', 'route', 'configKey', 'seam', 'template', 'propsSchema', 'generatedFrom'],
+    surface: ['component', 'route', 'configKey', 'seam', 'template', 'propsSchema', 'generatedFrom', 'variants', 'defaultVariant'],
     predicate: ['expression', 'registryId'],
     effect: ['reversibility', 'risk', 'confirmationRequired', 'failureModes', 'registryId'],
 };
 const EDGE_FIELDS = ['from', 'type', 'to', 'when', 'notes'];
+const VARIANT_FIELDS = ['template', 'propsSchema', 'strategyOverrides', 'description', 'status', 'promotedAt', 'metrics'];
+
+function canonicalizeVariant(variant: SurfaceVariant, label: string, options: CanonicalizeOptions): SurfaceVariant {
+    return {
+        ...unknownFields(variant, VARIANT_FIELDS, label, options),
+        template: variant.template ?? undefined,
+        propsSchema: variant.propsSchema ?? undefined,
+        strategyOverrides: variant.strategyOverrides
+            ? Object.fromEntries(Object.entries(variant.strategyOverrides).sort(([a], [b]) => a.localeCompare(b)))
+            : undefined,
+        description: variant.description,
+        status: variant.status,
+        promotedAt: variant.promotedAt ?? undefined,
+        metrics: variant.metrics ?? undefined,
+    };
+}
+
+function canonicalizeVariants(variants: Record<string, SurfaceVariant>, label: string, options: CanonicalizeOptions): Record<string, SurfaceVariant> {
+    return Object.fromEntries(Object.entries(variants)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .map(([id, variant]) => [id, canonicalizeVariant(variant, `${label}/${id}`, options)]));
+}
 
 function unknownFields(record: object, known: Iterable<string>, label: string, options: CanonicalizeOptions): Record<string, unknown> {
     const knownFields = new Set(known);
@@ -98,6 +143,10 @@ function canonicalizeNode(node: UisgNode, options: CanonicalizeOptions): UisgNod
                 template: node.template ?? undefined,
                 propsSchema: node.propsSchema ?? undefined,
                 generatedFrom: node.generatedFrom ?? undefined,
+                variants: node.variants && Object.keys(node.variants).length
+                    ? canonicalizeVariants(node.variants, node.id, options)
+                    : undefined,
+                defaultVariant: node.defaultVariant ?? undefined,
             };
         case 'predicate':
             return {
