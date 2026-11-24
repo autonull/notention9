@@ -221,7 +221,7 @@ export function PropertyEditor({
                                     proposal.status === 'accepted'
                                         ? 'border-green-500/40 bg-green-500/10'
                                         : proposal.status === 'rejected'
-                                            ? 'border-neutral-600 bg-neutral-900/30 opacity-60'
+                                            ? 'border-[var(--app-line-strong)] bg-[var(--app-raised)] opacity-60'
                                             : 'border-[var(--app-line)] bg-[var(--app-surface)]'
                                 )}
                             >

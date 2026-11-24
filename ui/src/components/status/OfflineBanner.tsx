@@ -6,6 +6,7 @@
 import React from 'react';
 import { cn } from '../../utils/ui';
 import { Button } from '../ui/Button';
+import { tone } from '../../styles/tone';
 import {
     LoadingSpinner,
     CheckCircleIcon,
@@ -56,12 +57,12 @@ const ICON_MAP: Record<StatusKind, React.ReactNode> = {
     info: <InfoIcon className="h-5 w-5 flex-shrink-0" />,
 };
 
-const COLOR_MAP: Record<StatusKind, string> = {
-    loading: 'bg-blue-900/20 border-blue-800 text-blue-300',
-    success: 'bg-green-900/20 border-green-800 text-green-300',
-    warning: 'bg-amber-900/20 border-amber-800 text-amber-300',
-    error: 'bg-red-900/20 border-red-800 text-red-300',
-    info: 'bg-neutral-900/20 border-neutral-800 text-neutral-300',
+const TONE_MAP: Record<StatusKind, keyof typeof tone> = {
+    loading: 'accent',
+    success: 'success',
+    warning: 'warning',
+    error: 'danger',
+    info: 'neutral',
 };
 
 const COMPACT_ICON_MAP: Record<StatusKind, React.ReactNode> = {
@@ -72,18 +73,24 @@ const COMPACT_ICON_MAP: Record<StatusKind, React.ReactNode> = {
     info: <InfoIcon className="h-3 w-3" />,
 };
 
-const COMPACT_COLOR_MAP: Record<StatusKind, string> = {
-    loading: 'text-blue-400',
-    success: 'text-green-400',
-    warning: 'text-amber-400',
-    error: 'text-red-400',
-    info: 'text-neutral-400',
+const COMPACT_TONE_MAP: Record<StatusKind, keyof typeof tone> = {
+    loading: 'accent',
+    success: 'success',
+    warning: 'warning',
+    error: 'danger',
+    info: 'neutral',
 };
 
 const PROVIDER_ICON_MAP: Record<string, React.ReactNode> = {
     heuristic: <CpuChipIcon className="h-3 w-3" />,
     'local-model': <CpuChipIcon className="h-3 w-3" />,
     remote: <GlobeIcon className="h-3 w-3" />,
+};
+
+const PROVIDER_TONE_MAP: Record<string, keyof typeof tone> = {
+    heuristic: 'neutral',
+    'local-model': 'success',
+    remote: 'accent',
 };
 
 export function OfflineBanner({
@@ -107,13 +114,18 @@ export function OfflineBanner({
     const isLoading = kind === 'loading';
     const isCompact = size === 'compact';
     const showActions = (isError || isWarning || fallbackUsed) && !isCompact;
+    const kindTone = TONE_MAP[kind];
+    const compactTone = COMPACT_TONE_MAP[kind];
 
     if (isCompact) {
+        const t = tone[compactTone];
         return (
             <span
                 className={cn(
                     'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium',
-                    COMPACT_COLOR_MAP[kind],
+                    t.border,
+                    t.surface,
+                    t.text,
                     className
                 )}
                 data-testid={testId}
@@ -128,7 +140,7 @@ export function OfflineBanner({
                         {providerUsed}
                     </span>
                 )}
-                {fallbackUsed && <span className="text-amber-400" aria-label="Fell back">↓</span>}
+                {fallbackUsed && <span className={cn('ml-1', tone.warning.text)} aria-label="Fell back">↓</span>}
                 {onRetry && !isLoading && (
                     <button
                         onClick={onRetry}
@@ -142,9 +154,12 @@ export function OfflineBanner({
         );
     }
 
+    const t = tone[kindTone];
     const baseClasses = cn(
         'flex items-start gap-3 p-3 rounded-lg border transition-colors',
-        COLOR_MAP[kind],
+        t.border,
+        t.surface,
+        t.text,
         banner && 'w-full',
         className
     );
@@ -170,16 +185,18 @@ export function OfflineBanner({
                             <span
                                 className={cn(
                                     'inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium',
-                                    providerKind === 'heuristic' && 'bg-neutral-800 text-neutral-300',
-                                    providerKind === 'local-model' && 'bg-green-900/30 text-green-300 border border-green-800',
-                                    providerKind === 'remote' && 'bg-blue-900/30 text-blue-300 border border-blue-800',
-                                    fallbackUsed && 'bg-amber-900/30 text-amber-300 border border-amber-800'
+                                    providerKind && tone[PROVIDER_TONE_MAP[providerKind ?? 'heuristic']].border,
+                                    providerKind && tone[PROVIDER_TONE_MAP[providerKind ?? 'heuristic']].surface,
+                                    providerKind && tone[PROVIDER_TONE_MAP[providerKind ?? 'heuristic']].text,
+                                    fallbackUsed && tone.warning.border,
+                                    fallbackUsed && tone.warning.surface,
+                                    fallbackUsed && tone.warning.text
                                 )}
                                 title={`Provider: ${providerUsed} (${providerKind})${fallbackUsed ? ' — fell back from higher-priority provider' : ''}`}
                             >
                                 {PROVIDER_ICON_MAP[providerKind ?? 'heuristic']}
                                 {providerUsed}
-                                {fallbackUsed && <span className="text-amber-400" aria-label="Fell back from AI">↓</span>}
+                                {fallbackUsed && <span className={tone.warning.text} aria-label="Fell back from AI">↓</span>}
                             </span>
                         )}
                     </div>
@@ -192,10 +209,6 @@ export function OfflineBanner({
                                 size="xs"
                                 variant={isError ? 'destructive' : fallbackUsed ? 'secondary' : 'outline'}
                                 onClick={onRetry}
-                                className={cn(
-                                    isError && 'bg-red-800 text-red-200 hover:bg-red-700 focus:ring-red-700',
-                                    fallbackUsed && 'bg-amber-800 text-amber-200 hover:bg-amber-700 focus:ring-amber-700'
-                                )}
                                 aria-label={retryLabel}
                             >
                                 {retryLabel}
