@@ -32,6 +32,8 @@ export interface ViewNavigationContextType {
     setNoteTab: (tab: NoteTab) => void;
     settingsTab: SettingsTab;
     setSettingsTab: (tab: SettingsTab) => void;
+    uisgMode: string;
+    setUisgMode: (mode: string) => void;
 }
 
 const ViewNavigationContext = createContext<ViewNavigationContextType | undefined>(undefined);
@@ -51,6 +53,7 @@ export function ViewNavigationProvider({ children }: { children: ReactNode }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [noteTab, setNoteTab] = useState<NoteTab>('next');
     const [settingsTab, setSettingsTab] = useState<SettingsTab>('general');
+    const [uisgMode, setUisgMode] = useState<string>('graph');
 
     return (
         <ViewNavigationContext.Provider
@@ -80,7 +83,9 @@ export function ViewNavigationProvider({ children }: { children: ReactNode }) {
                 noteTab,
                 setNoteTab,
                 settingsTab,
-                setSettingsTab
+                setSettingsTab,
+                uisgMode,
+                setUisgMode,
             }}
         >
             {children}

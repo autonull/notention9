@@ -17,6 +17,8 @@ export function useUrlRouting() {
         noteTab,
         setNoteTab,
         setIsPaletteOpen,
+        uisgMode,
+        setUisgMode,
     } = useView();
 
     const pendingFromUrl = useRef<Route | null>(null);
@@ -41,7 +43,10 @@ export function useUrlRouting() {
             setIsPaletteOpen(true);
             requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('open-chat')));
         }
-    }, [setActiveView, setSelectedNoteId, setNotesMode, setNotesSection, setSettingsTab, setNoteTab, setIsPaletteOpen]);
+        if (route.uisgMode) {
+            setUisgMode(route.uisgMode);
+        }
+    }, [setActiveView, setSelectedNoteId, setNotesMode, setNotesSection, setSettingsTab, setNoteTab, setIsPaletteOpen, setUisgMode]);
 
     useEffect(() => {
         const handleUrlChange = () => {
@@ -73,6 +78,7 @@ export function useUrlRouting() {
             explore: false,
             search: false,
             chat: false,
+            uisgMode: activeView === 'uisg-dev' ? uisgMode : undefined,
         };
         const pending = pendingFromUrl.current;
         if (pending) {
@@ -82,7 +88,8 @@ export function useUrlRouting() {
                 pending.mode === state.mode &&
                 pending.section === state.section &&
                 pending.tab === state.tab &&
-                pending.settingsTab === state.settingsTab;
+                pending.settingsTab === state.settingsTab &&
+                pending.uisgMode === state.uisgMode;
             if (settled) {
                 pendingFromUrl.current = null;
             }
@@ -93,5 +100,5 @@ export function useUrlRouting() {
         if (window.location.hash !== hash) {
             window.history.pushState(null, '', hash);
         }
-    }, [activeView, selectedNoteId, notesMode, notesSection, noteTab, settingsTab]);
+    }, [activeView, selectedNoteId, notesMode, notesSection, noteTab, settingsTab, uisgMode]);
 }

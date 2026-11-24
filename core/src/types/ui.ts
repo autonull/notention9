@@ -1,6 +1,6 @@
 import type { Template } from './domain.js';
 
-export type View = 'notes' | 'settings';
+export type View = 'notes' | 'settings' | 'uisg-dev';
 
 export type NoteMode = 'canvas' | 'list' | 'board' | 'map' | 'timeline';
 

@@ -10,6 +10,7 @@ export interface Route {
     explore: boolean;
     search: boolean;
     chat: boolean;
+    uisgMode?: string;
 }
 
 export const DEFAULT_ROUTE: Route = {
@@ -22,6 +23,7 @@ export const DEFAULT_ROUTE: Route = {
     explore: false,
     search: false,
     chat: false,
+    uisgMode: undefined,
 };
 
 export const NOTE_MODES: NoteMode[] = ['list', 'canvas', 'board', 'map', 'timeline'];
@@ -88,6 +90,14 @@ export function parseRoute(hash: string): Route {
         };
     }
 
+    if (first === 'uisg-dev') {
+        return {
+            ...DEFAULT_ROUTE,
+            view: 'uisg-dev',
+            uisgMode: params.get('mode') ?? 'graph',
+        };
+    }
+
     const legacy = first ? LEGACY_REDIRECTS[first] : undefined;
     if (legacy) {
         const route = {...DEFAULT_ROUTE, ...legacy};
@@ -101,6 +111,13 @@ export function parseRoute(hash: string): Route {
 export function routeToHash(route: Route): string {
     if (route.view === 'settings') {
         return route.settingsTab === 'general' ? '#/settings' : `#/settings/${route.settingsTab}`;
+    }
+
+    if (route.view === 'uisg-dev') {
+        const params = new URLSearchParams();
+        if (route.uisgMode && route.uisgMode !== 'graph') params.set('mode', route.uisgMode);
+        const query = params.toString();
+        return `#/uisg-dev${query ? `?${query}` : ''}`;
     }
 
     if (route.noteId) {

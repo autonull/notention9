@@ -9,6 +9,8 @@ import {LoadingSpinner} from './ui/icons';
 import {NotesView} from './views/NotesView';
 import {SettingsView} from './views/SettingsView';
 
+const GraphEditor = React.lazy(() => import('../dev/GraphEditor').then(m => ({ default: m.GraphEditor })));
+
 interface MainViewProps {
     loading?: boolean;
 }
@@ -33,7 +35,11 @@ export function MainView({loading = false}: MainViewProps) {
         <div className="relative h-full">
             {activeView === 'settings'
                 ? <SettingsView/>
-                : <NotesView/>}
+                : activeView === 'uisg-dev'
+                    ? <React.Suspense fallback={<div className="flex h-full items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>}>
+                        <GraphEditor/>
+                      </React.Suspense>
+                    : <NotesView/>}
         </div>
     );
 }
