@@ -17,6 +17,8 @@
         --app-muted: #9aa0ad;
         --app-faint: #828896;
         --app-accent: var(--accent-color, #6366f1);
+        --app-radius: var(--theme-radius, 9px);
+        --app-font: var(--theme-font, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
         --app-accent-text: color-mix(in srgb, var(--app-accent) 58%, white);
         --app-accent-soft: color-mix(in srgb, var(--app-accent) 14%, transparent);
         --app-accent-line: color-mix(in srgb, var(--app-accent) 38%, transparent);
@@ -92,7 +94,7 @@
         margin: 0;
         background: var(--app-bg);
         color: var(--app-text);
-        font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        font-family: var(--app-font);
         font-size: 14px;
         line-height: 1.5;
         -webkit-font-smoothing: antialiased;
@@ -187,7 +189,7 @@
     height: 34px;
     padding: 0 12px;
     border: 1px solid transparent;
-    border-radius: 9px;
+    border-radius: var(--app-radius);
     font-size: 13px;
     font-weight: 500;
     line-height: 1;
@@ -246,7 +248,7 @@
     height: 36px;
     padding: 0 11px;
     border: 1px solid var(--app-line);
-    border-radius: 9px;
+    border-radius: var(--app-radius);
     background: var(--app-surface);
     color: var(--app-text);
     font-size: 13px;

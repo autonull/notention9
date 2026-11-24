@@ -1,93 +1,193 @@
 {
-  "version": 1,
-  "updatedAt": "2026-11-24T06:27:27.440Z",
+  "version": 2,
+  "updatedAt": "2026-11-24T21:27:14.261Z",
   "profiles": [
     {
+      "id": "desktop",
+      "name": "Desktop baseline",
+      "description": "Desktop viewport, comfortable density, pointer-first",
+      "actor": "desktop-user",
+      "expertise": "expert",
+      "device": "desktop",
+      "connectivity": "online",
+      "locale": "en-US",
+      "viewport": "desktop-1440",
+      "density": "comfortable",
+      "modality": "pointer",
+      "profile": "default",
+      "theme": "default",
+      "a11yConstraints": [],
+      "strategyOverrides": {
+        "layout": "split",
+        "display": "inline"
+      },
+      "templateVariants": {
+        "panel": "expanded"
+      },
+      "featureFlags": []
+    },
+    {
+      "id": "mobile",
+      "name": "Mobile baseline",
+      "description": "Mobile viewport, compact density, gesture-first",
+      "actor": "mobile-user",
+      "expertise": "expert",
+      "device": "mobile",
+      "connectivity": "online",
+      "locale": "en-US",
+      "viewport": "mobile-390",
+      "density": "compact",
+      "modality": "touch",
+      "profile": "minimal",
+      "theme": "default",
+      "a11yConstraints": [
+        "touch-targets"
+      ],
+      "strategyOverrides": {
+        "capture": "mobile-capture",
+        "elicit": "palette-swipe",
+        "layout": "stacked"
+      },
+      "templateVariants": {
+        "item": "dense",
+        "panel": "collapsed",
+        "editor": "minimal",
+        "status": "inline"
+      },
+      "featureFlags": [
+        "swipe-actions",
+        "haptic-feedback"
+      ]
+    },
+    {
+      "id": "tablet",
+      "extends": "mobile",
+      "name": "Tablet baseline",
+      "description": "Tablet viewport, comfortable density, touch-first",
+      "actor": "tablet-user",
+      "expertise": "expert",
+      "device": "tablet",
+      "connectivity": "online",
+      "locale": "en-US",
+      "viewport": "tablet-834",
+      "density": "comfortable",
+      "modality": "touch",
+      "profile": "default",
+      "theme": "default",
+      "a11yConstraints": [],
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": []
+    },
+    {
       "id": "desktop-novice-dark",
+      "extends": "desktop",
       "name": "Desktop novice, dark theme",
+      "description": "First-time desktop user, dark theme, keyboard and screen reader",
       "actor": "first-time-user",
       "expertise": "novice",
       "device": "desktop",
       "connectivity": "online",
       "locale": "en-US",
+      "viewport": "desktop-1440",
+      "density": "comfortable",
+      "modality": "pointer",
+      "profile": "default",
+      "theme": "default",
       "a11yConstraints": [
         "keyboard-nav",
         "screen-reader",
         "high-contrast"
       ],
-      "dimensions": {
-        "viewport": "desktop-1440",
-        "theme": "dark",
-        "modality": "pointer",
-        "profile": "default"
-      }
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": []
     },
     {
       "id": "desktop-expert-light",
+      "extends": "desktop",
       "name": "Desktop expert, light theme",
+      "description": "Power user, full profile, reduced motion",
       "actor": "power-user",
       "expertise": "expert",
       "device": "desktop",
       "connectivity": "online",
       "locale": "en-US",
+      "viewport": "desktop-1440",
+      "density": "comfortable",
+      "modality": "keyboard",
+      "profile": "full",
+      "theme": "default",
       "a11yConstraints": [
         "keyboard-nav",
         "reduced-motion"
       ],
-      "dimensions": {
-        "viewport": "desktop-1440",
-        "theme": "light",
-        "modality": "keyboard",
-        "profile": "full"
-      }
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": []
     },
     {
       "id": "mobile-novice-dark",
+      "extends": "mobile",
       "name": "Mobile novice, dark theme",
+      "description": "Mobile novice, large text, gesture-first",
       "actor": "mobile-user",
       "expertise": "novice",
       "device": "mobile",
       "connectivity": "online",
       "locale": "en-US",
+      "viewport": "mobile-390",
+      "density": "compact",
+      "modality": "touch",
+      "profile": "minimal",
+      "theme": "default",
       "a11yConstraints": [
-        "touch-targets",
         "screen-reader",
         "large-text"
       ],
-      "dimensions": {
-        "viewport": "mobile-390",
-        "theme": "dark",
-        "modality": "pointer",
-        "profile": "minimal"
-      }
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": []
     },
     {
       "id": "mobile-expert-degraded",
+      "extends": "mobile",
       "name": "Mobile expert, degraded connectivity",
+      "description": "Field user, offline-capable, degraded network",
       "actor": "field-user",
       "expertise": "expert",
       "device": "mobile",
       "connectivity": "degraded",
       "locale": "en-US",
+      "viewport": "mobile-390",
+      "density": "compact",
+      "modality": "touch",
+      "profile": "default",
+      "theme": "default",
       "a11yConstraints": [
-        "touch-targets",
         "offline-capable"
       ],
-      "dimensions": {
-        "viewport": "mobile-390",
-        "theme": "dark",
-        "modality": "pointer",
-        "profile": "default"
-      }
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": [
+        "offline-queue"
+      ]
     },
     {
       "id": "desktop-a11y-high-contrast",
+      "extends": "desktop",
       "name": "Desktop accessibility, high contrast",
+      "description": "High contrast, screen reader, keyboard, large text",
       "actor": "a11y-user",
       "expertise": "expert",
       "device": "desktop",
       "connectivity": "online",
       "locale": "en-US",
+      "viewport": "desktop-1440",
+      "density": "comfortable",
+      "modality": "keyboard",
+      "profile": "full",
+      "theme": "high-contrast",
       "a11yConstraints": [
         "high-contrast",
         "screen-reader",
@@ -95,31 +195,51 @@
         "reduced-motion",
         "large-text"
       ],
-      "dimensions": {
-        "viewport": "desktop-1440",
-        "theme": "light",
-        "modality": "keyboard",
-        "profile": "full"
-      }
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": []
     },
     {
       "id": "tablet-multilingual",
+      "extends": "tablet",
       "name": "Tablet multilingual user",
+      "description": "Tablet, German locale, touch-first",
       "actor": "international-user",
       "expertise": "novice",
       "device": "tablet",
       "connectivity": "online",
       "locale": "de-DE",
+      "viewport": "tablet-834",
+      "density": "comfortable",
+      "modality": "touch",
+      "profile": "default",
+      "theme": "default",
       "a11yConstraints": [
-        "touch-targets",
         "screen-reader"
       ],
-      "dimensions": {
-        "viewport": "mobile-390",
-        "theme": "light",
-        "modality": "pointer",
-        "profile": "default"
-      }
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": []
+    },
+    {
+      "id": "mobile-dense",
+      "extends": "mobile",
+      "name": "Mobile dense",
+      "description": "Mobile viewport, dense density, gesture-first",
+      "actor": "mobile-user",
+      "expertise": "expert",
+      "device": "mobile",
+      "connectivity": "online",
+      "locale": "en-US",
+      "viewport": "mobile-390",
+      "density": "compact",
+      "modality": "touch",
+      "profile": "minimal",
+      "theme": "default",
+      "a11yConstraints": [],
+      "strategyOverrides": {},
+      "templateVariants": {},
+      "featureFlags": []
     }
   ]
 }

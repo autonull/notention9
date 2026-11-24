@@ -21,15 +21,15 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | Sub-task | Status | Notes |
 |----------|--------|-------|
 | A.1 Graph variant schema | ✅ Done | `SurfaceVariant` + `VariantMetrics` on `UisgSurface`; `validate.ts` requires `version: 3`; `UISG_SCHEMA_VERSION=3`; no backward compatibility |
-| A.2 Context profiles v2 | ⬜ Pending | Needs `extends`, `strategyOverrides`, `templateVariants`, `featureFlags` + deep-merge resolver |
-| A.3 Theme system | ⬜ Pending | Needs `doc/uisg/themes.json`, `themes.ts`, generated CSS vars |
-| A.4 Multi-target templates | ⬜ Pending | Templates still React-only; add `target` param |
+| A.2 Context profiles v2 | ✅ Done | `CONTEXTS_SCHEMA_VERSION=2`; 3 bases + 7 derived profiles; `extends` with deep merge; v1 rejected |
+| A.3 Theme system | ✅ Core | `doc/uisg/themes.json`, `themes.ts`, `uisg themes list/show/generate`; `theme.css` consumes `--accent-color`, `--theme-radius`, `--theme-font`. Runtime `?uisg=1&theme=` pending |
+| A.4 Multi-target templates | ⬜ Pending | Templates still React-only; add required `target` param (no default) |
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
 | B.1–B.5 Evaluation harness | ⬜ Pending | Matrix runner, metrics, decide, A/B report, promotion |
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
-**Latest commit:** Phase A.1 + A.5 — variant schema (v3 only), variant registry.
+**Latest commit:** Phase A.2 + A.3 — context profiles v2, theme tokens + CSS generation.
 
 ---
 
@@ -160,6 +160,8 @@ interface SurfaceVariant {
 
 **Resolver:** `optimize/src/uisg/contexts.ts` — deep merge with inheritance.
 
+**Schema:** contexts v2 is canonical. `version` must equal 2; v1 is rejected. Inheritance is resolved at read time; arrays union, objects shallow-merge, scalars override. No fallback profile.
+
 ### A.3 Theme System
 **Files:**
 - `doc/uisg/themes.json` — token overrides per brand
@@ -176,7 +178,7 @@ interface SurfaceVariant {
 }
 ```
 
-**CLI:** `pnpm uisg optimize --theme=brand-acme` — generates `ui/src/styles/theme-brand-acme.css` + imports.
+**CLI:** `pnpm uisg themes generate brand-acme` — writes `ui/src/styles/theme-brand-acme.css`. Unknown theme ids throw; no fallback theme and no default import.
 
 ### A.4 Multi-Target Templates
 **File:** `optimize/src/uisg/templates/index.ts`
@@ -198,7 +200,7 @@ interface Template {
 }
 ```
 
-**Migration:** Update 4 existing templates with `target` param (default `'react'`).
+**Targets:** All 4 existing templates take a required `target` argument. No default target and no migration shim; callers must be explicit.
 
 ### A.5 Variant Registry CLI
 **Commands:**
@@ -521,8 +523,9 @@ interface UisgFlags {
 
 ### Phase A
 - [x] Graph v3 with `variants` loads; v2 rejected
-- [ ] 6 context profiles v2 with inheritance work
-- [ ] 3 themes generate CSS vars, apply at `?uisg=1&theme=`
+- [x] 6 context profiles v2 with inheritance work
+- [x] 3 themes generate CSS vars
+- [ ] Themes apply at `?uisg=1&theme=`
 - [ ] `uisg generate --target=html|json` works for 1 surface
 - [x] `uisg variants` CRUD works, stores in `variants.json`
 
@@ -609,18 +612,18 @@ D.1 AI Generate  ← D.2 Compose DSL  ← D.3 Predict     ← D.4 Feature Flags
 ## 13. First Commit (Today)
 
 ```bash
-# 1. Extend graph schema with variants
+# 1. Extend graph schema with variants (v3 only)
 edit optimize/src/uisg/types.ts
 
-# 2. Add migration v2→v3
-edit optimize/src/uisg/canonicalize.ts
+# 2. Require schema v3; reject v2
+edit optimize/src/uisg/validate.ts
 
-# 3. Create variant registry CLI stub
+# 3. Create variant registry CLI
 edit optimize/src/uisg/cli.ts  # add 'variants' command
 
 # 4. Update TODO34.md with progress
 # 5. Commit
-git commit -m "feat(uisg): Phase A.1 - variant schema + migration v3"
+git commit -m "feat(uisg): Phase A.1+A.5 - variant schema v3 + registry"
 ```
 
 ---

@@ -65,6 +65,7 @@ Commands:
   select <feature> [--context <id>] [--modality <m>] [--theme <t>] [--viewport <v>] [--profile <p>]
                                             Check constraints, return selection + conflicts -> doc/uisg/selection.json
   contexts [--list]                         Manage context profiles (doc/uisg/contexts.json)
+  themes <list|show|generate> [id]          Manage token themes (doc/uisg/themes.json)
   variants <list|create|promote|archive|diff|export>  Variant registry CRUD (doc/uisg/variants.json)
   adopt <flowId> --baseline <runId> --variant <runId> --hypothesis <text> --metric <name> --actor <name>
                                             Compare bundles, update lifecycle, record decision
@@ -665,15 +666,36 @@ async function main(): Promise<number> {
                 console.log(`Context profiles:`);
                 for (const p of profiles) {
                     console.log(`  ${p.id}: ${p.name} (${p.expertise}, ${p.device}, ${p.connectivity}, ${p.locale})`);
-                    console.log(`    viewport=${p.dimensions.viewport} theme=${p.dimensions.theme} modality=${p.dimensions.modality} profile=${p.dimensions.profile}`);
-                    console.log(`    a11y: ${p.a11yConstraints.join(', ') || 'none'}`);
+                    console.log(`    viewport=${p.viewport} density=${p.density} theme=${p.theme} modality=${p.modality} profile=${p.profile}`);
+                    console.log(`    a11y: ${p.a11yConstraints.join(', ') || 'none'} flags: ${p.featureFlags.join(', ') || 'none'}`);
+                    if (p.extends) console.log(`    extends: ${p.extends}`);
                 }
                 return 0;
             }
-            // Ensure file exists
             ensureContextsFile();
             console.log(`Contexts file ensured at doc/uisg/contexts.json`);
             return 0;
+        }
+        case 'themes': {
+            const [action, id] = positionals;
+            const { listThemes, getTheme, writeThemeCss } = await import('./themes.js');
+            if (!action || action === 'list') {
+                for (const theme of listThemes()) {
+                    console.log(`${theme.id}: accent=${theme.accent} radius=${theme.radius} font=${theme.font}`);
+                }
+                return 0;
+            }
+            if (!id) { console.error(`themes ${action} requires a theme id`); return 1; }
+            if (action === 'show') {
+                console.log(JSON.stringify(getTheme(id), null, 2));
+                return 0;
+            }
+            if (action === 'generate') {
+                console.log(`Generated ${writeThemeCss(id)}`);
+                return 0;
+            }
+            console.error(`Unknown themes action: ${action}`);
+            return 1;
         }
         case 'adopt': {
             const flowId = positionals[0];
@@ -1083,7 +1105,7 @@ async function runOptimizePipeline(flags: Map<string, string>): Promise<number> 
             const profileStrategies = new Set<string>();
             // In a real implementation, this would filter by strategy compatibility with the context
             // For now, we just log the context dimensions
-            console.log(`  Context: ${contextProfile.dimensions.viewport} / ${contextProfile.dimensions.theme} / ${contextProfile.dimensions.modality} / profile=${contextProfile.dimensions.profile}`);
+            console.log(`  Context: ${contextProfile.viewport} / ${contextProfile.theme} / ${contextProfile.modality} / profile=${contextProfile.profile}`);
             console.log(`  A11y constraints: ${contextProfile.a11yConstraints.join(', ') || 'none'}`);
         }
         

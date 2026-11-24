@@ -5,7 +5,7 @@ import { loadGraph } from './cli.js';
 import { indexGraph, queryGraph } from './query.js';
 import { validateGraph } from './validate.js';
 import { loadPriority } from './rank.js';
-import { loadContexts, type ContextProfile } from './contexts.js';
+import { getProfile, type ContextProfile } from './contexts.js';
 import type { UisgGraph, UisgNode, UisgNodeType } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -40,9 +40,7 @@ export interface SelectionResult {
 }
 
 function getContextProfile(contextId: string): ContextProfile | null {
-    const contexts = loadContexts();
-    if (!contexts) return null;
-    return contexts.profiles.find(p => p.id === contextId) ?? null;
+    return getProfile(contextId);
 }
 
 function getNodeById(graph: UisgGraph, id: string): UisgNode | undefined {
@@ -159,10 +157,10 @@ export function selectFeature(request: SelectionRequest, file: string = SELECTIO
     const contextProfile = request.context ? getContextProfile(request.context) : null;
 
     // Build selection criteria from request and context
-    const effectiveModality = request.modality ?? contextProfile?.dimensions.modality ?? 'pointer';
-    const effectiveTheme = request.theme ?? contextProfile?.dimensions.theme ?? 'dark';
-    const effectiveViewport = request.viewport ?? contextProfile?.dimensions.viewport ?? 'desktop-1440';
-    const effectiveProfile = request.profile ?? contextProfile?.dimensions.profile ?? 'default';
+    const effectiveModality = request.modality ?? contextProfile?.modality ?? 'pointer';
+    const effectiveTheme = request.theme ?? contextProfile?.theme ?? 'default';
+    const effectiveViewport = request.viewport ?? contextProfile?.viewport ?? 'desktop-1440';
+    const effectiveProfile = request.profile ?? contextProfile?.profile ?? 'default';
 
     // Find candidate nodes matching the feature request
     const candidates = queryGraph(index, { text: request.feature });

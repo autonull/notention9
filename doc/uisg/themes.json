@@ -1,0 +1,22 @@
+{
+  "default": {
+    "accent": "#6366f1",
+    "radius": "9px",
+    "font": "Inter"
+  },
+  "brand-acme": {
+    "accent": "#FF6B35",
+    "radius": "12px",
+    "font": "Inter"
+  },
+  "brand-beta": {
+    "accent": "#00D4AA",
+    "radius": "4px",
+    "font": "JetBrains Mono"
+  },
+  "high-contrast": {
+    "accent": "#FFFF00",
+    "radius": "0px",
+    "font": "system-ui"
+  }
+}

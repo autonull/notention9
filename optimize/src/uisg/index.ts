@@ -17,7 +17,9 @@ export * from './rank.js';
 export { selectFeature, loadSelection, type SelectionRequest, type SelectionResult, type SelectionConflict } from './select.js';
 
 // Contexts exports (avoid ContextProfile conflict with select.js)
-export { ensureContextsFile, listProfiles, loadContexts, getProfile, type ContextsData, type ContextProfile } from './contexts.js';
+export { ensureContextsFile, listProfiles, loadContexts, getProfile, CONTEXTS_SCHEMA_VERSION, type ContextsData, type ContextProfile, type ContextDensity, type ContextModality } from './contexts.js';
+
+export * from './themes.js';
 
 export * from './adopt.js';
 export * from './canonicalize.js';
