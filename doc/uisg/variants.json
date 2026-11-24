@@ -1,5 +1,24 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-24T00:00:00.000Z",
-  "variants": []
+  "updatedAt": "2026-11-24T22:54:12.025Z",
+  "variants": [
+    {
+      "template": "item",
+      "description": "Dense list view for mobile",
+      "status": "experimental",
+      "surface": "surface.notesview",
+      "id": "dense",
+      "createdAt": "2026-11-24T22:53:11.485Z",
+      "updatedAt": "2026-11-24T22:53:11.485Z"
+    },
+    {
+      "template": "item",
+      "description": "Compact desktop view",
+      "status": "experimental",
+      "surface": "surface.notesview",
+      "id": "compact",
+      "createdAt": "2026-11-24T22:54:12.025Z",
+      "updatedAt": "2026-11-24T22:54:12.025Z"
+    }
+  ]
 }

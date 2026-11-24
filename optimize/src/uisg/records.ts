@@ -69,6 +69,7 @@ export interface RunRecord {
         theme?: string;
         profile?: string;
         context?: string;
+        variant?: string;
     };
 }
 

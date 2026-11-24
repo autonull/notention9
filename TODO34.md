@@ -25,7 +25,7 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | A.3 Theme system | ✅ Done | `doc/uisg/themes.json`, `themes.ts`, `uisg themes list/show/generate/check`; `theme.css` consumes vars; `?uisg=1&theme=<id>` lazily imports `theme-<id>.css` |
 | A.4 Multi-target templates | ✅ Core | Required `target`; `react`/`html`/`json` renderers; `solid`/`flutter` throw (no fallback); `generate` requires `--target` |
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
-| A.6 Variant resolver | ⬜ Pending | `resolveSurface()`; apply variants in `generateSurface`/`matrix`; wire `promote` → `defaultVariant`. See §14.1/§14.2 |
+| A.6 Variant resolver    | ✅ Done | `resolveSurface()` implemented; `generateSurface` and `matrix` use variants; CLI `--variant` and `--variants` flags added
 | B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
 | B.2–B.5 Evaluation harness | ⬜ Pending | Metrics, decide, A/B report, promotion |
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
@@ -547,7 +547,7 @@ interface UisgFlags {
 - [x] Themes apply at `?uisg=1&theme=`
 - [x] `uisg generate --target=html|json` works for 1 surface
 - [x] `uisg variants` CRUD works, stores in `variants.json`
-- [ ] Variants resolve into generation and matrix (A.6)
+- [x] Variants resolve into generation and matrix (A.6)
 
 ### Phase B
 - [ ] `uisg matrix --contexts=all --themes=all` completes in <10min

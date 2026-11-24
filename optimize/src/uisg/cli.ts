@@ -110,6 +110,11 @@ export function loadGraph(flags: Map<string, string>): UisgGraph {
     return result.graph;
 }
 
+export function saveGraph(graph: UisgGraph, file?: string): void {
+    const targetFile = resolve(ROOT, file ?? 'doc/uisg/graph.json');
+    writeFileSync(targetFile, JSON.stringify(graph, null, 2) + '\n');
+}
+
 export function uiTestIds(): Set<string> {
     const ids = new Set<string>();
     const walk = (dir: string) => {
@@ -390,6 +395,7 @@ async function main(): Promise<number> {
             const dryRun = flags.has('dry-run');
             const changed = flags.has('changed');
             const target = flags.get('target') as TemplateTarget | undefined;
+            const variant = flags.get('variant');
             if (!target) {
                 console.error('generate --surface/--all requires --target=react|html|json');
                 return 1;
@@ -405,18 +411,23 @@ async function main(): Promise<number> {
                     console.error(`Surface ${surfaceId} has seam="${surface.seam}" - skipping (strategy-backed)`);
                     return 1;
                 }
+                if (variant && !surface.variants?.[variant]) {
+                    console.error(`Surface ${surfaceId} does not have variant "${variant}"`);
+                    return 1;
+                }
                 if (dryRun) {
-                    const result = generateSurface(surface as any, graph, { target, dryRun: true });
+                    const result = generateSurface(surface as any, graph, { target, dryRun: true, variant });
                     console.log(`DRY RUN - Would generate:`);
                     console.log(`  Component: ${result.path}`);
                     console.log(`  Test: ${result.testPath}`);
                     console.log(`  PropsSchema: ${result.propsSchemaPath}`);
+                    if (variant) console.log(`  Variant: ${variant}`);
                     console.log(`\n--- Component preview (first 100 lines) ---`);
                     console.log(result.content.split('\n').slice(0, 100).join('\n'));
                     return 0;
                 }
-                const result = generateSurface(surface as any, graph, { target });
-                console.log(`Generated ${result.path}`);
+                const result = generateSurface(surface as any, graph, { target, variant });
+                console.log(`Generated ${result.path}${variant ? ` (variant: ${variant})` : ''}`);
                 console.log(`Generated ${result.testPath}`);
                 console.log(`Generated ${result.propsSchemaPath}`);
                 return 0;
@@ -428,7 +439,7 @@ async function main(): Promise<number> {
                 
                 if (changed) {
                     const { checkAllParity } = await import('./codegen.js');
-                    const parityResults = checkAllParity(graph);
+                    const parityResults = checkAllParity(graph, undefined, variant);
                     const changedSurfaceIds = parityResults
                         .filter(r => !r.deterministic)
                         .map(r => r.surfaceId);
@@ -438,16 +449,17 @@ async function main(): Promise<number> {
                 
                 const results = [];
                 for (const surface of targets) {
+                    if (variant && !surface.variants?.[variant]) continue;
                     try {
                         const result = dryRun
-                            ? generateSurface(surface, graph, { target, dryRun: true })
-                            : generateSurface(surface, graph, { target });
+                            ? generateSurface(surface, graph, { target, dryRun: true, variant })
+                            : generateSurface(surface, graph, { target, variant });
                         results.push(result);
                     } catch (e) {
                         console.error(`Failed to generate ${surface.id}: ${e}`);
                     }
                 }
-                console.log(`Generated ${results.length} surface(s)`);
+                console.log(`Generated ${results.length} surface(s)${variant ? ` (variant: ${variant})` : ''}`);
                 for (const r of results) {
                     console.log(`  ${r.path}`);
                     console.log(`  ${r.testPath}`);
@@ -503,6 +515,7 @@ async function main(): Promise<number> {
             const contexts = flags.get('contexts')?.split(',') ?? [];
             const themes = flags.get('themes')?.split(',') ?? ['dark', 'light'];
             const viewports = flags.get('viewports')?.split(',') ?? ['desktop-1440', 'mobile-390'];
+            const variants = flags.get('variants')?.split(',') ?? [];
 
             const config: MatrixConfig = {
                 contexts: contexts.includes('all') ? listProfiles().map(({ id }) => id) : contexts,
@@ -510,6 +523,7 @@ async function main(): Promise<number> {
                     ? [...new Set([...listThemes().map(({ id }) => id), 'dark', 'light'])]
                     : themes,
                 viewports: viewports.includes('all') ? ['desktop-1440', 'tablet-834', 'mobile-390'] : viewports,
+                variants: variants.includes('all') ? [] : variants,
                 parallelism: Number(flags.get('parallelism') ?? 4),
             };
 
@@ -520,14 +534,14 @@ async function main(): Promise<number> {
                     && (!!getJourney(flow.journey) || existsSync(journeyTestFile(flow.journey)))
                     ? flow.journey
                     : undefined;
-                const variants: Array<{ id: string; profile: string }> = [];
-                if (handId) variants.push({ id: handId, profile: 'hand-built' });
+                const journeyVariants: Array<{ id: string; profile: string }> = [];
+                if (handId) journeyVariants.push({ id: handId, profile: 'hand-built' });
                 if (previewFlows.includes(flowId)) {
                     const preview = ensureSkeletonJourney(flowId, graph);
-                    if (preview) variants.push({ id: preview.id, profile: 'generated' });
+                    if (preview) journeyVariants.push({ id: preview.id, profile: 'generated' });
                 }
-                if (!variants.length) { console.log(`SKIP ${flowId} (no registered journey)`); continue; }
-                for (const variant of variants.filter(v => !profiles || profiles.includes(v.profile))) {
+                if (!journeyVariants.length) { console.log(`SKIP ${flowId} (no registered journey)`); continue; }
+                for (const variant of journeyVariants.filter(v => !profiles || profiles.includes(v.profile))) {
                     journeys.push({ flowId, journey: variant.id, profile: variant.profile });
                 }
             }
@@ -535,7 +549,7 @@ async function main(): Promise<number> {
             if (flags.has('plan')) {
                 const cells = buildMatrixCells(config, journeys);
                 for (const cell of cells) {
-                    console.log(`${cell.journey} [${cell.profile}] ${cell.context ?? '-'} ${cell.theme}/${cell.viewport}`);
+                    console.log(`${cell.journey} [${cell.profile}] ${cell.context ?? '-'} ${cell.theme}/${cell.viewport}${cell.variant ? ` variant=${cell.variant}` : ''}`);
                 }
                 console.log(`${cells.length} cell(s)`);
                 return 0;
@@ -548,7 +562,7 @@ async function main(): Promise<number> {
 
             const result = await runMatrix(config, journeys, async cell => {
                 const runId = createRunId();
-                console.log(`Running ${cell.journey} ${cell.context ?? '-'} ${cell.theme}/${cell.viewport} — ${runId}`);
+                console.log(`Running ${cell.journey} ${cell.context ?? '-'} ${cell.theme}/${cell.viewport}${cell.variant ? ` variant=${cell.variant}` : ''} — ${runId}`);
                 const { status } = await runOptimizeTestAsync({
                     runId,
                     grep: grepFor(cell.journey),
@@ -557,6 +571,7 @@ async function main(): Promise<number> {
                         NOTENTION_VIEWPORT: cell.viewport,
                         NOTENTION_THEME: cell.theme,
                         ...(cell.context ? { NOTENTION_CONTEXT: cell.context } : {}),
+                        ...(cell.variant ? { NOTENTION_UISG_VARIANT: cell.variant } : {}),
                     },
                 });
                 const bundlePath = join(getEvidenceDirSync(), runId, 'bundle.json');
@@ -566,7 +581,7 @@ async function main(): Promise<number> {
                     bundlePath,
                     status: status === 0 ? 'passed' : 'failed',
                     timestamp: new Date().toISOString(),
-                    dimensions: { viewport: cell.viewport, theme: cell.theme, profile: cell.profile },
+                    dimensions: { viewport: cell.viewport, theme: cell.theme, profile: cell.profile, variant: cell.variant },
                 });
                 return { status: status === 0 ? 'passed' : 'failed', runId, bundlePath };
             });
@@ -574,7 +589,7 @@ async function main(): Promise<number> {
             const { jsonPath, htmlPath } = writeMatrixReport(result);
             console.log(`Matrix: ${result.summary.passed}/${result.summary.total} passed (${result.summary.failed} failed, ${result.summary.skipped} skipped, ${result.summary.errors} errors)`);
             for (const cell of result.cells.filter(({ status }) => status !== 'passed')) {
-                console.log(`  ${cell.status.toUpperCase()} ${cell.journey} ${cell.context ?? '-'} ${cell.theme}/${cell.viewport} ${cell.runId}${cell.error ? ` — ${cell.error}` : ''}`);
+                console.log(`  ${cell.status.toUpperCase()} ${cell.journey} ${cell.context ?? '-'} ${cell.theme}/${cell.viewport}${cell.variant ? ` variant=${cell.variant}` : ''} ${cell.runId}${cell.error ? ` — ${cell.error}` : ''}`);
             }
             console.log(`Report: ${jsonPath}`);
             console.log(`Report: ${htmlPath}`);

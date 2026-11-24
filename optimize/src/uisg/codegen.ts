@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import type { UisgGraph, UisgSurface } from './types.js';
 import { getTemplate, type TemplateShape } from './templates/index.js';
 import { TARGET_EXTENSION, type TemplateTarget } from './templates/render.js';
+import { resolveSurface, type ResolvedSurface } from './resolve.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -66,9 +67,17 @@ function surfacePaths(surface: UisgSurface, shape: TemplateShape, target: Templa
     };
 }
 
+export interface GenerateSurfaceOptions {
+    target: TemplateTarget;
+    write?: boolean;
+    dryRun?: boolean;
+    variant?: string;
+}
+
 export function generateSurface(surface: UisgSurface, graph: UisgGraph, options: GenerateSurfaceOptions): GeneratedSurface {
-    const { target, write = true, dryRun = false } = options;
-    const shape = getTemplateShape(surface);
+    const { target, write = true, dryRun = false, variant } = options;
+    const resolvedSurface = resolveSurface(surface, variant);
+    const shape = getTemplateShape(resolvedSurface);
     const template = getTemplate(shape);
     
     if (!template) {
@@ -111,8 +120,8 @@ export function generateSurface(surface: UisgSurface, graph: UisgGraph, options:
     };
 }
 
-export function generateSurfaceInMemory(surface: UisgSurface, graph: UisgGraph, target: TemplateTarget): GeneratedSurface {
-    return generateSurface(surface, graph, { target, write: false, dryRun: true });
+export function generateSurfaceInMemory(surface: UisgSurface, graph: UisgGraph, target: TemplateTarget, variant?: string): GeneratedSurface {
+    return generateSurface(surface, graph, { target, write: false, dryRun: true, variant });
 }
 
 export interface ParityResult {
@@ -157,8 +166,8 @@ function readOriginalSource(surface: UisgSurface): string | null {
     return readFileSync(sourcePath, 'utf8');
 }
 
-export function checkParity(surface: UisgSurface, graph: UisgGraph): ParityResult {
-    const generated = generateSurfaceInMemory(surface, graph, 'react');
+export function checkParity(surface: UisgSurface, graph: UisgGraph, variant?: string): ParityResult {
+    const generated = generateSurfaceInMemory(surface, graph, 'react', variant);
     
     // Check determinism: compare with on-disk
     const onDiskComponent = existsSync(resolve(ROOT, generated.path)) 
@@ -228,7 +237,7 @@ export function checkParity(surface: UisgSurface, graph: UisgGraph): ParityResul
     };
 }
 
-export function checkAllParity(graph: UisgGraph, surfaceIds?: string[]): ParityResult[] {
+export function checkAllParity(graph: UisgGraph, surfaceIds?: string[], variant?: string): ParityResult[] {
     const surfaces = graph.nodes.filter(node => node.type === 'surface') as UisgSurface[];
     const targets = surfaceIds 
         ? surfaces.filter(s => surfaceIds.includes(s.id))
@@ -239,7 +248,7 @@ export function checkAllParity(graph: UisgGraph, surfaceIds?: string[]): ParityR
     for (const surface of targets) {
         if (surface.seam) continue;
         try {
-            const result = checkParity(surface, graph);
+            const result = checkParity(surface, graph, variant);
             results.push(result);
         } catch (error) {
             results.push({
@@ -258,7 +267,7 @@ export function checkAllParity(graph: UisgGraph, surfaceIds?: string[]): ParityR
     return results;
 }
 
-export function generateAllSurfaces(graph: UisgGraph, target: TemplateTarget, surfaceIds?: string[]): GeneratedSurface[] {
+export function generateAllSurfaces(graph: UisgGraph, target: TemplateTarget, surfaceIds?: string[], variant?: string): GeneratedSurface[] {
     const surfaces = graph.nodes.filter(node => node.type === 'surface') as UisgSurface[];
     const targets = surfaceIds 
         ? surfaces.filter(s => surfaceIds.includes(s.id))
@@ -269,9 +278,9 @@ export function generateAllSurfaces(graph: UisgGraph, target: TemplateTarget, su
     for (const surface of targets) {
         if (surface.seam) continue; // Skip strategy-backed surfaces
         try {
-            const result = generateSurface(surface, graph, { target });
+            const result = generateSurface(surface, graph, { target, variant });
             generated.push(result);
-            console.log(`Generated ${result.path}`);
+            console.log(`Generated ${result.path}${variant ? ` (variant: ${variant})` : ''}`);
         } catch (error) {
             console.error(`Failed to generate ${surface.id}: ${error}`);
         }

@@ -199,7 +199,19 @@
       "type": "surface",
       "component": "NotesView",
       "route": "#/notes",
-      "configKey": "NOTE_BROWSE_MODES"
+      "configKey": "NOTE_BROWSE_MODES",
+      "variants": {
+        "dense": {
+          "template": "item",
+          "description": "Dense list view for mobile",
+          "status": "experimental"
+        },
+        "compact": {
+          "template": "item",
+          "description": "Compact desktop view",
+          "status": "experimental"
+        }
+      }
     },
     {
       "id": "surface.dashboardlocalmatch",
@@ -1447,47 +1459,47 @@
     },
     {
       "id": "cap.capture.palette",
-      "type": "capability",
       "name": "Capture from the command palette",
       "status": "implemented",
-      "seam": "capture",
       "summary": "Palette actions dispatch events; AppShell creates and focuses the note. The palette subscribes to the action registry.",
       "source": [
         "ui/src/components/command/CommandPalette.tsx",
         "core/src/ui/actionRegistry.ts",
         "ui/src/hooks/useActionRegistry.ts",
         "ui/src/components/AppShell.tsx"
-      ]
+      ],
+      "type": "capability",
+      "seam": "capture"
     },
     {
       "id": "cap.elicit.property-palette",
-      "type": "capability",
       "name": "Property palette entry",
       "status": "implemented",
-      "seam": "elicit",
       "summary": "Searchable property list opens the detail modal prefilled with the key; typing a new key creates it.",
       "source": [
         "ui/src/components/properties/UnifiedSelector.tsx",
         "ui/src/components/editor/HybridEditor.tsx"
-      ]
+      ],
+      "type": "capability",
+      "seam": "elicit"
     },
     {
       "id": "flow.capture-and-edit-palette",
-      "type": "flow",
       "name": "Capture and edit (palette pathway)",
       "status": "implemented",
-      "entry": "step.palette.capture",
-      "outcome": "Same outcome through command and property palettes; the detail modal opens prefilled with the chosen key.",
-      "journey": "capture-and-edit-palette",
       "source": [
         "optimize/src/journeys.ts"
-      ]
+      ],
+      "type": "flow",
+      "entry": "step.palette.capture",
+      "outcome": "Same outcome through command and property palettes; the detail modal opens prefilled with the chosen key.",
+      "journey": "capture-and-edit-palette"
     },
     {
       "id": "step.palette.capture",
-      "type": "step",
       "name": "New Task from the command palette",
       "status": "implemented",
+      "type": "step",
       "kind": "action",
       "target": {
         "testId": "app-shell"
@@ -1497,9 +1509,9 @@
     },
     {
       "id": "step.palette.elicit",
-      "type": "step",
       "name": "Pick the property key and open the detail modal",
       "status": "implemented",
+      "type": "step",
       "kind": "action",
       "target": {
         "testId": "property-palette-input"
@@ -1509,9 +1521,9 @@
     },
     {
       "id": "step.palette.done",
-      "type": "step",
       "name": "Property saved from the palette path",
       "status": "implemented",
+      "type": "step",
       "kind": "result",
       "statePath": "note.propertyIndex.framework",
       "stateEquals": [
@@ -1520,26 +1532,26 @@
     },
     {
       "id": "surface.commandpalette",
-      "type": "surface",
       "name": "CommandPalette",
       "status": "implemented",
-      "component": "CommandPalette",
+      "summary": "Search/command overlay; actions come from the action registry plus notes, and it re-renders on registry changes.",
       "source": [
         "ui/src/components/command/CommandPalette.tsx"
       ],
-      "summary": "Search/command overlay; actions come from the action registry plus notes, and it re-renders on registry changes."
+      "type": "surface",
+      "component": "CommandPalette"
     },
     {
       "id": "surface.unifiedselector",
-      "type": "surface",
       "name": "UnifiedSelector",
       "status": "implemented",
-      "component": "UnifiedSelector",
-      "seam": "elicit",
+      "summary": "Property palette overlay; search, suggestions, and recent keys. Duplicate ontology keys collapse to one option.",
       "source": [
         "ui/src/components/properties/UnifiedSelector.tsx"
       ],
-      "summary": "Property palette overlay; search, suggestions, and recent keys. Duplicate ontology keys collapse to one option."
+      "type": "surface",
+      "component": "UnifiedSelector",
+      "seam": "elicit"
     }
   ],
   "edges": [

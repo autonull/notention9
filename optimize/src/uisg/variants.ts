@@ -1,7 +1,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { SurfaceVariant, SurfaceVariantStatus, VariantMetrics } from './types.js';
+import type { SurfaceVariant, SurfaceVariantStatus, VariantMetrics, UisgSurface } from './types.js';
+import { loadGraph, saveGraph } from './cli.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const DEFAULT_FILE = resolve(ROOT, 'doc/uisg/variants.json');
@@ -77,6 +78,26 @@ export function createVariant(surface: string, id: string, patch: VariantPatch =
     };
     data.variants.push(record);
     saveVariants(data);
+
+    // Update graph.json
+    const graph = loadGraph(new Map());
+    const surfaceIdx = graph.nodes.findIndex(n => n.id === surface && n.type === 'surface');
+    if (surfaceIdx >= 0) {
+        const surfaceNode = graph.nodes[surfaceIdx] as UisgSurface;
+        const variants = { ...surfaceNode.variants };
+        variants[id] = {
+            template: record.template,
+            propsSchema: record.propsSchema,
+            strategyOverrides: record.strategyOverrides,
+            description: record.description,
+            status: record.status,
+            promotedAt: record.promotedAt,
+            metrics: record.metrics,
+        };
+        graph.nodes[surfaceIdx] = { ...surfaceNode, variants };
+        saveGraph(graph);
+    }
+
     return record;
 }
 
@@ -89,6 +110,20 @@ export function promoteVariant(surface: string, id: string, metrics?: VariantMet
     record.updatedAt = now;
     if (metrics) record.metrics = metrics;
     saveVariants(data);
+
+    // Update graph.json
+    const graph = loadGraph(new Map());
+    const surfaceIdx = graph.nodes.findIndex(n => n.id === surface && n.type === 'surface');
+    if (surfaceIdx >= 0) {
+        const surfaceNode = graph.nodes[surfaceIdx] as UisgSurface;
+        const variants = { ...surfaceNode.variants };
+        if (variants[id]) {
+            variants[id] = { ...variants[id], status: 'promoted', promotedAt: now, metrics: record.metrics };
+        }
+        graph.nodes[surfaceIdx] = { ...surfaceNode, variants, defaultVariant: id };
+        saveGraph(graph);
+    }
+
     return record;
 }
 
@@ -98,6 +133,26 @@ export function archiveVariant(surface: string, id: string): VariantRecord {
     record.status = 'archived';
     record.updatedAt = new Date().toISOString();
     saveVariants(data);
+
+    // Update graph.json
+    const graph = loadGraph(new Map());
+    const surfaceIdx = graph.nodes.findIndex(n => n.id === surface && n.type === 'surface');
+    if (surfaceIdx >= 0) {
+        const surfaceNode = graph.nodes[surfaceIdx] as UisgSurface;
+        const variants = { ...surfaceNode.variants };
+        if (variants[id]) {
+            variants[id] = { ...variants[id], status: 'archived' };
+        }
+        if (surfaceNode.defaultVariant === id) {
+            // Clear default if archiving the default variant
+            const { [id]: removed, ...remainingVariants } = variants;
+            graph.nodes[surfaceIdx] = { ...surfaceNode, variants: remainingVariants, defaultVariant: undefined };
+        } else {
+            graph.nodes[surfaceIdx] = { ...surfaceNode, variants };
+        }
+        saveGraph(graph);
+    }
+
     return record;
 }
 
@@ -124,4 +179,73 @@ export function exportVariants(surface: string, format: 'md' | 'json' = 'md'): s
         '| --- | --- | --- | --- |',
         ...rows,
     ].join('\n');
+}
+
+export function syncVariants(): { added: number; updated: number; removed: number } {
+    const variantsData = loadVariants();
+    const graph = loadGraph(new Map());
+    let added = 0;
+    let updated = 0;
+    let removed = 0;
+
+    // Build map of variants from variants.json
+    const variantMap = new Map<string, Map<string, VariantRecord>>();
+    for (const record of variantsData.variants) {
+        if (!variantMap.has(record.surface)) {
+            variantMap.set(record.surface, new Map());
+        }
+        variantMap.get(record.surface)!.set(record.id, record);
+    }
+
+    // Update graph surfaces
+    for (const node of graph.nodes) {
+        if (node.type !== 'surface') continue;
+        const surfaceId = node.id;
+        const surfaceVariants = variantMap.get(surfaceId);
+        const graphVariants = node.variants ?? {};
+
+        if (!surfaceVariants) {
+            // No variants in variants.json for this surface - remove all from graph
+            if (Object.keys(graphVariants).length > 0) {
+                node.variants = undefined;
+                node.defaultVariant = undefined;
+                removed += Object.keys(graphVariants).length;
+            }
+            continue;
+        }
+
+        const newVariants: Record<string, SurfaceVariant> = {};
+        for (const [id, record] of surfaceVariants) {
+            if (!graphVariants[id]) {
+                added++;
+            } else {
+                updated++;
+            }
+            newVariants[id] = {
+                template: record.template,
+                propsSchema: record.propsSchema,
+                strategyOverrides: record.strategyOverrides,
+                description: record.description,
+                status: record.status,
+                promotedAt: record.promotedAt,
+                metrics: record.metrics,
+            };
+        }
+
+        // Count removed
+        for (const id of Object.keys(graphVariants)) {
+            if (!surfaceVariants.has(id)) {
+                removed++;
+            }
+        }
+
+        node.variants = newVariants;
+        // Preserve defaultVariant if it still exists, otherwise clear
+        if (node.defaultVariant && !newVariants[node.defaultVariant]) {
+            node.defaultVariant = undefined;
+        }
+    }
+
+    saveGraph(graph);
+    return { added, updated, removed };
 }

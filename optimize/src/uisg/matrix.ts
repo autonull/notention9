@@ -25,6 +25,7 @@ export interface MatrixCell {
     viewport: string;
     theme: string;
     context?: string;
+    variant?: string;
 }
 
 export type MatrixCellStatus = 'passed' | 'failed' | 'skipped' | 'error';
@@ -61,19 +62,30 @@ export interface MatrixResult {
     summary: { total: number; passed: number; failed: number; skipped: number; errors: number };
 }
 
+export interface MatrixConfig {
+    contexts: string[];
+    themes: string[];
+    viewports: string[];
+    variants: string[];
+    parallelism: number;
+}
+
 export function buildMatrixCells(config: MatrixConfig, journeys: MatrixJourney[]): MatrixCell[] {
     const contexts = config.contexts.length ? config.contexts : [undefined];
+    const variants = config.variants.length ? config.variants : [undefined];
     return journeys.flatMap(journey =>
         contexts.flatMap(context =>
             config.themes.flatMap(theme =>
-                config.viewports.map(viewport => ({
-                    flowId: journey.flowId,
-                    journey: journey.journey,
-                    profile: journey.profile,
-                    viewport,
-                    theme,
-                    ...(context ? { context } : {}),
-                })))));
+                config.viewports.flatMap(viewport =>
+                    variants.map(variant => ({
+                        flowId: journey.flowId,
+                        journey: journey.journey,
+                        profile: journey.profile,
+                        viewport,
+                        theme,
+                        ...(context ? { context } : {}),
+                        ...(variant ? { variant } : {}),
+                    }))))));
 }
 
 async function runWithConcurrency<T, R>(items: T[], limit: number, run: (item: T) => Promise<R>): Promise<R[]> {

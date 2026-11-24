@@ -10,6 +10,7 @@ const config: MatrixConfig = {
     contexts: ['desktop', 'mobile'],
     themes: ['default', 'brand-acme'],
     viewports: ['mobile-390'],
+    variants: [],
     parallelism: 2,
 };
 
@@ -50,7 +51,7 @@ describe('journey matrix', () => {
     });
 
     it('records runner errors as error cells', async () => {
-        const result = await runMatrix({ ...config, contexts: [], themes: ['default'], viewports: ['mobile-390'], parallelism: 1 }, journeys, () => {
+        const result = await runMatrix({ ...config, contexts: [], themes: ['default'], viewports: ['mobile-390'], variants: [], parallelism: 1 }, journeys, () => {
             throw new Error('boom');
         });
         expect(result.summary.errors).toBe(1);
