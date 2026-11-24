@@ -25,12 +25,15 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | A.3 Theme system | ✅ Done | `doc/uisg/themes.json`, `themes.ts`, `uisg themes list/show/generate/check`; `theme.css` consumes vars; `?uisg=1&theme=<id>` lazily imports `theme-<id>.css` |
 | A.4 Multi-target templates | ✅ Core | Required `target`; `react`/`html`/`json` renderers; `solid`/`flutter` throw (no fallback); `generate` requires `--target` |
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
+| A.6 Variant resolver | ⬜ Pending | `resolveSurface()`; apply variants in `generateSurface`/`matrix`; wire `promote` → `defaultVariant`. See §14.1/§14.2 |
 | B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
 | B.2–B.5 Evaluation harness | ⬜ Pending | Metrics, decide, A/B report, promotion |
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
-**Latest commit:** Phase A.3 runtime + B.1 — live theme CSS, journey matrix runner.
+**Latest code commit:** Phase A.3 runtime + B.1 — live theme CSS, journey matrix runner (`0496246a`).
+
+**Plan revision:** §14 adds the variant resolver, graph/log single source, matrix cache + affected gating, baseline sampling, data-driven policy, risk-aware promotion, and quality-debt items.
 
 ---
 
@@ -214,7 +217,20 @@ pnpm uisg variants diff <surfaceId> <variantA> <variantB>
 pnpm uisg variants export <surfaceId> --format=md|json
 ```
 
-**Storage:** `doc/uisg/variants.json` (git-tracked, append-only log).
+**Storage:** `graph.json` is the state (`surface.variants`, `surface.defaultVariant`); `doc/uisg/variants.json` is an append-only lifecycle log. Write both atomically.
+
+### A.6 Variant Resolver (required for A.1/A.5 to matter)
+**File:** `optimize/src/uisg/resolve.ts`
+
+```typescript
+resolveSurface(surface: UisgSurface, variantId?: string): UisgSurface
+```
+
+- Merge base surface → `surface.variants[variantId ?? surface.defaultVariant]`.
+- Apply `template`, `propsSchema`, `strategyOverrides`; later fields win.
+- `generateSurface()` and `matrix.ts` call the resolver; never read a raw surface when a variant is selected.
+- CLI: `uisg generate --variant <id>`, `uisg matrix --variants all`.
+- Acceptance: `uisg generate --surface surface.notesview --variant dense --target=react --dry-run` changes the emitted component; `uisg matrix --variants all` adds a variant dimension.
 
 ---
 
@@ -531,6 +547,7 @@ interface UisgFlags {
 - [x] Themes apply at `?uisg=1&theme=`
 - [x] `uisg generate --target=html|json` works for 1 surface
 - [x] `uisg variants` CRUD works, stores in `variants.json`
+- [ ] Variants resolve into generation and matrix (A.6)
 
 ### Phase B
 - [ ] `uisg matrix --contexts=all --themes=all` completes in <10min
@@ -558,7 +575,7 @@ interface UisgFlags {
 
 | Risk | Likelihood | Impact | Mitigation |
 |------|------------|--------|------------|
-| Variant explosion (combinatorial) | High | CI time, storage | Smart filtering: only run matrix on changed surfaces; predictive pre-filter |
+| Variant explosion (combinatorial) | High | CI time, storage | §14.3 content-addressed cache + `uisg affected`; §14.4 `--max-cells`/`--shard`; predictive pre-filter |
 | Template target divergence | Medium | Maintenance burden | Shared AST primitives; contract tests per target |
 | AI generation quality | Medium | Wasted review time | Few-shot with 20+ examples; human-in-loop; confidence scoring |
 | Visual diff flakiness | Medium | False positives | Deterministic rendering (seeded); mask dynamic regions; threshold tuning |
@@ -575,15 +592,21 @@ interface UisgFlags {
 | Promotion policy | Auto vs manual gate | Auto for PASS, manual for mixed | After 10 promotions |
 | AI provider | Local (Ollama) vs API (Anthropic) | Local first | If quality insufficient |
 | Composition DSL syntax | TS functions vs JSON vs YAML | TS functions (type-safe) | If non-dev authors need it |
+| Variant state source | Graph vs `variants.json` vs both | Graph state + append-only log | If audit needs full replay |
+| Matrix cache | File vs DB | `matrix-cache.json` | When CI shards need shared cache |
+| Runtime sampling | 1 vs 3 seeded runs | 3 seeded, median + MAD | If time budget is tight |
+| Policy location | Code vs `policy.json` | `policy.json` (versioned) | If overrides explode |
+| PR matrix scope | Full vs affected | Affected via `uisg affected` | If cache misses are high |
+| Auto-promotion risk | All vs non-destructive only | Non-destructive only | After effect-risk coverage grows |
 
 ---
 
 ## 11. Sequencing (No Parallelism Needed)
 
 ```
-A.1 Graph variants     → A.2 Contexts v2    → A.3 Themes      → A.4 Targets     → A.5 Variant CLI
-                                                                           │
-                                                                           ▼
+A.1 Graph variants → A.2 Contexts v2 → A.3 Themes → A.4 Targets → A.5 Variant CLI → A.6 Resolver
+                                                                                        │
+                                                                                        ▼
 B.1 Matrix runner  ← B.2 Metrics      ← B.3 Decide      ← B.4 A/B Report  ← B.5 Promotion
                                                                            │
                                                                            ▼
@@ -593,7 +616,7 @@ C.1 Visual diff CI  → C.2 PR Bot       → C.3 Graph UI    → C.4 Template PG
 D.1 AI Generate  ← D.2 Compose DSL  ← D.3 Predict     ← D.4 Feature Flags
 ```
 
-**Each sub-task ships independently.** Phase A alone enables variant authoring. Phase B enables evaluation. Phase C enables automation. Phase D enables intelligence.
+**Each sub-task ships independently.** Phase A alone enables variant authoring; A.6 makes variants executable. Phase B enables evaluation. Phase C enables automation. Phase D enables intelligence.
 
 ---
 
@@ -609,6 +632,9 @@ D.1 AI Generate  ← D.2 Compose DSL  ← D.3 Predict     ← D.4 Feature Flags
 | Time to new variant (dev) | Hours | 15min | 5min |
 | Bundle size per surface | Varies | ≤5kb delta | ≤2kb delta |
 | Tone violations in generated | 0 | 0 | 0 |
+| PR matrix cells (affected only) | N/A | <50 | <20 |
+| Matrix cache hit rate | 0% | 60% | 90% |
+| Flaky matrix cells | Unknown | <5% | <1% |
 
 ---
 
@@ -628,6 +654,105 @@ edit optimize/src/uisg/cli.ts  # add 'variants' command
 # 5. Commit
 git commit -m "feat(uisg): Phase A.1+A.5 - variant schema v3 + registry"
 ```
+
+---
+
+## 14. Efficiency & Quality Suggestions (Plan Update)
+
+These suggestions improve signal or cut work. Each maps to an existing sub-task.
+
+### 14.1 Make variants executable (A.6)
+Variants are currently metadata only: `generateSurface()` ignores `surface.variants` and `defaultVariant`.
+- Add `resolveSurface(surface, variantId?)`: base surface → `surface.variants[variantId ?? surface.defaultVariant]` → merged `template`, `propsSchema`, `strategyOverrides`.
+- `generateSurface()` and `matrix.ts` call the resolver; never read a raw surface when a variant is selected.
+- Add `uisg generate --variant <id>` and `uisg matrix --variants all`.
+- Without A.6, A.1/A.5 have no runtime effect.
+
+### 14.2 One source of truth for variants
+The graph and `variants.json` can drift.
+- Make `graph.json` the state: `surface.variants` + `surface.defaultVariant`.
+- Make `doc/uisg/variants.json` an append-only lifecycle log (`created|promoted|archived`) for audit.
+- `variants create/promote/archive` write both atomically (temp file + rename).
+- Add `uisg variants sync` and fail `uisg check` on drift.
+
+### 14.3 Cache matrix cells
+Variant explosion is the top risk.
+- Key each cell by `hash(graph, variant, template, context, theme, viewport, journey)`.
+- Store in `doc/uisg/matrix-cache.json`; skip cells whose key and inputs are unchanged.
+- Run full matrix nightly; run affected matrix on PRs.
+- Add `uisg affected <changed files...>`: changed files → surfaces → cells. Use `git diff --name-only`.
+- Expected: PR matrix drops from O(all) to O(changed).
+
+### 14.4 Pre-filter and shard matrix
+- Add `--max-cells N`; fail before running unless `--allow-large`.
+- Add `--shard i/N`; aggregate shards by `runId`.
+- Estimate time from historical `runs.jsonl`; print ETA in `--plan`.
+- Default parallelism `min(4, cpus)`.
+
+### 14.5 Reuse evidence, do not re-run
+- B.2 collectors read existing `bundle.json`, `runs.jsonl`, and `ui/test` artifacts.
+- Cache `lint:tone`, `tsc`, and axe results by content hash (`doc/uisg/quality-cache.json`).
+- One Playwright run per cell; metrics are derived, not a second pass.
+
+### 14.6 Baselines, not absolute thresholds
+- Store per-journey baselines in `doc/uisg/baselines/<journey>.json`.
+- Decide on deltas vs baseline; keep absolute hard gates only for type/axe/tone.
+- Run `N=3` seeded repetitions for runtime; use median + MAD, not one sample.
+
+### 14.7 Data-driven policy
+- Move thresholds from `decide.ts` to `doc/uisg/policy.json` (versioned).
+- Support per-surface/per-journey overrides.
+- `uisg decide --policy <file>`; `uisg check` validates the policy schema.
+
+### 14.8 Deterministic visual diff
+- Freeze time/random, disable animations/transitions, mask `[data-visual-mask]`.
+- Key screenshots by `(surface, variant, context, theme, viewport, journey)`.
+- `pixelmatch` + threshold; `--update-baselines` only on main.
+- Store diffs in `doc/uisg/visual/<runId>/`.
+
+### 14.9 Risk-aware promotion
+- Auto-promote only non-destructive surfaces/flows (no `consequential` effects).
+- Keep `previousDefaultVariant`; add `uisg variants rollback`.
+- Promotion writes graph + log atomically; commit message includes metrics + `runId`.
+
+### 14.10 AI generation with hard filters
+- Generate N candidates, then run schema + tone + type checks before preview.
+- Rank by static checks + one smoke matrix cell; show only the top candidate.
+- Reject on any hard gate; no silent fallback template.
+
+### 14.11 Narrow DSL first
+- D.2 starts with typed props/layout/actions only; compile to existing AST primitives.
+- Add contract tests per target (`react`/`html`/`json`) to prevent divergence.
+
+### 14.12 Simple predictive model
+- D.3 starts with a linear/GBM regression trained from `runs.jsonl`.
+- Use a time-based split; report MAE.
+- Use predictions only to order/pre-filter matrix, never to gate promotion.
+
+### 14.13 Feature flags
+- Resolve flags from context `featureFlags` + `?uisg=1&flags=a,-b`; reject unknown flags.
+- Record resolved flags in evidence bundles.
+- No persisted defaults.
+
+### 14.14 Close quality debt
+- Sanitize generated identifiers (`surface_settings-skills_PropsSchema` is invalid; camelCase).
+- Emit `.tsx` when generated hooks return JSX (`useFlowState.ts`).
+- Add `uisg check --compile` to typecheck a generated subset, not just content hashes.
+- Add schema checks for every `doc/uisg/*.json` (graph, contexts, themes, variants, matrix, policy).
+
+### 14.15 Test/CI efficiency
+- PR: `uisg check` + affected matrix + unit tests.
+- Nightly: full matrix + visual diff + promotion candidates.
+- Use `vitest --changed` and `isolate: false` for UISG tests; cache `tsc`/lint by hash.
+- Skip Playwright when only codegen/schema files changed.
+
+### 14.16 Suggested commit order
+1. Variant resolver + graph/log single source (§14.1, §14.2).
+2. Matrix cache + affected + max-cells (§14.3, §14.4).
+3. Metrics reuse + baselines + policy (§14.5–§14.7).
+4. Visual diff + promotion + rollback (§14.8, §14.9).
+5. AI/DSL/predict/flags (§14.10–§14.13).
+6. Quality-debt closeout (§14.14, §14.15).
 
 ---
 
