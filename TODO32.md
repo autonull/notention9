@@ -184,10 +184,10 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [x] `uisg rank`: score = (impact × confidence) / effort; emit `doc/uisg/priority.json` with reasons linked to graph nodes.
 - [x] `uisg select`: check `requires`/`excludes`, groups, lifecycle, platform, modality, theme, context; deterministic checker; return request + explanation + minimal conflict set; never silently drop.
 - [x] Context profiles: `doc/uisg/contexts.json` (actor, expertise, device, connectivity, locale, a11y constraints) as experiment contexts.
-- [ ] Hard constraints/Pareto in experiment reports; weight profiles explicit with sensitivity.
+- [x] Hard constraints/Pareto in experiment reports; weight profiles explicit with sensitivity.
 - [x] Map friction kinds → seams/params via `optimize/src/loop/frictionMap.ts`; ignore positive kinds.
 - [x] Surface top 3 in `uisg inventory` and verify log.
-- [ ] Tests for ranking, selection conflicts, metric ingestion.
+- [x] Tests for ranking, selection conflicts, metric ingestion.
 - **Dogfood:** use `uisg scan` output as denominator for coverage metrics; reuse `analyze` findings as drift evidence.
 
 #### A2: W32.9 — Evidence, Records, Governance
@@ -198,8 +198,8 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [x] `uisg adopt <flowId>`: compare bundles, require evidence, update graph (lifecycle, implementation, provenance, bundle), append decision; validate before write.
 - [x] Findings repo: `findings`/`mark-fixed`, statuses open/fixed/verified with stable IDs.
 - [x] Canonicalization: stable field/edge/enum ordering, explicit defaults, schema version, unknown-field policy, deterministic hash; round-trip `canonicalize(parse(serialize(canonicalize(G)))) == canonicalize(G)`; `uisg diff` (revision/variant; semantic vs ordering); `uisg sync` proposes only.
-- [ ] Regression: `pnpm optimize replay` on adopted flows; `pnpm optimize ux-evaluate` metrics linked to graph.
-- [ ] Tests: atomic adopt, ledger append, transition legality, finding status, round-trip, diff.
+- [x] Regression: `pnpm optimize replay` on adopted flows; `pnpm optimize ux-evaluate` metrics linked to graph.
+- [x] Tests: atomic adopt, ledger append, transition legality, finding status, round-trip, diff.
 - **Dogfood:** `validateGraph`/`analyzeGraph` as the source of truth for "evidence"; reuse manifest emission for provenance; `syncGraphWithCode` proposals as finding candidates.
 
 **Phase A Acceptance:** seeded friction + two bundles produce stable ranking; invalid selection rejected with explanation; top experiments in inventory; adopt atomic+validated; findings in repo; round-trip green; no single UX score.
@@ -227,16 +227,16 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [x] Move expandable "Why this match?" details into `MatchItem` (shared pattern); keep badges.
 - [x] Delete/rehome `LocalMatchPreview` and `DashboardLocalMatch`; update orphan baseline.
 - [x] Journey asserts explanation visibility + reason text (`assertVisible` via `matches[*].matched` state).
-- [ ] axe dark/light on note with rail open.
+- [x] axe dark/light on note with rail open.
 
 #### B3: W32.6 — Conflict Resolution & Ontology Health
 **Goal:** detection leads to resolution.
 - [x] Extend conflict journey: select, resolve (update/remove/merge), assert `conflicts.length === 0` with data preserved (detection verified, resolution journey modeled).
 - [x] State paths for suggestions/resolution modeled; capability "Resolve ontology conflict" added to graph.
-- [ ] Gardener/merge flow coverage; `ontology:audit` output linked to graph.
+- [x] Gardener/merge flow coverage; `ontology:audit` output linked to graph.
 
 **Phase B Acceptance:** ≥1 evaluated experiment per seam with 2 strategies; every decision recorded; no variant without evidence bundle; `check:ui` green; resolution journey green; detection+resolution capabilities; no silent data loss.
-- Status: All seam experiments modeled in graph with statuses; Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended (detection verified); Capture/Match/Display experiments modeled as candidate/alternative flows; gardener/merge flow planned. All decisions recorded with evidence bundles. `check:ui` green; golden-path & axe-audit journeys pass; ontology-conflict journey passes.
+- Status: All seam experiments modeled in graph with statuses; Elicit experiment (inline-detail vs popup) implemented; Explain consolidation done (MatchItem expanded, orphans removed); Conflict resolution journey extended (detection verified); Capture/Match/Display experiments modeled as candidate/alternative flows. Gardener merge modeled as `flow.gardener-merge` (planned: service-level merge exists in `Gardener.optimizeOntology`, no dedicated UI dialog yet). `ontology:audit --link-graph` appends an open finding linked to `cap.ontology.merge` with the report path and coverage counts. All decisions recorded with evidence bundles. `check:ui` green; golden-path & axe-audit journeys pass (incl. note-with-rail-open); ontology-conflict journey passes.
 
 ---
 
@@ -425,3 +425,19 @@ export function canonicalize(graph: UisgGraph): UisgGraph { ... }
 - `sync.ts`: `syncToAstOps` → `--apply` writes actual fixes
 - `validate.ts`: `canonicalize` round-trip test in CI
 - `toJourney.ts`: schema-driven compilation with Zod refinements
+---
+
+## 12. Progress snapshot (2026-11-23)
+
+### Completed this pass
+- **A1**: hard constraints + Pareto frontier in `rank.ts` (explicit `WEIGHT_PROFILES` with sensitivity, `paretoFrontier` in `priority.json`); tests for metrics ingestion, ranking, selection conflicts (`uisg.test.ts`).
+- **A2**: lifecycle legality/ledger tests; adopt/finding status tests; round-trip + diff tests; regression replay via `optimize replay`; metrics linked to graph (`loopLatency`/`driftFindings`).
+- **B2**: axe dark/light on note with rail open (`axe-audit.spec.ts`, 10 cases).
+- **B3**: `flow.gardener-merge` modeled as planned (service merge exists; no UI dialog yet, explicitly unsupported); `ontology:audit --link-graph` appends an open finding linked to `cap.ontology.merge` and is unit-tested.
+- **D hygiene**: TypeScript errors fixed (`MatchItem`, `InlineDetailStrategy`); type-scale violations cleared; `check:ui` and `pnpm verify` (L0–L3) green.
+
+### Remaining (in priority order)
+1. **B1**: second realization (keyboard/palette pathway; 2 themes × 2 viewports; 30–40 records); absorb TODO31 `ListRow`/`Field`/`ContextPanel` on second use.
+2. **D1**: absorb TODO31 residuals; audit `knownJourneys.ts` duplicates and `scene-editor-note`; split `mcp-contract`/`replay` in README; fix stale sources.
+3. **D2**: update skill ops + `doc/uisg/README.md`; reconcile with `DESIGN_UI_UX_ONTOLOGY_SUGGESTIONS.md`; refresh B/C screenshots; run final matrix and record run IDs.
+4. **Consolidated acceptance**: lossy representation note, migration ID preservation test, manifest determinism test, seeded regression detection, invalid-selection explanation test, skeleton preview test, positive/denied/invalid/loading/error/cancel/recovery test coverage, a11y + manual review traceability, generated-vs-hand-built comparison, full `create/query/validate/analyze/select/simulate/generate/diff/sync` slice demo.

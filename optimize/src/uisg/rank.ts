@@ -26,11 +26,55 @@ export interface RankedItem {
     evidence: string[];
 }
 
+export interface WeightProfile {
+    friction: number;
+    latency: number;
+    comprehension: number;
+    failingAssertions: number;
+    driftOrphans: number;
+}
+
+export const WEIGHT_PROFILES: Record<PriorityData['weightProfile'], WeightProfile> = {
+    default: {
+        friction: 10,
+        latency: 0.01,
+        comprehension: 5,
+        failingAssertions: 20,
+        driftOrphans: 15,
+    },
+    'user-visible-first': {
+        friction: 15,
+        latency: 0.005,
+        comprehension: 8,
+        failingAssertions: 25,
+        driftOrphans: 10,
+    },
+    'latency-focused': {
+        friction: 5,
+        latency: 0.05,
+        comprehension: 3,
+        failingAssertions: 15,
+        driftOrphans: 10,
+    },
+    'a11y-focused': {
+        friction: 8,
+        latency: 0.01,
+        comprehension: 12,
+        failingAssertions: 30,
+        driftOrphans: 20,
+    },
+};
+
 export interface PriorityData {
     version: number;
     generatedAt: string;
     weightProfile: 'default' | 'user-visible-first' | 'latency-focused' | 'a11y-focused';
     items: RankedItem[];
+    paretoFrontier?: string[]; // Node IDs on the Pareto frontier
+}
+
+function getWeightProfile(profile: PriorityData['weightProfile']): WeightProfile {
+    return WEIGHT_PROFILES[profile] ?? WEIGHT_PROFILES.default;
 }
 
 interface ImpactFactors {
@@ -156,6 +200,9 @@ export function rankItems(weightProfile: PriorityData['weightProfile'] = 'defaul
     const scan = scanAll();
     const findings = analyzeGraph(validation.graph);
 
+    // Weight profiles for explicit sensitivity
+    const weights = getWeightProfile(weightProfile);
+
     // Get nodes that are candidates for work (not removed, not fully implemented without issues)
     const candidates = validation.graph.nodes.filter((node: UisgNode) =>
         node.status !== 'removed' &&
@@ -167,11 +214,11 @@ export function rankItems(weightProfile: PriorityData['weightProfile'] = 'defaul
     for (const node of candidates) {
         const impactFactors = computeImpact(node, validation.graph, metrics);
         const impact =
-            impactFactors.frictionFrequency * impactFactors.frictionSeverity * 10 +
-            impactFactors.latency * 0.01 +
-            impactFactors.comprehension * 5 +
-            impactFactors.failingAssertions * 20 +
-            impactFactors.driftOrphans * 15;
+            impactFactors.frictionFrequency * impactFactors.frictionSeverity * weights.friction +
+            impactFactors.latency * weights.latency +
+            impactFactors.comprehension * weights.comprehension +
+            impactFactors.failingAssertions * weights.failingAssertions +
+            impactFactors.driftOrphans * weights.driftOrphans;
 
         const confidence = computeConfidence(node, metrics);
         const effort = computeEffort(node, validation.graph);
@@ -216,15 +263,46 @@ export function rankItems(weightProfile: PriorityData['weightProfile'] = 'defaul
         return (typeOrder[a.type] ?? 99) - (typeOrder[b.type] ?? 99);
     });
 
+    // Compute Pareto frontier: items that are not dominated on (impact, confidence) with lower effort
+    const paretoFrontier = computeParetoFrontier(items);
+
     const priority: PriorityData = {
         version: 1,
         generatedAt: new Date().toISOString(),
         weightProfile,
         items,
+        paretoFrontier,
     };
 
     writeFileSync(PRIORITY_FILE, JSON.stringify(priority, null, 2) + '\n');
     return priority;
+}
+
+function computeParetoFrontier(items: RankedItem[]): string[] {
+    // Pareto frontier: items not dominated by any other item
+    // Dominated means: another item has >= impact, >= confidence, AND <= effort (with at least one strict)
+    const pareto: RankedItem[] = [];
+
+    for (const item of items) {
+        let dominated = false;
+        for (const other of items) {
+            if (other.nodeId === item.nodeId) continue;
+            if (
+                other.impact >= item.impact &&
+                other.confidence >= item.confidence &&
+                other.effort <= item.effort &&
+                (other.impact > item.impact || other.confidence > item.confidence || other.effort < item.effort)
+            ) {
+                dominated = true;
+                break;
+            }
+        }
+        if (!dominated) {
+            pareto.push(item);
+        }
+    }
+
+    return pareto.map(p => p.nodeId);
 }
 
 export function loadPriority(): PriorityData | null {

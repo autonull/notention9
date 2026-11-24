@@ -16,6 +16,10 @@ function getOntologyArray(): OntologyNode[] {
 }
 import { readManifest } from '@notention/core/eval/caseManifest';
 import { QUALITY_CASE_NOTES } from '@notention/core/fixtures';
+import { appendFinding, loadFindings } from '../../uisg/records.js';
+
+const COVERAGE_NODE_ID = 'cap.ontology.merge';
+const COVERAGE_ISSUE = 'ontology-coverage';
 
 interface OntologyAuditResult {
     timestamp: string;
@@ -216,6 +220,41 @@ function generateRecommendations(
     return recommendations;
 }
 
+export function buildCoverageFinding(
+    result: OntologyAuditResult,
+    reportPath: string,
+    nodeId: string = COVERAGE_NODE_ID
+) {
+    const severity: 'low' | 'medium' | 'high' =
+        result.gaps.coveragePercent < 50 ? 'high' : result.gaps.coveragePercent < 80 ? 'medium' : 'low';
+    return {
+        issue: COVERAGE_ISSUE,
+        evidence: [
+            reportPath,
+            `coverage:${result.gaps.coveragePercent}%`,
+            `unused:${result.gaps.unusedOntologyKeys.length}`,
+            `missing:${result.gaps.missingFromOntology.length}`,
+        ],
+        impact: `Ontology coverage is ${result.gaps.coveragePercent}% (${result.gaps.unusedOntologyKeys.length} keys unused, ${result.gaps.missingFromOntology.length} keys missing from ontology).`,
+        suggestedChange: 'Add missing keys to the shipped ontology or deprecate unused keys; see audit recommendations.',
+        severity,
+        nodeId,
+        status: 'open' as const,
+    };
+}
+
+export function linkAuditToGraph(
+    result: OntologyAuditResult,
+    reportPath: string,
+    nodeId: string = COVERAGE_NODE_ID
+): string | null {
+    const existing = loadFindings().find(
+        finding => finding.nodeId === nodeId && finding.issue === COVERAGE_ISSUE && finding.status === 'open'
+    );
+    if (existing) return null;
+    return appendFinding(buildCoverageFinding(result, reportPath, nodeId)).id;
+}
+
 export class OntologyAuditCommand extends Command {
     readonly name = 'ontology:audit';
     readonly description = 'Audit ontology coverage vs eval cases + fixtures; reports gaps, unused keys, coverage %';
@@ -223,12 +262,14 @@ export class OntologyAuditCommand extends Command {
         { name: 'output', type: 'string' as const, short: 'o', description: 'Output directory (default: data/eval/ontology)' },
         { name: 'json', type: 'boolean' as const, description: 'Output JSON to stdout' },
         { name: 'markdown', type: 'boolean' as const, description: 'Also write Markdown report' },
+        { name: 'link-graph', type: 'boolean' as const, description: 'Append an open finding linked to cap.ontology.merge' },
     ];
 
     async execute(args: {
         output?: string;
         json?: boolean;
         markdown?: boolean;
+        linkGraph?: boolean;
         positionals: string[];
     }): Promise<number> {
         try {
@@ -328,6 +369,13 @@ export class OntologyAuditCommand extends Command {
                 console.log(JSON.stringify(result, null, 2));
             } else {
                 this.printSummary(result);
+            }
+
+            if (args.linkGraph) {
+                const findingId = linkAuditToGraph(result, reportPath);
+                this.printInfo(findingId
+                    ? `Linked audit to graph: finding ${findingId} (${COVERAGE_NODE_ID})`
+                    : `Audit already linked to graph (${COVERAGE_NODE_ID}); no new finding`);
             }
 
             this.printInfo(`JSON report: ${reportPath}`);

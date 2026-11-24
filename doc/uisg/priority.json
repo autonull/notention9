@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generatedAt": "2026-11-23T22:35:58.472Z",
+  "generatedAt": "2026-11-24T00:22:52.097Z",
   "weightProfile": "default",
   "items": [
     {
@@ -15,6 +15,22 @@
         "status:candidate"
       ],
       "evidence": []
+    },
+    {
+      "nodeId": "flow.gardener-merge",
+      "type": "flow",
+      "name": "Gardener: merge ontology classes",
+      "score": 0,
+      "impact": 0,
+      "confidence": 3,
+      "effort": 6,
+      "reasons": [
+        "status:planned"
+      ],
+      "evidence": [
+        "ui/src/services/gardener.ts",
+        "ui/src/hooks/useGardener.ts"
+      ]
     },
     {
       "nodeId": "cap.property.inline",
@@ -372,5 +388,9 @@
       "reasons": [],
       "evidence": []
     }
+  ],
+  "paretoFrontier": [
+    "flow.gardener-merge",
+    "cap.intent.recognize"
   ]
 }

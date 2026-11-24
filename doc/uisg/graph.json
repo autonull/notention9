@@ -481,6 +481,20 @@
       ]
     },
     {
+      "id": "flow.gardener-merge",
+      "type": "flow",
+      "name": "Gardener: merge ontology classes",
+      "status": "planned",
+      "confidence": "medium",
+      "entry": "step.gm.open",
+      "outcome": "Selected ontology classes are merged with preserved data.",
+      "summary": "Service merge exists in Gardener.optimizeOntology and useGardener.mergeAttributesToNode; no dedicated UI merge dialog yet - planned, explicitly unsupported in today's UI.",
+      "source": [
+        "ui/src/services/gardener.ts",
+        "ui/src/hooks/useGardener.ts"
+      ]
+    },
+    {
       "id": "surface.ontologyview",
       "type": "surface",
       "name": "Ontology settings",
@@ -537,6 +551,51 @@
         "careRequirements"
       ],
       "summary": "Matched keys explain the match."
+    },
+    {
+      "id": "step.gm.open",
+      "type": "step",
+      "name": "Open Merge dialog",
+      "status": "implemented",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "role": "button",
+        "name": "Merge classes"
+      }
+    },
+    {
+      "id": "step.gm.select",
+      "type": "step",
+      "name": "Select classes to merge",
+      "status": "implemented",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "role": "checkbox",
+        "name": "Select classes"
+      }
+    },
+    {
+      "id": "step.gm.confirm",
+      "type": "step",
+      "name": "Confirm merge",
+      "status": "implemented",
+      "kind": "action",
+      "action": "click",
+      "target": {
+        "role": "button",
+        "name": "Merge"
+      }
+    },
+    {
+      "id": "step.gm.verified",
+      "type": "step",
+      "name": "Merge verified",
+      "status": "implemented",
+      "kind": "result",
+      "statePath": "conflicts.length",
+      "stateEquals": 0
     },
     {
       "id": "pred.can-publish",
@@ -1797,6 +1856,59 @@
     },
     {
       "from": "step.oc.visible",
+      "type": "renders",
+      "to": "surface.ontologyview"
+    },
+    {
+      "from": "flow.gardener-merge",
+      "type": "uses",
+      "to": "cap.ontology.merge"
+    },
+    {
+      "from": "flow.gardener-merge",
+      "type": "contains",
+      "to": "step.gm.open"
+    },
+    {
+      "from": "flow.gardener-merge",
+      "type": "contains",
+      "to": "step.gm.select"
+    },
+    {
+      "from": "flow.gardener-merge",
+      "type": "contains",
+      "to": "step.gm.confirm"
+    },
+    {
+      "from": "flow.gardener-merge",
+      "type": "contains",
+      "to": "step.gm.verified"
+    },
+    {
+      "from": "step.gm.open",
+      "type": "renders",
+      "to": "surface.ontologyview"
+    },
+    {
+      "from": "step.gm.open",
+      "type": "next",
+      "to": "step.gm.select",
+      "when": "dialog-opened"
+    },
+    {
+      "from": "step.gm.select",
+      "type": "next",
+      "to": "step.gm.confirm",
+      "when": "classes-selected"
+    },
+    {
+      "from": "step.gm.confirm",
+      "type": "next",
+      "to": "step.gm.verified",
+      "when": "merge-confirmed"
+    },
+    {
+      "from": "step.gm.verified",
       "type": "renders",
       "to": "surface.ontologyview"
     },

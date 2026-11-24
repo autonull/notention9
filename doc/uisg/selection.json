@@ -1,11 +1,11 @@
 {
   "request": {
-    "feature": "flow.inline-detail"
+    "feature": "intent.recognize"
   },
   "selected": [
-    "flow.inline-detail"
+    "cap.intent.recognize"
   ],
-  "explanation": "Selected 1 node(s) for \"flow.inline-detail\" under context \"default\"",
+  "explanation": "Selected 1 node(s) for \"intent.recognize\" under context \"default\"",
   "conflicts": [],
   "satisfied": true
 }
