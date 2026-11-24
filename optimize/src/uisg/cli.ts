@@ -63,6 +63,7 @@ Commands:
                                             Run journeys across contexts x themes x viewports; write matrix report
   visual-diff --baseline=<runId> --compare=<runId> [--contexts c|all] [--themes t|all] [--threshold=0.99] [--update-baselines]
                                             Visual regression test with pixelmatch
+  pr-bot --repo=owner/repo --pr=N --token=xxx  Post UISG status comment on PR
   compare <bundleA> <bundleB>               Diff two evidence bundles (run dirs or bundle.json files)
   inventory                                 Graph stats, journey links, seam coverage, variants
   scan [--out <file>]                       Scan codebase for surfaces, navigation, seams, journeys, strategies
@@ -641,6 +642,26 @@ async function main(): Promise<number> {
                 ...(themes.length ? ['--themes', themes.join(',')] : []),
                 '--threshold', String(threshold),
                 ...(updateBaselines ? ['--update-baselines'] : []),
+            ], { cwd: ROOT, stdio: 'inherit', encoding: 'utf8' });
+
+            return result.status ?? 1;
+        }
+        case 'pr-bot': {
+            const { spawnSync } = await import('node:child_process');
+            const repo = flags.get('repo');
+            const pr = flags.get('pr');
+            const token = flags.get('token');
+            const matrix = flags.get('matrix');
+            const visual = flags.get('visual');
+
+            if (!repo || !pr || !token) {
+                console.error('pr-bot requires --repo, --pr, and --token');
+                return 1;
+            }
+
+            const result = spawnSync('tsx', ['scripts/pr-bot.ts', '--repo', repo, '--pr', pr, '--token', token,
+                ...(matrix ? ['--matrix', matrix] : []),
+                ...(visual ? ['--visual', visual] : []),
             ], { cwd: ROOT, stdio: 'inherit', encoding: 'utf8' });
 
             return result.status ?? 1;
