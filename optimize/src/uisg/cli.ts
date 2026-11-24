@@ -34,6 +34,7 @@ import {
     skeletonOutputs, skeletonToJourney, type UisgSkeleton,
 } from './skeleton.js';
 import { simulateFlow } from './simulate.js';
+import { flowToReducer, emitReducer } from './flowToReducer.js';
 import { emitSeamProps, writeSeamProps } from './seamProps.js';
 import { emitComponentMap, writeComponentMap } from './componentMap.js';
 import { generateSurface, generateAllSurfaces, checkParity, checkAllParity } from './codegen.js';
@@ -52,6 +53,7 @@ Commands:
   generate [--surface <id>] [--all] [--dry-run] [--check] [--parity] [--changed]  Generate surface component + test + props schema
   optimize [--changed] [--dry-run] [--json] [--context <id>]  Run full pipeline: types, scan, generate, check
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
+  reducer <flowId> [--out <file>]           Generate flow reducer from graph
   matrix [--flows a,b] [--viewports v] [--themes t] [--profiles hand-built,generated] [--no-build]
                                             Run every flow at 2 themes x 2 viewports; record dimensions
   compare <bundleA> <bundleB>               Diff two evidence bundles (run dirs or bundle.json files)
@@ -454,6 +456,22 @@ async function main(): Promise<number> {
             }
             if (flags.has('json')) console.log(JSON.stringify(simulation, null, 2));
             return simulation.status === 'missing' ? 1 : 0;
+        }
+        case 'reducer': {
+            const flowId = positionals[0];
+            if (!flowId) { console.error('reducer requires a flowId'); return 1; }
+            const graph = loadGraph(flags);
+            const out = flags.get('out') ?? `ui/src/hooks/reducers/${flowId}.ts`;
+            const reducer = flowToReducer(graph, flowId);
+            const content = emitReducer(reducer);
+            const { writeFileSync, mkdirSync } = await import('node:fs');
+            const { dirname } = await import('node:path');
+            const fullPath = resolve(ROOT, out);
+            mkdirSync(dirname(fullPath), { recursive: true });
+            writeFileSync(fullPath, content);
+            console.log(`Generated ${out}`);
+            if (flags.has('json')) console.log(JSON.stringify(reducer, null, 2));
+            return 0;
         }
         case 'matrix': {
             const graph = loadGraph(flags);
