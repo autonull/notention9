@@ -43,6 +43,9 @@ async function main(): Promise<void> {
     // L1: UISG graph gate (validate, analyze, sync, seeded regressions, round-trip)
     run('pnpm uisg:check', 'L1: UISG graph gate');
 
+    // L1: UISG optimize pipeline (types, scan, generate, check)
+    run('pnpm uisg optimize', 'L1: UISG optimize pipeline');
+
     // L2: UISG browser journey - capture-and-edit
     run('pnpm uisg run flow.capture-and-edit', 'L2: UISG E2E journey (capture-and-edit)');
 

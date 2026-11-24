@@ -50,7 +50,7 @@ Commands:
   run <flowId> [same flags as to-journey]   Compile, emit the journey test if missing, run it
   skeleton [--write] [--check] [--json]      Emit the generated skeleton preview + preview journeys
   generate [--surface <id>] [--all] [--dry-run] [--check] [--parity] [--changed]  Generate surface component + test + props schema
-  optimize [--changed] [--dry-run] [--json]   Run full pipeline: types, scan, generate, check
+  optimize [--changed] [--dry-run] [--json] [--context <id>]  Run full pipeline: types, scan, generate, check
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
   matrix [--flows a,b] [--viewports v] [--themes t] [--profiles hand-built,generated] [--no-build]
                                             Run every flow at 2 themes x 2 viewports; record dimensions
@@ -733,15 +733,23 @@ async function main(): Promise<number> {
             const expectedSeamProps = emitSeamProps();
             const expectedComponentMap = emitComponentMap();
             const typesOutOfDate = currentSeamProps !== expectedSeamProps || currentComponentMap !== expectedComponentMap;
+            // Check generated surfaces
+            const staleGenerated = skeletonOutputs(buildSkeleton(graph))
+                .filter(({ path, content }) => {
+                    const file = resolve(ROOT, path);
+                    return !existsSync(file) || readFileSync(file, 'utf8') !== content;
+                })
+                .map(({ path }) => path);
 
             console.log(`  findings: ${findings.length}`);
             console.log(`  sync warnings: ${blocked.length}`);
             console.log(`  seeded regressions: ${regressions.length - missed.length}/${regressions.length}`);
             console.log(`  unresolved run records: ${unresolved.length}`);
             console.log(`  skeleton artifacts: ${staleSkeleton.length ? `${staleSkeleton.length} stale` : 'current'}`);
+            console.log(`  generated surfaces: ${staleGenerated.length ? `${staleGenerated.length} stale` : 'current'}`);
             console.log(`  round-trip: ${roundtrip ? 'PASS' : 'FAIL'}`);
             console.log(`  types: ${typesOutOfDate ? 'OUT OF DATE' : 'current'}`);
-            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || !roundtrip || typesOutOfDate;
+            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || staleGenerated.length > 0 || !roundtrip || typesOutOfDate;
             console.log(failed ? 'CHECK FAILED' : 'CHECK OK');
             return failed ? 1 : 0;
         }
@@ -910,12 +918,25 @@ interface PipelineResults {
     timestamp: string;
     stages: Record<string, StageResult>;
     totalDurationMs: number;
+    context?: string;
 }
 
 async function runOptimizePipeline(flags: Map<string, string>): Promise<number> {
     const dryRun = flags.has('dry-run');
     const changed = flags.has('changed');
     const json = flags.has('json');
+    const contextId = flags.get('context');
+    
+    let contextProfile = null;
+    if (contextId) {
+        const { getProfile } = await import('./contexts.js');
+        contextProfile = getProfile(contextId);
+        if (!contextProfile) {
+            console.error(`Context profile "${contextId}" not found`);
+            return 1;
+        }
+        console.log(`Using context profile: ${contextProfile.name} (${contextProfile.id})`);
+    }
     
     console.log('=== UISG Optimize Pipeline ===');
     const startTime = Date.now();
@@ -924,6 +945,7 @@ async function runOptimizePipeline(flags: Map<string, string>): Promise<number> 
         timestamp: new Date().toISOString(),
         stages: {},
         totalDurationMs: 0,
+        context: contextProfile?.id ?? 'default',
     };
     
     // Stage 1: Types
@@ -981,6 +1003,15 @@ async function runOptimizePipeline(flags: Map<string, string>): Promise<number> 
                 .map(r => r.surfaceId);
             targets = targets.filter(s => changedSurfaceIds.includes(s.id));
             console.log(`  Changed surfaces: ${changedSurfaceIds.join(', ') || 'none'}`);
+        }
+        
+        // Apply context profile filtering
+        if (contextProfile) {
+            const profileStrategies = new Set<string>();
+            // In a real implementation, this would filter by strategy compatibility with the context
+            // For now, we just log the context dimensions
+            console.log(`  Context: ${contextProfile.dimensions.viewport} / ${contextProfile.dimensions.theme} / ${contextProfile.dimensions.modality} / profile=${contextProfile.dimensions.profile}`);
+            console.log(`  A11y constraints: ${contextProfile.a11yConstraints.join(', ') || 'none'}`);
         }
         
         let generated = 0;

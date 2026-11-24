@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "scannedAt": "2026-11-24T17:56:41.239Z",
+  "scannedAt": "2026-11-24T18:15:20.203Z",
   "surfaces": [
     {
       "id": "surface.quickcapture",
@@ -107,11 +107,131 @@
       ]
     },
     {
+      "id": "surface.conditionalautomationview",
+      "component": "ConditionalAutomationView",
+      "file": "ui/src/components/items/ConditionalAutomationView.tsx",
+      "exports": [
+        "ConditionalAutomationView"
+      ]
+    },
+    {
+      "id": "surface.confirmationmodal",
+      "component": "ConfirmationModal",
+      "file": "ui/src/components/items/ConfirmationModal.tsx",
+      "exports": [
+        "ConfirmationModal"
+      ]
+    },
+    {
+      "id": "surface.emptystate",
+      "component": "EmptyState",
+      "file": "ui/src/components/items/EmptyState.tsx",
+      "exports": [
+        "EmptyState"
+      ]
+    },
+    {
+      "id": "surface.errordisplay",
+      "component": "ErrorDisplay",
+      "file": "ui/src/components/items/ErrorDisplay.tsx",
+      "exports": [
+        "ErrorDisplay"
+      ]
+    },
+    {
+      "id": "surface.loadingspinner",
+      "component": "LoadingSpinner",
+      "file": "ui/src/components/items/LoadingSpinner.tsx",
+      "exports": [
+        "LoadingSpinner"
+      ]
+    },
+    {
+      "id": "surface.mapview",
+      "component": "MapView",
+      "file": "ui/src/components/items/MapView.tsx",
+      "exports": [
+        "MapView"
+      ]
+    },
+    {
       "id": "surface.matchitem",
       "component": "MatchItem",
       "file": "ui/src/components/items/MatchItem.tsx",
       "exports": [
         "MatchItem"
+      ]
+    },
+    {
+      "id": "surface.mobilecapture",
+      "component": "MobileCapture",
+      "file": "ui/src/components/items/MobileCapture.tsx",
+      "exports": [
+        "MobileCapture"
+      ]
+    },
+    {
+      "id": "surface.networkview",
+      "component": "NetworkView",
+      "file": "ui/src/components/items/NetworkView.tsx",
+      "exports": [
+        "NetworkView"
+      ]
+    },
+    {
+      "id": "surface.notesview",
+      "component": "NotesView",
+      "file": "ui/src/components/items/NotesView.tsx",
+      "exports": [
+        "NotesView"
+      ]
+    },
+    {
+      "id": "surface.ontologyview",
+      "component": "OntologyView",
+      "file": "ui/src/components/items/OntologyView.tsx",
+      "exports": [
+        "OntologyView"
+      ]
+    },
+    {
+      "id": "surface.rejecteddisplay",
+      "component": "RejectedDisplay",
+      "file": "ui/src/components/items/RejectedDisplay.tsx",
+      "exports": [
+        "RejectedDisplay"
+      ]
+    },
+    {
+      "id": "surface.settingsview",
+      "component": "SettingsView",
+      "file": "ui/src/components/items/SettingsView.tsx",
+      "exports": [
+        "SettingsView"
+      ]
+    },
+    {
+      "id": "surface.skillmanagementview",
+      "component": "SkillManagementView",
+      "file": "ui/src/components/items/SkillManagementView.tsx",
+      "exports": [
+        "SkillManagementView"
+      ]
+    },
+    {
+      "id": "surface.timelineview",
+      "component": "TimelineView",
+      "file": "ui/src/components/items/TimelineView.tsx",
+      "exports": [
+        "TimelineView"
+      ]
+    },
+    {
+      "id": "surface.toast",
+      "component": "Toast",
+      "file": "ui/src/components/items/Toast.tsx",
+      "exports": [
+        "Toast"
       ]
     },
     {
@@ -139,99 +259,11 @@
       ]
     },
     {
-      "id": "surface.skillmanagementview",
-      "component": "SkillManagementView",
-      "file": "ui/src/components/skills/SkillManagementView.tsx",
-      "exports": [
-        "SkillManagementView"
-      ]
-    },
-    {
-      "id": "surface.confirmationmodal",
-      "component": "ConfirmationModal",
-      "file": "ui/src/components/ui/ConfirmationModal.tsx",
-      "exports": [
-        "ConfirmationModal"
-      ]
-    },
-    {
-      "id": "surface.emptystate",
-      "component": "EmptyState",
-      "file": "ui/src/components/ui/EmptyState.tsx",
-      "exports": [
-        "EmptyState"
-      ]
-    },
-    {
       "id": "surface.extractionstatus",
       "component": "ExtractionStatus",
       "file": "ui/src/components/ui/ExtractionStatus.tsx",
       "exports": [
         "ExtractionStatus"
-      ]
-    },
-    {
-      "id": "surface.toast",
-      "component": "Toast",
-      "file": "ui/src/components/ui/Toast.tsx",
-      "exports": [
-        "Toast"
-      ]
-    },
-    {
-      "id": "surface.mapview",
-      "component": "MapView",
-      "file": "ui/src/components/views/MapView.tsx",
-      "exports": [
-        "MapView"
-      ]
-    },
-    {
-      "id": "surface.networkview",
-      "component": "NetworkView",
-      "file": "ui/src/components/views/NetworkView.tsx",
-      "exports": [
-        "NetworkView"
-      ]
-    },
-    {
-      "id": "surface.notesview",
-      "component": "NotesView",
-      "file": "ui/src/components/views/NotesView.tsx",
-      "exports": [
-        "NotesView"
-      ]
-    },
-    {
-      "id": "surface.ontologyview",
-      "component": "OntologyView",
-      "file": "ui/src/components/views/OntologyView.tsx",
-      "exports": [
-        "OntologyView"
-      ]
-    },
-    {
-      "id": "surface.settingsview",
-      "component": "SettingsView",
-      "file": "ui/src/components/views/SettingsView.tsx",
-      "exports": [
-        "SettingsView"
-      ]
-    },
-    {
-      "id": "surface.timelineview",
-      "component": "TimelineView",
-      "file": "ui/src/components/views/TimelineView.tsx",
-      "exports": [
-        "TimelineView"
-      ]
-    },
-    {
-      "id": "surface.conditionalautomationview",
-      "component": "ConditionalAutomationView",
-      "file": "ui/src/plugins/metaphor/ConditionalAutomationView.tsx",
-      "exports": [
-        "ConditionalAutomationView"
       ]
     }
   ],
@@ -735,10 +767,199 @@
       ]
     },
     {
+      "name": "AppShell",
+      "file": "ui/src/components/items/AppShell.tsx",
+      "exports": [
+        "AppShell"
+      ]
+    },
+    {
+      "name": "AutomationsView",
+      "file": "ui/src/components/items/AutomationsView.tsx",
+      "exports": [
+        "AutomationsView"
+      ]
+    },
+    {
+      "name": "CommandPalette",
+      "file": "ui/src/components/items/CommandPalette.tsx",
+      "exports": [
+        "CommandPalette"
+      ]
+    },
+    {
+      "name": "ConditionalAutomationView",
+      "file": "ui/src/components/items/ConditionalAutomationView.tsx",
+      "exports": [
+        "ConditionalAutomationView"
+      ]
+    },
+    {
+      "name": "ConfirmationModal",
+      "file": "ui/src/components/items/ConfirmationModal.tsx",
+      "exports": [
+        "ConfirmationModal"
+      ]
+    },
+    {
+      "name": "EmptyState",
+      "file": "ui/src/components/items/EmptyState.tsx",
+      "exports": [
+        "EmptyState"
+      ]
+    },
+    {
+      "name": "ErrorDisplay",
+      "file": "ui/src/components/items/ErrorDisplay.tsx",
+      "exports": [
+        "ErrorDisplay"
+      ]
+    },
+    {
+      "name": "LoadingSpinner",
+      "file": "ui/src/components/items/LoadingSpinner.tsx",
+      "exports": [
+        "LoadingSpinner"
+      ]
+    },
+    {
+      "name": "MainView",
+      "file": "ui/src/components/items/MainView.tsx",
+      "exports": [
+        "MainView"
+      ]
+    },
+    {
+      "name": "MapView",
+      "file": "ui/src/components/items/MapView.tsx",
+      "exports": [
+        "MapView"
+      ]
+    },
+    {
       "name": "MatchItem",
       "file": "ui/src/components/items/MatchItem.tsx",
       "exports": [
         "MatchItem"
+      ]
+    },
+    {
+      "name": "MobileCapture",
+      "file": "ui/src/components/items/MobileCapture.tsx",
+      "exports": [
+        "MobileCapture"
+      ]
+    },
+    {
+      "name": "NetworkView",
+      "file": "ui/src/components/items/NetworkView.tsx",
+      "exports": [
+        "NetworkView"
+      ]
+    },
+    {
+      "name": "NoMatch",
+      "file": "ui/src/components/items/NoMatch.tsx",
+      "exports": [
+        "NoMatch"
+      ]
+    },
+    {
+      "name": "NotesView",
+      "file": "ui/src/components/items/NotesView.tsx",
+      "exports": [
+        "NotesView"
+      ]
+    },
+    {
+      "name": "OntologyView",
+      "file": "ui/src/components/items/OntologyView.tsx",
+      "exports": [
+        "OntologyView"
+      ]
+    },
+    {
+      "name": "PageSurface",
+      "file": "ui/src/components/items/PageSurface.tsx",
+      "exports": [
+        "PageSurface"
+      ]
+    },
+    {
+      "name": "PermissionDenied",
+      "file": "ui/src/components/items/PermissionDenied.tsx",
+      "exports": [
+        "PermissionDenied"
+      ]
+    },
+    {
+      "name": "PublishReady",
+      "file": "ui/src/components/items/PublishReady.tsx",
+      "exports": [
+        "PublishReady"
+      ]
+    },
+    {
+      "name": "QuickCapture",
+      "file": "ui/src/components/items/QuickCapture.tsx",
+      "exports": [
+        "QuickCapture"
+      ]
+    },
+    {
+      "name": "RejectedDisplay",
+      "file": "ui/src/components/items/RejectedDisplay.tsx",
+      "exports": [
+        "RejectedDisplay"
+      ]
+    },
+    {
+      "name": "SaveState",
+      "file": "ui/src/components/items/SaveState.tsx",
+      "exports": [
+        "SaveState"
+      ]
+    },
+    {
+      "name": "SettingsView",
+      "file": "ui/src/components/items/SettingsView.tsx",
+      "exports": [
+        "SettingsView"
+      ]
+    },
+    {
+      "name": "SkillManagementView",
+      "file": "ui/src/components/items/SkillManagementView.tsx",
+      "exports": [
+        "SkillManagementView"
+      ]
+    },
+    {
+      "name": "TagInput",
+      "file": "ui/src/components/items/TagInput.tsx",
+      "exports": [
+        "TagInput"
+      ]
+    },
+    {
+      "name": "TemplateSelector",
+      "file": "ui/src/components/items/TemplateSelector.tsx",
+      "exports": [
+        "TemplateSelector"
+      ]
+    },
+    {
+      "name": "TimelineView",
+      "file": "ui/src/components/items/TimelineView.tsx",
+      "exports": [
+        "TimelineView"
+      ]
+    },
+    {
+      "name": "Toast",
+      "file": "ui/src/components/items/Toast.tsx",
+      "exports": [
+        "Toast"
       ]
     },
     {
