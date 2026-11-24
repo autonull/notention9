@@ -10,13 +10,14 @@ import {NotesView} from './views/NotesView';
 import {SettingsView} from './views/SettingsView';
 
 const GraphEditor = React.lazy(() => import('../dev/GraphEditor').then(m => ({ default: m.GraphEditor })));
+const TemplatePlayground = React.lazy(() => import('../dev/TemplatePlayground').then(m => ({ default: m.TemplatePlayground })));
 
 interface MainViewProps {
     loading?: boolean;
 }
 
 export function MainView({loading = false}: MainViewProps) {
-    const {activeView} = useView();
+    const {activeView, uisgMode} = useView();
     const {settingsLoading} = useSettings();
 
     useBackgroundMatcher();
@@ -31,15 +32,17 @@ export function MainView({loading = false}: MainViewProps) {
         );
     }
 
-    return (
-        <div className="relative h-full">
-            {activeView === 'settings'
-                ? <SettingsView/>
-                : activeView === 'uisg-dev'
-                    ? <React.Suspense fallback={<div className="flex h-full items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>}>
-                        <GraphEditor/>
-                      </React.Suspense>
-                    : <NotesView/>}
-        </div>
-    );
+    if (activeView === 'settings') {
+        return <SettingsView/>;
+    }
+
+    if (activeView === 'uisg-dev') {
+        return (
+            <React.Suspense fallback={<div className="flex h-full items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>}>
+                {uisgMode === 'template' ? <TemplatePlayground/> : <GraphEditor/>}
+            </React.Suspense>
+        );
+    }
+
+    return <NotesView/>;
 }
