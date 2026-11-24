@@ -42,11 +42,20 @@ const kitRequested = typeof window !== 'undefined' &&
     (window.location.hash === '#/kit' || params.get('kit') === '1');
 const skeletonRequested = params.get('uisg') === '1' && params.get('flow');
 const galleryRequested = params.get('uisg') === '1' && !params.get('flow');
+const uisgRequested = params.get('uisg') === '1';
 const requestedTheme = params.get('theme');
-if ((skeletonRequested || galleryRequested) && (requestedTheme === 'dark' || requestedTheme === 'light')) {
-    document.documentElement.setAttribute('data-theme', requestedTheme);
-    document.documentElement.classList.toggle('light', requestedTheme === 'light');
-    document.documentElement.classList.toggle('dark', requestedTheme === 'dark');
+const themeStyles = import.meta.glob('./styles/theme-*.css');
+
+if (uisgRequested && requestedTheme) {
+    if (requestedTheme === 'dark' || requestedTheme === 'light') {
+        document.documentElement.setAttribute('data-theme', requestedTheme);
+        document.documentElement.classList.toggle('light', requestedTheme === 'light');
+        document.documentElement.classList.toggle('dark', requestedTheme === 'dark');
+    } else {
+        const loadTheme = themeStyles[`./styles/theme-${requestedTheme}.css`];
+        if (loadTheme) void loadTheme();
+        else console.warn(`Unknown uisg theme: ${requestedTheme}`);
+    }
 }
 
 const root = ReactDOM.createRoot(rootElement);

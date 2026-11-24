@@ -8,7 +8,7 @@ import { SEAM_ROLES } from '@notention/core/constants/seams';
 import '../journeys.js';
 import { getAllJourneys, getJourney } from '../registry.js';
 import { generateTestFile } from '../journeyFileGenerator.js';
-import { createRunId, runOptimizeTest } from '../runner.js';
+import { createRunId, runOptimizeTest, runOptimizeTestAsync } from '../runner.js';
 import type { EvidenceBundle } from '../evidence.js';
 import type { JourneySpec } from '../journey.js';
 import { analyzeGraph, journeyTargetDrift } from './analyze.js';
@@ -38,6 +38,7 @@ import { flowToReducer, emitReducer } from './flowToReducer.js';
 import { emitSeamProps, writeSeamProps } from './seamProps.js';
 import { emitComponentMap, writeComponentMap } from './componentMap.js';
 import { generateSurface, generateAllSurfaces, checkParity, checkAllParity } from './codegen.js';
+import { buildMatrixCells, runMatrix, writeMatrixReport, type MatrixConfig, type MatrixJourney } from './matrix.js';
 import type { SurfaceVariantStatus, UisgGraph, UisgSurface } from './types.js';
 import type { TemplateTarget } from './templates/render.js';
 
@@ -57,8 +58,9 @@ Commands:
   optimize [--changed] [--dry-run] [--json] [--context <id>]  Run full pipeline: types, scan, generate, check
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
   reducer <flowId> [--out <file>]           Generate flow reducer from graph
-  matrix [--flows a,b] [--viewports v] [--themes t] [--profiles hand-built,generated] [--no-build]
-                                            Run every flow at 2 themes x 2 viewports; record dimensions
+  matrix [--journeys a,b|all] [--contexts c|all] [--themes t|all] [--viewports v|all]
+         [--profiles hand-built,generated] [--parallelism N] [--plan] [--no-build]
+                                            Run journeys across contexts x themes x viewports; write matrix report
   compare <bundleA> <bundleB>               Diff two evidence bundles (run dirs or bundle.json files)
   inventory                                 Graph stats, journey links, seam coverage, variants
   scan [--out <file>]                       Scan codebase for surfaces, navigation, seams, journeys, strategies
@@ -68,7 +70,7 @@ Commands:
   select <feature> [--context <id>] [--modality <m>] [--theme <t>] [--viewport <v>] [--profile <p>]
                                             Check constraints, return selection + conflicts -> doc/uisg/selection.json
   contexts [--list]                         Manage context profiles (doc/uisg/contexts.json)
-  themes <list|show|generate> [id]          Manage token themes (doc/uisg/themes.json)
+  themes <list|show|generate|check> [id]    Manage token themes (doc/uisg/themes.json)
   variants <list|create|promote|archive|diff|export>  Variant registry CRUD (doc/uisg/variants.json)
   adopt <flowId> --baseline <runId> --variant <runId> --hypothesis <text> --metric <name> --actor <name>
                                             Compare bundles, update lifecycle, record decision
@@ -494,17 +496,24 @@ async function main(): Promise<number> {
             const implemented = graph.nodes
                 .filter(node => node.type === 'flow' && ['implemented', 'partial'].includes(node.status))
                 .map(node => node.id);
-            const flows = flags.get('flows')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
-            const viewports = flags.get('viewports')?.split(',') ?? ['desktop-1440', 'mobile-390'];
-            const themes = flags.get('themes')?.split(',') ?? ['dark', 'light'];
+            const flows = flags.get('flows')?.split(',') ?? flags.get('journeys')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
             const profiles = flags.get('profiles')?.split(',');
+            const { listThemes } = await import('./themes.js');
 
-            if (!flags.has('no-build')) {
-                const status = buildOptimize();
-                if (status !== 0) return status;
-            }
+            const contexts = flags.get('contexts')?.split(',') ?? [];
+            const themes = flags.get('themes')?.split(',') ?? ['dark', 'light'];
+            const viewports = flags.get('viewports')?.split(',') ?? ['desktop-1440', 'mobile-390'];
 
-            const results: Array<{ flowId: string; viewport: string; theme: string; status: number | null; runId: string }> = [];
+            const config: MatrixConfig = {
+                contexts: contexts.includes('all') ? listProfiles().map(({ id }) => id) : contexts,
+                themes: themes.includes('all')
+                    ? [...new Set([...listThemes().map(({ id }) => id), 'dark', 'light'])]
+                    : themes,
+                viewports: viewports.includes('all') ? ['desktop-1440', 'tablet-834', 'mobile-390'] : viewports,
+                parallelism: Number(flags.get('parallelism') ?? 4),
+            };
+
+            const journeys: MatrixJourney[] = [];
             for (const flowId of flows) {
                 const flow = graph.nodes.find(node => node.id === flowId);
                 const handId = flow?.type === 'flow' && flow.journey
@@ -519,31 +528,57 @@ async function main(): Promise<number> {
                 }
                 if (!variants.length) { console.log(`SKIP ${flowId} (no registered journey)`); continue; }
                 for (const variant of variants.filter(v => !profiles || profiles.includes(v.profile))) {
-                    for (const viewport of viewports) {
-                        for (const theme of themes) {
-                            const runId = createRunId();
-                            console.log(`Running ${variant.id} ${viewport}/${theme} — ${runId}`);
-                            const { status } = runOptimizeTest({
-                                runId, grep: grepFor(variant.id),
-                                env: { ...dimensionEnv(flags), NOTENTION_VIEWPORT: viewport, NOTENTION_THEME: theme },
-                            });
-                            appendRunRecord({
-                                flowId,
-                                runId,
-                                bundlePath: join(getEvidenceDirSync(), runId, 'bundle.json'),
-                                status: status === 0 ? 'passed' : 'failed',
-                                timestamp: new Date().toISOString(),
-                                dimensions: { viewport, theme, profile: variant.profile },
-                            });
-                            results.push({ flowId, viewport, theme, status, runId });
-                        }
-                    }
+                    journeys.push({ flowId, journey: variant.id, profile: variant.profile });
                 }
             }
-            const failed = results.filter(({ status }) => status !== 0);
-            console.log(`Matrix: ${results.length - failed.length}/${results.length} passed (${new Set(flows).size} flows x ${viewports.length} viewports x ${themes.length} themes)`);
-            for (const { flowId, viewport, theme, runId } of failed) console.log(`  FAILED ${flowId} ${viewport}/${theme} ${runId}`);
-            return failed.length ? 1 : 0;
+
+            if (flags.has('plan')) {
+                const cells = buildMatrixCells(config, journeys);
+                for (const cell of cells) {
+                    console.log(`${cell.journey} [${cell.profile}] ${cell.context ?? '-'} ${cell.theme}/${cell.viewport}`);
+                }
+                console.log(`${cells.length} cell(s)`);
+                return 0;
+            }
+
+            if (!flags.has('no-build')) {
+                const status = buildOptimize();
+                if (status !== 0) return status;
+            }
+
+            const result = await runMatrix(config, journeys, async cell => {
+                const runId = createRunId();
+                console.log(`Running ${cell.journey} ${cell.context ?? '-'} ${cell.theme}/${cell.viewport} — ${runId}`);
+                const { status } = await runOptimizeTestAsync({
+                    runId,
+                    grep: grepFor(cell.journey),
+                    env: {
+                        ...dimensionEnv(flags),
+                        NOTENTION_VIEWPORT: cell.viewport,
+                        NOTENTION_THEME: cell.theme,
+                        ...(cell.context ? { NOTENTION_CONTEXT: cell.context } : {}),
+                    },
+                });
+                const bundlePath = join(getEvidenceDirSync(), runId, 'bundle.json');
+                appendRunRecord({
+                    flowId: cell.flowId,
+                    runId,
+                    bundlePath,
+                    status: status === 0 ? 'passed' : 'failed',
+                    timestamp: new Date().toISOString(),
+                    dimensions: { viewport: cell.viewport, theme: cell.theme, profile: cell.profile },
+                });
+                return { status: status === 0 ? 'passed' : 'failed', runId, bundlePath };
+            });
+
+            const { jsonPath, htmlPath } = writeMatrixReport(result);
+            console.log(`Matrix: ${result.summary.passed}/${result.summary.total} passed (${result.summary.failed} failed, ${result.summary.skipped} skipped, ${result.summary.errors} errors)`);
+            for (const cell of result.cells.filter(({ status }) => status !== 'passed')) {
+                console.log(`  ${cell.status.toUpperCase()} ${cell.journey} ${cell.context ?? '-'} ${cell.theme}/${cell.viewport} ${cell.runId}${cell.error ? ` — ${cell.error}` : ''}`);
+            }
+            console.log(`Report: ${jsonPath}`);
+            console.log(`Report: ${htmlPath}`);
+            return result.summary.failed + result.summary.errors ? 1 : 0;
         }
         case 'compare': {
             const [pathA, pathB] = positionals;
@@ -688,12 +723,23 @@ async function main(): Promise<number> {
         }
         case 'themes': {
             const [action, id] = positionals;
-            const { listThemes, getTheme, writeThemeCss } = await import('./themes.js');
+            const { listThemes, getTheme, writeThemeCss, emitThemeCss, themeCssPath } = await import('./themes.js');
             if (!action || action === 'list') {
                 for (const theme of listThemes()) {
                     console.log(`${theme.id}: accent=${theme.accent} radius=${theme.radius} font=${theme.font}`);
                 }
                 return 0;
+            }
+            if (action === 'check') {
+                const stale = listThemes()
+                    .filter(theme => theme.id !== 'default')
+                    .filter(theme => {
+                        const path = themeCssPath(theme.id);
+                        return !existsSync(path) || readFileSync(path, 'utf8') !== emitThemeCss(theme.id, theme);
+                    });
+                for (const theme of stale) console.log(`stale: ${themeCssPath(theme.id)}`);
+                console.log(stale.length ? `${stale.length} stale theme file(s)` : 'Theme CSS current');
+                return stale.length ? 1 : 0;
             }
             if (!id) { console.error(`themes ${action} requires a theme id`); return 1; }
             if (action === 'show') {
@@ -845,6 +891,14 @@ async function main(): Promise<number> {
                     return !existsSync(file) || readFileSync(file, 'utf8') !== content;
                 })
                 .map(({ path }) => path);
+            const { listThemes, emitThemeCss, themeCssPath } = await import('./themes.js');
+            const staleThemes = listThemes()
+                .filter(theme => theme.id !== 'default')
+                .filter(theme => {
+                    const path = themeCssPath(theme.id);
+                    return !existsSync(path) || readFileSync(path, 'utf8') !== emitThemeCss(theme.id, theme);
+                })
+                .map(theme => themeCssPath(theme.id));
 
             console.log(`  findings: ${findings.length}`);
             console.log(`  sync warnings: ${blocked.length}`);
@@ -852,9 +906,10 @@ async function main(): Promise<number> {
             console.log(`  unresolved run records: ${unresolved.length}`);
             console.log(`  skeleton artifacts: ${staleSkeleton.length ? `${staleSkeleton.length} stale` : 'current'}`);
             console.log(`  generated surfaces: ${staleGenerated.length ? `${staleGenerated.length} stale` : 'current'}`);
+            console.log(`  theme css: ${staleThemes.length ? `${staleThemes.length} stale` : 'current'}`);
             console.log(`  round-trip: ${roundtrip ? 'PASS' : 'FAIL'}`);
             console.log(`  types: ${typesOutOfDate ? 'OUT OF DATE' : 'current'}`);
-            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || staleGenerated.length > 0 || !roundtrip || typesOutOfDate;
+            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || staleGenerated.length > 0 || staleThemes.length > 0 || !roundtrip || typesOutOfDate;
             console.log(failed ? 'CHECK FAILED' : 'CHECK OK');
             return failed ? 1 : 0;
         }

@@ -24,6 +24,7 @@ export * from './themes.js';
 export * from './adopt.js';
 export * from './canonicalize.js';
 export * from './variants.js';
+export * from './matrix.js';
 export * from './diff.js';
 
 // Records exports (avoid FindingStatus conflict with finding.js, Provenance conflict with synthesis)

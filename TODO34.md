@@ -22,14 +22,15 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 |----------|--------|-------|
 | A.1 Graph variant schema | ✅ Done | `SurfaceVariant` + `VariantMetrics` on `UisgSurface`; `validate.ts` requires `version: 3`; `UISG_SCHEMA_VERSION=3`; no backward compatibility |
 | A.2 Context profiles v2 | ✅ Done | `CONTEXTS_SCHEMA_VERSION=2`; 3 bases + 7 derived profiles; `extends` with deep merge; v1 rejected |
-| A.3 Theme system | ✅ Core | `doc/uisg/themes.json`, `themes.ts`, `uisg themes list/show/generate`; `theme.css` consumes `--accent-color`, `--theme-radius`, `--theme-font`. Runtime `?uisg=1&theme=` pending |
+| A.3 Theme system | ✅ Done | `doc/uisg/themes.json`, `themes.ts`, `uisg themes list/show/generate/check`; `theme.css` consumes vars; `?uisg=1&theme=<id>` lazily imports `theme-<id>.css` |
 | A.4 Multi-target templates | ✅ Core | Required `target`; `react`/`html`/`json` renderers; `solid`/`flutter` throw (no fallback); `generate` requires `--target` |
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
-| B.1–B.5 Evaluation harness | ⬜ Pending | Matrix runner, metrics, decide, A/B report, promotion |
+| B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
+| B.2–B.5 Evaluation harness | ⬜ Pending | Metrics, decide, A/B report, promotion |
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
-**Latest commit:** Phase A.4 — multi-target templates (react/html/json, explicit target).
+**Latest commit:** Phase A.3 runtime + B.1 — live theme CSS, journey matrix runner.
 
 ---
 
@@ -256,6 +257,8 @@ interface MatrixCell {
 **CLI:** `pnpm uisg matrix --contexts=all --themes=all --journeys=golden-path,publish-gate --viewports=all`
 
 **Output:** `doc/uisg/matrix-<runId>.json` + HTML report.
+
+**Status:** `matrix.ts` implements planning, bounded parallelism, aggregation, JSON + HTML reports. `--plan` prints the grid without building or running. `--parallelism N` controls concurrency; the default runner uses async `spawn`.
 
 ### B.2 Metric Collectors
 **File:** `optimize/src/uisg/metrics.ts`
@@ -525,7 +528,7 @@ interface UisgFlags {
 - [x] Graph v3 with `variants` loads; v2 rejected
 - [x] 6 context profiles v2 with inheritance work
 - [x] 3 themes generate CSS vars
-- [ ] Themes apply at `?uisg=1&theme=`
+- [x] Themes apply at `?uisg=1&theme=`
 - [x] `uisg generate --target=html|json` works for 1 surface
 - [x] `uisg variants` CRUD works, stores in `variants.json`
 
