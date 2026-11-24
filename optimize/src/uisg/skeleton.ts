@@ -51,7 +51,7 @@ export interface BuildSkeletonOptions {
     statuses?: UisgStep['status'][];
 }
 
-const PREVIEW_COMPONENT = 'ui/src/dev/uisg/GeneratedSkeleton.tsx';
+const PREVIEW_COMPONENT = 'ui/src/dev/GeneratedSkeleton.tsx';
 const JOURNEY_DIR = 'ui/test/optimize';
 
 const COMPILEABLE: UisgStep['status'][] = ['implemented', 'partial'];

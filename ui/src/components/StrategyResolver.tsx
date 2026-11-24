@@ -74,7 +74,6 @@ export function StrategyResolver({ seamRole, props, fallback, resolutionKey = 0 
         }
     }
     const mergedProps = {...filteredStrategyProps, ...props};
-    console.log('[StrategyResolver] mergedProps:', mergedProps);
     const element = strategy.render(mergedProps);
     
     // Wrap in Suspense to handle potential lazy-loaded component chunks in production

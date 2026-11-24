@@ -45,7 +45,7 @@ describe('skeleton generator', () => {
         expect(skeletonJourneyFlows(skeleton).map(({ id }) => id))
             .toEqual(['flow.ontology-conflict', 'flow.publish-gate']);
         expect(skeletonOutputs(skeleton).map(({ path }) => path)).toEqual([
-            'ui/src/dev/uisg/GeneratedSkeleton.tsx',
+            'ui/src/dev/GeneratedSkeleton.tsx',
             'ui/test/optimize/uisg.skeleton.flow.ontology-conflict.journey.ts',
             'ui/test/optimize/uisg.skeleton.flow.publish-gate.journey.ts',
         ]);

@@ -46,7 +46,7 @@ export function NoteHistoryRail({
     isOpen = true,
     onOpenChange,
     tabs = DEFAULT_TABS,
-    activeTab = tabs[0]?.id ?? 'content',
+    activeTab,
     onTabChange,
     items = [],
     emptyMessage = 'No items to display.',
@@ -54,11 +54,12 @@ export function NoteHistoryRail({
     testId = 'note-history-rail',
 }: NoteHistoryRailProps) {
     const [localOpen, setLocalOpen] = useState(isOpen);
-    const [localActiveTab, setLocalActiveTab] = useState(activeTab);
+    const [localActiveTab, setLocalActiveTab] = useState(activeTab ?? tabs[0]?.id ?? 'content');
     const [filterText, setFilterText] = useState('');
 
+    const isControlled = activeTab !== undefined;
     const open = isOpen ?? localOpen;
-    const currentTab = activeTab ?? localActiveTab;
+    const currentTab = isControlled ? activeTab : localActiveTab;
 
     const handleOpenChange = useCallback((nextOpen: boolean) => {
         if (isOpen === undefined) setLocalOpen(nextOpen);
@@ -66,9 +67,9 @@ export function NoteHistoryRail({
     }, [isOpen, onOpenChange]);
 
     const handleTabChange = useCallback((nextTab: string) => {
-        if (activeTab === undefined) setLocalActiveTab(nextTab);
+        if (!isControlled) setLocalActiveTab(nextTab);
         onTabChange?.(nextTab);
-    }, [activeTab, onTabChange]);
+    }, [isControlled, onTabChange]);
 
     const filteredItems = useMemo(() => {
         if (!filterText) return items;
@@ -78,6 +79,52 @@ export function NoteHistoryRail({
             item.subtitle?.toLowerCase().includes(lower)
         );
     }, [items, filterText]);
+
+    const isEmpty = filteredItems.length === 0;
+
+    let panelContent: React.ReactNode;
+    if (content && currentTab === 'content') {
+        panelContent = <div data-testid={testId + '-content'}>{content}</div>;
+    } else if (currentTab === 'list') {
+        if (isEmpty) {
+            panelContent = (
+                <div data-testid={testId + '-list'}>
+                    <div className="flex items-center justify-center h-24 text-[12px] text-[var(--app-muted)]">
+                        {emptyMessage}
+                    </div>
+                </div>
+            );
+        } else {
+            panelContent = (
+                <div data-testid={testId + '-list'}>
+                    <div className="space-y-1">
+                        {filteredItems.map(item => (
+                            <button
+                                key={item.id}
+                                type="button"
+                                onClick={item.onClick}
+                                className="w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-left transition-colors hover:border-[var(--app-line-strong)]"
+                                data-testid={testId + '-item-' + item.id}
+                            >
+                                {item.title && (
+                                    <div className="truncate text-[12px] font-medium text-[var(--app-text-secondary)]">
+                                        {item.title}
+                                    </div>
+                                )}
+                                {item.subtitle && (
+                                    <div className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-[var(--app-muted)]">
+                                        {item.subtitle}
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+    } else {
+        panelContent = <div data-testid={testId + '-tab-' + currentTab}>{content}</div>;
+    }
 
     if (!open) {
         return (
@@ -125,9 +172,9 @@ export function NoteHistoryRail({
             <div className="min-h-0 flex-1 overflow-y-auto p-2 custom-scrollbar">
                 {currentTab === 'list' && items.length > 0 && (
                     <div className="mb-2">
-                        <label className="sr-only" htmlFor={`${testId}-filter`}>Filter items</label>
+                        <label className="sr-only" htmlFor={testId + '-filter'}>Filter items</label>
                         <Input
-                            id={`${testId}-filter`}
+                            id={testId + '-filter'}
                             value={filterText}
                             onChange={e => setFilterText(e.target.value)}
                             placeholder="Filter…"
@@ -137,44 +184,7 @@ export function NoteHistoryRail({
                     </div>
                 )}
 
-                {content && currentTab === 'content' ? (
-                    <div data-testid={testId + '-content'}>{content}</div>
-                ) : currentTab === 'list' ? (
-                    <div data-testid={testId + '-list'}>
-                        {filteredItems.length === 0 ? (
-                            <div className="flex items-center justify-center h-24 text-[12px] text-[var(--app-muted)]">
-                                {emptyMessage}
-                            </div>
-                        ) : (
-                            <div className="space-y-1">
-                                {filteredItems.map(item => (
-                                    <button
-                                        key={item.id}
-                                        type="button"
-                                        onClick={item.onClick}
-                                        className="w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-left transition-colors hover:border-[var(--app-line-strong)]"
-                                        data-testid={testId + '-item-' + item.id}
-                                    >
-                                        {item.title && (
-                                            <div className="truncate text-[12px] font-medium text-[var(--app-text-secondary)]">
-                                                {item.title}
-                                            </div>
-                                        )}
-                                        {item.subtitle && (
-                                            <div className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-[var(--app-muted)]">
-                                                {item.subtitle}
-                                            </div>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        )
-                    </div>
-                ) : (
-                    <div data-testid={testId + '-tab-' + currentTab}>
-                        {content}
-                    </div>
-                )}
+                {panelContent}
             </div>
         </aside>
     );

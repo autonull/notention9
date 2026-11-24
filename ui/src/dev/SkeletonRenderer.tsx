@@ -1,8 +1,8 @@
 import React, {useLayoutEffect, useMemo, useState} from 'react';
 import type {UisgSkeleton} from '@notention/optimize/uisg';
-import {Badge} from '../../components/ui/Badge';
-import {Button} from '../../components/ui/Button';
-import {ConfirmationModal} from '../../components/ui/ConfirmationModal';
+import {Badge} from '../components/ui/Badge';
+import {Button} from '../components/ui/Button';
+import {ConfirmationModal} from '../components/ui/ConfirmationModal';
 
 declare global {
     interface Window {

@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "scannedAt": "2026-11-24T18:24:17.920Z",
+  "scannedAt": "2026-11-24T20:07:44.140Z",
   "surfaces": [
     {
       "id": "surface.quickcapture",
@@ -243,6 +243,22 @@
       ]
     },
     {
+      "id": "surface.mobilematchrail",
+      "component": "MobileMatchRail",
+      "file": "ui/src/components/panels/MobileMatchRail.tsx",
+      "exports": [
+        "MobileMatchRail"
+      ]
+    },
+    {
+      "id": "surface.notehistoryrail",
+      "component": "NoteHistoryRail",
+      "file": "ui/src/components/panels/NoteHistoryRail.tsx",
+      "exports": [
+        "NoteHistoryRail"
+      ]
+    },
+    {
       "id": "surface.unifiedselector",
       "component": "UnifiedSelector",
       "file": "ui/src/components/properties/UnifiedSelector.tsx",
@@ -251,19 +267,27 @@
       ]
     },
     {
-      "id": "surface.notehistoryrail",
-      "component": "NoteHistoryRail",
-      "file": "ui/src/components/sidebar/NoteHistoryRail.tsx",
+      "id": "surface.degradedbanner",
+      "component": "DegradedBanner",
+      "file": "ui/src/components/status/DegradedBanner.tsx",
       "exports": [
-        "NoteHistoryRail"
+        "DegradedBanner"
       ]
     },
     {
       "id": "surface.extractionstatus",
       "component": "ExtractionStatus",
-      "file": "ui/src/components/ui/ExtractionStatus.tsx",
+      "file": "ui/src/components/status/ExtractionStatus.tsx",
       "exports": [
         "ExtractionStatus"
+      ]
+    },
+    {
+      "id": "surface.offlinebanner",
+      "component": "OfflineBanner",
+      "file": "ui/src/components/status/OfflineBanner.tsx",
+      "exports": [
+        "OfflineBanner"
       ]
     }
   ],
@@ -760,6 +784,27 @@
       ]
     },
     {
+      "name": "DescribeItComposer",
+      "file": "ui/src/components/editors/DescribeItComposer.tsx",
+      "exports": [
+        "DescribeItComposer"
+      ]
+    },
+    {
+      "name": "EditorManager",
+      "file": "ui/src/components/editors/EditorManager.tsx",
+      "exports": [
+        "EditorManager"
+      ]
+    },
+    {
+      "name": "PropertyEditor",
+      "file": "ui/src/components/editors/PropertyEditor.tsx",
+      "exports": [
+        "PropertyEditor"
+      ]
+    },
+    {
       "name": "LanguageSelector",
       "file": "ui/src/components/i18n/LanguageSelector.tsx",
       "exports": [
@@ -1209,6 +1254,34 @@
       ]
     },
     {
+      "name": "LocalMatchesPanel",
+      "file": "ui/src/components/panels/LocalMatchesPanel.tsx",
+      "exports": [
+        "LocalMatchesPanel"
+      ]
+    },
+    {
+      "name": "MobileMatchRail",
+      "file": "ui/src/components/panels/MobileMatchRail.tsx",
+      "exports": [
+        "MobileMatchRail"
+      ]
+    },
+    {
+      "name": "NoteContextRail",
+      "file": "ui/src/components/panels/NoteContextRail.tsx",
+      "exports": [
+        "NoteContextRail"
+      ]
+    },
+    {
+      "name": "NoteHistoryRail",
+      "file": "ui/src/components/panels/NoteHistoryRail.tsx",
+      "exports": [
+        "NoteHistoryRail"
+      ]
+    },
+    {
       "name": "ArrangeMenu",
       "file": "ui/src/components/patterns/ArrangeMenu.tsx",
       "exports": [
@@ -1524,6 +1597,27 @@
       "file": "ui/src/components/skills/SkillManagementView.tsx",
       "exports": [
         "SkillManagementView"
+      ]
+    },
+    {
+      "name": "DegradedBanner",
+      "file": "ui/src/components/status/DegradedBanner.tsx",
+      "exports": [
+        "DegradedBanner"
+      ]
+    },
+    {
+      "name": "ExtractionStatus",
+      "file": "ui/src/components/status/ExtractionStatus.tsx",
+      "exports": [
+        "ExtractionStatus"
+      ]
+    },
+    {
+      "name": "OfflineBanner",
+      "file": "ui/src/components/status/OfflineBanner.tsx",
+      "exports": [
+        "OfflineBanner"
       ]
     },
     {
@@ -1953,7 +2047,7 @@
     },
     {
       "name": "SkeletonRenderer",
-      "file": "ui/src/dev/uisg/SkeletonRenderer.tsx",
+      "file": "ui/src/dev/SkeletonRenderer.tsx",
       "exports": [
         "SkeletonRenderer"
       ]
