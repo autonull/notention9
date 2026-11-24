@@ -260,9 +260,9 @@ Phase 1 (Types + Map) → Phase 2 (First Surface) → Phase 3 (Pipeline) → Pha
 | Phase | Status | Notes |
 | :--- | :--- | :--- |
 | 1 — Types + Map | **Done** | 1.1 `seamProps.ts`, 1.2 `componentMap.ts`, 1.3 seam backfill (sync applies), 1.4 gate wiring (`types: current`) |
-| 2 — First Surface | **In progress** | 2.1 Schema done, 2.2 Template registry done (item), 2.3 Emit component+test done (MatchItem), 2.4 Parity test pending |
+| 2 — First Surface | **2.1-2.3 Done** | 2.1 Schema done, 2.2 Template registry done (item), 2.3 Emit component+test done (MatchItem), 2.4 Parity test pending, 2.5 Pilot+rollback pending |
 | 3 — Pipeline | Not started | After 2.5 rollback proven |
 | 4 — Flows + Bulk | Not started | After 3.3 verify wiring |
 | **Gate** | `pnpm uisg:check` green | Re-verify after each phase |
 
-**Current baseline:** `uisg:check` OK (0 findings, 0 sync warnings, 10/10 regressions, current skeleton, round-trip PASS, types current); `pnpm verify` L0–L3 pass; optimize 186 pass / 4 skipped; UI typecheck, `lint:type`, `lint:tone` clean; matrix 32/32.
+**Current baseline:** `uisg:check` OK (0 findings, 0 sync warnings, 10/10 regressions, current skeleton, round-trip PASS, types current); `pnpm verify` L0-L1 pass (L2/3 running); optimize 186 pass / 4 skipped; UI typecheck, `lint:type`, `lint:tone` clean; matrix 32/32.
