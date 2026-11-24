@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { actionRegistry } from '@notention/core/ui';
 import type { ActionContext, RegisteredAction } from '@notention/core/ui/actionRegistry';
+import { useActionRegistry } from '../../hooks/useActionRegistry';
 import { Button } from '../ui/Button';
 import { KeyIcon, SearchIcon, SearchSparkleIcon, MenuIcon, NoteIcon, ChevronRightIcon, type LucideIcon } from '../ui/icons';
 import { useView } from '../../hooks/useViewContext';
@@ -83,7 +84,9 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
     }), []);
 
     // Get actions and notes for search
-    const paletteActions = useMemo(() => actionRegistry.getPaletteActions(context), [context]);
+    // Subscribe so actions registered after mount (App effect) show up here.
+    const { version } = useActionRegistry();
+    const paletteActions = useMemo(() => actionRegistry.getPaletteActions(context), [context, version]);
     const noteActions = useMemo((): RegisteredAction[] => {
         return notes.slice(0, 50).map(note => ({
             id: `note:${note.id}`,
@@ -247,6 +250,7 @@ export function CommandPalette({ isOpen, onClose, onAction }: CommandPaletteProp
                             value={query}
                             onChange={handleInputChange}
                             placeholder="Search notes, details, tags, and commands…"
+                            data-testid="command-palette-input"
                             className="h-11 min-w-0 flex-1 bg-transparent px-0 text-[14px] text-[var(--app-text)] placeholder:text-[var(--app-faint)] outline-none focus:outline-none focus-visible:outline-none"
                             autoComplete="off"
                             spellCheck={false}

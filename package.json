@@ -69,7 +69,8 @@
     "match-relevance": "tsx scripts/match-relevance-test.ts",
     "preference-exp": "tsx scripts/run-preference-experiment.ts",
     "bench:plugins": "tsx scripts/bench-plugins.ts",
-    "lint:ui-layers": "node scripts/check-ui-layers.mjs"
+    "lint:ui-layers": "node scripts/check-ui-layers.mjs",
+    "uisg:check": "tsx optimize/src/uisg/cli.ts check"
   },
   "dependencies": {
     "@meshtastic/core": "^2.6.7",

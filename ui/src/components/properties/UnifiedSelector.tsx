@@ -32,7 +32,8 @@ interface UnifiedSelectorProps {
 function flattenOntology(
     nodes: OntologyNode[],
     path: string[] = [],
-    depth: number = 0
+    depth: number = 0,
+    seen: Set<string> = new Set()
 ): UnifiedSelectorOption[] {
     const options: UnifiedSelectorOption[] = [];
 
@@ -40,6 +41,8 @@ function flattenOntology(
         const nodePath = [...path, node.label];
         if (node.attributes) {
             for (const [key, attr] of Object.entries(node.attributes)) {
+                if (seen.has(key)) continue;
+                seen.add(key);
                 options.push({
                     key,
                     icon: attr.icon,
@@ -52,7 +55,7 @@ function flattenOntology(
             }
         }
         if (node.children) {
-            options.push(...flattenOntology(node.children, nodePath, depth + 1));
+            options.push(...flattenOntology(node.children, nodePath, depth + 1, seen));
         }
     }
     return options;
@@ -194,6 +197,7 @@ export function UnifiedSelector({
                         }}
                         onKeyDown={handleKeyDown}
                         placeholder="Search properties..."
+                        data-testid="property-palette-input"
                         icon={SearchIcon}
                         className="w-full text-sm"
                         autoFocus

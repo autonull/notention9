@@ -3,7 +3,6 @@ import { getJourney } from '@notention/optimize';
 import { seed } from '../../support/seed';
 import { settle } from '../../support/settle';
 import { writeBundle, type EvidenceBundle } from '@notention/optimize/evidence';
-import { getEvidenceDir } from '@notention/core';
 
 export async function runJourneyTest(journeyId: string, page: any) {
     const journey = getJourney(journeyId);
@@ -11,17 +10,18 @@ export async function runJourneyTest(journeyId: string, page: any) {
         throw new Error(`Journey ${journeyId} not found in registry`);
     }
 
-    // Inject the runId before the app loads so DevBridge can find it
-    const runId = `run_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
-    await page.addInitScript((runId) => {
-        window.__OPTIMIZE_RUN_ID__ = runId;
+    // Reuse the runner's run id so the recorded path resolves to this bundle.
+    const runId = process.env.NOTENTION_OPTIMIZE_RUN_ID
+        ?? `run_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+    await page.addInitScript((id: string) => {
+        window.__OPTIMIZE_RUN_ID__ = id;
     }, runId);
 
     // Determine initial hash: if journey has seed notes, navigate to first note; otherwise inbox (W10.2)
     const initialHash = journey.seed.notes.length > 0
         ? `notes/${journey.seed.notes[0].id}`
         : 'inbox';
-    
+
     // Seed the database with the journey's seed data
     await seed(page, {
         notes: journey.seed.notes,

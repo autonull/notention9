@@ -15,8 +15,32 @@ function stableSort<T>(array: T[], keyFn: (item: T) => string): T[] {
     return [...array].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
 }
 
-function canonicalizeNode(node: UisgNode): UisgNode {
+const COMMON_NODE_FIELDS = ['id', 'name', 'status', 'summary', 'source', 'confidence', 'type'];
+const NODE_FIELDS: Record<UisgNode['type'], readonly string[]> = {
+    intent: ['actor', 'outcome'],
+    capability: ['seam', 'strategy', 'skill', 'risk', 'effect'],
+    flow: ['entry', 'outcome', 'journey'],
+    step: ['kind', 'target', 'action', 'value', 'statePath', 'stateEquals', 'guard'],
+    surface: ['component', 'route', 'configKey', 'seam'],
+    predicate: ['expression', 'registryId'],
+    effect: ['reversibility', 'risk', 'confirmationRequired', 'failureModes', 'registryId'],
+};
+const EDGE_FIELDS = ['from', 'type', 'to', 'when', 'notes'];
+
+function unknownFields(record: object, known: Iterable<string>, label: string, options: CanonicalizeOptions): Record<string, unknown> {
+    const knownFields = new Set(known);
+    const extra = Object.entries(record).filter(([key, value]) => !knownFields.has(key) && value !== undefined);
+    if (!extra.length) return {};
+    if (options.unknownFieldPolicy === 'error') {
+        throw new Error(`Unknown fields on ${label}: ${extra.map(([key]) => key).sort().join(', ')}`);
+    }
+    if (options.unknownFieldPolicy === 'strip') return {};
+    return Object.fromEntries(extra.sort(([a], [b]) => a.localeCompare(b)));
+}
+
+function canonicalizeNode(node: UisgNode, options: CanonicalizeOptions): UisgNode {
     const base = {
+        ...unknownFields(node, [...COMMON_NODE_FIELDS, ...NODE_FIELDS[node.type]], node.id, options),
         id: node.id,
         name: node.name,
         status: node.status,
@@ -116,8 +140,9 @@ function canonicalizeTarget(target: any): any {
     return target;
 }
 
-function canonicalizeEdge(edge: UisgEdge): UisgEdge {
+function canonicalizeEdge(edge: UisgEdge, options: CanonicalizeOptions): UisgEdge {
     return {
+        ...unknownFields(edge, EDGE_FIELDS, `${edge.from}->${edge.to}`, options),
         from: edge.from,
         type: edge.type,
         to: edge.to,
@@ -127,8 +152,8 @@ function canonicalizeEdge(edge: UisgEdge): UisgEdge {
 }
 
 export function canonicalize(graph: UisgGraph, options: CanonicalizeOptions = DEFAULT_CANONICALIZE_OPTIONS): UisgGraph {
-    const canonicalNodes = stableSort(graph.nodes.map(canonicalizeNode), n => n.id);
-    const canonicalEdges = stableSort(graph.edges.map(canonicalizeEdge), e => `${e.from}|${e.type}|${e.to}|${e.when ?? ''}`);
+    const canonicalNodes = stableSort(graph.nodes.map(node => canonicalizeNode(node, options)), n => n.id);
+    const canonicalEdges = stableSort(graph.edges.map(edge => canonicalizeEdge(edge, options)), e => `${e.from}|${e.type}|${e.to}|${e.when ?? ''}`);
 
     return {
         version: options.schemaVersion,

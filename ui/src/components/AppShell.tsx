@@ -25,8 +25,20 @@ const DevBridge = import.meta.env.VITE_DEV_HOOKS === 'true'
     ? React.lazy(() => import('../dev/DevBridge').then(m => ({ default: m.DevBridge })))
     : () => null;
 
+const PALETTE_EVENTS = [
+    'action:navigate',
+    'action:newNote',
+    'action:openNote',
+    'action:deleteNote',
+    'action:openPalette',
+    'action:openSearch',
+    'action:openShortcutsHelp',
+] as const;
+
+const CAPTURE_TITLES: Record<string, string> = {task: 'New Task', journal: 'Journal'};
+
 export function AppShell() {
-    const {getSortedFilteredNotes, loading: notesLoading, addNote} = useNotes();
+    const {getSortedFilteredNotes, loading: notesLoading, addNote, deleteNote} = useNotes();
 
     useSuggestionsCompositionRoot();
     const {
@@ -174,6 +186,49 @@ export function AppShell() {
             window.removeEventListener('open-shortcuts-help', handleOpenShortcutsHelp);
         };
     }, [addToast, addDegradedMode, removeDegradedMode]);
+
+    // Command palette actions dispatch events; wire them to app state.
+    useEffect(() => {
+        const handlers: Record<(typeof PALETTE_EVENTS)[number], (detail: Record<string, unknown>) => void> = {
+            'action:navigate': detail => {
+                setActiveView(String(detail.view ?? 'notes') as Parameters<typeof setActiveView>[0]);
+                setIsPaletteOpen(false);
+            },
+            'action:newNote': detail => {
+                const type = typeof detail.type === 'string' && detail.type in CAPTURE_TITLES ? detail.type : undefined;
+                const note = addNote({
+                    title: type ? CAPTURE_TITLES[type] : '',
+                    content: '',
+                    ...(type ? {tags: [type]} : {}),
+                });
+                setActiveView('notes');
+                setSelectedNoteId(note.id);
+                setIsPaletteOpen(false);
+            },
+            'action:openNote': detail => {
+                if (typeof detail.noteId !== 'string' || !detail.noteId) return;
+                setActiveView('notes');
+                setSelectedNoteId(detail.noteId);
+                setIsPaletteOpen(false);
+            },
+            'action:deleteNote': detail => {
+                if (typeof detail.noteId !== 'string' || !detail.noteId) return;
+                deleteNote(detail.noteId);
+                if (detail.noteId === selectedNoteId) setSelectedNoteId(null);
+            },
+            'action:openPalette': () => setIsPaletteOpen(true),
+            'action:openSearch': () => setIsPaletteOpen(true),
+            'action:openShortcutsHelp': () => setIsHelpOpen(true),
+        };
+
+        const listeners = PALETTE_EVENTS.map(type => {
+            const listener = (event: Event) => handlers[type](((event as CustomEvent<Record<string, unknown>>).detail ?? {}));
+            window.addEventListener(type, listener);
+            return [type, listener] as const;
+        });
+
+        return () => listeners.forEach(([type, listener]) => window.removeEventListener(type, listener));
+    }, [addNote, deleteNote, selectedNoteId, setActiveView, setSelectedNoteId, setIsPaletteOpen, setIsHelpOpen]);
 
     useKeyboardShortcuts({
         onNewNote: () => {

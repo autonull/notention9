@@ -40,6 +40,9 @@ async function main(): Promise<void> {
     // L1: Param visibility check
     run('pnpm exec tsx scripts/verify-param-visibility.ts', 'L1: Strategy param visibility check');
 
+    // L1: UISG graph gate (validate, analyze, sync, seeded regressions, round-trip)
+    run('pnpm uisg:check', 'L1: UISG graph gate');
+
     // L2: UISG browser journey - capture-and-edit
     run('pnpm uisg run flow.capture-and-edit', 'L2: UISG E2E journey (capture-and-edit)');
 
@@ -47,6 +50,7 @@ async function main(): Promise<void> {
     run('pnpm uisg run flow.golden-path', 'L3: UISG journey (golden-path)');
     run('pnpm uisg run flow.publish-gate', 'L3: UISG journey (publish-gate)');
     run('pnpm uisg run flow.ontology-conflict', 'L3: UISG journey (ontology-conflict)');
+    run('pnpm uisg run flow.capture-and-edit-palette', 'L3: UISG journey (capture-and-edit-palette)');
 
     // Performance budget
     run('pnpm optimize perf:budget', 'L3: Performance budget check');

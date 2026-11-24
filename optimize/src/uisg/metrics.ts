@@ -189,7 +189,7 @@ function loadFailingAssertions(): FailingAssertion[] {
     return entries;
 }
 
-export function collectMetrics(days: number = 7): MetricsData {
+export function collectMetrics(days: number = 7, file: string = METRICS_FILE): MetricsData {
     const graph = loadGraph(new Map());
     const validation = validateGraph(graph);
     if (!validation.ok) {
@@ -216,10 +216,10 @@ export function collectMetrics(days: number = 7): MetricsData {
         failingAssertions,
     };
 
-    writeFileSync(METRICS_FILE, JSON.stringify(metrics, null, 2) + '\n');
+    writeFileSync(file, JSON.stringify(metrics, null, 2) + '\n');
     return metrics;
 }
 
-export function loadMetrics(): MetricsData | null {
-    return readJsonSafe(METRICS_FILE, null);
+export function loadMetrics(file: string = METRICS_FILE): MetricsData | null {
+    return readJsonSafe(file, null);
 }

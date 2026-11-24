@@ -26,7 +26,29 @@ src/
 
 ## Journey Authoring
 
-Journeys are declarative, serializable, and replayable. Each journey lives in `ui/test/optimize/*.journey.ts` under the `optimize` Playwright project.
+Journeys are declarative, serializable, and replayable. Registry specs live in
+`optimize/src/journeys.ts`; each has a thin Playwright wrapper in
+`ui/test/optimize/*.journey.ts` that calls `runJourneyTest(id)`.
+
+Registered (registry-backed, UISG-linked):
+
+| Journey | Intent |
+|---------|--------|
+| `capture-and-edit` | capture a note and edit its properties |
+| `capture-and-edit-keyboard` | same, keyboard only |
+| `capture-and-edit-palette` | same, via command and property palettes |
+| `golden-path` | first-run request + offer, explained match |
+| `publish-gate` | private publish requires confirmation; cancel keeps privacy |
+| `ontology-conflict` | conflicting capacity value is detected |
+
+Standalone specs (not registry journeys, not UISG flows):
+
+| Spec | Runs when | Purpose |
+|------|-----------|---------|
+| `mcp-contract.journey.ts` | `NOTENTION_MCP_URL` is set | MCP tool inventory + policy gating |
+| `replay.journey.ts` | invoked directly | replay a recorded bundle |
+
+`knownJourneys.ts` is a thin adapter over the registry; do not add specs there.
 
 ### Step Kinds
 

@@ -3,6 +3,7 @@ import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { getEvidenceDirSync } from '@notention/core/constants/paths';
 import { SEAM_ROLES } from '@notention/core/constants/seams';
 import '../journeys.js';
 import { getAllJourneys, getJourney } from '../registry.js';
@@ -27,6 +28,7 @@ import { adoptFlow } from './adopt.js';
 import { canonicalize, graphHash, roundTripTest } from './canonicalize.js';
 import { diffGraphsCommand, printDiff } from './diff.js';
 import { appendRunRecord, loadRuns, loadFindings, markFindingFixed, verifyFinding } from './records.js';
+import { loadRegressionCatalogue, runSeededRegressions } from './regressions.js';
 import type { UisgGraph } from './types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -50,9 +52,11 @@ Commands:
   adopt <flowId> --baseline <runId> --variant <runId> --hypothesis <text> --metric <name> --actor <name>
                                             Compare bundles, update lifecycle, record decision
   canonicalize [--graph <file>] [--check-roundtrip]  Canonicalize graph; verify round-trip
+  regressions [--graph <file>]              Apply seeded regressions; every expected finding must fire
+  check [--graph <file>]                    Gate: validate, analyze --strict, sync, regressions, round-trip
   diff <baseline> <variant> [--semantic]    Semantic diff of two graphs (files, 'current', or 'hash:<id>')
   findings [--mark-fixed <id> --by <name> --run <runId>] [--verify <id> --run <runId>]  Findings repo
-  runs                                      Show recent run records
+  runs [--repair]                            Show recent run records; resolve bundle paths in place
 
 Default graph: doc/uisg/graph.json`;
 
@@ -206,10 +210,11 @@ function main(): number {
             console.log(status === 0 ? `PASSED ${id}` : `FAILED ${id}`);
 
             // Record run
+            const bundlePath = join(getEvidenceDirSync(), runId, 'bundle.json');
             appendRunRecord({
                 flowId,
                 runId,
-                bundlePath: `data/loop/runs/run-${runId}/bundle.json`,
+                bundlePath,
                 status: status === 0 ? 'passed' : 'failed',
                 timestamp: new Date().toISOString(),
                 dimensions: {
@@ -415,6 +420,39 @@ function main(): number {
             }
             return 0;
         }
+        case 'check': {
+            const graph = loadGraph(flags);
+            const journeyIds = new Set(getAllJourneys().map(({ id }) => id));
+            const findings = analyzeGraph(graph, { journeyIds });
+            const sync = syncGraphWithCode(graph);
+            const regressions = runSeededRegressions(graph, loadRegressionCatalogue(), journeyIds);
+            const roundtrip = roundTripTest(graph);
+            const blocked = sync.proposals.filter(({ severity }) => severity !== 'info');
+            const missed = regressions.filter(({ detected }) => !detected);
+            const evidenceDir = getEvidenceDirSync();
+            const unresolved = loadRuns().filter(
+                run => !existsSync(resolve(ROOT, run.bundlePath)) && !existsSync(join(evidenceDir, run.runId, 'bundle.json'))
+            );
+            console.log(`  findings: ${findings.length}`);
+            console.log(`  sync warnings: ${blocked.length}`);
+            console.log(`  seeded regressions: ${regressions.length - missed.length}/${regressions.length}`);
+            console.log(`  unresolved run records: ${unresolved.length}`);
+            console.log(`  round-trip: ${roundtrip ? 'PASS' : 'FAIL'}`);
+            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || !roundtrip;
+            console.log(failed ? 'CHECK FAILED' : 'CHECK OK');
+            return failed ? 1 : 0;
+        }
+        case 'regressions': {
+            const graph = loadGraph(flags);
+            const catalogue = loadRegressionCatalogue();
+            const outcomes = runSeededRegressions(graph, catalogue, new Set(getAllJourneys().map(({ id }) => id)));
+            for (const outcome of outcomes) {
+                console.log(`  [${outcome.detected ? 'OK' : 'MISS'}] ${outcome.seedId} (${outcome.family}) -> ${outcome.expectedCode}`);
+            }
+            const missed = outcomes.filter(outcome => !outcome.detected);
+            console.log(`Seeded regressions: ${outcomes.length - missed.length}/${outcomes.length} detected`);
+            return missed.length ? 1 : 0;
+        }
         case 'diff': {
             const [baseline, variant] = positionals;
             if (!baseline || !variant) { console.error('diff requires baseline and variant'); return 1; }
@@ -450,6 +488,26 @@ function main(): number {
         }
         case 'runs': {
             const runs = loadRuns();
+            if (flags.has('repair')) {
+                const evidenceDir = getEvidenceDirSync();
+                let repaired = 0;
+                const resolved = [];
+                const unresolved = [];
+                for (const run of runs) {
+                    if (existsSync(resolve(ROOT, run.bundlePath))) { resolved.push(run); continue; }
+                    const candidate = join(evidenceDir, run.runId, 'bundle.json');
+                    if (existsSync(candidate)) {
+                        repaired += 1;
+                        resolved.push({ ...run, bundlePath: candidate });
+                    } else {
+                        unresolved.push(run);
+                    }
+                }
+                writeFileSync(resolve(ROOT, 'doc/uisg/runs.jsonl'), resolved.map(run => JSON.stringify(run)).join('\n') + '\n');
+                writeFileSync(resolve(ROOT, 'doc/uisg/runs.unresolved.jsonl'), unresolved.map(run => JSON.stringify(run)).join('\n') + '\n');
+                console.log(`Repaired ${repaired}/${runs.length} run bundle paths; quarantined ${unresolved.length}`);
+                return 0;
+            }
             console.log(`Recent runs (${runs.length}):`);
             for (const r of runs.slice(-10).reverse()) {
                 console.log(`  ${r.runId} ${r.flowId} ${r.status} ${r.timestamp}`);

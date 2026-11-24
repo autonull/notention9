@@ -35,21 +35,24 @@ function computeHash(obj: unknown): string {
     return Math.abs(hash).toString(16);
 }
 
-export function emitManifest(flowId: string, spec: JourneySpec, warnings: string[] = []): FlowManifest {
-    ensureManifestDir();
-
+export function buildManifest(flowId: string, spec: JourneySpec, warnings: string[] = []): FlowManifest {
     const journeyFile = resolve(ROOT, 'ui/test/optimize', `${spec.id}.journey.ts`);
-    const manifest: FlowManifest = {
+    return {
         flowId,
         spec,
         journeyFile: journeyFile.replace(ROOT + '/', ''),
         compilerVersion: '1.0.0',
         warnings,
-        sourceMap: '', // TODO: generate source map
+        sourceMap: '',
         generatedAt: new Date().toISOString(),
         contentHash: computeHash(spec),
     };
+}
 
+export function emitManifest(flowId: string, spec: JourneySpec, warnings: string[] = []): FlowManifest {
+    ensureManifestDir();
+
+    const manifest = buildManifest(flowId, spec, warnings);
     const manifestPath = resolve(MANIFEST_DIR, `${flowId}.manifest.json`);
     writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
 

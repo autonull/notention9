@@ -70,31 +70,34 @@ export function generateA11yFindingsFromBundle(bundle: any): A11yFinding[] {
         }
     }
 
-    // Check state inconsistencies (like operator mismatch)
+    // Check rendered property operators against the stored properties
     if (bundle.steps) {
         const captureSteps = bundle.steps.filter((s: any) => s.kind === 'capture' || s.kind === 'captureAria');
         for (const capture of captureSteps) {
-            if (capture.stateSnapshot?.note?.properties) {
-                for (const prop of capture.stateSnapshot.note.properties) {
-                    const indexValue = capture.stateSnapshot.note.propertyIndex?.[prop.key];
-                    if (indexValue && prop.operator !== 'contains' && indexValue.includes(prop.values[0])) {
-                        findings.push(createA11yFinding({
-                            id: `a11y-${journeyId}-${prop.key}-operator-mismatch`,
-                            title: `Property operator mismatch: ${prop.key} shows "${prop.operator}" but index has "${prop.values[0]}"`,
-                            journey: journeyId,
-                            location: `note.propertyIndex.${prop.key}`,
-                            severity: 'major',
-                            confidence: 'high',
-                            evidence: ['stateSnapshot', 'propertyIndex'],
-                            reproduction: `Run journey ${journeyId} and inspect property ${prop.key}`,
-                            affectedLayer: ['core', 'ui'],
-                            userImpact: 'Screen readers may announce incorrect operator state',
-                            proposedFix: 'Ensure property operator in UI matches propertyIndex',
-                            verification: 'Run journey with assertAccessibleName on property operator',
-                            wcagCriteria: ['4.1.2 Name, Role, Value'],
-                        }));
-                    }
-                }
+            const note = capture.stateSnapshot?.note;
+            if (!note?.properties || typeof note.content !== 'string') continue;
+            const rendered = new Map<string, string>();
+            for (const match of note.content.matchAll(/data-name="([^"]+)"[^>]*?data-operator="([^"]+)"/g)) {
+                rendered.set(match[1], match[2]);
+            }
+            for (const prop of note.properties) {
+                const renderedOperator = rendered.get(prop.key);
+                if (!renderedOperator || renderedOperator === prop.operator) continue;
+                findings.push(createA11yFinding({
+                    id: `a11y-${journeyId}-${prop.key}-operator-mismatch`,
+                    title: `Property operator mismatch: ${prop.key} shows "${renderedOperator}" but is stored as "${prop.operator}"`,
+                    journey: journeyId,
+                    location: `note.properties.${prop.key}`,
+                    severity: 'major',
+                    confidence: 'high',
+                    evidence: ['stateSnapshot', 'note.content', 'note.properties'],
+                    reproduction: `Run journey ${journeyId} and inspect property ${prop.key}`,
+                    affectedLayer: ['core', 'ui'],
+                    userImpact: 'Screen readers may announce an operator different from the stored value',
+                    proposedFix: 'Render the stored operator or persist the displayed operator',
+                    verification: 'Run the journey and compare the rendered property with the stored operator',
+                    wcagCriteria: ['4.1.2 Name, Role, Value'],
+                }));
             }
         }
     }

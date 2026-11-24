@@ -135,6 +135,37 @@ const captureAndEditKeyboard: JourneySpec = {
     status: 'ready',
 };
 
+const captureAndEditPalette: JourneySpec = {
+    id: 'capture-and-edit-palette',
+    version: 1,
+    intent: 'capture a note and edit its properties through command palettes',
+    journeysTouched: ['capture', 'edit', 'property-extraction', 'palette'],
+    seed: { notes: [testNote], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [testNote], settings: baseSettings },
+        { kind: 'navigate', hash: 'notes' },
+        { kind: 'act', target: { testId: 'app-shell' }, action: 'press', value: 'Control+k' },
+        { kind: 'script', code: 'new Promise(r => setTimeout(r, 300))' },
+        { kind: 'act', target: { testId: 'command-palette-input' }, action: 'fill', value: 'New Task' },
+        { kind: 'script', code: 'new Promise(r => setTimeout(r, 250))' },
+        { kind: 'act', target: { testId: 'command-palette-input' }, action: 'press', value: 'Enter' },
+        { kind: 'waitForState', path: 'note.title', equals: 'New Task', timeoutMs: 3000 },
+        { kind: 'assertState', path: 'note.tags', equals: ['task'] },
+        { kind: 'act', target: { testId: 'page-add-detail' }, action: 'press', value: 'Control+Shift+P' },
+        { kind: 'script', code: 'new Promise(r => setTimeout(r, 300))' },
+        { kind: 'act', target: { testId: 'property-palette-input' }, action: 'fill', value: 'framework' },
+        { kind: 'act', target: { testId: 'property-palette-input' }, action: 'press', value: 'Enter' },
+        { kind: 'capture', label: 'after-property-palette' },
+        { kind: 'act', target: { testId: 'property-value-input', modal: 'Edit detail' }, action: 'fill', value: 'Next.js' },
+        { kind: 'act', target: { role: 'button', name: /^save changes$/i, modal: 'Edit detail' }, action: 'click' },
+        { kind: 'script', code: 'window.dispatchEvent(new CustomEvent("save-note"))' },
+        { kind: 'waitForState', path: 'note.propertyIndex.framework', equals: ['Next.js'], timeoutMs: 3000 },
+        { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['Next.js'] },
+        { kind: 'capture', label: 'after-palette-edit' },
+    ],
+    status: 'ready',
+};
+
 const goldenPath: JourneySpec = {
     id: 'golden-path',
     version: 2,
@@ -164,7 +195,8 @@ const goldenPath: JourneySpec = {
 };
 
 registerJourney(captureAndEdit);
+registerJourney(captureAndEditKeyboard);
+registerJourney(captureAndEditPalette);
 registerJourney(publishGate);
 registerJourney(ontologyConflict);
-registerJourney(captureAndEditKeyboard);
 registerJourney(goldenPath);

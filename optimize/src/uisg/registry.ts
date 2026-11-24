@@ -82,7 +82,7 @@ export function validateAgainstRegistry(
     const errors: string[] = [];
 
     for (const node of graph.nodes) {
-        if (node.type === 'surface' && node.component) {
+        if (node.type === 'surface' && node.component && (node.status === 'implemented' || node.status === 'partial')) {
             if (!registry.components.has(node.component)) {
                 errors.push(`Surface ${node.id} references unknown component ${node.component}`);
             }

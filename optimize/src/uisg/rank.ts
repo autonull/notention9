@@ -189,7 +189,7 @@ function computeConfidence(node: UisgNode, metrics: ReturnType<typeof loadMetric
     return (evidenceCount * reproducibility) || 0.1;
 }
 
-export function rankItems(weightProfile: PriorityData['weightProfile'] = 'default'): PriorityData {
+export function rankItems(weightProfile: PriorityData['weightProfile'] = 'default', file: string = PRIORITY_FILE): PriorityData {
     const graph = loadGraph(new Map());
     const validation = validateGraph(graph);
     if (!validation.ok || !validation.graph) {
@@ -274,7 +274,7 @@ export function rankItems(weightProfile: PriorityData['weightProfile'] = 'defaul
         paretoFrontier,
     };
 
-    writeFileSync(PRIORITY_FILE, JSON.stringify(priority, null, 2) + '\n');
+    writeFileSync(file, JSON.stringify(priority, null, 2) + '\n');
     return priority;
 }
 
@@ -305,9 +305,9 @@ function computeParetoFrontier(items: RankedItem[]): string[] {
     return pareto.map(p => p.nodeId);
 }
 
-export function loadPriority(): PriorityData | null {
+export function loadPriority(file: string = PRIORITY_FILE): PriorityData | null {
     try {
-        return JSON.parse(readFileSync(PRIORITY_FILE, 'utf8')) as PriorityData;
+        return JSON.parse(readFileSync(file, 'utf8')) as PriorityData;
     } catch {
         return null;
     }

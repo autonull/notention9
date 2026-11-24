@@ -147,7 +147,7 @@ function checkContext(node: UisgNode, context: ContextProfile): SelectionConflic
     return conflicts;
 }
 
-export function selectFeature(request: SelectionRequest): SelectionResult {
+export function selectFeature(request: SelectionRequest, file: string = SELECTION_FILE): SelectionResult {
     const graph = loadGraph(new Map());
     const validation = validateGraph(graph);
     if (!validation.ok || !validation.graph) {
@@ -237,13 +237,13 @@ export function selectFeature(request: SelectionRequest): SelectionResult {
         satisfied,
     };
 
-    writeFileSync(SELECTION_FILE, JSON.stringify(result, null, 2) + '\n');
+    writeFileSync(file, JSON.stringify(result, null, 2) + '\n');
     return result;
 }
 
-export function loadSelection(): SelectionResult | null {
+export function loadSelection(file: string = SELECTION_FILE): SelectionResult | null {
     try {
-        return JSON.parse(readFileSync(SELECTION_FILE, 'utf8')) as SelectionResult;
+        return JSON.parse(readFileSync(file, 'utf8')) as SelectionResult;
     } catch {
         return null;
     }

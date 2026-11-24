@@ -200,7 +200,8 @@ export function scanSurfaces(): ScannedSurface[] {
         f.endsWith('Editor.tsx') || f.endsWith('Manager.tsx') || f.endsWith('Composer.tsx') ||
         f.endsWith('Selector.tsx') || f.endsWith('Input.tsx') || f.endsWith('Banner.tsx') ||
         f.endsWith('Display.tsx') || f.endsWith('Spinner.tsx') || f.endsWith('Capture.tsx') ||
-        f.endsWith('Toast.tsx') || f.endsWith('Picker.tsx') || f.endsWith('List.tsx')
+        f.endsWith('Toast.tsx') || f.endsWith('Picker.tsx') || f.endsWith('List.tsx') ||
+        f.endsWith('Item.tsx') || f.endsWith('Palette.tsx')
     );
     
     // Primitive components to exclude (these are not "surfaces" in UISG sense)
@@ -215,7 +216,7 @@ export function scanSurfaces(): ScannedSurface[] {
         'PublishErrorBanner', 'ConnectivityBanner', 'DegradedModeBanner', 'CapabilitiesPanel',
         'NoteGridItem', 'NoteListItem', 'NetworkFeedList', 'SuggestedMatchItem',
         'OntologyNodeItem', 'OntologySuggestionItem', 'EnhancedPropertyValueInput',
-        'UnifiedSelector', 'LanguageSelector', 'TiptapEditor', 'HybridEditor', 'MatchList',
+        'LanguageSelector', 'TiptapEditor', 'HybridEditor', 'MatchList',
         'AttributeList'
     ]);
     
@@ -233,7 +234,8 @@ export function scanSurfaces(): ScannedSurface[] {
              e.endsWith('Display') || e.endsWith('Spinner') || e.endsWith('Capture') ||
              e.endsWith('Toast') || e.endsWith('Picker') || e.endsWith('List') ||
              e.endsWith('Rail') || e.endsWith('Item') || e.endsWith('Empty') ||
-             e.endsWith('Error') || e.endsWith('Match') || e.endsWith('Confirm'))
+             e.endsWith('Error') || e.endsWith('Match') || e.endsWith('Confirm') ||
+             e.endsWith('Palette'))
         );
         
         for (const name of uiExports) {
@@ -362,7 +364,7 @@ export function scanJourneys(): ScannedJourney[] {
             const varMatch = source.match(new RegExp(`const\\s+${journeyVar}\\s*:\\s*JourneySpec\\s*=\\s*\\{([\\s\\S]*?)\\n\\};`));
             if (varMatch) {
                 const journeySource = varMatch[1];
-                const idMatch = journeySource.match(/id:\s*['"](\w+)['"]/);
+                const idMatch = journeySource.match(/id:\s*['"]([\w-]+)['"]/);
                 const intentMatch = journeySource.match(/intent:\s*['"]([^'"]+)['"]/);
                 const statusMatch = journeySource.match(/status:\s*['"](\w+)['"]/);
                 const stepsMatch = journeySource.match(/steps:\s*\[([\s\S]*?)\]/);

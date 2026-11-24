@@ -435,3 +435,23 @@ pnpm optimize suggestions --status proposed
 | UI variants fragment codebase | Component composition over inheritance, shared design tokens |
 | Matrix tests too slow | Parallel execution, selective scenario sampling, caching |
 | False positives from metrics | Multi-metric confirmation, human-in-the-loop validation |
+---
+
+## Reconciliation with the UISG loop
+
+The suggestion store described here is materialized by the UI/UX space graph:
+
+- **Findings** — `doc/uisg/findings.jsonl` (open → fixed → verified, stable IDs).
+- **Priority** — `doc/uisg/priority.json` (`(impact × confidence) / effort`,
+  hard constraints, Pareto front, reasons linked to graph node IDs).
+- **Decisions** — `doc/uisg/decisions.jsonl` (lifecycle transitions and
+  adopted/rejected variants with evidence).
+- **Experiments** — `doc/uisg/variants/` designs; `experiments.jsonl` records
+  flow, variant, metric, baseline, expected effect, and stop condition.
+- **Simulator scenarios** — candidate variants enter the simulator only after
+  `uisg select` accepts them; results return as metrics, not as graph truth.
+- **Ontology proposals** — conflicts found by `ontology:audit` become findings
+  linked to `cap.ontology.merge`; they do not edit the ontology directly.
+
+A suggestion is adopted only with a baseline, a variant, a comparison, and a
+decision record. No suggestion bypasses the evidence gate.

@@ -1,8 +1,6 @@
 {
   "ui/src/components/agent/AgentStatusIndicator.tsx": 10,
   "ui/src/components/assistant/LocalMatchesPanel.tsx": 1,
-  "ui/src/components/dashboard/DashboardLocalMatch.tsx": 6,
-  "ui/src/components/dashboard/LocalMatchPreview.tsx": 2,
   "ui/src/components/dashboard/QuickCapture.tsx": 3,
   "ui/src/components/editor/TemplateSelector.tsx": 10,
   "ui/src/components/layout/ConnectionStatus.tsx": 4,

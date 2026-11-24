@@ -1,0 +1,81 @@
+{
+  "version": 1,
+  "seeds": [
+    {
+      "id": "reg-integrity-duplicate-id",
+      "family": "integrity",
+      "description": "A node id appears twice; references become ambiguous.",
+      "mutation": { "kind": "duplicate-node", "nodeId": "step.detail.open" },
+      "expectedCode": "duplicate-id"
+    },
+    {
+      "id": "reg-integrity-dangling-edge",
+      "family": "integrity",
+      "description": "An edge targets a node that does not exist.",
+      "mutation": {
+        "kind": "dangling-edge",
+        "edge": { "from": "flow.capture-and-edit", "type": "contains", "to": "step.missing" }
+      },
+      "expectedCode": "dangling-edge"
+    },
+    {
+      "id": "reg-integrity-edge-direction",
+      "family": "integrity",
+      "description": "A contains edge starts at a capability instead of a flow.",
+      "mutation": {
+        "kind": "wrong-edge-direction",
+        "edge": { "from": "cap.note.publish", "type": "contains", "to": "step.pub.decide" }
+      },
+      "expectedCode": "edge-direction"
+    },
+    {
+      "id": "reg-traceability-stale-journey",
+      "family": "traceability",
+      "description": "A flow links a journey id that is not registered.",
+      "mutation": { "kind": "retarget-journey", "nodeId": "flow.golden-path", "journey": "golden-path-v3" },
+      "expectedCode": "stale-journey-link"
+    },
+    {
+      "id": "reg-flow-state-missing-confirmation",
+      "family": "flow-state",
+      "description": "A destructive flow loses its explicit confirmation step.",
+      "mutation": { "kind": "downgrade-confirm", "nodeId": "step.pub.decide" },
+      "expectedCode": "missing-confirmation"
+    },
+    {
+      "id": "reg-flow-state-missing-recovery",
+      "family": "flow-state",
+      "description": "The cancel branch is renamed; no cancel/deny path remains.",
+      "mutation": { "kind": "rename-cancel-branch", "flowId": "flow.publish-gate" },
+      "expectedCode": "missing-recovery"
+    },
+    {
+      "id": "reg-flow-state-unasserted-result",
+      "family": "flow-state",
+      "description": "A result step loses its state assertion and renders nothing.",
+      "mutation": { "kind": "strip-result-assertion", "nodeId": "step.palette.done" },
+      "expectedCode": "unasserted-result"
+    },
+    {
+      "id": "reg-a11y-untargeted-step",
+      "family": "a11y-ergonomics",
+      "description": "An action step loses its accessible target.",
+      "mutation": { "kind": "remove-target", "nodeId": "step.palette.capture" },
+      "expectedCode": "untargeted-step"
+    },
+    {
+      "id": "reg-a11y-orphan-step",
+      "family": "a11y-ergonomics",
+      "description": "A step is detached from every flow.",
+      "mutation": { "kind": "detach-step", "nodeId": "step.oc.visible" },
+      "expectedCode": "orphan-step"
+    },
+    {
+      "id": "reg-a11y-ungrounded-surface",
+      "family": "a11y-ergonomics",
+      "description": "An implemented surface loses its component, route, and config key.",
+      "mutation": { "kind": "strip-surface-grounding", "nodeId": "surface.commandpalette" },
+      "expectedCode": "ungrounded-surface"
+    }
+  ]
+}

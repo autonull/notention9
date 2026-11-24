@@ -15,7 +15,7 @@ export function useActionRegistryInit(): void {
  * Hook for using the action registry in components.
  */
 export function useActionRegistry() {
-    const [, forceUpdate] = useState(0);
+    const [version, forceUpdate] = useState(0);
 
     useEffect(() => {
         const unsubscribe = actionRegistry.subscribe(() => {
@@ -25,6 +25,7 @@ export function useActionRegistry() {
     }, []);
 
     return {
+        version,
         register: actionRegistry.register.bind(actionRegistry),
         unregister: actionRegistry.unregister.bind(actionRegistry),
         get: actionRegistry.get.bind(actionRegistry),

@@ -18,6 +18,9 @@ import { loadGraph } from './cli.js';
 import { canonicalize, roundTripTest, diffGraphs } from './canonicalize.js';
 import { appendRunRecord, loadRuns, appendDecision, loadDecisions, appendFinding, loadFindings, markFindingFixed, verifyFinding, transitionLifecycle } from './records.js';
 import { adoptFlow } from './adopt.js';
+import { loadRegressionCatalogue, runSeededRegressions } from './regressions.js';
+import { buildManifest, loadManifest } from './manifest.js';
+import { buildComponentRegistry, validateAgainstRegistry } from './registry.js';
 
 const minimal: UisgGraph = {
     version: 1,
@@ -231,8 +234,10 @@ describe('real graph', () => {
 });
 
 describe('collectMetrics', () => {
+    const file = '/tmp/opencode/uisg-metrics.json';
+
     it('collects metrics and writes to file', () => {
-        const metrics = collectMetrics(7);
+        const metrics = collectMetrics(7, file);
         expect(metrics.version).toBe(1);
         expect(metrics.generatedAt).toBeDefined();
         expect(Array.isArray(metrics.friction)).toBe(true);
@@ -245,15 +250,17 @@ describe('collectMetrics', () => {
     });
 
     it('loads metrics from file', () => {
-        const loaded = loadMetrics();
+        const loaded = loadMetrics(file);
         expect(loaded).not.toBeNull();
         expect(loaded!.version).toBe(1);
     });
 });
 
 describe('rankItems', () => {
+    const file = '/tmp/opencode/uisg-priority.json';
+
     it('ranks items and writes priority.json', () => {
-        const priority = rankItems('default');
+        const priority = rankItems('default', file);
         expect(priority.version).toBe(1);
         expect(priority.weightProfile).toBe('default');
         expect(Array.isArray(priority.items)).toBe(true);
@@ -274,13 +281,13 @@ describe('rankItems', () => {
     });
 
     it('loads priority from file', () => {
-        const loaded = loadPriority();
+        const loaded = loadPriority(file);
         expect(loaded).not.toBeNull();
         expect(loaded!.version).toBe(1);
     });
 
     it('sorts by score descending with type order tie-break', () => {
-        const priority = rankItems('default');
+        const priority = rankItems('default', file);
         for (let i = 1; i < priority.items.length; i++) {
             const prev = priority.items[i - 1];
             const curr = priority.items[i];
@@ -294,8 +301,10 @@ describe('rankItems', () => {
 });
 
 describe('selectFeature', () => {
+    const file = '/tmp/opencode/uisg-selection.json';
+
     it('selects a feature and writes selection.json', () => {
-        const result = selectFeature({ feature: 'inline-detail' });
+        const result = selectFeature({ feature: 'inline-detail' }, file);
         expect(result.request.feature).toBe('inline-detail');
         expect(Array.isArray(result.selected)).toBe(true);
         expect(result.explanation).toBeDefined();
@@ -304,7 +313,7 @@ describe('selectFeature', () => {
     });
 
     it('loads selection from file', () => {
-        const loaded = loadSelection();
+        const loaded = loadSelection(file);
         expect(loaded).not.toBeNull();
         expect(loaded!.request.feature).toBe('inline-detail');
     });
@@ -315,6 +324,7 @@ describe('selectFeature', () => {
         expect(result.selected).toHaveLength(0);
         expect(result.conflicts.length).toBeGreaterThan(0);
         expect(result.conflicts[0].type).toBe('requires');
+        expect(result.explanation).toContain('non-existent-feature-xyz');
     });
 
     it('allows selection of rejected nodes (soft lifecycle conflict)', () => {
@@ -511,5 +521,115 @@ describe('adoptFlow', () => {
         expect(result.success).toBe(false);
         expect(result.decision).toBe('reject');
         expect(result.error).toBeDefined();
+    });
+});
+
+describe('seeded regressions', () => {
+    const file = fileURLToPath(new URL('../../../doc/uisg/graph.json', import.meta.url));
+    const graph = validateGraph(JSON.parse(readFileSync(file, 'utf8'))).graph!;
+    const catalogue = loadRegressionCatalogue();
+    const journeyIds = new Set(getAllJourneys().map(({ id }) => id));
+
+    it('detects every seeded regression', () => {
+        const outcomes = runSeededRegressions(graph, catalogue, journeyIds);
+        expect(outcomes).toHaveLength(catalogue.seeds.length);
+        expect(outcomes.filter(outcome => !outcome.detected)).toEqual([]);
+    });
+
+    it('covers integrity, traceability, flow-state, and a11y families', () => {
+        expect(new Set(catalogue.seeds.map(seed => seed.family))).toEqual(
+            new Set(['integrity', 'traceability', 'flow-state', 'a11y-ergonomics'])
+        );
+    });
+
+    it('leaves the unmutated graph clean', () => {
+        expect(analyzeGraph(graph, { journeyIds })).toEqual([]);
+    });
+});
+
+describe('canonicalization fidelity', () => {
+    const withExtras = (): UisgGraph => {
+        const graph = clone();
+        (graph.nodes[0] as unknown as Record<string, unknown>).owner = 'design';
+        return graph;
+    };
+
+    it('preserves unknown fields by default', () => {
+        const canon = canonicalize(withExtras());
+        expect((canon.nodes.find(node => node.id === 'intent.test') as unknown as Record<string, unknown>).owner).toBe('design');
+    });
+
+    it('strips unknown fields when configured', () => {
+        const canon = canonicalize(withExtras(), { schemaVersion: 1, unknownFieldPolicy: 'strip' });
+        expect((canon.nodes[0] as unknown as Record<string, unknown>).owner).toBeUndefined();
+    });
+
+    it('rejects unknown fields when configured', () => {
+        expect(() => canonicalize(withExtras(), { schemaVersion: 1, unknownFieldPolicy: 'error' })).toThrow(/Unknown fields on intent.test: owner/);
+    });
+
+    it('preserves ids, edges, lifecycle, and provenance through a migration', () => {
+        const file = fileURLToPath(new URL('../../../doc/uisg/graph.json', import.meta.url));
+        const raw = validateGraph(JSON.parse(readFileSync(file, 'utf8'))).graph!;
+        const canon = canonicalize(raw);
+
+        expect(canon.nodes.map(node => node.id)).toEqual([...raw.nodes.map(node => node.id)].sort());
+        expect(canon.edges.map(edge => `${edge.from}|${edge.type}|${edge.to}|${edge.when ?? ''}`))
+            .toEqual(raw.edges.map(edge => `${edge.from}|${edge.type}|${edge.to}|${edge.when ?? ''}`).sort());
+
+        for (const node of raw.nodes) {
+            const migrated = canon.nodes.find(candidate => candidate.id === node.id)!;
+            expect(migrated).toMatchObject({ status: node.status });
+            expect(migrated.source ?? []).toEqual([...(node.source ?? [])].sort());
+            if (node.type === 'flow' && migrated.type === 'flow') expect(migrated.journey).toBe(node.journey);
+            if (node.type === 'capability' && migrated.type === 'capability') expect(migrated.strategy).toBe(node.strategy);
+        }
+    });
+});
+
+describe('manifest determinism', () => {
+    it('emits identical manifests for identical inputs', () => {
+        const spec = getJourney('golden-path')!;
+        const first = buildManifest('flow.golden-path', spec);
+        const second = buildManifest('flow.golden-path', spec);
+        expect(first.contentHash).toBe(second.contentHash);
+        expect({ ...first, generatedAt: '' }).toEqual({ ...second, generatedAt: '' });
+    });
+
+    it('keeps the recorded manifest in sync with its flow', () => {
+        const file = fileURLToPath(new URL('../../../doc/uisg/graph.json', import.meta.url));
+        const { graph } = validateGraph(JSON.parse(readFileSync(file, 'utf8')));
+        const manifest = loadManifest('flow.golden-path');
+        expect(manifest).not.toBeNull();
+        const spec = flowToJourney(graph!, 'flow.golden-path', { seed: getJourney('golden-path')!.seed });
+        expect(manifest!.spec).toEqual(spec);
+        expect(manifest!.contentHash).toBe(buildManifest('flow.golden-path', spec).contentHash);
+    });
+});
+
+describe('registry validation', () => {
+    const registry = buildComponentRegistry();
+
+    it('only requires components for implemented surfaces', () => {
+        const graph = clone();
+        graph.nodes.push(
+            { id: 'surface.planned-ghost', type: 'surface', name: 'PlannedGhost', status: 'planned', component: 'PlannedGhost' },
+            { id: 'surface.removed-ghost', type: 'surface', name: 'RemovedGhost', status: 'removed', component: 'RemovedGhost' }
+        );
+        expect(validateAgainstRegistry(graph, registry)).toEqual({ ok: true, errors: [] });
+    });
+
+    it('flags an implemented surface with no component', () => {
+        const graph = clone();
+        graph.nodes.push({ id: 'surface.missing', type: 'surface', name: 'Missing', status: 'implemented', component: 'Missing' });
+        expect(validateAgainstRegistry(graph, registry).errors).toEqual([
+            'Surface surface.missing references unknown component Missing',
+        ]);
+    });
+
+    it('accepts the real graph', () => {
+        const file = fileURLToPath(new URL('../../../doc/uisg/graph.json', import.meta.url));
+        const graph = validateGraph(JSON.parse(readFileSync(file, 'utf8'))).graph!;
+        expect(validateAgainstRegistry(graph, registry)).toEqual({ ok: true, errors: [] });
     });
 });
