@@ -1,12 +1,15 @@
+import type { UisgGraph, UisgSurface } from '../types.js';
+import type { TemplateTarget } from './render.js';
+
 export type TemplateShape = 'item' | 'panel' | 'editor' | 'status';
 
 export interface Template {
     shape: TemplateShape;
     name: string;
     description: string;
-    generateComponent(surface: any, graph: any): string;
-    generateTest(surface: any, graph: any): string;
-    generatePropsSchema(surface: any, graph: any): string;
+    generateComponent(surface: UisgSurface, graph: UisgGraph, target: TemplateTarget): string;
+    generateTest(surface: UisgSurface, graph: UisgGraph, target: TemplateTarget): string;
+    generatePropsSchema(surface: UisgSurface, graph: UisgGraph): string;
 }
 
 export const TEMPLATE_REGISTRY: Record<TemplateShape, Template> = {} as any;

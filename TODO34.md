@@ -23,13 +23,13 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | A.1 Graph variant schema | ✅ Done | `SurfaceVariant` + `VariantMetrics` on `UisgSurface`; `validate.ts` requires `version: 3`; `UISG_SCHEMA_VERSION=3`; no backward compatibility |
 | A.2 Context profiles v2 | ✅ Done | `CONTEXTS_SCHEMA_VERSION=2`; 3 bases + 7 derived profiles; `extends` with deep merge; v1 rejected |
 | A.3 Theme system | ✅ Core | `doc/uisg/themes.json`, `themes.ts`, `uisg themes list/show/generate`; `theme.css` consumes `--accent-color`, `--theme-radius`, `--theme-font`. Runtime `?uisg=1&theme=` pending |
-| A.4 Multi-target templates | ⬜ Pending | Templates still React-only; add required `target` param (no default) |
+| A.4 Multi-target templates | ✅ Core | Required `target`; `react`/`html`/`json` renderers; `solid`/`flutter` throw (no fallback); `generate` requires `--target` |
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
 | B.1–B.5 Evaluation harness | ⬜ Pending | Matrix runner, metrics, decide, A/B report, promotion |
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
-**Latest commit:** Phase A.2 + A.3 — context profiles v2, theme tokens + CSS generation.
+**Latest commit:** Phase A.4 — multi-target templates (react/html/json, explicit target).
 
 ---
 
@@ -184,12 +184,12 @@ interface SurfaceVariant {
 **File:** `optimize/src/uisg/templates/index.ts`
 
 ```typescript
-export const targets = {
-  react: { extension: '.tsx', builder: tsMorphReact },
-  solid: { extension: '.tsx', builder: tsMorphSolid },
-  html: { extension: '.html', builder: stringTemplate },
-  flutter: { extension: '.dart', builder: dartBuilder },
-  json: { extension: '.json', builder: schemaOnly }, // for design tools
+export type TemplateTarget = 'react' | 'html' | 'json';
+
+export const TARGET_EXTENSION = {
+  react: '.tsx',
+  html: '.html',
+  json: '.json',
 };
 
 interface Template {
@@ -200,7 +200,7 @@ interface Template {
 }
 ```
 
-**Targets:** All 4 existing templates take a required `target` argument. No default target and no migration shim; callers must be explicit.
+**Targets:** All 4 existing templates take a required `target` argument. No default target and no migration shim; callers must be explicit. `solid`/`flutter` are not implemented and throw; there is no fallback renderer.
 
 ### A.5 Variant Registry CLI
 **Commands:**
@@ -526,7 +526,7 @@ interface UisgFlags {
 - [x] 6 context profiles v2 with inheritance work
 - [x] 3 themes generate CSS vars
 - [ ] Themes apply at `?uisg=1&theme=`
-- [ ] `uisg generate --target=html|json` works for 1 surface
+- [x] `uisg generate --target=html|json` works for 1 surface
 - [x] `uisg variants` CRUD works, stores in `variants.json`
 
 ### Phase B

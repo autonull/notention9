@@ -39,6 +39,7 @@ import { emitSeamProps, writeSeamProps } from './seamProps.js';
 import { emitComponentMap, writeComponentMap } from './componentMap.js';
 import { generateSurface, generateAllSurfaces, checkParity, checkAllParity } from './codegen.js';
 import type { SurfaceVariantStatus, UisgGraph, UisgSurface } from './types.js';
+import type { TemplateTarget } from './templates/render.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const USAGE = `Usage: pnpm uisg <command> [args]
@@ -50,7 +51,9 @@ Commands:
   to-journey <flowId> [--seed <file>] [--out <file>] [--conditions a,b] [--ready] [--emit-test [--force]]
   run <flowId> [same flags as to-journey]   Compile, emit the journey test if missing, run it
   skeleton [--write] [--check] [--json]      Emit the generated skeleton preview + preview journeys
-  generate [--surface <id>] [--all] [--dry-run] [--check] [--parity] [--changed]  Generate surface component + test + props schema
+  generate --target=<react|html|json> [--surface <id>] [--all] [--dry-run] [--changed]
+                                            Generate surface component + test + props schema (target required)
+  generate [--check] [--parity]             Verify generated React artifacts (no target)
   optimize [--changed] [--dry-run] [--json] [--context <id>]  Run full pipeline: types, scan, generate, check
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
   reducer <flowId> [--out <file>]           Generate flow reducer from graph
@@ -384,6 +387,11 @@ async function main(): Promise<number> {
             const all = flags.has('all');
             const dryRun = flags.has('dry-run');
             const changed = flags.has('changed');
+            const target = flags.get('target') as TemplateTarget | undefined;
+            if (!target) {
+                console.error('generate --surface/--all requires --target=react|html|json');
+                return 1;
+            }
             
             if (surfaceId) {
                 const surface = graph.nodes.find(n => n.id === surfaceId && n.type === 'surface') as UisgSurface | undefined;
@@ -396,7 +404,7 @@ async function main(): Promise<number> {
                     return 1;
                 }
                 if (dryRun) {
-                    const result = generateSurface(surface as any, graph);
+                    const result = generateSurface(surface as any, graph, { target, dryRun: true });
                     console.log(`DRY RUN - Would generate:`);
                     console.log(`  Component: ${result.path}`);
                     console.log(`  Test: ${result.testPath}`);
@@ -405,7 +413,7 @@ async function main(): Promise<number> {
                     console.log(result.content.split('\n').slice(0, 100).join('\n'));
                     return 0;
                 }
-                const result = generateSurface(surface as any, graph);
+                const result = generateSurface(surface as any, graph, { target });
                 console.log(`Generated ${result.path}`);
                 console.log(`Generated ${result.testPath}`);
                 console.log(`Generated ${result.propsSchemaPath}`);
@@ -429,7 +437,9 @@ async function main(): Promise<number> {
                 const results = [];
                 for (const surface of targets) {
                     try {
-                        const result = dryRun ? generateSurface(surface, graph, { dryRun: true }) : generateSurface(surface, graph);
+                        const result = dryRun
+                            ? generateSurface(surface, graph, { target, dryRun: true })
+                            : generateSurface(surface, graph, { target });
                         results.push(result);
                     } catch (e) {
                         console.error(`Failed to generate ${surface.id}: ${e}`);
@@ -1113,7 +1123,7 @@ async function runOptimizePipeline(flags: Map<string, string>): Promise<number> 
         if (!dryRun) {
             for (const surface of targets) {
                 try {
-                    generateSurface(surface, graph);
+                    generateSurface(surface, graph, { target: 'react' });
                     generated++;
                 } catch (e) {
                     console.error(`  ✗ ${surface.id}: ${e}`);

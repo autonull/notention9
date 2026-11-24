@@ -3,6 +3,7 @@ import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import type { UisgGraph, UisgSurface } from './types.js';
 import { getTemplate, type TemplateShape } from './templates/index.js';
+import { TARGET_EXTENSION, type TemplateTarget } from './templates/render.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -10,6 +11,7 @@ const ROOT = resolve(__dirname, '../../..');
 
 export interface GeneratedSurface {
     surfaceId: string;
+    target: TemplateTarget;
     path: string;
     content: string;
     testPath: string;
@@ -42,12 +44,30 @@ function getTemplateShape(surface: UisgSurface): TemplateShape {
 }
 
 export interface GenerateSurfaceOptions {
+    target: TemplateTarget;
     write?: boolean;
     dryRun?: boolean;
 }
 
-export function generateSurface(surface: UisgSurface, graph: UisgGraph, options: GenerateSurfaceOptions = {}): GeneratedSurface {
-    const { write = true, dryRun = false } = options;
+function surfacePaths(surface: UisgSurface, shape: TemplateShape, target: TemplateTarget): { componentPath: string; testPath: string; propsSchemaPath: string } {
+    const componentName = surface.component ?? surface.id.replace('surface.', '').replace(/-./g, m => m[1].toUpperCase());
+    if (target === 'react') {
+        const shapePlural = shape === 'status' ? 'status' : `${shape}s`;
+        return {
+            componentPath: `ui/src/components/${shapePlural}/${componentName}.tsx`,
+            testPath: `ui/src/tests/generated/${componentName}.test.tsx`,
+            propsSchemaPath: `ui/src/components/${shapePlural}/${componentName}Props.ts`,
+        };
+    }
+    return {
+        componentPath: `ui/src/generated/${target}/${componentName}${TARGET_EXTENSION[target]}`,
+        testPath: `ui/src/tests/generated/${componentName}.${target}.test.ts`,
+        propsSchemaPath: `ui/src/generated/${target}/${componentName}Props.ts`,
+    };
+}
+
+export function generateSurface(surface: UisgSurface, graph: UisgGraph, options: GenerateSurfaceOptions): GeneratedSurface {
+    const { target, write = true, dryRun = false } = options;
     const shape = getTemplateShape(surface);
     const template = getTemplate(shape);
     
@@ -55,15 +75,11 @@ export function generateSurface(surface: UisgSurface, graph: UisgGraph, options:
         throw new Error(`No template found for shape: ${shape}`);
     }
 
-    const componentContent = template.generateComponent(surface, graph);
-    const testContent = template.generateTest(surface, graph);
+    const componentContent = template.generateComponent(surface, graph, target);
+    const testContent = template.generateTest(surface, graph, target);
     const propsSchemaContent = template.generatePropsSchema(surface, graph);
 
-    const componentName = surface.component ?? surface.id.replace('surface.', '').replace(/-./g, m => m[1].toUpperCase());
-    const shapePlural = shape === 'status' ? 'status' : `${shape}s`;
-    const componentPath = `ui/src/components/${shapePlural}/${componentName}.tsx`;
-    const testPath = `ui/src/tests/generated/${componentName}.test.tsx`;
-    const propsSchemaPath = `ui/src/components/${shapePlural}/${componentName}Props.ts`;
+    const { componentPath, testPath, propsSchemaPath } = surfacePaths(surface, shape, target);
 
     const fullComponentPath = resolve(ROOT, componentPath);
     const fullTestPath = resolve(ROOT, testPath);
@@ -84,6 +100,7 @@ export function generateSurface(surface: UisgSurface, graph: UisgGraph, options:
 
     return {
         surfaceId: surface.id,
+        target,
         path: componentPath,
         content: componentContent,
         testPath,
@@ -94,8 +111,8 @@ export function generateSurface(surface: UisgSurface, graph: UisgGraph, options:
     };
 }
 
-export function generateSurfaceInMemory(surface: UisgSurface, graph: UisgGraph): GeneratedSurface {
-    return generateSurface(surface, graph, { write: false, dryRun: true });
+export function generateSurfaceInMemory(surface: UisgSurface, graph: UisgGraph, target: TemplateTarget): GeneratedSurface {
+    return generateSurface(surface, graph, { target, write: false, dryRun: true });
 }
 
 export interface ParityResult {
@@ -141,7 +158,7 @@ function readOriginalSource(surface: UisgSurface): string | null {
 }
 
 export function checkParity(surface: UisgSurface, graph: UisgGraph): ParityResult {
-    const generated = generateSurfaceInMemory(surface, graph);
+    const generated = generateSurfaceInMemory(surface, graph, 'react');
     
     // Check determinism: compare with on-disk
     const onDiskComponent = existsSync(resolve(ROOT, generated.path)) 
@@ -241,7 +258,7 @@ export function checkAllParity(graph: UisgGraph, surfaceIds?: string[]): ParityR
     return results;
 }
 
-export function generateAllSurfaces(graph: UisgGraph, surfaceIds?: string[]): GeneratedSurface[] {
+export function generateAllSurfaces(graph: UisgGraph, target: TemplateTarget, surfaceIds?: string[]): GeneratedSurface[] {
     const surfaces = graph.nodes.filter(node => node.type === 'surface') as UisgSurface[];
     const targets = surfaceIds 
         ? surfaces.filter(s => surfaceIds.includes(s.id))
@@ -252,7 +269,7 @@ export function generateAllSurfaces(graph: UisgGraph, surfaceIds?: string[]): Ge
     for (const surface of targets) {
         if (surface.seam) continue; // Skip strategy-backed surfaces
         try {
-            const result = generateSurface(surface, graph);
+            const result = generateSurface(surface, graph, { target });
             generated.push(result);
             console.log(`Generated ${result.path}`);
         } catch (error) {
