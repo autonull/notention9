@@ -20,7 +20,7 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 
 | Sub-task | Status | Notes |
 |----------|--------|-------|
-| A.1 Graph variant schema | ✅ Done | `SurfaceVariant` + `VariantMetrics` on `UisgSurface`; `validate.ts` schema; `migrateGraph` v2→v3 (`CURRENT_SCHEMA_VERSION=3`); `loadGraph` auto-migrates |
+| A.1 Graph variant schema | ✅ Done | `SurfaceVariant` + `VariantMetrics` on `UisgSurface`; `validate.ts` requires `version: 3`; `UISG_SCHEMA_VERSION=3`; no backward compatibility |
 | A.2 Context profiles v2 | ⬜ Pending | Needs `extends`, `strategyOverrides`, `templateVariants`, `featureFlags` + deep-merge resolver |
 | A.3 Theme system | ⬜ Pending | Needs `doc/uisg/themes.json`, `themes.ts`, generated CSS vars |
 | A.4 Multi-target templates | ⬜ Pending | Templates still React-only; add `target` param |
@@ -29,7 +29,7 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
-**Latest commit:** Phase A.1 + A.5 — variant schema, v2→v3 migration, variant registry.
+**Latest commit:** Phase A.1 + A.5 — variant schema (v3 only), variant registry.
 
 ---
 
@@ -130,7 +130,7 @@ interface SurfaceVariant {
 }
 ```
 
-**Migration:** bump graph version 2→3 with auto-migration (all existing surfaces get empty `variants`).
+**Schema:** v3 is canonical. `version` must equal 3; older graphs are rejected. No migration shim.
 
 ### A.2 Context Profiles v2
 **File:** `doc/uisg/contexts.json` (extend)
@@ -520,7 +520,7 @@ interface UisgFlags {
 ## 8. Acceptance Criteria (Definition of Done)
 
 ### Phase A
-- [x] Graph v3 with `variants` loads, migrates v2
+- [x] Graph v3 with `variants` loads; v2 rejected
 - [ ] 6 context profiles v2 with inheritance work
 - [ ] 3 themes generate CSS vars, apply at `?uisg=1&theme=`
 - [ ] `uisg generate --target=html|json` works for 1 surface

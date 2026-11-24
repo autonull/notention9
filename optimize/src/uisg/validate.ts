@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { UISG_SCHEMA_VERSION } from './types.js';
 import type { UisgEdgeType, UisgGraph, UisgNode, UisgNodeType, UisgReversibility, UisgEffectRisk } from './types.js';
 
 const StatusSchema = z.enum(['implemented', 'partial', 'planned', 'candidate', 'experimental', 'removed', 'rejected']);
@@ -58,7 +59,7 @@ const EdgeSchema = z.object({
 });
 
 export const UisgGraphSchema = z.object({
-    version: z.number().int().positive(),
+    version: z.literal(UISG_SCHEMA_VERSION),
     nodes: z.array(NodeSchema),
     edges: z.array(EdgeSchema),
 });

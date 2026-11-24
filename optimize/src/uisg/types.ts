@@ -2,6 +2,8 @@ import type { SeamRole } from '@notention/core/ui/strategy';
 import type { Step, Target } from '../journey.js';
 import type { ParamDef } from '@notention/core/ui/strategy.js';
 
+export const UISG_SCHEMA_VERSION = 3 as const;
+
 export type UisgStatus = 'implemented' | 'partial' | 'planned' | 'candidate' | 'experimental' | 'removed' | 'rejected';
 export type UisgNodeType = 'intent' | 'capability' | 'flow' | 'step' | 'surface' | 'predicate' | 'effect';
 export type UisgEdgeType =

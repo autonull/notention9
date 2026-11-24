@@ -25,7 +25,7 @@ import { rankItems, loadPriority } from './rank.js';
 import { selectFeature, loadSelection } from './select.js';
 import { ensureContextsFile, listProfiles, loadContexts } from './contexts.js';
 import { adoptFlow } from './adopt.js';
-import { canonicalize, graphHash, migrateGraph, roundTripTest } from './canonicalize.js';
+import { canonicalize, graphHash, roundTripTest } from './canonicalize.js';
 import { diffGraphsCommand, printDiff } from './diff.js';
 import { appendRunRecord, loadRuns, loadFindings, markFindingFixed, verifyFinding } from './records.js';
 import { loadRegressionCatalogue, runSeededRegressions } from './regressions.js';
@@ -101,7 +101,7 @@ export function loadGraph(flags: Map<string, string>): UisgGraph {
         for (const { severity, code, message } of result.issues) console.error(`${severity.toUpperCase()} ${code}: ${message}`);
         throw new Error(`Graph ${file} failed schema validation`);
     }
-    return migrateGraph(result.graph).graph;
+    return result.graph;
 }
 
 export function uiTestIds(): Set<string> {

@@ -10,7 +10,7 @@ import type { EvidenceBundle } from '../evidence.js';
 import { indexGraph, queryGraph, flowSteps } from './query.js';
 import { flowToJourney } from './toJourney.js';
 import { validateGraph } from './validate.js';
-import type { UisgGraph } from './types.js';
+import { UISG_SCHEMA_VERSION, type UisgGraph } from './types.js';
 import { collectMetrics, loadMetrics } from './metrics.js';
 import { rankItems, loadPriority } from './rank.js';
 import { selectFeature, loadSelection } from './select.js';
@@ -23,7 +23,7 @@ import { buildManifest, loadManifest } from './manifest.js';
 import { buildComponentRegistry, validateAgainstRegistry } from './registry.js';
 
 const minimal: UisgGraph = {
-    version: 1,
+    version: UISG_SCHEMA_VERSION,
     nodes: [
         { id: 'intent.test', type: 'intent', name: 'Test intent', status: 'implemented' },
         { id: 'cap.test', type: 'capability', name: 'Test capability', status: 'implemented', seam: 'elicit', source: ['optimize/src/uisg/types.ts'] },
@@ -338,7 +338,7 @@ describe('selectFeature', () => {
 });
 
 const testGraph: UisgGraph = {
-    version: 1,
+    version: UISG_SCHEMA_VERSION,
     nodes: [
         { id: 'flow.test', type: 'flow', name: 'Test flow', status: 'candidate', entry: 'step.act', outcome: 'Done.' },
         { id: 'cap.test', type: 'capability', name: 'Test capability', status: 'implemented', seam: 'elicit', source: [] },
@@ -463,7 +463,7 @@ describe('records', () => {
 
     it('appends lifecycle transition to decisions.jsonl', () => {
         const graph: UisgGraph = {
-            version: 1,
+            version: UISG_SCHEMA_VERSION,
             nodes: [
                 { id: 'flow.transition', type: 'flow', name: 'Transition flow', status: 'planned', entry: 'step.act', outcome: 'Done.' },
             ],

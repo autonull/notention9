@@ -2,36 +2,45 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { canonicalize, migrateGraph } from './canonicalize.js';
-import type { UisgGraph, UisgSurface } from './types.js';
+import { canonicalize } from './canonicalize.js';
+import { validateGraph } from './validate.js';
+import { UISG_SCHEMA_VERSION, type UisgGraph, type UisgSurface } from './types.js';
 import {
     archiveVariant, createVariant, diffVariants, exportVariants, listVariants, promoteVariant,
 } from './variants.js';
 
-const v2 = (): UisgGraph => ({
-    version: 2,
+const graph = (version: number): UisgGraph => ({
+    version,
     nodes: [{ id: 'surface.test', name: 'Test surface', status: 'implemented', type: 'surface', component: 'Test' }],
     edges: [],
 });
 
-describe('graph v3 migration', () => {
-    it('migrates v2 surfaces to v3 with empty variants', () => {
-        const result = migrateGraph(v2());
-        expect(result).toMatchObject({ migrated: true, from: 2 });
-        expect(result.graph.version).toBe(3);
-        expect((result.graph.nodes[0] as UisgSurface).variants).toEqual({});
+describe('graph v3 schema', () => {
+    it('rejects v2 graphs', () => {
+        const result = validateGraph(graph(2));
+        expect(result.ok).toBe(false);
+        expect(result.issues[0]).toMatchObject({ code: 'schema', ref: 'version' });
     });
 
-    it('leaves v3 graphs untouched', () => {
-        const graph = { ...v2(), version: 3 };
-        const result = migrateGraph(graph);
-        expect(result.migrated).toBe(false);
-        expect(result.graph).toBe(graph);
+    it('loads v3 graphs with variants', () => {
+        const result = validateGraph({
+            version: UISG_SCHEMA_VERSION,
+            nodes: [{
+                id: 'surface.test', name: 'Test surface', status: 'implemented', type: 'surface', component: 'Test',
+                defaultVariant: 'dense',
+                variants: {
+                    dense: { description: 'Dense', status: 'experimental', template: 'item-dense' },
+                },
+            }],
+            edges: [],
+        });
+        expect(result.ok).toBe(true);
+        expect((result.graph!.nodes[0] as UisgSurface).variants!.dense.template).toBe('item-dense');
     });
 
     it('canonicalizes variant maps deterministically', () => {
-        const graph: UisgGraph = {
-            version: 3,
+        const canon = canonicalize({
+            version: UISG_SCHEMA_VERSION,
             nodes: [{
                 id: 'surface.test', name: 'Test surface', status: 'implemented', type: 'surface', component: 'Test',
                 defaultVariant: 'dense',
@@ -41,8 +50,7 @@ describe('graph v3 migration', () => {
                 },
             }],
             edges: [],
-        };
-        const canon = canonicalize(graph);
+        });
         const surface = canon.nodes[0] as UisgSurface;
         expect(Object.keys(surface.variants!)).toEqual(['dense', 'sparse']);
         expect(Object.keys(surface.variants!.dense.strategyOverrides!)).toEqual(['display', 'layout']);

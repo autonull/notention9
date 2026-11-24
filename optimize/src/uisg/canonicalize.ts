@@ -1,7 +1,6 @@
 import { createHash } from 'node:crypto';
+import { UISG_SCHEMA_VERSION } from './types.js';
 import type { UisgGraph, UisgNode, UisgEdge, SurfaceVariant } from './types.js';
-
-export const CURRENT_SCHEMA_VERSION = 3;
 
 export interface CanonicalizeOptions {
     schemaVersion: number;
@@ -9,30 +8,9 @@ export interface CanonicalizeOptions {
 }
 
 export const DEFAULT_CANONICALIZE_OPTIONS: CanonicalizeOptions = {
-    schemaVersion: CURRENT_SCHEMA_VERSION,
+    schemaVersion: UISG_SCHEMA_VERSION,
     unknownFieldPolicy: 'preserve',
 };
-
-export interface GraphMigration {
-    graph: UisgGraph;
-    migrated: boolean;
-    from: number;
-}
-
-export function migrateGraph(graph: UisgGraph): GraphMigration {
-    if (graph.version >= CURRENT_SCHEMA_VERSION) return { graph, migrated: false, from: graph.version };
-    return {
-        graph: {
-            ...graph,
-            version: CURRENT_SCHEMA_VERSION,
-            nodes: graph.nodes.map(node => node.type === 'surface'
-                ? { ...node, variants: node.variants ?? {} }
-                : node),
-        },
-        migrated: true,
-        from: graph.version,
-    };
-}
 
 function stableSort<T>(array: T[], keyFn: (item: T) => string): T[] {
     return [...array].sort((a, b) => keyFn(a).localeCompare(keyFn(b)));
