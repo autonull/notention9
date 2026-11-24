@@ -146,7 +146,7 @@ export function PropertyEditor({
             {!readOnly && (
                 <Toolbar
                     className="border-b border-[var(--app-line)] px-2 py-1.5"
-                    data-testid={`${testId}-toolbar`}
+                    data-testid={testId + '-toolbar'}
                 >
                     {TOOLBAR_BUTTONS.map(btn => (
                         <Button
@@ -158,7 +158,7 @@ export function PropertyEditor({
                             icon={btn.icon}
                             aria-label={btn.label}
                             title={`${btn.label} (${btn.shortcut})`}
-                            data-testid={`${testId}-toolbar-${btn.id}`}
+                            data-testid={testId + '-toolbar-' + btn.id}
                         />
                     ))}
                     <div className="flex-1" />
@@ -168,7 +168,7 @@ export function PropertyEditor({
                         onClick={handleSuggest}
                         disabled={suggestStatus === 'loading' || !text.trim() || readOnly}
                         icon={SparklesIcon}
-                        data-testid={`${testId}-suggest`}
+                        data-testid={testId + '-suggest'}
                     >
                         {suggestStatus === 'loading' ? 'Thinking…' : 'Suggest details'}
                     </Button>
@@ -186,7 +186,7 @@ export function PropertyEditor({
                     autoFocus={autoFocus}
                     rows={10}
                     className="w-full min-h-[120px] rounded-xl border-none bg-transparent p-3 text-sm text-[var(--app-text)] focus:outline-none resize-none"
-                    data-testid={`${testId}-input`}
+                    data-testid={testId + '-input'}
                     aria-label="Editor content"
                 />
             </div>
@@ -194,7 +194,7 @@ export function PropertyEditor({
             {suggestError && (
                 <div
                     className="rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-200"
-                    data-testid={`${testId}-error`}
+                    data-testid={testId + '-error'}
                     role="alert"
                 >
                     {suggestError}
@@ -202,12 +202,12 @@ export function PropertyEditor({
             )}
 
             {proposals.length > 0 && showProposals && (
-                <div className="border-t border-[var(--app-line)] p-3" data-testid={`${testId}-proposals`}>
+                <div className="border-t border-[var(--app-line)] p-3" data-testid={testId + '-proposals'}>
                     <div className="flex items-center justify-between gap-3 mb-2">
                         <span className="text-xs font-bold tracking-widest text-[var(--app-muted)]">
                             Suggestions ({proposals.length})
                         </span>
-                        <span className="text-xs text-[var(--app-muted)]" data-testid={`${testId}-source`}>
+                        <span className="text-xs text-[var(--app-muted)]" data-testid={testId + '-source'}>
                             {SOURCE_LABELS[providerKind] ?? providerKind}
                         </span>
                     </div>
@@ -215,7 +215,7 @@ export function PropertyEditor({
                         {proposals.map((proposal, index) => (
                             <div
                                 key={`${proposal.property.key}-${proposal.property.operator}-${proposal.property.values.join(',')}-${index}`}
-                                data-testid={`${testId}-proposal-${index}`}
+                                data-testid={testId + '-proposal-' + index}
                                 className={cn(
                                     'flex items-center justify-between gap-3 rounded-xl p-3',
                                     proposal.status === 'accepted'
@@ -243,7 +243,7 @@ export function PropertyEditor({
                                             onClick={() => onAcceptProposal?.(proposal.property)}
                                             disabled={readOnly}
                                             aria-label={`Accept ${proposal.property.key}`}
-                                            data-testid={`${testId}-accept-${index}`}
+                                            data-testid={testId + '-accept-' + index}
                                         >
                                             <CheckIcon className="h-3.5 w-3.5 text-green-400" />
                                         </Button>
@@ -255,7 +255,7 @@ export function PropertyEditor({
                                             onClick={() => onRejectProposal?.(proposal.property)}
                                             disabled={readOnly}
                                             aria-label={`Reject ${proposal.property.key}`}
-                                            data-testid={`${testId}-reject-${index}`}
+                                            data-testid={testId + '-reject-' + index}
                                         >
                                             <XMarkIcon className="h-3.5 w-3.5 text-[var(--app-muted)]" />
                                         </Button>
@@ -270,7 +270,7 @@ export function PropertyEditor({
             {!readOnly && proposals.length === 0 && suggestStatus === 'idle' && !suggestError && (
                 <div
                     className="rounded-xl border border-dashed border-[var(--app-line)] bg-[var(--app-surface)] p-4 text-center text-xs text-[var(--app-muted)]"
-                    data-testid={`${testId}-empty`}
+                    data-testid={testId + '-empty'}
                 >
                     No suggestions yet. Write content and click "Suggest details".
                 </div>

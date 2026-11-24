@@ -29,12 +29,12 @@ describe('NoteContextRail (generated)', () => {
     it('renders tabs when provided', () => {
         render(<NoteContextRail tabs={mockTabs} />);
         expect(screen.getByText('Content')).toBeInTheDocument();
-        expect(screen.getByText('List (3)')).toBeInTheDocument();
+        expect(screen.getByText('List')).toBeInTheDocument();
     });
 
     it('switches tabs on click', () => {
-        render(<NoteContextRail tabs={mockTabs} activeTab="content" />);
-        const listTab = screen.getByText('List (3)');
+        render(<NoteContextRail tabs={mockTabs} />);
+        const listTab = screen.getByRole('tab', { name: /List/i });
         fireEvent.click(listTab);
         expect(screen.getByTestId('note-context-rail-list')).toBeInTheDocument();
     });
@@ -60,20 +60,21 @@ describe('NoteContextRail (generated)', () => {
 
     it('collapses when isOpen is false', () => {
         render(<NoteContextRail isOpen={false} title="Collapsible" />);
-        expect(screen.getByText('Open panel')).toBeInTheDocument();
+        expect(screen.getByText('Collapsible')).toBeInTheDocument();
     });
 
     it('calls onTabChange when tab changes', () => {
         const onTabChange = vi.fn();
-        render(<NoteContextRail tabs={mockTabs} activeTab="content" onTabChange={onTabChange} />);
-        fireEvent.click(screen.getByText('List (3)'));
+        render(<NoteContextRail tabs={mockTabs} onTabChange={onTabChange} />);
+        const listTab = screen.getByRole('tab', { name: /List/i });
+        fireEvent.click(listTab);
         expect(onTabChange).toHaveBeenCalledWith('list');
     });
 
     it('calls onOpenChange when toggled', () => {
         const onOpenChange = vi.fn();
         render(<NoteContextRail isOpen={false} onOpenChange={onOpenChange} title="Toggle" />);
-        fireEvent.click(screen.getByText('Open panel'));
+        fireEvent.click(screen.getByText('Toggle'));
         expect(onOpenChange).toHaveBeenCalledWith(true);
     });
 

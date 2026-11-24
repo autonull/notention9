@@ -57,7 +57,7 @@ export function ${componentName}({
     isOpen = true,
     onOpenChange,
     tabs = DEFAULT_TABS,
-    activeTab = tabs[0]?.id ?? 'content',
+    activeTab,
     onTabChange,
     items = [],
     emptyMessage = 'No items to display.',
@@ -65,11 +65,12 @@ export function ${componentName}({
     testId = '${testId}',
 }: ${componentName}Props) {
     const [localOpen, setLocalOpen] = useState(isOpen);
-    const [localActiveTab, setLocalActiveTab] = useState(activeTab);
+    const [localActiveTab, setLocalActiveTab] = useState(activeTab ?? tabs[0]?.id ?? 'content');
     const [filterText, setFilterText] = useState('');
 
+    const isControlled = activeTab !== undefined;
     const open = isOpen ?? localOpen;
-    const currentTab = activeTab ?? localActiveTab;
+    const currentTab = isControlled ? activeTab : localActiveTab;
 
     const handleOpenChange = useCallback((nextOpen: boolean) => {
         if (isOpen === undefined) setLocalOpen(nextOpen);
@@ -77,9 +78,9 @@ export function ${componentName}({
     }, [isOpen, onOpenChange]);
 
     const handleTabChange = useCallback((nextTab: string) => {
-        if (activeTab === undefined) setLocalActiveTab(nextTab);
+        if (!isControlled) setLocalActiveTab(nextTab);
         onTabChange?.(nextTab);
-    }, [activeTab, onTabChange]);
+    }, [isControlled, onTabChange]);
 
     const filteredItems = useMemo(() => {
         if (!filterText) return items;
@@ -90,13 +91,59 @@ export function ${componentName}({
         );
     }, [items, filterText]);
 
+    const isEmpty = filteredItems.length === 0;
+
+    let panelContent: React.ReactNode;
+    if (content && currentTab === 'content') {
+        panelContent = <div data-testid={testId + '-content'}>{content}</div>;
+    } else if (currentTab === 'list') {
+        if (isEmpty) {
+            panelContent = (
+                <div data-testid={testId + '-list'}>
+                    <div className="flex items-center justify-center h-24 text-[12px] text-[var(--app-muted)]">
+                        {emptyMessage}
+                    </div>
+                </div>
+            );
+        } else {
+            panelContent = (
+                <div data-testid={testId + '-list'}>
+                    <div className="space-y-1">
+                        {filteredItems.map(item => (
+                            <button
+                                key={item.id}
+                                type="button"
+                                onClick={item.onClick}
+                                className="w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-left transition-colors hover:border-[var(--app-line-strong)]"
+                                data-testid={testId + '-item-' + item.id}
+                            >
+                                {item.title && (
+                                    <div className="truncate text-[12px] font-medium text-[var(--app-text-secondary)]">
+                                        {item.title}
+                                    </div>
+                                )}
+                                {item.subtitle && (
+                                    <div className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-[var(--app-muted)]">
+                                        {item.subtitle}
+                                    </div>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            );
+        }
+    } else {
+        panelContent = <div data-testid={testId + '-tab-' + currentTab}>{content}</div>;
+    }
+
     if (!open) {
         return (
             <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => handleOpenChange(true)}
-                data-testid={\`\${testId}-toggle\`}
+                data-testid={testId + '-toggle'}
                 aria-label={\`Open \${title ?? 'panel'}\`}
             >
                 {title ?? 'Open panel'}
@@ -136,9 +183,9 @@ export function ${componentName}({
             <div className="min-h-0 flex-1 overflow-y-auto p-2 custom-scrollbar">
                 {currentTab === 'list' && items.length > 0 && (
                     <div className="mb-2">
-                        <label className="sr-only" htmlFor={\`\${testId}-filter\`}>Filter items</label>
+                        <label className="sr-only" htmlFor={testId + '-filter'}>Filter items</label>
                         <Input
-                            id={\`\${testId}-filter\`}
+                            id={testId + '-filter'}
                             value={filterText}
                             onChange={e => setFilterText(e.target.value)}
                             placeholder="Filter…"
@@ -148,44 +195,7 @@ export function ${componentName}({
                     </div>
                 )}
 
-                {content && currentTab === 'content' ? (
-                    <div data-testid={\`\${testId}-content\`}>{content}</div>
-                ) : currentTab === 'list' ? (
-                    <div data-testid={\`\${testId}-list\`}>
-                        {filteredItems.length === 0 ? (
-                            <div className="flex items-center justify-center h-24 text-[12px] text-[var(--app-muted)]">
-                                {emptyMessage}
-                            </div>
-                        ) : (
-                            <div className="space-y-1">
-                                {filteredItems.map(item => (
-                                    <button
-                                        key={item.id}
-                                        type="button"
-                                        onClick={item.onClick}
-                                        className="w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-left transition-colors hover:border-[var(--app-line-strong)]"
-                                        data-testid={\`\${testId}-item-\${item.id}\`}
-                                    >
-                                        {item.title && (
-                                            <div className="truncate text-[12px] font-medium text-[var(--app-text-secondary)]">
-                                                {item.title}
-                                            </div>
-                                        )}
-                                        {item.subtitle && (
-                                            <div className="mt-0.5 line-clamp-2 text-[11px] leading-4 text-[var(--app-muted)]">
-                                                {item.subtitle}
-                                            </div>
-                                        )}
-                                    </button>
-                                ))}
-                            </div>
-                        )
-                    </div>
-                ) : (
-                    <div data-testid={\`\${testId}-tab-\${currentTab}\`}>
-                        {content}
-                    </div>
-                )}
+                {panelContent}
             </div>
         </aside>
     );
@@ -228,12 +238,12 @@ describe('${componentName} (generated)', () => {
     it('renders tabs when provided', () => {
         render(<${componentName} tabs={mockTabs} />);
         expect(screen.getByText('Content')).toBeInTheDocument();
-        expect(screen.getByText('List (3)')).toBeInTheDocument();
+        expect(screen.getByText('List')).toBeInTheDocument();
     });
 
     it('switches tabs on click', () => {
-        render(<${componentName} tabs={mockTabs} activeTab="content" />);
-        const listTab = screen.getByText('List (3)');
+        render(<${componentName} tabs={mockTabs} />);
+        const listTab = screen.getByRole('tab', { name: /List/i });
         fireEvent.click(listTab);
         expect(screen.getByTestId('${testId}-list')).toBeInTheDocument();
     });
@@ -259,20 +269,21 @@ describe('${componentName} (generated)', () => {
 
     it('collapses when isOpen is false', () => {
         render(<${componentName} isOpen={false} title="Collapsible" />);
-        expect(screen.getByText('Open panel')).toBeInTheDocument();
+        expect(screen.getByText('Collapsible')).toBeInTheDocument();
     });
 
     it('calls onTabChange when tab changes', () => {
         const onTabChange = vi.fn();
-        render(<${componentName} tabs={mockTabs} activeTab="content" onTabChange={onTabChange} />);
-        fireEvent.click(screen.getByText('List (3)'));
+        render(<${componentName} tabs={mockTabs} onTabChange={onTabChange} />);
+        const listTab = screen.getByRole('tab', { name: /List/i });
+        fireEvent.click(listTab);
         expect(onTabChange).toHaveBeenCalledWith('list');
     });
 
     it('calls onOpenChange when toggled', () => {
         const onOpenChange = vi.fn();
         render(<${componentName} isOpen={false} onOpenChange={onOpenChange} title="Toggle" />);
-        fireEvent.click(screen.getByText('Open panel'));
+        fireEvent.click(screen.getByText('Toggle'));
         expect(onOpenChange).toHaveBeenCalledWith(true);
     });
 

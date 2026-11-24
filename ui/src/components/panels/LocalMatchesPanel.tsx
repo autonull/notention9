@@ -85,7 +85,7 @@ export function LocalMatchesPanel({
                 variant="ghost"
                 size="sm"
                 onClick={() => handleOpenChange(true)}
-                data-testid={`${testId}-toggle`}
+                data-testid={testId + '-toggle'}
                 aria-label={`Open ${title ?? 'panel'}`}
             >
                 {title ?? 'Open panel'}
@@ -138,9 +138,9 @@ export function LocalMatchesPanel({
                 )}
 
                 {content && currentTab === 'content' ? (
-                    <div data-testid={`${testId}-content`}>{content}</div>
+                    <div data-testid={testId + '-content'}>{content}</div>
                 ) : currentTab === 'list' ? (
-                    <div data-testid={`${testId}-list`}>
+                    <div data-testid={testId + '-list'}>
                         {filteredItems.length === 0 ? (
                             <div className="flex items-center justify-center h-24 text-[12px] text-[var(--app-muted)]">
                                 {emptyMessage}
@@ -153,7 +153,7 @@ export function LocalMatchesPanel({
                                         type="button"
                                         onClick={item.onClick}
                                         className="w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] p-2 text-left transition-colors hover:border-[var(--app-line-strong)]"
-                                        data-testid={`${testId}-item-${item.id}`}
+                                        data-testid={testId + '-item-' + item.id}
                                     >
                                         {item.title && (
                                             <div className="truncate text-[12px] font-medium text-[var(--app-text-secondary)]">
@@ -171,7 +171,7 @@ export function LocalMatchesPanel({
                         )
                     </div>
                 ) : (
-                    <div data-testid={`${testId}-tab-${currentTab}`}>
+                    <div data-testid={testId + '-tab-' + currentTab}>
                         {content}
                     </div>
                 )}
