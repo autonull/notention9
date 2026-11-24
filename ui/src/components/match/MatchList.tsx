@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScoredMatch, Contact } from '@notention/core';
-import { MatchItem } from './MatchItem';
+import { MatchItem } from '../items/MatchItem';
 
 interface MatchListProps {
     matches: ScoredMatch[];

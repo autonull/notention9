@@ -58,3 +58,5 @@
 {"flowId":"flow.capture-and-edit","runId":"run_1795536965088_3n586ry","bundlePath":"/home/me/.notention/evidence/run_1795536965088_3n586ry/bundle.json","status":"passed","timestamp":"2026-11-24T16:16:16.635Z","dimensions":{}}
 {"flowId":"flow.golden-path","runId":"run_1795536980245_9jz20ck","bundlePath":"/home/me/.notention/evidence/run_1795536980245_9jz20ck/bundle.json","status":"passed","timestamp":"2026-11-24T16:16:35.295Z","dimensions":{}}
 {"flowId":"flow.publish-gate","runId":"run_1795536998944_riepaj0","bundlePath":"/home/me/.notention/evidence/run_1795536998944_riepaj0/bundle.json","status":"passed","timestamp":"2026-11-24T16:16:50.106Z","dimensions":{}}
+{"flowId":"flow.capture-and-edit","runId":"run_1795542419789_i12o55a","bundlePath":"/home/me/.notention/evidence/run_1795542419789_i12o55a/bundle.json","status":"passed","timestamp":"2026-11-24T17:47:12.642Z","dimensions":{}}
+{"flowId":"flow.golden-path","runId":"run_1795542439419_m2xd1bv","bundlePath":"/home/me/.notention/evidence/run_1795542439419_m2xd1bv/bundle.json","status":"passed","timestamp":"2026-11-24T17:47:32.982Z","dimensions":{}}

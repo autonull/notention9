@@ -6,35 +6,53 @@
 import { describe, it, expect } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { MatchItem } from '@/components/items/MatchItem';
-import { ScoredMatch } from '@notention/core';
+import { ScoredMatch, PropertyMatch, MatchDetails, Property, Note, MatchResult } from '@notention/core';
+
+const mockNote: Note = {
+    id: 'test-note-1',
+    title: 'Test Note',
+    content: 'Test content',
+    tags: [],
+    properties: [],
+    createdAt: '2024-01-01T00:00:00.000Z',
+    updatedAt: '2024-01-01T00:00:00.000Z',
+    source: { type: 'user', identifier: 'test', timestamp: Date.now() },
+    privacy: 'private',
+    priority: 0,
+};
+
+const mockProperty: Property = {
+    key: 'framework',
+    operator: 'is',
+    values: ['React'],
+    role: 'constraint',
+    confidence: 1,
+    provenance: 'deterministic',
+};
 
 const mockMatch: ScoredMatch = {
-    note: {
-        id: 'test-note-1',
-        title: 'Test Note',
-        content: 'Test content',
-        author: 'test-author',
-    },
+    note: mockNote,
     result: {
         score: 0.85,
         matches: [
             {
-                requestProp: { key: 'framework', operator: 'is', values: ['React'] },
-                offerProp: { key: 'framework', operator: 'is', values: ['React'] },
+                requestProp: mockProperty,
+                offerProp: mockProperty,
+                compatibility: 1,
                 reason: 'Exact match on framework',
-                details: { type: 'exact' },
+                details: { type: 'exact' } as MatchDetails,
             },
         ],
         conflicts: [],
         missing: [],
-    },
+    } as MatchResult,
     direction: 'incoming',
 };
 
 describe('MatchItem (generated)', () => {
     it('renders with score and match badges', () => {
         render(<MatchItem match={mockMatch} isLocal={false} />);
-        expect(screen.getByTestId('surface-matchitem')).toBeInTheDocument();
+        expect(screen.getByTestId('match-item')).toBeInTheDocument();
         expect(screen.getByText('85%')).toBeInTheDocument();
         expect(screen.getByText('match')).toBeInTheDocument();
     });

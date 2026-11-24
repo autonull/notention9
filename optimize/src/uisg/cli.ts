@@ -36,8 +36,8 @@ import {
 import { simulateFlow } from './simulate.js';
 import { emitSeamProps, writeSeamProps } from './seamProps.js';
 import { emitComponentMap, writeComponentMap } from './componentMap.js';
-import { generateSurface, generateAllSurfaces } from './codegen.js';
-import type { UisgGraph } from './types.js';
+import { generateSurface, generateAllSurfaces, checkParity, checkAllParity } from './codegen.js';
+import type { UisgGraph, UisgSurface } from './types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const USAGE = `Usage: pnpm uisg <command> [args]
@@ -49,7 +49,7 @@ Commands:
   to-journey <flowId> [--seed <file>] [--out <file>] [--conditions a,b] [--ready] [--emit-test [--force]]
   run <flowId> [same flags as to-journey]   Compile, emit the journey test if missing, run it
   skeleton [--write] [--check] [--json]      Emit the generated skeleton preview + preview journeys
-  generate [--surface <id>] [--all] [--dry-run] [--check]  Generate surface component + test + props schema
+  generate [--surface <id>] [--all] [--dry-run] [--check] [--parity]  Generate surface component + test + props schema
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
   matrix [--flows a,b] [--viewports v] [--themes t] [--profiles hand-built,generated] [--no-build]
                                             Run every flow at 2 themes x 2 viewports; record dimensions
@@ -343,13 +343,42 @@ function main(): number {
                 console.log(stale.length ? `${stale.length} stale generated artifact(s)` : 'Generated artifacts current');
                 return stale.length ? 1 : 0;
             }
+            if (flags.has('parity')) {
+                const graph = loadGraph(flags);
+                const surfaceId = flags.get('surface');
+                const all = flags.has('all');
+                const results = surfaceId 
+                    ? [checkParity(graph.nodes.find(n => n.id === surfaceId && n.type === 'surface') as any, graph)]
+                    : all
+                        ? checkAllParity(graph)
+                        : checkAllParity(graph);
+                
+                let failed = false;
+                for (const r of results) {
+                    console.log(`\n=== Parity Check: ${r.surfaceId} ===`);
+                    console.log(`  Deterministic: ${r.deterministic ? 'YES' : 'NO'}`);
+                    console.log(`  Has Original: ${r.hasOriginal ? 'YES' : 'NO'}`);
+                    if (r.hasOriginal) {
+                        console.log(`  Original Matches: ${r.originalMatches ? 'YES' : 'NO'}`);
+                    }
+                    if (r.differences.length > 0) {
+                        console.log(`  Differences:`);
+                        for (const d of r.differences) {
+                            console.log(`    - ${d}`);
+                        }
+                    }
+                    if (!r.deterministic) failed = true;
+                }
+                console.log(`\n${failed ? 'PARITY CHECK FAILED' : 'PARITY CHECK PASSED'}`);
+                return failed ? 1 : 0;
+            }
             const graph = loadGraph(flags);
             const surfaceId = flags.get('surface');
             const all = flags.has('all');
             const dryRun = flags.has('dry-run');
             
             if (surfaceId) {
-                const surface = graph.nodes.find(n => n.id === surfaceId && n.type === 'surface');
+                const surface = graph.nodes.find(n => n.id === surfaceId && n.type === 'surface') as UisgSurface | undefined;
                 if (!surface) {
                     console.error(`Surface ${surfaceId} not found`);
                     return 1;

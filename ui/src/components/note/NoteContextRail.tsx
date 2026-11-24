@@ -11,7 +11,7 @@ import {SendIcon, SparklesIcon} from '../ui/icons';
 import {Tabs} from '../ui/kit';
 import {cn} from '../../utils/ui';
 import {NextStepStrip} from '../next-steps';
-import {MatchItem} from '../match/MatchItem';
+import {MatchItem} from '../items/MatchItem';
 import {ChatPanel} from '../chat/ChatPanel';
 import {NOTE_RAIL_TABS} from '../../config/uiSurfaces';
 

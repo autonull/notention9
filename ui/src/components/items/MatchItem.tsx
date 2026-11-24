@@ -67,7 +67,7 @@ export function MatchItem({
                 hover:border-[var(--app-line-strong)]
                 ${isLocal ? 'cursor-pointer' : ''}
             `}
-            data-testid="surface-matchitem"
+            data-testid="match-item"
         >
             <div className="flex items-center gap-2">
                 <span className="text-[12px] font-semibold tabular-nums text-[var(--app-text-secondary)]">
