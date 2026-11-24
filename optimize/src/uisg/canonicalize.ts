@@ -21,7 +21,7 @@ const NODE_FIELDS: Record<UisgNode['type'], readonly string[]> = {
     capability: ['seam', 'strategy', 'skill', 'risk', 'effect'],
     flow: ['entry', 'outcome', 'journey'],
     step: ['kind', 'target', 'action', 'value', 'statePath', 'stateEquals', 'guard'],
-    surface: ['component', 'route', 'configKey', 'seam'],
+    surface: ['component', 'route', 'configKey', 'seam', 'template', 'propsSchema', 'generatedFrom'],
     predicate: ['expression', 'registryId'],
     effect: ['reversibility', 'risk', 'confirmationRequired', 'failureModes', 'registryId'],
 };
@@ -95,6 +95,9 @@ function canonicalizeNode(node: UisgNode, options: CanonicalizeOptions): UisgNod
                 route: node.route ?? undefined,
                 configKey: node.configKey ?? undefined,
                 seam: node.seam ?? undefined,
+                template: node.template ?? undefined,
+                propsSchema: node.propsSchema ?? undefined,
+                generatedFrom: node.generatedFrom ?? undefined,
             };
         case 'predicate':
             return {

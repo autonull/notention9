@@ -36,6 +36,7 @@ import {
 import { simulateFlow } from './simulate.js';
 import { emitSeamProps, writeSeamProps } from './seamProps.js';
 import { emitComponentMap, writeComponentMap } from './componentMap.js';
+import { generateSurface, generateAllSurfaces } from './codegen.js';
 import type { UisgGraph } from './types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -48,7 +49,7 @@ Commands:
   to-journey <flowId> [--seed <file>] [--out <file>] [--conditions a,b] [--ready] [--emit-test [--force]]
   run <flowId> [same flags as to-journey]   Compile, emit the journey test if missing, run it
   skeleton [--write] [--check] [--json]      Emit the generated skeleton preview + preview journeys
-  generate [--check]                         Write the preview artifacts and flow manifests
+  generate [--surface <id>] [--all] [--dry-run] [--check]  Generate surface component + test + props schema
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
   matrix [--flows a,b] [--viewports v] [--themes t] [--profiles hand-built,generated] [--no-build]
                                             Run every flow at 2 themes x 2 viewports; record dimensions
@@ -342,6 +343,49 @@ function main(): number {
                 console.log(stale.length ? `${stale.length} stale generated artifact(s)` : 'Generated artifacts current');
                 return stale.length ? 1 : 0;
             }
+            const graph = loadGraph(flags);
+            const surfaceId = flags.get('surface');
+            const all = flags.has('all');
+            const dryRun = flags.has('dry-run');
+            
+            if (surfaceId) {
+                const surface = graph.nodes.find(n => n.id === surfaceId && n.type === 'surface');
+                if (!surface) {
+                    console.error(`Surface ${surfaceId} not found`);
+                    return 1;
+                }
+                if (surface.seam) {
+                    console.error(`Surface ${surfaceId} has seam="${surface.seam}" - skipping (strategy-backed)`);
+                    return 1;
+                }
+                if (dryRun) {
+                    const result = generateSurface(surface as any, graph);
+                    console.log(`DRY RUN - Would generate:`);
+                    console.log(`  Component: ${result.path}`);
+                    console.log(`  Test: ${result.testPath}`);
+                    console.log(`  PropsSchema: ${result.propsSchemaPath}`);
+                    console.log(`\n--- Component preview (first 100 lines) ---`);
+                    console.log(result.content.split('\n').slice(0, 100).join('\n'));
+                    return 0;
+                }
+                const result = generateSurface(surface as any, graph);
+                console.log(`Generated ${result.path}`);
+                console.log(`Generated ${result.testPath}`);
+                console.log(`Generated ${result.propsSchemaPath}`);
+                return 0;
+            }
+            
+            if (all) {
+                const results = generateAllSurfaces(graph);
+                console.log(`Generated ${results.length} surface(s)`);
+                for (const r of results) {
+                    console.log(`  ${r.path}`);
+                    console.log(`  ${r.testPath}`);
+                    console.log(`  ${r.propsSchemaPath}`);
+                }
+                return 0;
+            }
+            
             const { files, manifests } = generateAll(flags);
             console.log(`Generated ${files} preview artifact(s) and ${manifests} manifest(s)`);
             return 0;

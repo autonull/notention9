@@ -260,7 +260,7 @@ Phase 1 (Types + Map) → Phase 2 (First Surface) → Phase 3 (Pipeline) → Pha
 | Phase | Status | Notes |
 | :--- | :--- | :--- |
 | 1 — Types + Map | **Done** | 1.1 `seamProps.ts`, 1.2 `componentMap.ts`, 1.3 seam backfill (sync applies), 1.4 gate wiring (`types: current`) |
-| 2 — First Surface | Not started | After 1.4 gates |
+| 2 — First Surface | **In progress** | 2.1 Schema done, 2.2 Template registry done (item), 2.3 Emit component+test done (MatchItem), 2.4 Parity test pending |
 | 3 — Pipeline | Not started | After 2.5 rollback proven |
 | 4 — Flows + Bulk | Not started | After 3.3 verify wiring |
 | **Gate** | `pnpm uisg:check` green | Re-verify after each phase |

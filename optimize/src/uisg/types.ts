@@ -1,5 +1,6 @@
 import type { SeamRole } from '@notention/core/ui/strategy';
 import type { Step, Target } from '../journey.js';
+import type { ParamDef } from '@notention/core/ui/strategy.js';
 
 export type UisgStatus = 'implemented' | 'partial' | 'planned' | 'candidate' | 'experimental' | 'removed' | 'rejected';
 export type UisgNodeType = 'intent' | 'capability' | 'flow' | 'step' | 'surface' | 'predicate' | 'effect';
@@ -61,6 +62,9 @@ export interface UisgSurface extends UisgBaseNode {
     route?: string;
     configKey?: string;
     seam?: SeamRole;
+    template?: string;
+    propsSchema?: Record<string, ParamDef>;
+    generatedFrom?: string;
 }
 
 export interface UisgPredicate extends UisgBaseNode {

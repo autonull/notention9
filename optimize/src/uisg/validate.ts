@@ -27,7 +27,7 @@ const NodeSchema = z.discriminatedUnion('type', [
     z.object({ ...baseFields, type: z.literal('capability'), seam: SeamRoleSchema.optional(), strategy: z.string().optional(), skill: z.string().optional(), risk: z.enum(['normal', 'caution', 'destructive']).optional(), effect: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('flow'), entry: z.string().min(1), outcome: z.string().min(1), journey: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('step'), kind: z.enum(['show', 'action', 'choice', 'confirm', 'result']), target: TargetSchema.optional(), action: z.enum(['click', 'fill', 'press', 'select']).optional(), value: z.string().optional(), statePath: z.string().optional(), stateEquals: z.unknown().optional(), guard: z.string().optional() }),
-    z.object({ ...baseFields, type: z.literal('surface'), component: z.string().optional(), route: z.string().optional(), configKey: z.string().optional(), seam: SeamRoleSchema.optional() }),
+    z.object({ ...baseFields, type: z.literal('surface'), component: z.string().optional(), route: z.string().optional(), configKey: z.string().optional(), seam: SeamRoleSchema.optional(), template: z.string().optional(), propsSchema: z.record(z.unknown()).optional(), generatedFrom: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('predicate'), expression: z.string().min(1), registryId: z.string().min(1) }),
     z.object({ ...baseFields, type: z.literal('effect'), reversibility: ReversibilitySchema, risk: EffectRiskSchema, confirmationRequired: z.boolean(), failureModes: z.array(z.string()), registryId: z.string().min(1) }),
 ]);
