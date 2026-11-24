@@ -35,7 +35,8 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | C.2 PR comment bot         | ✅ Done | `scripts/pr-bot.ts`; `uisg pr-bot`; posts UISG status, visual diff, matrix, decisions to PR |
 | C.3 Graph UI editor        | ✅ Done | `ui/src/dev/GraphEditor.tsx`; Cytoscape.js + dagre; lazy-loaded at `?uisg=1&mode=graph` |
 | C.4 Template Playground    | ✅ Done | `ui/src/dev/TemplatePlayground.tsx`; Monaco-style editor; live preview; export templates |
-| C.5 Automation & DX        | ⬜ Pending | Time-travel debugger |
+| C.5 Time-travel debugger   | ✅ Done | `ui/src/dev/TimeTravelDebugger.tsx`; step slider, guard/effect timelines, state inspector, trace export |
+| C.6+ Automation & DX       | ⬜ Pending | (reserved) |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
 **Latest code commit:** Phase A.3 runtime + B.1 — live theme CSS, journey matrix runner (`0496246a`).
@@ -568,7 +569,7 @@ interface UisgFlags {
 - [x] PR bot posts full UISG status on every PR
 - [x] Graph UI at `?uisg=1&mode=graph` edits + previews live
 - [x] Template Playground at `?uisg=1&mode=template` hot-reloads
-- [ ] Debugger at `?uisg=1&flow=X&debug=1` time-travels
+- [x] Debugger at `?uisg=1&flow=X&debug=1` time-travels
 
 ### Phase D
 - [ ] `uisg generate --prompt` produces valid variant + preview
