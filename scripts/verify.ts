@@ -55,6 +55,10 @@ async function main(): Promise<void> {
     run('pnpm uisg run flow.ontology-conflict', 'L3: UISG journey (ontology-conflict)');
     run('pnpm uisg run flow.capture-and-edit-palette', 'L3: UISG journey (capture-and-edit-palette)');
 
+    // L3: UISG journey matrix + decision gate
+    run('pnpm uisg matrix --contexts=all --themes=default --viewports=all --variants=all --no-build', 'L3: UISG journey matrix');
+    run('pnpm uisg decide --matrix=doc/uisg/matrix-latest.json', 'L3: UISG decision gate');
+
     // Performance budget
     run('pnpm optimize perf:budget', 'L3: Performance budget check');
 

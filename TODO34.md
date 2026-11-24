@@ -96,7 +96,7 @@ Phase A: Variant Foundation    → Phase B: Evaluation Harness → Phase C: Auto
       A.2 Context profiles v2        B.2 Metric collectors          C.2 PR comment bot
       A.3 Theme system               B.3 Decision engine            C.3 Graph UI editor
       A.4 Multi-target templates     B.4 A/B report generator | ✅ Done | `report.ts`; markdown with metric tables, visual diff refs, journey matrix, bundle impact, recommendation
-      A.5 Variant registry CLI       B.5 Promotion pipeline         C.5 Time-travel debugger
+      A.5 Variant registry CLI       B.5 Promotion pipeline     | ✅ Done | verify.ts L3 integration; uisg matrix + decide; auto-promote on all-PASS (commit pending)
                                        │
                                        ▼
                               Phase D: Intelligence Layer
@@ -554,7 +554,7 @@ interface UisgFlags {
 - [x] Metrics collected: bundle, runtime, quality, match
 - [x] `uisg decide` returns PASS/FAIL/REGRESS per variant
 - [x] `uisg ab-report` produces readable markdown + gallery
-- [ ] Auto-promotion commits graph update on all-PASS
+- [x] Auto-promotion commits graph update on all-PASS
 
 ### Phase C
 - [ ] Visual diff runs in CI, posts PR comment with screenshots

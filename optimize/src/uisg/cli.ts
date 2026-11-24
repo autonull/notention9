@@ -595,6 +595,26 @@ async function main(): Promise<number> {
             console.log(`Report: ${htmlPath}`);
             return result.summary.failed + result.summary.errors ? 1 : 0;
         }
+        case 'decide': {
+            const matrixFile = flags.get('matrix');
+            const baselineFile = flags.get('baseline');
+            const policyFile = flags.get('policy');
+            if (!matrixFile) { console.error('decide requires --matrix <file>'); return 1; }
+            const { loadMatrixResult } = await import('./report.js');
+            const { decide } = await import('./decide.js');
+            const matrixResult = loadMatrixResult(matrixFile.replace('matrix-', '').replace('.json', ''));
+            const baselineResult = baselineFile ? loadMatrixResult(baselineFile.replace('matrix-', '').replace('.json', '')) : null;
+            if (!matrixResult) { console.error(`Matrix file not found: ${matrixFile}`); return 1; }
+            const decision = decide(matrixResult, baselineResult, policyFile);
+            console.log(`Decision: ${decision.runId}`);
+            console.log(`Promoted: ${decision.promoted.join(', ') || 'none'}`);
+            console.log(`Rejected: ${decision.rejected.join(', ') || 'none'}`);
+            console.log(`Flagged: ${decision.flagged.join(', ') || 'none'}`);
+            for (const d of decision.decisions) {
+                console.log(`  ${d.surface}/${d.variant}: ${d.status} (score: ${d.softScore.toFixed(2)})${d.hardGateFailures.length ? ` — ${d.hardGateFailures.join('; ')}` : ''}`);
+            }
+            return decision.rejected.length > 0 ? 1 : 0;
+        }
         case 'compare': {
             const [pathA, pathB] = positionals;
             if (!pathA || !pathB) { console.error('compare requires two bundle paths'); return 1; }

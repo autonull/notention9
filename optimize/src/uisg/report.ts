@@ -14,6 +14,15 @@ export interface ABReportOptions {
     policyFile?: string;
 }
 
+export function loadMatrixResult(runId: string): { cells: Array<{ journey: string; variant?: string; metrics: CellMetrics; visualPass?: boolean; status: string; durationMs: number }> } | null {
+    try {
+        const file = resolve(ROOT, `doc/uisg/matrix-${runId}.json`);
+        return JSON.parse(readFileSync(file, 'utf8'));
+    } catch {
+        return null;
+    }
+}
+
 export function generateABReport(options: ABReportOptions): string {
     const baseline = loadMatrixResult(options.baselineRunId);
     const compare = loadMatrixResult(options.compareRunId);
@@ -140,15 +149,6 @@ function formatMetricRows(
     }
 
     return rows;
-}
-
-function loadMatrixResult(runId: string): { cells: Array<{ journey: string; variant?: string; metrics: CellMetrics; visualPass?: boolean; status: string; durationMs: number }> } | null {
-    try {
-        const file = resolve(ROOT, `doc/uisg/matrix-${runId}.json`);
-        return JSON.parse(readFileSync(file, 'utf8'));
-    } catch {
-        return null;
-    }
 }
 
 function loadDecisionResult(experiment: string): DecisionResult | null {
