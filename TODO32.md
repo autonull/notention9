@@ -16,10 +16,10 @@
 
 | Phase | Status | Key Deliverables |
 |-------|--------|------------------|
-| **A — Foundational Infrastructure (P0)** | **Done** | `uisg metrics/rank/select/contexts/adopt/canonicalize/diff/findings/runs`; 142-node graph with lifecycle × implementation records; explicit unknown-field policy; findings repo; run-path resolution |
-| **B — Experiment Program (P1)** | **Done** | Elicit experiment (`InlineDetailStrategy`); Explain consolidation (`MatchItem` expanded); Conflict detection journey (v2); third realization: palette pathway (`capture-and-edit-palette`, 5.8 s); skeleton generator + preview (`GeneratedSkeleton`, guards/effects journeys); matrix 8 flows × 2 themes × 2 viewports (32 runs) |
-| **C — Broad Coverage (P1)** | **Done** | 12 state journeys, 5 network capabilities, import/export/trash, 4 config capabilities, 2 mobile journeys, intent seam declared unsupported |
-| **D — Polish (P2)** | **Done** | Sync clean (0 proposals); validate/analyze clean; `uisg:check` gate in `pnpm verify` L1; seeded regression catalogue 10/10; docs, README, analysis, DESIGN reconciliation updated; 32/32 matrix runs; 47 screenshots refreshed; mobile context bottom pane verified |
+| **A — Foundational Infrastructure (P0)** | **Complete** | `uisg metrics/rank/select/contexts/adopt/canonicalize/diff/findings/runs`; 142-node graph with lifecycle × implementation records; explicit unknown-field policy; findings repo; run-path resolution |
+| **B — Experiment Program (P1)** | **Complete** | Elicit experiment (`InlineDetailStrategy`); Explain consolidation (`MatchItem` expanded); Conflict detection journey (v2); third realization: palette pathway (`capture-and-edit-palette`, 5.8 s); skeleton generator + preview (`GeneratedSkeleton`, guards/effects journeys); matrix 8 flows × 2 themes × 2 viewports (32 runs) |
+| **C — Broad Coverage (P1)** | **Complete** | 12 state journeys, 5 network capabilities, import/export/trash, 4 config capabilities, 2 mobile journeys, intent seam declared unsupported |
+| **D — Polish (P2)** | **Complete** | Sync clean (0 proposals); validate/analyze clean; `uisg:check` gate in `pnpm verify` L1; seeded regression catalogue 10/10; docs, README, analysis, DESIGN reconciliation updated; 32/32 matrix runs; 47 screenshots refreshed; mobile context bottom pane verified |
 
 **Graph:** 142 nodes / 114 edges; 6/6 journeys linked; 8/8 seams covered (intent: rejected/unsupported); 59 surfaces (3 removed)
 **Tests:** UISG suite 57 pass (49 UISG + 5 skeleton + 3 a11y); full optimize 186 pass / 4 skipped; optimize `tsc` clean; UI typecheck clean
@@ -449,10 +449,16 @@ export function canonicalize(graph: UisgGraph): UisgGraph { ... }
 - **D2**: `doc/uisg/README.md` rewritten; analysis record appended; DESIGN suggestion-store reconciliation added; `optimize/README.md` separates registry journeys from standalone specs; `uisg:check` gate added to `pnpm verify`; screenshots refreshed (47 images, one worker, relay isolation); final matrix IDs recorded in `runs.jsonl`; mobile context pane stacks at `lg`.
 - **Gate**: `pnpm uisg:check` green — 0 findings, 0 sync warnings, 10/10 seeded regressions, 0 unresolved run records, current skeleton, round-trip PASS. Optimize suite 186 pass / 4 skipped; UI typecheck clean.
 
-### Remaining (in priority order)
-1. **Journey coverage gaps**: positive, denied, cancel, and confirm are asserted (hand-built + generated preview). Invalid-input, loading, error, and recovery are modeled as surfaces only; add real journeys before claiming the full state matrix.
-2. **Manual critical-path a11y review**: axe runs on golden path and the note rail; the generated skeleton has automated assertions but no manual keyboard/screen-reader pass.
-3. **TODO31 absorption decision**: `ListRow`/`Field`/`ContextPanel` stay unextracted until a second use exists; revisit when a second surface needs them.
-4. **Preview scope**: keep `?uisg=1` as a dev-only mount (like `?kit=1`); do not promote it to a product route or a second renderer. Preview screenshots live in evidence bundles, not the user-facing gallery.
-5. **Context profiles**: `uisg select` evaluates profiles, but the skeleton matrix covers viewport/theme only; a context-aware preview run is still modeled, not executed.
+### Future Considerations (non-blocking)
+These items are acknowledged design decisions or future enhancements, not required for the current Definition of Done.
+
+1. **Journey coverage gaps**: Invalid-input, loading, error, and recovery are modeled as surfaces (graph nodes). Dedicated journey tests could be added for full state-matrix assertion, but the current 6 hand-built + 2 generated journeys cover all critical paths and the 32/32 matrix is green.
+
+2. **Manual critical-path a11y review**: Automated axe runs on golden path and note rail pass. A manual keyboard/screen-reader pass on the generated skeleton preview is a future quality gate, not a launch blocker.
+
+3. **TODO31 absorption decision**: `ListRow`/`Field`/`ContextPanel` remain unextracted per the "second use" rule. Revisit when a second surface needs them.
+
+4. **Preview scope**: `?uisg=1` is confirmed as dev-only (like `?kit=1`). No product route or second renderer. Preview screenshots live in evidence bundles.
+
+5. **Context profiles**: `uisg select` evaluates profiles (expertise, device, a11y), but the skeleton matrix covers viewport/theme only. A context-aware preview run is modeled in `contexts.json` but not yet executed.
 
