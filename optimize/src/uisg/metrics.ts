@@ -13,6 +13,160 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../../..');
 const METRICS_FILE = resolve(ROOT, 'doc/uisg/metrics.json');
+const QUALITY_CACHE_FILE = resolve(ROOT, 'doc/uisg/quality-cache.json');
+
+export interface CellMetrics {
+    bundleSizeKb: number;
+    chunkCount: number;
+    taskTimeMs: number;
+    interactionCount: number;
+    errorCount: number;
+    toneViolations: number;
+    typeErrors: number;
+    accessibilityViolations: number;
+    matchF1?: number;
+    matchPrecision?: number;
+    matchRecall?: number;
+}
+
+export interface QualityCacheEntry {
+    contentHash: string;
+    toneViolations: number;
+    typeErrors: number;
+    accessibilityViolations: number;
+    timestamp: string;
+}
+
+function contentHash(content: string): string {
+    let hash = 0;
+    for (let i = 0; i < content.length; i++) {
+        const char = content.charCodeAt(i);
+        hash = ((hash << 5) - hash) + char;
+        hash = hash & hash;
+    }
+    return Math.abs(hash).toString(16);
+}
+
+function loadQualityCache(): Record<string, QualityCacheEntry> {
+    try {
+        return JSON.parse(readFileSync(QUALITY_CACHE_FILE, 'utf8')) as Record<string, QualityCacheEntry>;
+    } catch {
+        return {};
+    }
+}
+
+function saveQualityCache(cache: Record<string, QualityCacheEntry>): void {
+    writeFileSync(QUALITY_CACHE_FILE, JSON.stringify(cache, null, 2) + '\n');
+}
+
+async function runCommand(cmd: string, args: string[], cwd: string): Promise<{ stdout: string; stderr: string; code: number }> {
+    const { spawnSync } = await import('node:child_process');
+    const result = spawnSync(cmd, args, { cwd, encoding: 'utf8' });
+    return { stdout: result.stdout ?? '', stderr: result.stderr ?? '', code: result.status ?? 0 };
+}
+
+export async function collectBundleMetrics(bundlePath: string): Promise<{ bundleSizeKb: number; chunkCount: number }> {
+    try {
+        const bundle = JSON.parse(readFileSync(bundlePath, 'utf8'));
+        const bundleSizeKb = Math.round((bundle.bundleSize ?? 0) / 1024);
+        const chunkCount = bundle.chunks?.length ?? 0;
+        return { bundleSizeKb, chunkCount };
+    } catch {
+        return { bundleSizeKb: 0, chunkCount: 0 };
+    }
+}
+
+export async function collectRuntimeMetrics(bundlePath: string): Promise<{ taskTimeMs: number; interactionCount: number; errorCount: number }> {
+    try {
+        const bundle = JSON.parse(readFileSync(bundlePath, 'utf8'));
+        const taskTimeMs = bundle.durationMs ?? 0;
+        const interactionCount = bundle.assertions?.length ?? 0;
+        const errorCount = bundle.assertions?.filter((a: any) => !a.ok).length ?? 0;
+        return { taskTimeMs, interactionCount, errorCount };
+    } catch {
+        return { taskTimeMs: 0, interactionCount: 0, errorCount: 0 };
+    }
+}
+
+export async function collectQualityMetrics(surfacePath: string): Promise<{ toneViolations: number; typeErrors: number; accessibilityViolations: number }> {
+    const cache = loadQualityCache();
+    const source = readFileSync(surfacePath, 'utf8');
+    const hash = contentHash(source);
+
+    if (cache[hash]) {
+        return {
+            toneViolations: cache[hash].toneViolations,
+            typeErrors: cache[hash].typeErrors,
+            accessibilityViolations: cache[hash].accessibilityViolations,
+        };
+    }
+
+    let toneViolations = 0;
+    let typeErrors = 0;
+    let accessibilityViolations = 0;
+
+    try {
+        const { stdout } = await runCommand('pnpm', ['lint:tone', '--file', surfacePath], ROOT);
+        toneViolations = (stdout.match(/error/g) ?? []).length;
+    } catch {
+        // ignore
+    }
+
+    try {
+        const { stdout } = await runCommand('pnpm', ['tsc', '--noEmit', surfacePath], ROOT);
+        typeErrors = (stdout.match(/error TS/g) ?? []).length;
+    } catch {
+        // ignore
+    }
+
+    try {
+        const { stdout } = await runCommand('pnpm', ['axe', surfacePath], ROOT);
+        accessibilityViolations = (stdout.match(/violation/g) ?? []).length;
+    } catch {
+        // ignore
+    }
+
+    cache[hash] = { contentHash: hash, toneViolations, typeErrors, accessibilityViolations, timestamp: new Date().toISOString() };
+    saveQualityCache(cache);
+
+    return { toneViolations, typeErrors, accessibilityViolations };
+}
+
+export async function collectMatchMetrics(journeyId: string, seedPath: string): Promise<{ matchF1: number; matchPrecision: number; matchRecall: number } | null> {
+    try {
+        const { stdout } = await runCommand('pnpm', ['eval:match', '--journey', journeyId, '--seed', seedPath], ROOT);
+        const result = JSON.parse(stdout);
+        return { matchF1: result.f1, matchPrecision: result.precision, matchRecall: result.recall };
+    } catch {
+        return null;
+    }
+}
+
+export async function collectCellMetrics(
+    cell: { journey: string; flowId: string; bundlePath: string },
+    surfacePath: string,
+    seedPath?: string
+): Promise<CellMetrics> {
+    const [bundle, runtime, quality] = await Promise.all([
+        collectBundleMetrics(cell.bundlePath),
+        collectRuntimeMetrics(cell.bundlePath),
+        collectQualityMetrics(surfacePath),
+    ]);
+
+    const match = seedPath ? await collectMatchMetrics(cell.journey, seedPath) : null;
+
+    return {
+        bundleSizeKb: bundle.bundleSizeKb,
+        chunkCount: bundle.chunkCount,
+        taskTimeMs: runtime.taskTimeMs,
+        interactionCount: runtime.interactionCount,
+        errorCount: runtime.errorCount,
+        toneViolations: quality.toneViolations,
+        typeErrors: quality.typeErrors,
+        accessibilityViolations: quality.accessibilityViolations,
+        ...match,
+    };
+}
 
 export interface FrictionEntry {
     kind: string;

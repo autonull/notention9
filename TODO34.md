@@ -27,7 +27,7 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
 | A.6 Variant resolver    | ✅ Done | `resolveSurface()` implemented; `generateSurface` and `matrix` use variants; CLI `--variant` and `--variants` flags added
 | B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
-| B.2–B.5 Evaluation harness | ⬜ Pending | Metrics, decide, A/B report, promotion |
+| B.2 Metric collectors    | ✅ Done | `collectCellMetrics()` in metrics.ts; bundle, runtime, quality, match metrics; quality cache by content hash
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
@@ -95,7 +95,7 @@ Phase A: Variant Foundation    → Phase B: Evaluation Harness → Phase C: Auto
       A.1 Graph variant schema       B.1 Journey matrix runner      C.1 Visual diff in CI
       A.2 Context profiles v2        B.2 Metric collectors          C.2 PR comment bot
       A.3 Theme system               B.3 Decision engine            C.3 Graph UI editor
-      A.4 Multi-target templates     B.4 A/B report generator       C.4 Template playground
+      A.4 Multi-target templates     B.4 A/B report generator | ✅ Done | `report.ts`; markdown with metric tables, visual diff refs, journey matrix, bundle impact, recommendation
       A.5 Variant registry CLI       B.5 Promotion pipeline         C.5 Time-travel debugger
                                        │
                                        ▼
@@ -551,9 +551,9 @@ interface UisgFlags {
 
 ### Phase B
 - [ ] `uisg matrix --contexts=all --themes=all` completes in <10min
-- [ ] Metrics collected: bundle, runtime, quality, match
-- [ ] `uisg decide` returns PASS/FAIL/REGRESS per variant
-- [ ] `uisg ab-report` produces readable markdown + gallery
+- [x] Metrics collected: bundle, runtime, quality, match
+- [x] `uisg decide` returns PASS/FAIL/REGRESS per variant
+- [x] `uisg ab-report` produces readable markdown + gallery
 - [ ] Auto-promotion commits graph update on all-PASS
 
 ### Phase C
