@@ -29,6 +29,11 @@ import { canonicalize, graphHash, roundTripTest } from './canonicalize.js';
 import { diffGraphsCommand, printDiff } from './diff.js';
 import { appendRunRecord, loadRuns, loadFindings, markFindingFixed, verifyFinding } from './records.js';
 import { loadRegressionCatalogue, runSeededRegressions } from './regressions.js';
+import {
+    buildSkeleton, emitSkeletonJourneyTest, skeletonJourneyFlows, skeletonJourneyId,
+    skeletonOutputs, skeletonToJourney, type UisgSkeleton,
+} from './skeleton.js';
+import { simulateFlow } from './simulate.js';
 import type { UisgGraph } from './types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -40,6 +45,11 @@ Commands:
   analyze [--graph <file>] [--strict]       Actionable findings (issue/evidence/impact/change)
   to-journey <flowId> [--seed <file>] [--out <file>] [--conditions a,b] [--ready] [--emit-test [--force]]
   run <flowId> [same flags as to-journey]   Compile, emit the journey test if missing, run it
+  skeleton [--write] [--check] [--json]      Emit the generated skeleton preview + preview journeys
+  generate [--check]                         Write the preview artifacts and flow manifests
+  simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
+  matrix [--flows a,b] [--viewports v] [--themes t] [--profiles hand-built,generated] [--no-build]
+                                            Run every flow at 2 themes x 2 viewports; record dimensions
   compare <bundleA> <bundleB>               Diff two evidence bundles (run dirs or bundle.json files)
   inventory                                 Graph stats, journey links, seam coverage, variants
   scan [--out <file>]                       Scan codebase for surfaces, navigation, seams, journeys, strategies
@@ -140,6 +150,64 @@ function emitTest(spec: JourneySpec, flags: Map<string, string>): string {
     return file;
 }
 
+function buildOptimize(): number {
+    console.log('Building @notention/optimize (Playwright resolves dist)...');
+    return spawnSync('pnpm', ['--filter', '@notention/optimize', 'build'], { cwd: ROOT, stdio: 'inherit' }).status ?? 1;
+}
+
+function journeyTestFile(id: string): string {
+    return resolve(ROOT, 'ui/test/optimize', `${id}.journey.ts`);
+}
+
+function grepFor(id: string): string {
+    return `(?:^|\\s)${id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`;
+}
+
+function dimensionEnv(flags: Map<string, string>): Record<string, string> {
+    const env: Record<string, string> = {};
+    const viewport = flags.get('viewport');
+    const theme = flags.get('theme');
+    if (viewport) env.NOTENTION_VIEWPORT = viewport;
+    if (theme) env.NOTENTION_THEME = theme;
+    return env;
+}
+
+function writeSkeletonOutputs(flags: Map<string, string>): { files: string[]; skeleton: UisgSkeleton } {
+    const skeleton = buildSkeleton(loadGraph(flags), { flowIds: flags.get('flows')?.split(',') });
+    const files = skeletonOutputs(skeleton).map(({ path, content }) => {
+        writeFileSync(resolve(ROOT, path), content);
+        return path;
+    });
+    return { files, skeleton };
+}
+
+function ensureSkeletonJourney(flowId: string, graph: UisgGraph): JourneySpec | undefined {
+    const flow = buildSkeleton(graph, { flowIds: [flowId] }).flows.find(node => node.id === flowId);
+    if (!flow) return undefined;
+    const journey = skeletonToJourney(flow);
+    const file = resolve(ROOT, 'ui/test/optimize', `${journey.id}.journey.ts`);
+    if (!existsSync(file)) writeFileSync(file, emitSkeletonJourneyTest(flow));
+    return journey;
+}
+
+function generateAll(flags: Map<string, string>): { files: number; manifests: number } {
+    const graph = loadGraph(flags);
+    const { files } = writeSkeletonOutputs(flags);
+    let manifests = 0;
+    for (const node of graph.nodes) {
+        if (node.type !== 'flow' || !node.journey) continue;
+        const journey = getJourney(node.journey);
+        if (!journey) continue;
+        const conditions = [...new Set(graph.edges
+            .filter(edge => edge.type === 'next' && edge.when)
+            .map(edge => edge.when!))];
+        const spec = flowToJourney(graph, node.id, { seed: journey.seed, conditions });
+        emitManifest(node.id, spec);
+        manifests++;
+    }
+    return { files: files.length, manifests };
+}
+
 function main(): number {
     const [command, ...rest] = process.argv.slice(2);
     const { flags, positionals } = parseArgs(rest);
@@ -190,23 +258,30 @@ function main(): number {
         case 'run': {
             const flowId = positionals[0];
             if (!flowId) { console.error('run requires a flowId'); return 1; }
-            const flow = loadGraph(flags).nodes.find(node => node.id === flowId);
-            const registered = flow?.type === 'flow' && flow.journey ? getJourney(flow.journey) : undefined;
-            if (registered) console.log(`Registered journey ${registered.id} (${registered.status})`);
-            const spec = registered ? undefined : compileFlow(flowId, flags);
-            if (spec) {
+            const graph = loadGraph(flags);
+            const flow = graph.nodes.find(node => node.id === flowId);
+            const registeredId = !flags.has('skeleton') && flow?.type === 'flow' && flow.journey
+                && (!!getJourney(flow.journey) || existsSync(journeyTestFile(flow.journey)))
+                ? flow.journey
+                : undefined;
+            const registered = registeredId ? getJourney(registeredId) : undefined;
+            const preview = !registered && (flags.has('skeleton') || flow?.type === 'flow')
+                ? ensureSkeletonJourney(flowId, graph)
+                : undefined;
+            if (registeredId) console.log(`Journey test ${registeredId}${registered ? ` (${registered.status})` : ''}`);
+            const spec = registeredId ? undefined : preview ?? compileFlow(flowId, flags);
+            if (spec && !preview) {
                 const file = resolve(ROOT, 'ui/test/optimize', `${spec.id}.journey.ts`);
                 if (!existsSync(file)) console.log(`Emitted ${emitTest(spec, flags)}`);
             }
-            const id = registered?.id ?? spec!.id;
+            const id = registeredId ?? spec!.id;
             if (!flags.has('no-build')) {
-                console.log('Building @notention/optimize (Playwright resolves dist)...');
-                const built = spawnSync('pnpm', ['--filter', '@notention/optimize', 'build'], { cwd: ROOT, stdio: 'inherit' });
-                if (built.status !== 0) return built.status ?? 1;
+                const status = buildOptimize();
+                if (status !== 0) return status;
             }
             const runId = createRunId();
             console.log(`Running ${id} — run ${runId}`);
-            const { status } = runOptimizeTest({ runId, grep: id });
+            const { status } = runOptimizeTest({ runId, grep: grepFor(id), env: dimensionEnv(flags) });
             console.log(status === 0 ? `PASSED ${id}` : `FAILED ${id}`);
 
             // Record run
@@ -226,6 +301,116 @@ function main(): number {
             });
 
             return status ?? 1;
+        }
+        case 'skeleton': {
+            const graph = loadGraph(flags);
+            const skeleton = buildSkeleton(graph, { flowIds: flags.get('flows')?.split(',') });
+            console.log(`Skeleton: ${skeleton.flows.length} flow(s), ${skeleton.flows.reduce((n, f) => n + f.steps.length, 0)} step(s), ${skeleton.flows.reduce((n, f) => n + f.guards.length, 0)} guard(s), ${skeleton.flows.reduce((n, f) => n + f.effects.length, 0)} effect(s)`);
+            for (const flow of skeleton.flows) {
+                console.log(`  ${flow.id}: ${flow.steps.length} steps, ${flow.guards.length} guards, ${flow.effects.length} effects`);
+            }
+            if (flags.has('json')) { console.log(JSON.stringify(skeleton, null, 2)); return 0; }
+            const outputs = skeletonOutputs(skeleton);
+            if (flags.has('check')) {
+                const stale = outputs.filter(({ path, content }) => {
+                    const file = resolve(ROOT, path);
+                    return !existsSync(file) || readFileSync(file, 'utf8') !== content;
+                });
+                for (const { path } of stale) console.log(`  STALE ${path}`);
+                console.log(stale.length ? `Skeleton artifacts stale (${stale.length})` : 'Skeleton artifacts current');
+                return stale.length ? 1 : 0;
+            }
+            if (flags.has('write')) {
+                const { files } = writeSkeletonOutputs(flags);
+                for (const file of files) console.log(`Wrote ${file}`);
+                return 0;
+            }
+            return 0;
+        }
+        case 'generate': {
+            if (flags.has('check')) {
+                const stale = skeletonOutputs(buildSkeleton(loadGraph(flags)))
+                    .filter(({ path, content }) => {
+                        const file = resolve(ROOT, path);
+                        return !existsSync(file) || readFileSync(file, 'utf8') !== content;
+                    });
+                console.log(stale.length ? `${stale.length} stale generated artifact(s)` : 'Generated artifacts current');
+                return stale.length ? 1 : 0;
+            }
+            const { files, manifests } = generateAll(flags);
+            console.log(`Generated ${files} preview artifact(s) and ${manifests} manifest(s)`);
+            return 0;
+        }
+        case 'simulate': {
+            const flowId = positionals[0];
+            if (!flowId) { console.error('simulate requires a flowId'); return 1; }
+            const simulation = simulateFlow(loadGraph(flags), flowId, flags.get('conditions')?.split(',') ?? []);
+            console.log(`Simulate ${flowId}: ${simulation.status}${simulation.reason ? ` (${simulation.reason})` : ''}`);
+            for (const step of simulation.steps) {
+                const guards = step.guards.map(({ id, satisfied }) => `${id}:${satisfied ? 'satisfied' : 'blocked'}`).join(' ');
+                const effects = step.effects.map(({ id, risk, confirmationRequired }) => `${id}:${risk}${confirmationRequired ? '+confirm' : ''}`).join(' ');
+                console.log(`  ${step.kind.padEnd(8)} ${step.id}${guards ? `  guards ${guards}` : ''}${effects ? `  effects ${effects}` : ''}`);
+            }
+            if (flags.has('json')) console.log(JSON.stringify(simulation, null, 2));
+            return simulation.status === 'missing' ? 1 : 0;
+        }
+        case 'matrix': {
+            const graph = loadGraph(flags);
+            const skeleton = buildSkeleton(graph);
+            const previewFlows = skeletonJourneyFlows(skeleton).map(({ id }) => id);
+            const implemented = graph.nodes
+                .filter(node => node.type === 'flow' && ['implemented', 'partial'].includes(node.status))
+                .map(node => node.id);
+            const flows = flags.get('flows')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
+            const viewports = flags.get('viewports')?.split(',') ?? ['desktop-1440', 'mobile-390'];
+            const themes = flags.get('themes')?.split(',') ?? ['dark', 'light'];
+            const profiles = flags.get('profiles')?.split(',');
+
+            if (!flags.has('no-build')) {
+                const status = buildOptimize();
+                if (status !== 0) return status;
+            }
+
+            const results: Array<{ flowId: string; viewport: string; theme: string; status: number | null; runId: string }> = [];
+            for (const flowId of flows) {
+                const flow = graph.nodes.find(node => node.id === flowId);
+                const handId = flow?.type === 'flow' && flow.journey
+                    && (!!getJourney(flow.journey) || existsSync(journeyTestFile(flow.journey)))
+                    ? flow.journey
+                    : undefined;
+                const variants: Array<{ id: string; profile: string }> = [];
+                if (handId) variants.push({ id: handId, profile: 'hand-built' });
+                if (previewFlows.includes(flowId)) {
+                    const preview = ensureSkeletonJourney(flowId, graph);
+                    if (preview) variants.push({ id: preview.id, profile: 'generated' });
+                }
+                if (!variants.length) { console.log(`SKIP ${flowId} (no registered journey)`); continue; }
+                for (const variant of variants.filter(v => !profiles || profiles.includes(v.profile))) {
+                    for (const viewport of viewports) {
+                        for (const theme of themes) {
+                            const runId = createRunId();
+                            console.log(`Running ${variant.id} ${viewport}/${theme} — ${runId}`);
+                            const { status } = runOptimizeTest({
+                                runId, grep: grepFor(variant.id),
+                                env: { ...dimensionEnv(flags), NOTENTION_VIEWPORT: viewport, NOTENTION_THEME: theme },
+                            });
+                            appendRunRecord({
+                                flowId,
+                                runId,
+                                bundlePath: join(getEvidenceDirSync(), runId, 'bundle.json'),
+                                status: status === 0 ? 'passed' : 'failed',
+                                timestamp: new Date().toISOString(),
+                                dimensions: { viewport, theme, profile: variant.profile },
+                            });
+                            results.push({ flowId, viewport, theme, status, runId });
+                        }
+                    }
+                }
+            }
+            const failed = results.filter(({ status }) => status !== 0);
+            console.log(`Matrix: ${results.length - failed.length}/${results.length} passed (${new Set(flows).size} flows x ${viewports.length} viewports x ${themes.length} themes)`);
+            for (const { flowId, viewport, theme, runId } of failed) console.log(`  FAILED ${flowId} ${viewport}/${theme} ${runId}`);
+            return failed.length ? 1 : 0;
         }
         case 'compare': {
             const [pathA, pathB] = positionals;
@@ -427,6 +612,10 @@ function main(): number {
             const sync = syncGraphWithCode(graph);
             const regressions = runSeededRegressions(graph, loadRegressionCatalogue(), journeyIds);
             const roundtrip = roundTripTest(graph);
+            const staleSkeleton = skeletonOutputs(buildSkeleton(graph)).filter(({ path, content }) => {
+                const file = resolve(ROOT, path);
+                return !existsSync(file) || readFileSync(file, 'utf8') !== content;
+            }).map(({ path }) => path);
             const blocked = sync.proposals.filter(({ severity }) => severity !== 'info');
             const missed = regressions.filter(({ detected }) => !detected);
             const evidenceDir = getEvidenceDirSync();
@@ -437,8 +626,9 @@ function main(): number {
             console.log(`  sync warnings: ${blocked.length}`);
             console.log(`  seeded regressions: ${regressions.length - missed.length}/${regressions.length}`);
             console.log(`  unresolved run records: ${unresolved.length}`);
+            console.log(`  skeleton artifacts: ${staleSkeleton.length ? `${staleSkeleton.length} stale` : 'current'}`);
             console.log(`  round-trip: ${roundtrip ? 'PASS' : 'FAIL'}`);
-            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || !roundtrip;
+            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || !roundtrip;
             console.log(failed ? 'CHECK FAILED' : 'CHECK OK');
             return failed ? 1 : 0;
         }
@@ -503,8 +693,13 @@ function main(): number {
                         unresolved.push(run);
                     }
                 }
+                const unresolvedFile = resolve(ROOT, 'doc/uisg/runs.unresolved.jsonl');
+                const previous = existsSync(unresolvedFile)
+                    ? readFileSync(unresolvedFile, 'utf8').trim().split('\n').filter(Boolean).map(line => JSON.parse(line))
+                    : [];
+                const quarantined = [...new Map([...previous, ...unresolved].map((run: { runId: string }) => [run.runId, run])).values()];
                 writeFileSync(resolve(ROOT, 'doc/uisg/runs.jsonl'), resolved.map(run => JSON.stringify(run)).join('\n') + '\n');
-                writeFileSync(resolve(ROOT, 'doc/uisg/runs.unresolved.jsonl'), unresolved.map(run => JSON.stringify(run)).join('\n') + '\n');
+                writeFileSync(unresolvedFile, quarantined.map(run => JSON.stringify(run)).join('\n') + '\n');
                 console.log(`Repaired ${repaired}/${runs.length} run bundle paths; quarantined ${unresolved.length}`);
                 return 0;
             }

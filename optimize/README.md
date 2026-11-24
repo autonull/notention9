@@ -50,6 +50,16 @@ Standalone specs (not registry journeys, not UISG flows):
 
 `knownJourneys.ts` is a thin adapter over the registry; do not add specs there.
 
+### Generated previews
+
+`uisg skeleton --write` compiles implemented UISG flows into
+`ui/src/dev/uisg/GeneratedSkeleton.tsx` and preview journeys under
+`ui/test/optimize/uisg.skeleton.*.journey.ts`. The preview mounts at the dev
+entry (`?uisg=1`), uses kit primitives, blocks guarded actions, and sends
+consequential effects through `ConfirmationModal`. `uisg check` fails when the
+generated files are stale. `uisg matrix` runs hand-built and generated variants
+at 2 themes × 2 viewports and records `dimensions` in `doc/uisg/runs.jsonl`.
+
 ### Step Kinds
 
 | Kind | Purpose |

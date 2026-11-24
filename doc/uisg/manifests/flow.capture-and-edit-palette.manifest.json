@@ -1,0 +1,136 @@
+{
+  "flowId": "flow.capture-and-edit-palette",
+  "spec": {
+    "id": "capture-and-edit-palette",
+    "version": 1,
+    "intent": "Capture and edit (palette pathway)",
+    "journeysTouched": [
+      "flow.capture-and-edit-palette"
+    ],
+    "seed": {
+      "notes": [
+        {
+          "id": "scene-editor-note",
+          "title": "Scene Editor Note",
+          "content": "Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>",
+          "tags": [
+            "development"
+          ],
+          "properties": [
+            {
+              "key": "skill",
+              "operator": "contains",
+              "values": [
+                "React",
+                "TypeScript"
+              ]
+            }
+          ],
+          "createdAt": "2026-11-24T06:21:30.997Z",
+          "updatedAt": "2026-11-24T06:21:30.997Z",
+          "source": {
+            "type": "user",
+            "identifier": "user-default",
+            "timestamp": 1795501290997
+          },
+          "privacy": "private",
+          "priority": 1
+        }
+      ],
+      "settings": {
+        "theme": "dark",
+        "density": "comfortable",
+        "accentColor": "#2563eb",
+        "developerMode": false,
+        "aiEnabled": false,
+        "aiProvider": "local",
+        "aiModel": "",
+        "googleGeminiApiKey": "",
+        "nostr": {
+          "privkey": null,
+          "relays": []
+        },
+        "ontology": []
+      }
+    },
+    "steps": [
+      {
+        "kind": "seed",
+        "notes": [
+          {
+            "id": "scene-editor-note",
+            "title": "Scene Editor Note",
+            "content": "Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>",
+            "tags": [
+              "development"
+            ],
+            "properties": [
+              {
+                "key": "skill",
+                "operator": "contains",
+                "values": [
+                  "React",
+                  "TypeScript"
+                ]
+              }
+            ],
+            "createdAt": "2026-11-24T06:21:30.997Z",
+            "updatedAt": "2026-11-24T06:21:30.997Z",
+            "source": {
+              "type": "user",
+              "identifier": "user-default",
+              "timestamp": 1795501290997
+            },
+            "privacy": "private",
+            "priority": 1
+          }
+        ],
+        "settings": {
+          "theme": "dark",
+          "density": "comfortable",
+          "accentColor": "#2563eb",
+          "developerMode": false,
+          "aiEnabled": false,
+          "aiProvider": "local",
+          "aiModel": "",
+          "googleGeminiApiKey": "",
+          "nostr": {
+            "privkey": null,
+            "relays": []
+          },
+          "ontology": []
+        }
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "app-shell"
+        },
+        "action": "press",
+        "value": "Control+k"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "property-palette-input"
+        },
+        "action": "press",
+        "value": "Control+Shift+P"
+      },
+      {
+        "kind": "assertState",
+        "path": "note.propertyIndex.framework",
+        "equals": [
+          "Next.js"
+        ]
+      }
+    ],
+    "status": "draft"
+  },
+  "journeyFile": "ui/test/optimize/capture-and-edit-palette.journey.ts",
+  "compilerVersion": "1.0.0",
+  "warnings": [],
+  "sourceMap": "",
+  "generatedAt": "2026-11-24T06:21:31.030Z",
+  "contentHash": "5dfbd352"
+}

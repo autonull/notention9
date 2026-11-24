@@ -1,0 +1,139 @@
+{
+  "flowId": "flow.publish-gate",
+  "spec": {
+    "id": "publish-gate",
+    "version": 1,
+    "intent": "Publish without leaking private content",
+    "journeysTouched": [
+      "flow.publish-gate"
+    ],
+    "seed": {
+      "notes": [
+        {
+          "id": "private-note-for-publish",
+          "title": "Private note for publish",
+          "content": "Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>",
+          "tags": [
+            "development"
+          ],
+          "properties": [
+            {
+              "key": "skill",
+              "operator": "contains",
+              "values": [
+                "React",
+                "TypeScript"
+              ]
+            }
+          ],
+          "createdAt": "2026-11-24T06:21:30.997Z",
+          "updatedAt": "2026-11-24T06:21:30.997Z",
+          "source": {
+            "type": "user",
+            "identifier": "user-default",
+            "timestamp": 1795501290997
+          },
+          "privacy": "private",
+          "priority": 1
+        }
+      ],
+      "settings": {
+        "theme": "dark",
+        "density": "comfortable",
+        "accentColor": "#2563eb",
+        "developerMode": false,
+        "aiEnabled": false,
+        "aiProvider": "local",
+        "aiModel": "",
+        "googleGeminiApiKey": "",
+        "nostr": {
+          "privkey": null,
+          "relays": []
+        },
+        "ontology": []
+      }
+    },
+    "steps": [
+      {
+        "kind": "seed",
+        "notes": [
+          {
+            "id": "private-note-for-publish",
+            "title": "Private note for publish",
+            "content": "Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>",
+            "tags": [
+              "development"
+            ],
+            "properties": [
+              {
+                "key": "skill",
+                "operator": "contains",
+                "values": [
+                  "React",
+                  "TypeScript"
+                ]
+              }
+            ],
+            "createdAt": "2026-11-24T06:21:30.997Z",
+            "updatedAt": "2026-11-24T06:21:30.997Z",
+            "source": {
+              "type": "user",
+              "identifier": "user-default",
+              "timestamp": 1795501290997
+            },
+            "privacy": "private",
+            "priority": 1
+          }
+        ],
+        "settings": {
+          "theme": "dark",
+          "density": "comfortable",
+          "accentColor": "#2563eb",
+          "developerMode": false,
+          "aiEnabled": false,
+          "aiProvider": "local",
+          "aiModel": "",
+          "googleGeminiApiKey": "",
+          "nostr": {
+            "privkey": null,
+            "relays": []
+          },
+          "ontology": []
+        }
+      },
+      {
+        "kind": "navigate",
+        "hash": "#/notes/private-note-for-publish"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "role": "button",
+          "name": "Publish",
+          "exact": true
+        },
+        "action": "click"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "role": "button",
+          "name": "cancel"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "assertState",
+        "path": "note.privacy",
+        "equals": "private"
+      }
+    ],
+    "status": "draft"
+  },
+  "journeyFile": "ui/test/optimize/publish-gate.journey.ts",
+  "compilerVersion": "1.0.0",
+  "warnings": [],
+  "sourceMap": "",
+  "generatedAt": "2026-11-24T06:21:31.026Z",
+  "contentHash": "14da28a6"
+}

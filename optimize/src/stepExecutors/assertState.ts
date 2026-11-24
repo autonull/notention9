@@ -4,7 +4,7 @@ import { StepExecutor, StepExecutionResult } from './index.js';
 import { resolvePath, deepEqual } from '../pathUtils.js';
 
 async function getStateSnapshot(page: Page): Promise<unknown> {
-    return page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
+    return page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.() ?? (globalThis as any).__UISG_SKELETON__?.state?.());
 }
 
 export const assertStateExecutor: StepExecutor = {

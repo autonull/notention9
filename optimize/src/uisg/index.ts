@@ -4,6 +4,8 @@ export * from './validate.js';
 export * from './query.js';
 export * from './analyze.js';
 export * from './toJourney.js';
+export * from './skeleton.js';
+export * from './simulate.js';
 export * from './registry.js';
 export * from './manifest.js';
 export * from './scan.js';

@@ -1,0 +1,147 @@
+{
+  "flowId": "flow.capture-and-edit",
+  "spec": {
+    "id": "capture-and-edit",
+    "version": 1,
+    "intent": "Capture a note and edit its properties",
+    "journeysTouched": [
+      "flow.capture-and-edit"
+    ],
+    "seed": {
+      "notes": [
+        {
+          "id": "scene-editor-note",
+          "title": "Scene Editor Note",
+          "content": "Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>",
+          "tags": [
+            "development"
+          ],
+          "properties": [
+            {
+              "key": "skill",
+              "operator": "contains",
+              "values": [
+                "React",
+                "TypeScript"
+              ]
+            }
+          ],
+          "createdAt": "2026-11-24T06:21:30.997Z",
+          "updatedAt": "2026-11-24T06:21:30.997Z",
+          "source": {
+            "type": "user",
+            "identifier": "user-default",
+            "timestamp": 1795501290997
+          },
+          "privacy": "private",
+          "priority": 1
+        }
+      ],
+      "settings": {
+        "theme": "dark",
+        "density": "comfortable",
+        "accentColor": "#2563eb",
+        "developerMode": false,
+        "aiEnabled": false,
+        "aiProvider": "local",
+        "aiModel": "",
+        "googleGeminiApiKey": "",
+        "nostr": {
+          "privkey": null,
+          "relays": []
+        },
+        "ontology": []
+      }
+    },
+    "steps": [
+      {
+        "kind": "seed",
+        "notes": [
+          {
+            "id": "scene-editor-note",
+            "title": "Scene Editor Note",
+            "content": "Working on the scene editor with <span data-type=\"property\" data-name=\"skill\" data-operator=\"contains\" data-value=\"React, TypeScript\"></span>",
+            "tags": [
+              "development"
+            ],
+            "properties": [
+              {
+                "key": "skill",
+                "operator": "contains",
+                "values": [
+                  "React",
+                  "TypeScript"
+                ]
+              }
+            ],
+            "createdAt": "2026-11-24T06:21:30.997Z",
+            "updatedAt": "2026-11-24T06:21:30.997Z",
+            "source": {
+              "type": "user",
+              "identifier": "user-default",
+              "timestamp": 1795501290997
+            },
+            "privacy": "private",
+            "priority": 1
+          }
+        ],
+        "settings": {
+          "theme": "dark",
+          "density": "comfortable",
+          "accentColor": "#2563eb",
+          "developerMode": false,
+          "aiEnabled": false,
+          "aiProvider": "local",
+          "aiModel": "",
+          "googleGeminiApiKey": "",
+          "nostr": {
+            "privkey": null,
+            "relays": []
+          },
+          "ontology": []
+        }
+      },
+      {
+        "kind": "navigate",
+        "hash": "#/notes/scene-editor-note"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "page-add-detail"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "property-key-input"
+        },
+        "action": "fill",
+        "value": "framework"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "role": "button",
+          "name": "Add detail"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "assertState",
+        "path": "note.propertyIndex.framework",
+        "equals": [
+          "Next.js"
+        ]
+      }
+    ],
+    "status": "draft"
+  },
+  "journeyFile": "ui/test/optimize/capture-and-edit.journey.ts",
+  "compilerVersion": "1.0.0",
+  "warnings": [],
+  "sourceMap": "",
+  "generatedAt": "2026-11-24T06:21:31.023Z",
+  "contentHash": "5b93607f"
+}

@@ -35,14 +35,25 @@ if (!rootElement) {
 }
 
 const KitGallery = React.lazy(() => import('./dev/KitGallery'));
+const GeneratedSkeleton = React.lazy(() => import('./dev/uisg/GeneratedSkeleton'));
+const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
 const kitRequested = typeof window !== 'undefined' &&
-    (window.location.hash === '#/kit' || new URLSearchParams(window.location.search).get('kit') === '1');
+    (window.location.hash === '#/kit' || params.get('kit') === '1');
+const skeletonRequested = params.get('uisg') === '1';
+const requestedTheme = params.get('theme');
+if (skeletonRequested && (requestedTheme === 'dark' || requestedTheme === 'light')) {
+    document.documentElement.setAttribute('data-theme', requestedTheme);
+    document.documentElement.classList.toggle('light', requestedTheme === 'light');
+    document.documentElement.classList.toggle('dark', requestedTheme === 'dark');
+}
 
 const root = ReactDOM.createRoot(rootElement);
 root.render(
-    kitRequested
-        ? <React.Suspense fallback={null}><KitGallery/></React.Suspense>
-        : <UIProvider><App/></UIProvider>
+    skeletonRequested
+        ? <React.Suspense fallback={null}><GeneratedSkeleton/></React.Suspense>
+        : kitRequested
+            ? <React.Suspense fallback={null}><KitGallery/></React.Suspense>
+            : <UIProvider><App/></UIProvider>
 );
 
 // Enhanced focus management for keyboard navigation

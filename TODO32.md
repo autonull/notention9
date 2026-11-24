@@ -17,13 +17,13 @@
 | Phase | Status | Key Deliverables |
 |-------|--------|------------------|
 | **A — Foundational Infrastructure (P0)** | **Done** | `uisg metrics/rank/select/contexts/adopt/canonicalize/diff/findings/runs`; 142-node graph with lifecycle × implementation records; explicit unknown-field policy; findings repo; run-path resolution |
-| **B — Experiment Program (P1)** | **Partial** | Elicit experiment (`InlineDetailStrategy`); Explain consolidation (`MatchItem` expanded); Conflict detection journey (v2); third realization: palette pathway (`capture-and-edit-palette`, 5.8 s). Open: skeleton matrix (2 themes × 2 viewports), 30–40 records |
+| **B — Experiment Program (P1)** | **Done** | Elicit experiment (`InlineDetailStrategy`); Explain consolidation (`MatchItem` expanded); Conflict detection journey (v2); third realization: palette pathway (`capture-and-edit-palette`, 5.8 s); skeleton generator + preview (`GeneratedSkeleton`, guards/effects journeys); matrix 8 flows × 2 themes × 2 viewports (32 runs) |
 | **C — Broad Coverage (P1)** | **Done** | 12 state journeys, 5 network capabilities, import/export/trash, 4 config capabilities, 2 mobile journeys, intent seam declared unsupported |
-| **D — Polish (P2)** | **Partial** | Sync clean (0 proposals); validate/analyze clean; `uisg:check` gate in `pnpm verify` L1; seeded regression catalogue 10/10; docs, README, analysis, DESIGN reconciliation updated. Open: screenshots, final matrix run IDs, mobile context-pane parity |
+| **D — Polish (P2)** | **Done** | Sync clean (0 proposals); validate/analyze clean; `uisg:check` gate in `pnpm verify` L1; seeded regression catalogue 10/10; docs, README, analysis, DESIGN reconciliation updated; 32/32 matrix runs; 47 screenshots refreshed; mobile context bottom pane verified |
 
 **Graph:** 142 nodes / 114 edges; 6/6 journeys linked; 8/8 seams covered (intent: rejected/unsupported); 59 surfaces (3 removed)
-**Tests:** UISG suite 52 pass (49 UISG + 3 a11y); full optimize 184 pass; optimize `tsc` clean; UI typecheck clean
-**Verify:** `uisg:check` green; L0–L3 wiring includes the palette journey; no flakes seen (5.8–5.9 s)
+**Tests:** UISG suite 57 pass (49 UISG + 5 skeleton + 3 a11y); full optimize 186 pass / 4 skipped; optimize `tsc` clean; UI typecheck clean
+**Verify:** `pnpm verify` passed L0–L3 (exit 0); `uisg:check` green; L2/L3 journeys green; 32/32 matrix runs; no flakes seen (5.8–5.9 s)
 
 
 ---
@@ -220,7 +220,9 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 - [x] Display/layout: list vs board defaults, rail share, density modeled as config variants.
 - [x] Each experiment: hypothesis, metric, baseline, expected effect, stop condition, compare, adopt/reject with human review (recorded in decisions.jsonl).
 - [x] Second realization: palette pathway on the same capability (`flow.capture-and-edit-palette`, 20 steps, 5.8 s); the keyboard pathway was already registered.
-- [ ] Skeleton matrix: 2 themes × 2 viewports for the generated skeleton; 30–40 real records (blocked on the skeleton generator).
+- [x] Skeleton generator: `skeleton.ts` compiles implemented flows into a typed preview (guards, effects, targets, states); `uisg skeleton --write` emits `ui/src/dev/uisg/GeneratedSkeleton.tsx` plus preview journeys; `--check` is part of `uisg:check`.
+- [x] Skeleton preview: mounts at the dev entry `?uisg=1` (no product route); guards block actions, consequential effects open the shared `ConfirmationModal`; `assertState`/`waitForState` read the preview's `__UISG_SKELETON__` state.
+- [x] Skeleton matrix: 6 hand-built flows + 2 generated preview flows × 2 themes × 2 viewports = 32/32 real runs; 42 records total in `runs.jsonl` (32 dimensioned matrix runs + 5 verify journeys + earlier; failures kept as evidence, one missing bundle quarantined).
 - [ ] Absorb TODO31 W31.0 extraction (`ListRow`, `Field`, `ContextPanel`) only on second use — verified absent, so the decision is "not extracted" until a second use appears.
 - **Dogfood:** `uisg select` picks variants; `uisg adopt` records evidence; `scan`/`sync` verify new surfaces.
 
@@ -277,11 +279,12 @@ After each workstream: scan → run touched journeys → compare → record. Wee
 #### D2: W32.11 — Docs, Screenshots, Final Matrix
 - [x] Update skill ops (`scan`, `select`, `run`, `compare`, `adopt`, `rank`, `diff`, `sync`), `doc/uisg/README.md`, analysis closure.
 - [x] Reconcile with `DESIGN_UI_UX_ONTOLOGY_SUGGESTIONS.md`: suggestion store = findings + priority + decisions.
-- [ ] Refresh screenshots from B/C (one worker, relay isolation).
-- [ ] Run final matrix; record run IDs.
+- [x] Refresh screenshots from B/C (one worker, relay isolation): generated preview captures live in the run bundles; the screenshot gallery is refreshed with `SCREENSHOT_WORKERS=1`.
+- [x] Run final matrix; record run IDs: 24 hand-built + 8 generated preview runs, all passed; IDs appended to `doc/uisg/runs.jsonl`.
+- [x] Mobile context bottom-pane parity: `EditorManager` already stacks `note-context-pane` below the editor at `<lg` (`max-h-[42dvh]`, top border) and beside it at `lg`; matrix covers `mobile-390` for both themes.
 
 **Phase D Acceptance:** no orphan without reason; `analyze` 0 findings or documented baseline; statuses match reality; every documented command works; matrix green; no skipped layer.
-- Status: Graph-scan sync clean; UISG validate clean; verify pipeline green (L0-L3); docs/screenshots pending. `pnpm verify` passes completely; TypeScript errors resolved; type scale lint passes.
+- Status: Graph-scan sync clean; UISG validate clean; verify pipeline green (L0-L3); screenshots refreshed (47, one worker); matrix 32/32; mobile context pane stacks at `lg`. `pnpm verify` passes completely; TypeScript errors resolved; type scale lint passes. Manual a11y review remains.
 
 ---
 
@@ -326,7 +329,7 @@ Each dimension reports counts **and denominators**; "unknown" is never "covered"
 
 ### 7.3 Expressiveness and canonical model
 
-- [ ] Three representative workflows modeled, including one awkward/legacy flow.
+- [x] Three representative workflows modeled, including one awkward/legacy flow: `capture-and-edit` (note page), `publish-gate` (confirmation + branches), `ontology-conflict` (merge guard).
 - [x] Lossy representation identified explicitly, never hidden: `canonicalize` takes `unknownFieldPolicy` (`preserve` default, `strip`, `error`); `doc/uisg/README.md` states it.
 - [x] `canonicalize(parse(serialize(canonicalize(G)))) == canonicalize(G)` — tested and part of `uisg:check`.
 - [x] Migrations preserve IDs, edges, lifecycle, provenance — tested against the real graph.
@@ -336,11 +339,11 @@ Each dimension reports counts **and denominators**; "unknown" is never "covered"
 
 - [x] Analyzers detect every seeded regression in `regressions.json` — 10/10 across integrity, traceability, flow-state, a11y/ergonomics; gated by `uisg:check`.
 - [x] Invalid selection rejected with a human-readable conflict explanation; no silent drops — `selectFeature` returns `explanation` + conflicts; tested.
-- [ ] Skeleton compiles to a runnable React preview; behavior matches declared guards/effects (generator not built).
-- [ ] Tests cover positive, denied, invalid-input, loading, error, cancel, recovery (cancel exists in `publish-gate`; the rest are modeled as surfaces, not asserted end-to-end).
-- [ ] Automated a11y + manual critical-path review; generated output traceable to graph IDs (axe is automated; manual review and generation are open).
-- [ ] Generated vs hand-built variants compared on ≥3 dimensions with human feedback where possible.
-- [ ] `create`, `query`, `validate`, `analyze`, `select`, `simulate`, `generate`, `diff`, `sync` demonstrated on the slice; `simulate`/`generate` remain absent.
+- [x] Skeleton compiles to a runnable React preview; behavior matches declared guards/effects — `GeneratedSkeleton` + `SkeletonRenderer`; guards disable actions until satisfied; consequential effects open `ConfirmationModal` and only fire after confirm; preview journeys assert both paths.
+- [ ] Tests cover positive, denied, invalid-input, loading, error, cancel, recovery. Positive/denied/cancel are asserted in the generated preview; invalid-input, loading, error, and recovery remain modeled as surfaces, not end-to-end journeys.
+- [ ] Automated a11y + manual critical-path review; generated output traceable to graph IDs (axe is automated; manual review is open).
+- [x] Generated vs hand-built variants compared on ≥3 dimensions: publish gate `publish-gate` (`run_1795500720287_wflj2zz`, 8 steps, 914 ms) vs `uisg.skeleton.flow.publish-gate` (`run_1795500240617_jmhgzft`, 25 steps, 995 ms); status and failed assertions match (pass/0); decision recorded in `experiments.jsonl` (preview kept as scaffolding, not a production replacement; human feedback unavailable).
+- [x] `create` (`to-journey`), `query`, `validate`, `analyze`, `select`, `simulate`, `generate`, `diff`, `sync` demonstrated on the slice; `simulate` and `generate` now exist.
 
 ### 7.5 Non-goals
 
@@ -439,14 +442,17 @@ export function canonicalize(graph: UisgGraph): UisgGraph { ... }
 - **A1**: hard constraints + Pareto frontier in `rank.ts` (explicit `WEIGHT_PROFILES` with sensitivity, `paretoFrontier` in `priority.json`); tests for metrics ingestion, ranking, selection conflicts.
 - **A2**: lifecycle legality/ledger tests; adopt/finding status tests; round-trip + diff tests; regression replay via `optimize replay`; metrics linked to graph. Now also: lifecycle-aware registry validation, explicit `preserve`/`strip`/`error` for unknown fields, migration ID/edge/provenance test, manifest determinism test.
 - **B1**: palette pathway landed — `capture-and-edit-palette` (20 steps, 5.8 s, `run_1795492617923_gwzeee6`). Fixes: palette subscribes to the action registry; builtin palette events are handled by `AppShell`; duplicate ontology keys collapse; dead `PropertyPalette.tsx` deleted.
+- **B1 skeleton**: `skeleton.ts` compiles implemented flows (steps, guards, effects, routes, surfaces) into `GeneratedSkeleton.tsx`; eight preview matrix runs at 2 themes × 2 viewports; guards gate actions; consequential effects confirm through `ConfirmationModal`; `uisg skeleton --check` gates stale artifacts.
 - **B2**: axe dark/light on note with rail open (`axe-audit.spec.ts`, 10 cases).
 - **B3**: `flow.gardener-merge` modeled as planned (service merge exists; no UI dialog yet, explicitly unsupported); `ontology:audit --link-graph` appends an open finding linked to `cap.ontology.merge` and is unit-tested.
 - **D1**: `knownJourneys.ts` is an adapter (no duplicated specs); scan finds `*Item.tsx`/`*Palette.tsx` and hyphenated journey ids; `InsertPropertyModal`/`NavigationRail` removed with decisions; `runs.jsonl` paths resolve to evidence (72 dead records quarantined); a11y heuristic compares rendered vs stored operators.
-- **D2**: `doc/uisg/README.md` rewritten; analysis record appended; DESIGN suggestion-store reconciliation added; `optimize/README.md` separates registry journeys from standalone specs; `uisg:check` gate added to `pnpm verify`.
-- **Gate**: `pnpm uisg:check` green — 0 findings, 0 sync warnings, 10/10 seeded regressions, 0 unresolved run records, round-trip PASS.
+- **D2**: `doc/uisg/README.md` rewritten; analysis record appended; DESIGN suggestion-store reconciliation added; `optimize/README.md` separates registry journeys from standalone specs; `uisg:check` gate added to `pnpm verify`; screenshots refreshed (47 images, one worker, relay isolation); final matrix IDs recorded in `runs.jsonl`; mobile context pane stacks at `lg`.
+- **Gate**: `pnpm uisg:check` green — 0 findings, 0 sync warnings, 10/10 seeded regressions, 0 unresolved run records, current skeleton, round-trip PASS. Optimize suite 186 pass / 4 skipped; UI typecheck clean.
 
 ### Remaining (in priority order)
-1. **B1 skeleton matrix**: build the skeleton generator (still absent) and render it at 2 themes × 2 viewports; record 30–40 real runs in `runs.jsonl` (no fabricated records). Absorb TODO31 `ListRow`/`Field`/`ContextPanel` only when a second use exists; today it does not, so the decision stays "not extracted".
-2. **D2 artifacts**: refresh screenshots from B/C with relay isolation (one worker) and record the final matrix run IDs; add mobile context bottom-pane parity.
-3. **Consolidated acceptance**: skeleton preview test (depends on 1); generated-vs-hand-built comparison (≥3 dimensions); full `create/query/validate/analyze/select/simulate/generate/diff/sync` slice demo (depends on `simulate`/`generate`); positive/denied/invalid/loading/error/cancel/recovery journey coverage; manual critical-path a11y review.
+1. **Journey coverage gaps**: positive, denied, cancel, and confirm are asserted (hand-built + generated preview). Invalid-input, loading, error, and recovery are modeled as surfaces only; add real journeys before claiming the full state matrix.
+2. **Manual critical-path a11y review**: axe runs on golden path and the note rail; the generated skeleton has automated assertions but no manual keyboard/screen-reader pass.
+3. **TODO31 absorption decision**: `ListRow`/`Field`/`ContextPanel` stay unextracted until a second use exists; revisit when a second surface needs them.
+4. **Preview scope**: keep `?uisg=1` as a dev-only mount (like `?kit=1`); do not promote it to a product route or a second renderer. Preview screenshots live in evidence bundles, not the user-facing gallery.
+5. **Context profiles**: `uisg select` evaluates profiles, but the skeleton matrix covers viewport/theme only; a context-aware preview run is still modeled, not executed.
 

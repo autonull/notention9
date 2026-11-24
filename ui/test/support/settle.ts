@@ -29,6 +29,13 @@ export const settle = async (page: Page) => {
     }
 };
 
+export const settlePreview = async (page: Page) => {
+    await page.waitForSelector('[data-skeleton-ready]');
+    await page.evaluate(() => document.fonts.ready);
+    await settleFrame(page);
+    await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 150)));
+};
+
 export const disableMotion = async (page: Page) => {
     await page.addStyleTag({
         content: `

@@ -1,8 +1,22 @@
 import { executeJourney, type ExecutionContext } from '@notention/optimize';
 import { getJourney } from '@notention/optimize';
 import { seed } from '../../support/seed';
-import { settle } from '../../support/settle';
+import { settle, settlePreview } from '../../support/settle';
 import { writeBundle, type EvidenceBundle } from '@notention/optimize/evidence';
+
+const VIEWPORTS: Record<string, { width: number; height: number }> = {
+    'desktop-1440': { width: 1440, height: 900 },
+    'mobile-390': { width: 390, height: 844 },
+};
+
+const previewFlowId = (journeyId: string) =>
+    journeyId.startsWith('uisg.skeleton.') ? journeyId.slice('uisg.skeleton.'.length) : undefined;
+
+const appliedViewport = (journey: { dimensions?: { viewport?: string } }) =>
+    process.env.NOTENTION_VIEWPORT ?? journey.dimensions?.viewport;
+
+const appliedTheme = (journey: { dimensions?: { theme?: string } }) =>
+    process.env.NOTENTION_THEME ?? journey.dimensions?.theme;
 
 export async function runJourneyTest(journeyId: string, page: any) {
     const journey = getJourney(journeyId);
@@ -17,18 +31,32 @@ export async function runJourneyTest(journeyId: string, page: any) {
         window.__OPTIMIZE_RUN_ID__ = id;
     }, runId);
 
-    // Determine initial hash: if journey has seed notes, navigate to first note; otherwise inbox (W10.2)
-    const initialHash = journey.seed.notes.length > 0
-        ? `notes/${journey.seed.notes[0].id}`
-        : 'inbox';
+    const viewport = appliedViewport(journey);
+    if (viewport && VIEWPORTS[viewport]) await page.setViewportSize(VIEWPORTS[viewport]);
 
-    // Seed the database with the journey's seed data
-    await seed(page, {
-        notes: journey.seed.notes,
-        settings: journey.seed.settings as any,
-        hash: initialHash,
-    });
-    await settle(page);
+    const theme = appliedTheme(journey);
+    if (theme === 'dark' || theme === 'light') await page.emulateMedia({ colorScheme: theme });
+
+    const flowId = previewFlowId(journeyId);
+    if (flowId) {
+        const params = new URLSearchParams({ uisg: '1', flow: flowId });
+        if (theme) params.set('theme', theme);
+        await page.goto(`${process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:4199'}/?${params}`);
+        await settlePreview(page);
+    } else {
+        // Determine initial hash: if journey has seed notes, navigate to first note; otherwise inbox (W10.2)
+        const initialHash = journey.seed.notes.length > 0
+            ? `notes/${journey.seed.notes[0].id}`
+            : 'inbox';
+
+        // Seed the database with the journey's seed data
+        await seed(page, {
+            notes: journey.seed.notes,
+            settings: { ...journey.seed.settings, ...(theme ? { theme } : {}) } as any,
+            hash: initialHash,
+        });
+        await settle(page);
+    }
 
     const context: ExecutionContext = {
         page,

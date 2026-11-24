@@ -5,7 +5,7 @@ import { resolvePath, deepEqual } from '../pathUtils.js';
 import { STATE_WAIT_DEFAULT_TIMEOUT_MS } from '../constants.js';
 
 async function getStateSnapshot(page: Page): Promise<unknown> {
-    return page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
+    return page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.() ?? (globalThis as any).__UISG_SKELETON__?.state?.());
 }
 
 export const waitForStateExecutor: StepExecutor = {
