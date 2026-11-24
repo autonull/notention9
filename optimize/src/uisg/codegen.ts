@@ -60,9 +60,10 @@ export function generateSurface(surface: UisgSurface, graph: UisgGraph, options:
     const propsSchemaContent = template.generatePropsSchema(surface, graph);
 
     const componentName = surface.component ?? surface.id.replace('surface.', '').replace(/-./g, m => m[1].toUpperCase());
-    const componentPath = `ui/src/components/${shape}s/${componentName}.tsx`;
+    const shapePlural = shape === 'status' ? 'status' : `${shape}s`;
+    const componentPath = `ui/src/components/${shapePlural}/${componentName}.tsx`;
     const testPath = `ui/src/tests/generated/${componentName}.test.tsx`;
-    const propsSchemaPath = `ui/src/components/${shape}s/${componentName}Props.ts`;
+    const propsSchemaPath = `ui/src/components/${shapePlural}/${componentName}Props.ts`;
 
     const fullComponentPath = resolve(ROOT, componentPath);
     const fullTestPath = resolve(ROOT, testPath);

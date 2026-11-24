@@ -25,4 +25,10 @@ export function getAvailableTemplates(): TemplateShape[] {
 
 // Auto-register built-in templates
 import { itemTemplate } from './item.js';
+import { panelTemplate } from './panel.js';
+import { editorTemplate } from './editor.js';
+import { statusTemplate } from './status.js';
 registerTemplate(itemTemplate);
+registerTemplate(panelTemplate);
+registerTemplate(editorTemplate);
+registerTemplate(statusTemplate);
