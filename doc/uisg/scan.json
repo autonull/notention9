@@ -1,0 +1,1766 @@
+{
+  "version": 1,
+  "scannedAt": "2026-11-24T17:56:41.239Z",
+  "surfaces": [
+    {
+      "id": "surface.quickcapture",
+      "component": "QuickCapture",
+      "file": "ui/src/components/dashboard/QuickCapture.tsx",
+      "exports": [
+        "QuickCapture"
+      ]
+    },
+    {
+      "id": "surface.describeitcomposer",
+      "component": "DescribeItComposer",
+      "file": "ui/src/components/editor/DescribeItComposer.tsx",
+      "exports": [
+        "DescribeItComposer"
+      ]
+    },
+    {
+      "id": "surface.templateselector",
+      "component": "TemplateSelector",
+      "file": "ui/src/components/editor/TemplateSelector.tsx",
+      "exports": [
+        "TemplateSelector"
+      ]
+    },
+    {
+      "id": "surface.taginput",
+      "component": "TagInput",
+      "file": "ui/src/components/editor/TagInput.tsx",
+      "exports": [
+        "TagInput"
+      ]
+    },
+    {
+      "id": "surface.inlinedetailstrategy",
+      "component": "InlineDetailStrategy",
+      "file": "ui/src/strategies/InlineDetailStrategy.tsx",
+      "exports": [
+        "InlineDetailStrategy"
+      ]
+    },
+    {
+      "id": "surface.localmatchespanel",
+      "component": "LocalMatchesPanel",
+      "file": "ui/src/components/assistant/LocalMatchesPanel.tsx",
+      "exports": [
+        "LocalMatchesPanel"
+      ]
+    },
+    {
+      "id": "surface.appshell",
+      "component": "AppShell",
+      "file": "ui/src/components/AppShell.tsx",
+      "exports": [
+        "AppShell"
+      ]
+    },
+    {
+      "id": "surface.mainview",
+      "component": "MainView",
+      "file": "ui/src/components/MainView.tsx",
+      "exports": [
+        "MainView"
+      ]
+    },
+    {
+      "id": "surface.commandpalette",
+      "component": "CommandPalette",
+      "file": "ui/src/components/command/CommandPalette.tsx",
+      "exports": [
+        "CommandPalette"
+      ]
+    },
+    {
+      "id": "surface.automationsview",
+      "component": "AutomationsView",
+      "file": "ui/src/components/dashboard/AutomationsView.tsx",
+      "exports": [
+        "AutomationsView"
+      ]
+    },
+    {
+      "id": "surface.editormanager",
+      "component": "EditorManager",
+      "file": "ui/src/components/editor/EditorManager.tsx",
+      "exports": [
+        "EditorManager"
+      ]
+    },
+    {
+      "id": "surface.propertyeditor",
+      "component": "PropertyEditor",
+      "file": "ui/src/components/editor/PropertyEditor.tsx",
+      "exports": [
+        "PropertyEditor"
+      ]
+    },
+    {
+      "id": "surface.savestate",
+      "component": "SaveState",
+      "file": "ui/src/components/editor/SaveState.tsx",
+      "exports": [
+        "SaveState"
+      ]
+    },
+    {
+      "id": "surface.matchitem",
+      "component": "MatchItem",
+      "file": "ui/src/components/items/MatchItem.tsx",
+      "exports": [
+        "MatchItem"
+      ]
+    },
+    {
+      "id": "surface.notecontextrail",
+      "component": "NoteContextRail",
+      "file": "ui/src/components/note/NoteContextRail.tsx",
+      "exports": [
+        "NoteContextRail"
+      ]
+    },
+    {
+      "id": "surface.unifiedselector",
+      "component": "UnifiedSelector",
+      "file": "ui/src/components/properties/UnifiedSelector.tsx",
+      "exports": [
+        "UnifiedSelector"
+      ]
+    },
+    {
+      "id": "surface.notehistoryrail",
+      "component": "NoteHistoryRail",
+      "file": "ui/src/components/sidebar/NoteHistoryRail.tsx",
+      "exports": [
+        "NoteHistoryRail"
+      ]
+    },
+    {
+      "id": "surface.skillmanagementview",
+      "component": "SkillManagementView",
+      "file": "ui/src/components/skills/SkillManagementView.tsx",
+      "exports": [
+        "SkillManagementView"
+      ]
+    },
+    {
+      "id": "surface.confirmationmodal",
+      "component": "ConfirmationModal",
+      "file": "ui/src/components/ui/ConfirmationModal.tsx",
+      "exports": [
+        "ConfirmationModal"
+      ]
+    },
+    {
+      "id": "surface.emptystate",
+      "component": "EmptyState",
+      "file": "ui/src/components/ui/EmptyState.tsx",
+      "exports": [
+        "EmptyState"
+      ]
+    },
+    {
+      "id": "surface.extractionstatus",
+      "component": "ExtractionStatus",
+      "file": "ui/src/components/ui/ExtractionStatus.tsx",
+      "exports": [
+        "ExtractionStatus"
+      ]
+    },
+    {
+      "id": "surface.toast",
+      "component": "Toast",
+      "file": "ui/src/components/ui/Toast.tsx",
+      "exports": [
+        "Toast"
+      ]
+    },
+    {
+      "id": "surface.mapview",
+      "component": "MapView",
+      "file": "ui/src/components/views/MapView.tsx",
+      "exports": [
+        "MapView"
+      ]
+    },
+    {
+      "id": "surface.networkview",
+      "component": "NetworkView",
+      "file": "ui/src/components/views/NetworkView.tsx",
+      "exports": [
+        "NetworkView"
+      ]
+    },
+    {
+      "id": "surface.notesview",
+      "component": "NotesView",
+      "file": "ui/src/components/views/NotesView.tsx",
+      "exports": [
+        "NotesView"
+      ]
+    },
+    {
+      "id": "surface.ontologyview",
+      "component": "OntologyView",
+      "file": "ui/src/components/views/OntologyView.tsx",
+      "exports": [
+        "OntologyView"
+      ]
+    },
+    {
+      "id": "surface.settingsview",
+      "component": "SettingsView",
+      "file": "ui/src/components/views/SettingsView.tsx",
+      "exports": [
+        "SettingsView"
+      ]
+    },
+    {
+      "id": "surface.timelineview",
+      "component": "TimelineView",
+      "file": "ui/src/components/views/TimelineView.tsx",
+      "exports": [
+        "TimelineView"
+      ]
+    },
+    {
+      "id": "surface.conditionalautomationview",
+      "component": "ConditionalAutomationView",
+      "file": "ui/src/plugins/metaphor/ConditionalAutomationView.tsx",
+      "exports": [
+        "ConditionalAutomationView"
+      ]
+    }
+  ],
+  "navigation": [
+    {
+      "view": "settings",
+      "hash": "#/settings",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/appearance",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/language",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/shortcuts",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/accessibility",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/network",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/nostr",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/sync",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/relayDiscovery",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/ai",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/automation",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/matchDigest",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/data",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/metrics",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/revisions",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/labels",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/ontology",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "settings",
+      "hash": "#/settings/skills",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "notes",
+      "hash": "#/notes",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "notes",
+      "hash": "#/notes?mode=map",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "notes",
+      "hash": "#/notes?mode=timeline",
+      "file": "ui/src/utils/navigation.ts"
+    },
+    {
+      "view": "notes",
+      "hash": "#/notes?explore=1",
+      "file": "ui/src/utils/navigation.ts"
+    }
+  ],
+  "seams": [
+    {
+      "role": "capture",
+      "strategies": [
+        "QuickCapture",
+        "PropertyForm"
+      ],
+      "file": "core/src/schemas/generated/seam-definitions.ts"
+    },
+    {
+      "role": "capture",
+      "strategies": [
+        "DescribeItComposer"
+      ],
+      "file": "core/src/schemas/generated/seam-definitions.ts"
+    },
+    {
+      "role": "capture",
+      "strategies": [
+        "TemplateSelector"
+      ],
+      "file": "core/src/schemas/generated/seam-definitions.ts"
+    },
+    {
+      "role": "elicit",
+      "strategies": [
+        "TagInput",
+        "InlineDetailStrategy"
+      ],
+      "file": "core/src/schemas/generated/seam-definitions.ts"
+    },
+    {
+      "role": "layout",
+      "strategies": [
+        "LocalMatchesPanel"
+      ],
+      "file": "core/src/schemas/generated/seam-definitions.ts"
+    }
+  ],
+  "journeys": [
+    {
+      "id": "capture-and-edit",
+      "version": 1,
+      "intent": "capture a note and edit its properties",
+      "status": "ready",
+      "steps": 0,
+      "file": "optimize/src/journeys.ts"
+    },
+    {
+      "id": "capture-and-edit-keyboard",
+      "version": 1,
+      "intent": "capture a note and edit its properties using keyboard only",
+      "status": "ready",
+      "steps": 0,
+      "file": "optimize/src/journeys.ts"
+    },
+    {
+      "id": "capture-and-edit-palette",
+      "version": 1,
+      "intent": "capture a note and edit its properties through command palettes",
+      "status": "ready",
+      "steps": 0,
+      "file": "optimize/src/journeys.ts"
+    },
+    {
+      "id": "publish-gate",
+      "version": 1,
+      "intent": "verify publish gate requires confirmation for private notes",
+      "status": "ready",
+      "steps": 0,
+      "file": "optimize/src/journeys.ts"
+    },
+    {
+      "id": "ontology-conflict",
+      "version": 1,
+      "intent": "verify ontology conflict detection",
+      "status": "ready",
+      "steps": 0,
+      "file": "optimize/src/journeys.ts"
+    },
+    {
+      "id": "golden-path",
+      "version": 1,
+      "intent": "first-time user writes a request and an offer note, sees a relevant explained match",
+      "status": "ready",
+      "steps": 0,
+      "file": "optimize/src/journeys.ts"
+    }
+  ],
+  "strategies": [
+    {
+      "id": "quick-capture",
+      "seam": "capture",
+      "component": "QuickCapture",
+      "file": "ui/src/components/dashboard/QuickCapture.tsx"
+    },
+    {
+      "id": "property-form",
+      "seam": "capture",
+      "component": "PropertyForm",
+      "file": "ui/src/components/editor/PropertyForm.tsx"
+    },
+    {
+      "id": "describe-it-composer",
+      "seam": "capture",
+      "component": "DescribeItComposer",
+      "file": "ui/src/components/editor/DescribeItComposer.tsx"
+    },
+    {
+      "id": "template-selector",
+      "seam": "capture",
+      "component": "TemplateSelector",
+      "file": "ui/src/components/editor/TemplateSelector.tsx"
+    },
+    {
+      "id": "tag-input",
+      "seam": "elicit",
+      "component": "TagInput",
+      "file": "ui/src/components/editor/TagInput.tsx"
+    },
+    {
+      "id": "inline-detail",
+      "seam": "elicit",
+      "component": "InlineDetailStrategy",
+      "file": "ui/src/strategies/InlineDetailStrategy.tsx"
+    },
+    {
+      "id": "local-matches-panel",
+      "seam": "layout",
+      "component": "LocalMatchesPanel",
+      "file": "ui/src/components/assistant/LocalMatchesPanel.tsx"
+    }
+  ],
+  "components": [
+    {
+      "name": "App",
+      "file": "ui/src/App.tsx",
+      "exports": [
+        "App"
+      ]
+    },
+    {
+      "name": "AgentCursor",
+      "file": "ui/src/components/AgentCursor.tsx",
+      "exports": [
+        "AgentCursor"
+      ]
+    },
+    {
+      "name": "AppShell",
+      "file": "ui/src/components/AppShell.tsx",
+      "exports": [
+        "AppShell"
+      ]
+    },
+    {
+      "name": "MainView",
+      "file": "ui/src/components/MainView.tsx",
+      "exports": [
+        "MainView"
+      ]
+    },
+    {
+      "name": "StrategyResolver",
+      "file": "ui/src/components/StrategyResolver.tsx",
+      "exports": [
+        "StrategyResolver",
+        "SEAM_ROLES"
+      ]
+    },
+    {
+      "name": "AgentStatus",
+      "file": "ui/src/components/agent/AgentStatus.tsx",
+      "exports": [
+        "AgentStatus"
+      ]
+    },
+    {
+      "name": "AgentStatusIndicator",
+      "file": "ui/src/components/agent/AgentStatusIndicator.tsx",
+      "exports": [
+        "AgentStatusIndicator"
+      ]
+    },
+    {
+      "name": "LocalMatchesPanel",
+      "file": "ui/src/components/assistant/LocalMatchesPanel.tsx",
+      "exports": [
+        "LocalMatchesPanel"
+      ]
+    },
+    {
+      "name": "ChatPanel",
+      "file": "ui/src/components/chat/ChatPanel.tsx",
+      "exports": [
+        "ChatPanel"
+      ]
+    },
+    {
+      "name": "ChatWindow",
+      "file": "ui/src/components/chat/ChatWindow.tsx",
+      "exports": [
+        "ChatWindow"
+      ]
+    },
+    {
+      "name": "ContactList",
+      "file": "ui/src/components/chat/ContactList.tsx",
+      "exports": [
+        "ContactList"
+      ]
+    },
+    {
+      "name": "CommandPalette",
+      "file": "ui/src/components/command/CommandPalette.tsx",
+      "exports": [
+        "CommandPalette"
+      ]
+    },
+    {
+      "name": "NotePreview",
+      "file": "ui/src/components/command/NotePreview.tsx",
+      "exports": [
+        "NotePreview"
+      ]
+    },
+    {
+      "name": "ConfigSync",
+      "file": "ui/src/components/config/ConfigSync.tsx",
+      "exports": [
+        "ConfigSync"
+      ]
+    },
+    {
+      "name": "AutomationsView",
+      "file": "ui/src/components/dashboard/AutomationsView.tsx",
+      "exports": [
+        "AutomationsView"
+      ]
+    },
+    {
+      "name": "QuickCapture",
+      "file": "ui/src/components/dashboard/QuickCapture.tsx",
+      "exports": [
+        "QuickCapture"
+      ]
+    },
+    {
+      "name": "DescribeItComposer",
+      "file": "ui/src/components/editor/DescribeItComposer.tsx",
+      "exports": [
+        "DescribeItComposer"
+      ]
+    },
+    {
+      "name": "EditorBubbleMenu",
+      "file": "ui/src/components/editor/EditorBubbleMenu.tsx",
+      "exports": [
+        "EditorBubbleMenu"
+      ]
+    },
+    {
+      "name": "EditorContent",
+      "file": "ui/src/components/editor/EditorContent.tsx",
+      "exports": [
+        "EditorContent"
+      ]
+    },
+    {
+      "name": "EditorControls",
+      "file": "ui/src/components/editor/EditorControls.tsx",
+      "exports": [
+        "EditorControls"
+      ]
+    },
+    {
+      "name": "EditorHeader",
+      "file": "ui/src/components/editor/EditorHeader.tsx",
+      "exports": [
+        "EditorHeader"
+      ]
+    },
+    {
+      "name": "EditorManager",
+      "file": "ui/src/components/editor/EditorManager.tsx",
+      "exports": [
+        "EditorManager"
+      ]
+    },
+    {
+      "name": "EditorModals",
+      "file": "ui/src/components/editor/EditorModals.tsx",
+      "exports": [
+        "EditorModals"
+      ]
+    },
+    {
+      "name": "EditorStatusBar",
+      "file": "ui/src/components/editor/EditorStatusBar.tsx",
+      "exports": [
+        "EditorStatusBar"
+      ]
+    },
+    {
+      "name": "FormatMenu",
+      "file": "ui/src/components/editor/FormatMenu.tsx",
+      "exports": [
+        "FormatMenu"
+      ]
+    },
+    {
+      "name": "HybridEditor",
+      "file": "ui/src/components/editor/HybridEditor.tsx",
+      "exports": [
+        "HybridEditor"
+      ]
+    },
+    {
+      "name": "PropertyChip",
+      "file": "ui/src/components/editor/PropertyChip.tsx",
+      "exports": [
+        "PropertyChip"
+      ]
+    },
+    {
+      "name": "PropertyEditor",
+      "file": "ui/src/components/editor/PropertyEditor.tsx",
+      "exports": [
+        "PropertyEditor"
+      ]
+    },
+    {
+      "name": "PublishErrorBanner",
+      "file": "ui/src/components/editor/PublishErrorBanner.tsx",
+      "exports": [
+        "PublishErrorBanner"
+      ]
+    },
+    {
+      "name": "SaveState",
+      "file": "ui/src/components/editor/SaveState.tsx",
+      "exports": [
+        "SaveState"
+      ]
+    },
+    {
+      "name": "SaveTemplateModal",
+      "file": "ui/src/components/editor/SaveTemplateModal.tsx",
+      "exports": [
+        "SaveTemplateModal"
+      ]
+    },
+    {
+      "name": "SuggestionList",
+      "file": "ui/src/components/editor/SuggestionList.tsx",
+      "exports": [
+        "SuggestionList"
+      ]
+    },
+    {
+      "name": "TagInput",
+      "file": "ui/src/components/editor/TagInput.tsx",
+      "exports": [
+        "TagInput"
+      ]
+    },
+    {
+      "name": "TemplateSelector",
+      "file": "ui/src/components/editor/TemplateSelector.tsx",
+      "exports": [
+        "TemplateSelector"
+      ]
+    },
+    {
+      "name": "TiptapEditor",
+      "file": "ui/src/components/editor/TiptapEditor.tsx",
+      "exports": [
+        "TiptapEditor"
+      ]
+    },
+    {
+      "name": "LanguageSelector",
+      "file": "ui/src/components/i18n/LanguageSelector.tsx",
+      "exports": [
+        "LanguageSelector"
+      ]
+    },
+    {
+      "name": "MatchItem",
+      "file": "ui/src/components/items/MatchItem.tsx",
+      "exports": [
+        "MatchItem"
+      ]
+    },
+    {
+      "name": "BrandMark",
+      "file": "ui/src/components/layout/BrandMark.tsx",
+      "exports": [
+        "BrandMark"
+      ]
+    },
+    {
+      "name": "ConnectionStatus",
+      "file": "ui/src/components/layout/ConnectionStatus.tsx",
+      "exports": [
+        "ConnectionStatus"
+      ]
+    },
+    {
+      "name": "ConnectivityBanner",
+      "file": "ui/src/components/layout/ConnectivityBanner.tsx",
+      "exports": [
+        "ConnectivityBanner"
+      ]
+    },
+    {
+      "name": "DegradedModeBanner",
+      "file": "ui/src/components/layout/DegradedModeBanner.tsx",
+      "exports": [
+        "DegradedModeBanner"
+      ]
+    },
+    {
+      "name": "ExtractionStatusBadge",
+      "file": "ui/src/components/layout/ExtractionStatusBadge.tsx",
+      "exports": [
+        "ExtractionStatusBadge",
+        "ExtractionStatusIndicator"
+      ]
+    },
+    {
+      "name": "Header",
+      "file": "ui/src/components/layout/Header.tsx",
+      "exports": [
+        "Header"
+      ]
+    },
+    {
+      "name": "NavButton",
+      "file": "ui/src/components/layout/NavButton.tsx",
+      "exports": [
+        "NavButton"
+      ]
+    },
+    {
+      "name": "MapPickerModal",
+      "file": "ui/src/components/map/MapPickerModal.tsx",
+      "exports": [
+        "MapPickerModal"
+      ]
+    },
+    {
+      "name": "MatchItem",
+      "file": "ui/src/components/match/MatchItem.tsx",
+      "exports": [
+        "MatchItem"
+      ]
+    },
+    {
+      "name": "MatchList",
+      "file": "ui/src/components/match/MatchList.tsx",
+      "exports": [
+        "MatchList"
+      ]
+    },
+    {
+      "name": "MatchReplies",
+      "file": "ui/src/components/match/MatchReplies.tsx",
+      "exports": [
+        "MatchReplies"
+      ]
+    },
+    {
+      "name": "MetaphorRenderer",
+      "file": "ui/src/components/metaphor/MetaphorRenderer.tsx",
+      "exports": [
+        "MetaphorRenderer"
+      ]
+    },
+    {
+      "name": "HelpDialog",
+      "file": "ui/src/components/modals/HelpDialog.tsx",
+      "exports": [
+        "HelpDialog"
+      ]
+    },
+    {
+      "name": "LmConsentModal",
+      "file": "ui/src/components/modals/LmConsentModal.tsx",
+      "exports": [
+        "LmConsentModal"
+      ]
+    },
+    {
+      "name": "PrivacyConfirmModal",
+      "file": "ui/src/components/modals/PrivacyConfirmModal.tsx",
+      "exports": [
+        "PrivacyConfirmModal"
+      ]
+    },
+    {
+      "name": "ConnectIdentityPrompt",
+      "file": "ui/src/components/network/ConnectIdentityPrompt.tsx",
+      "exports": [
+        "ConnectIdentityPrompt"
+      ]
+    },
+    {
+      "name": "NetworkFeedHeader",
+      "file": "ui/src/components/network/NetworkFeedHeader.tsx",
+      "exports": [
+        "NetworkFeedHeader"
+      ]
+    },
+    {
+      "name": "NetworkFeedList",
+      "file": "ui/src/components/network/NetworkFeedList.tsx",
+      "exports": [
+        "NetworkFeedList"
+      ]
+    },
+    {
+      "name": "NostrEventCard",
+      "file": "ui/src/components/network/NostrEventCard.tsx",
+      "exports": [
+        "NostrEventCard"
+      ]
+    },
+    {
+      "name": "ProfileHeader",
+      "file": "ui/src/components/network/ProfileHeader.tsx",
+      "exports": [
+        "ProfileHeader"
+      ]
+    },
+    {
+      "name": "RelayStatusChip",
+      "file": "ui/src/components/network/RelayStatusChip.tsx",
+      "exports": [
+        "RelayStatusChip"
+      ]
+    },
+    {
+      "name": "SuggestedMatchItem",
+      "file": "ui/src/components/network/SuggestedMatchItem.tsx",
+      "exports": [
+        "SuggestedMatchItem"
+      ]
+    },
+    {
+      "name": "SuggestedMatches",
+      "file": "ui/src/components/network/SuggestedMatches.tsx",
+      "exports": [
+        "SuggestedMatches"
+      ]
+    },
+    {
+      "name": "NextStepCard",
+      "file": "ui/src/components/next-steps/NextStepCard.tsx",
+      "exports": [
+        "NextStepCard"
+      ]
+    },
+    {
+      "name": "NextStepStrip",
+      "file": "ui/src/components/next-steps/NextStepStrip.tsx",
+      "exports": [
+        "NextStepStrip"
+      ]
+    },
+    {
+      "name": "NextStepsDrawer",
+      "file": "ui/src/components/next-steps/NextStepsDrawer.tsx",
+      "exports": [
+        "NextStepsDrawer"
+      ]
+    },
+    {
+      "name": "NoteContextRail",
+      "file": "ui/src/components/note/NoteContextRail.tsx",
+      "exports": [
+        "NoteContextRail"
+      ]
+    },
+    {
+      "name": "SkillExecutionIndicator",
+      "file": "ui/src/components/notes/SkillExecutionIndicator.tsx",
+      "exports": [
+        "SkillExecutionIndicator"
+      ]
+    },
+    {
+      "name": "AttributeEditorModal",
+      "file": "ui/src/components/ontology/AttributeEditorModal.tsx",
+      "exports": [
+        "AttributeEditorModal"
+      ]
+    },
+    {
+      "name": "AttributeList",
+      "file": "ui/src/components/ontology/AttributeList.tsx",
+      "exports": [
+        "AttributeList"
+      ]
+    },
+    {
+      "name": "ConflictGroup",
+      "file": "ui/src/components/ontology/ConflictGroup.tsx",
+      "exports": [
+        "ConflictGroup"
+      ]
+    },
+    {
+      "name": "OntologyAliasLinkModal",
+      "file": "ui/src/components/ontology/OntologyAliasLinkModal.tsx",
+      "exports": [
+        "OntologyAliasLinkModal"
+      ]
+    },
+    {
+      "name": "OntologyConflicts",
+      "file": "ui/src/components/ontology/OntologyConflicts.tsx",
+      "exports": [
+        "OntologyConflicts"
+      ]
+    },
+    {
+      "name": "OntologyNodeItem",
+      "file": "ui/src/components/ontology/OntologyNodeItem.tsx",
+      "exports": [
+        "OntologyNodeItem"
+      ]
+    },
+    {
+      "name": "OntologySuggestionItem",
+      "file": "ui/src/components/ontology/OntologySuggestionItem.tsx",
+      "exports": [
+        "OntologySuggestionItem"
+      ]
+    },
+    {
+      "name": "ArrangeMenu",
+      "file": "ui/src/components/patterns/ArrangeMenu.tsx",
+      "exports": [
+        "ArrangeMenu"
+      ]
+    },
+    {
+      "name": "FeedRow",
+      "file": "ui/src/components/patterns/FeedRow.tsx",
+      "exports": [
+        "FeedRow"
+      ]
+    },
+    {
+      "name": "IdentityStrip",
+      "file": "ui/src/components/patterns/IdentityStrip.tsx",
+      "exports": [
+        "IdentityStrip"
+      ]
+    },
+    {
+      "name": "PageSurface",
+      "file": "ui/src/components/patterns/PageSurface.tsx",
+      "exports": [
+        "PageSurface",
+        "PageTitle",
+        "PageMeta",
+        "DetailChips",
+        "PageHeader"
+      ]
+    },
+    {
+      "name": "SettingsDirectory",
+      "file": "ui/src/components/patterns/SettingsDirectory.tsx",
+      "exports": [
+        "SettingsDirectory"
+      ]
+    },
+    {
+      "name": "SettingsSection",
+      "file": "ui/src/components/patterns/SettingsSection.tsx",
+      "exports": [
+        "SettingsSection"
+      ]
+    },
+    {
+      "name": "EnhancedPropertyValueInput",
+      "file": "ui/src/components/properties/EnhancedPropertyValueInput.tsx",
+      "exports": [
+        "EnhancedPropertyValueInput"
+      ]
+    },
+    {
+      "name": "NeedSelector",
+      "file": "ui/src/components/properties/NicheSelectors.tsx",
+      "exports": [
+        "NeedSelector",
+        "IdentitySelector",
+        "EmotionSelector",
+        "LocationSelector",
+        "TemplateSelector",
+        "TimeRangeSelector",
+        "MarkdownSelector"
+      ]
+    },
+    {
+      "name": "OperatorDropdown",
+      "file": "ui/src/components/properties/OperatorDropdown.tsx",
+      "exports": [
+        "OperatorDropdown"
+      ]
+    },
+    {
+      "name": "PropertyBlock",
+      "file": "ui/src/components/properties/PropertyBlock.tsx",
+      "exports": [
+        "PropertyBlock"
+      ]
+    },
+    {
+      "name": "UnifiedSelector",
+      "file": "ui/src/components/properties/UnifiedSelector.tsx",
+      "exports": [
+        "UnifiedSelector"
+      ]
+    },
+    {
+      "name": "CurrencyWidget",
+      "file": "ui/src/components/properties/widgets/CurrencyWidget.tsx",
+      "exports": [
+        "CurrencyWidget"
+      ]
+    },
+    {
+      "name": "DateWidget",
+      "file": "ui/src/components/properties/widgets/DateWidget.tsx",
+      "exports": [
+        "DateWidget"
+      ]
+    },
+    {
+      "name": "EnumWidget",
+      "file": "ui/src/components/properties/widgets/EnumWidget.tsx",
+      "exports": [
+        "EnumWidget"
+      ]
+    },
+    {
+      "name": "LocationWidget",
+      "file": "ui/src/components/properties/widgets/LocationWidget.tsx",
+      "exports": [
+        "LocationWidget"
+      ]
+    },
+    {
+      "name": "TextWidget",
+      "file": "ui/src/components/properties/widgets/TextWidget.tsx",
+      "exports": [
+        "TextWidget"
+      ]
+    },
+    {
+      "name": "AttributeWidget",
+      "file": "ui/src/components/properties/widgets/registry.tsx",
+      "exports": [
+        "AttributeWidget"
+      ]
+    },
+    {
+      "name": "AITab",
+      "file": "ui/src/components/settings/AITab.tsx",
+      "exports": [
+        "AITab"
+      ]
+    },
+    {
+      "name": "AccessibilityTab",
+      "file": "ui/src/components/settings/AccessibilityTab.tsx",
+      "exports": [
+        "AccessibilityTab"
+      ]
+    },
+    {
+      "name": "AgentTab",
+      "file": "ui/src/components/settings/AgentTab.tsx",
+      "exports": [
+        "AgentTab"
+      ]
+    },
+    {
+      "name": "AppearanceTab",
+      "file": "ui/src/components/settings/AppearanceTab.tsx",
+      "exports": [
+        "AppearanceTab"
+      ]
+    },
+    {
+      "name": "AutoBackupSection",
+      "file": "ui/src/components/settings/AutoBackupSection.tsx",
+      "exports": [
+        "AutoBackupSection"
+      ]
+    },
+    {
+      "name": "AutomationTab",
+      "file": "ui/src/components/settings/AutomationTab.tsx",
+      "exports": [
+        "AutomationTab"
+      ]
+    },
+    {
+      "name": "CapabilitiesPanel",
+      "file": "ui/src/components/settings/CapabilitiesPanel.tsx",
+      "exports": [
+        "CapabilitiesPanel"
+      ]
+    },
+    {
+      "name": "DataTab",
+      "file": "ui/src/components/settings/DataTab.tsx",
+      "exports": [
+        "DataTab"
+      ]
+    },
+    {
+      "name": "ImportExportSection",
+      "file": "ui/src/components/settings/ImportExportSection.tsx",
+      "exports": [
+        "ImportExportSection"
+      ]
+    },
+    {
+      "name": "LabelsTab",
+      "file": "ui/src/components/settings/LabelsTab.tsx",
+      "exports": [
+        "LabelsTab"
+      ]
+    },
+    {
+      "name": "LanguageTab",
+      "file": "ui/src/components/settings/LanguageTab.tsx",
+      "exports": [
+        "LanguageTab"
+      ]
+    },
+    {
+      "name": "MatchDigestTab",
+      "file": "ui/src/components/settings/MatchDigestTab.tsx",
+      "exports": [
+        "MatchDigestTab"
+      ]
+    },
+    {
+      "name": "MetricsTab",
+      "file": "ui/src/components/settings/MetricsTab.tsx",
+      "exports": [
+        "MetricsTab"
+      ]
+    },
+    {
+      "name": "NetworkManagementSection",
+      "file": "ui/src/components/settings/NetworkManagementSection.tsx",
+      "exports": [
+        "NetworkManagementSection"
+      ]
+    },
+    {
+      "name": "NostrTab",
+      "file": "ui/src/components/settings/NostrTab.tsx",
+      "exports": [
+        "NostrTab"
+      ]
+    },
+    {
+      "name": "OntologyTab",
+      "file": "ui/src/components/settings/OntologyTab.tsx",
+      "exports": [
+        "OntologyTab"
+      ]
+    },
+    {
+      "name": "ProfileSettings",
+      "file": "ui/src/components/settings/ProfileSettings.tsx",
+      "exports": [
+        "ProfileSettings"
+      ]
+    },
+    {
+      "name": "RelayDiscoverySection",
+      "file": "ui/src/components/settings/RelayDiscoverySection.tsx",
+      "exports": [
+        "RelayDiscoverySection"
+      ]
+    },
+    {
+      "name": "RelayManagementSection",
+      "file": "ui/src/components/settings/RelayManagementSection.tsx",
+      "exports": [
+        "RelayManagementSection"
+      ]
+    },
+    {
+      "name": "RevisionsTab",
+      "file": "ui/src/components/settings/RevisionsTab.tsx",
+      "exports": [
+        "RevisionsTab"
+      ]
+    },
+    {
+      "name": "ShortcutsTab",
+      "file": "ui/src/components/settings/ShortcutsTab.tsx",
+      "exports": [
+        "ShortcutsTab"
+      ]
+    },
+    {
+      "name": "SyncTab",
+      "file": "ui/src/components/settings/SyncTab.tsx",
+      "exports": [
+        "SyncTab"
+      ]
+    },
+    {
+      "name": "NoteGridItem",
+      "file": "ui/src/components/sidebar/NoteGridItem.tsx",
+      "exports": [
+        "NoteGridItem"
+      ]
+    },
+    {
+      "name": "NoteHistoryRail",
+      "file": "ui/src/components/sidebar/NoteHistoryRail.tsx",
+      "exports": [
+        "NoteHistoryRail"
+      ]
+    },
+    {
+      "name": "NoteListItem",
+      "file": "ui/src/components/sidebar/NoteListItem.tsx",
+      "exports": [
+        "NoteListItem"
+      ]
+    },
+    {
+      "name": "SkillApprovalDialog",
+      "file": "ui/src/components/skills/SkillApprovalDialog.tsx",
+      "exports": [
+        "SkillApprovalDialog"
+      ]
+    },
+    {
+      "name": "SkillManagementView",
+      "file": "ui/src/components/skills/SkillManagementView.tsx",
+      "exports": [
+        "SkillManagementView"
+      ]
+    },
+    {
+      "name": "Avatar",
+      "file": "ui/src/components/ui/Avatar.tsx",
+      "exports": [
+        "Avatar"
+      ]
+    },
+    {
+      "name": "Badge",
+      "file": "ui/src/components/ui/Badge.tsx",
+      "exports": [
+        "Badge"
+      ]
+    },
+    {
+      "name": "Button",
+      "file": "ui/src/components/ui/Button.tsx",
+      "exports": [
+        "Button",
+        "IconButton"
+      ]
+    },
+    {
+      "name": "Card",
+      "file": "ui/src/components/ui/Card.tsx",
+      "exports": [
+        "Card"
+      ]
+    },
+    {
+      "name": "CollapsibleSection",
+      "file": "ui/src/components/ui/CollapsibleSection.tsx",
+      "exports": [
+        "CollapsibleSection"
+      ]
+    },
+    {
+      "name": "ConfirmationModal",
+      "file": "ui/src/components/ui/ConfirmationModal.tsx",
+      "exports": [
+        "ConfirmationModal"
+      ]
+    },
+    {
+      "name": "CopyableField",
+      "file": "ui/src/components/ui/CopyableField.tsx",
+      "exports": [
+        "CopyableField"
+      ]
+    },
+    {
+      "name": "DropdownMenu",
+      "file": "ui/src/components/ui/DropdownMenu.tsx",
+      "exports": [
+        "DropdownMenu"
+      ]
+    },
+    {
+      "name": "EmptyState",
+      "file": "ui/src/components/ui/EmptyState.tsx",
+      "exports": [
+        "EmptyState",
+        "EmptyStateIllustration",
+        "NotesEmptyIllustration",
+        "SearchEmptyIllustration",
+        "NetworkEmptyIllustration",
+        "TrashEmptyIllustration",
+        "EmptyStatePreset"
+      ]
+    },
+    {
+      "name": "ErrorBoundary",
+      "file": "ui/src/components/ui/ErrorBoundary.tsx",
+      "exports": [
+        "ErrorBoundary"
+      ]
+    },
+    {
+      "name": "ErrorDisplay",
+      "file": "ui/src/components/ui/ErrorHandler.tsx",
+      "exports": [
+        "ErrorDisplay"
+      ]
+    },
+    {
+      "name": "ExtractionStatus",
+      "file": "ui/src/components/ui/ExtractionStatus.tsx",
+      "exports": [
+        "ExtractionStatus",
+        "ExtractionProviderBadge"
+      ]
+    },
+    {
+      "name": "FeedbackWidget",
+      "file": "ui/src/components/ui/FeedbackWidget.tsx",
+      "exports": [
+        "FeedbackWidget"
+      ]
+    },
+    {
+      "name": "BaseIcon",
+      "file": "ui/src/components/ui/Icon.tsx",
+      "exports": [
+        "BaseIcon",
+        "OutlineIcon",
+        "SolidIcon"
+      ]
+    },
+    {
+      "name": "Input",
+      "file": "ui/src/components/ui/Input.tsx",
+      "exports": [
+        "Input"
+      ]
+    },
+    {
+      "name": "InputModal",
+      "file": "ui/src/components/ui/InputModal.tsx",
+      "exports": [
+        "InputModal"
+      ]
+    },
+    {
+      "name": "Modal",
+      "file": "ui/src/components/ui/Modal.tsx",
+      "exports": [
+        "Modal"
+      ]
+    },
+    {
+      "name": "Tooltip",
+      "file": "ui/src/components/ui/Overlay.tsx",
+      "exports": [
+        "Tooltip"
+      ]
+    },
+    {
+      "name": "PendingConfirmationsModal",
+      "file": "ui/src/components/ui/PendingConfirmationsModal.tsx",
+      "exports": [
+        "PendingConfirmationsModal"
+      ]
+    },
+    {
+      "name": "AlertTriangleIcon",
+      "file": "ui/src/components/ui/Primitives.tsx",
+      "exports": [
+        "AlertTriangleIcon",
+        "WifiOffIcon",
+        "ServerIcon",
+        "ZapIcon",
+        "DatabaseIcon",
+        "HistoryIcon"
+      ]
+    },
+    {
+      "name": "PaneResizer",
+      "file": "ui/src/components/ui/ResizablePane.tsx",
+      "exports": [
+        "PaneResizer"
+      ]
+    },
+    {
+      "name": "Select",
+      "file": "ui/src/components/ui/Select.tsx",
+      "exports": [
+        "Select"
+      ]
+    },
+    {
+      "name": "Skeleton",
+      "file": "ui/src/components/ui/Skeleton.tsx",
+      "exports": [
+        "Skeleton",
+        "NoteItemSkeleton",
+        "NetworkEventSkeleton",
+        "EditorSkeleton",
+        "SidebarSkeleton",
+        "MatchesPanelSkeleton"
+      ]
+    },
+    {
+      "name": "SkipLink",
+      "file": "ui/src/components/ui/SkipLink.tsx",
+      "exports": [
+        "SkipLink",
+        "SkipLinks"
+      ]
+    },
+    {
+      "name": "StatItem",
+      "file": "ui/src/components/ui/StatItem.tsx",
+      "exports": [
+        "StatItem"
+      ]
+    },
+    {
+      "name": "Textarea",
+      "file": "ui/src/components/ui/Textarea.tsx",
+      "exports": [
+        "Textarea"
+      ]
+    },
+    {
+      "name": "TimePickerModal",
+      "file": "ui/src/components/ui/TimePickerModal.tsx",
+      "exports": [
+        "TimePickerModal"
+      ]
+    },
+    {
+      "name": "Toast",
+      "file": "ui/src/components/ui/Toast.tsx",
+      "exports": [
+        "Toast",
+        "ToastContainer"
+      ]
+    },
+    {
+      "name": "Toggle",
+      "file": "ui/src/components/ui/Toggle.tsx",
+      "exports": [
+        "Toggle"
+      ]
+    },
+    {
+      "name": "NoteIcon",
+      "file": "ui/src/components/ui/icons.tsx",
+      "exports": [
+        "NoteIcon",
+        "LightBulbIcon",
+        "ArrowUpTrayIcon",
+        "ResponseIcon",
+        "GlobeIcon",
+        "SignalIcon",
+        "ShieldIcon",
+        "QuestionMarkCircleIcon",
+        "EllipsisVerticalIcon",
+        "MagicWandIcon",
+        "ThumbsUpIcon",
+        "ThumbsDownIcon",
+        "MessageIcon",
+        "ArrowPathIcon",
+        "PlayIcon",
+        "PauseIcon",
+        "HomeIcon",
+        "InboxIcon",
+        "BellIcon",
+        "CpuChipIcon",
+        "PinIcon",
+        "LockIcon",
+        "ChevronUpIcon",
+        "OntologyIcon",
+        "NetworkIcon",
+        "ChatIcon",
+        "SettingsIcon",
+        "CogIcon",
+        "BookOpenIcon",
+        "PlusIcon",
+        "TrashIcon",
+        "SparklesIcon",
+        "PaletteIcon",
+        "SunIcon",
+        "MoonIcon",
+        "MonitorIcon",
+        "MinimizeIcon",
+        "MaximizeIcon",
+        "LoadingSpinner",
+        "KeyIcon",
+        "UserPlusIcon",
+        "UserGroupIcon",
+        "WorldIcon",
+        "EditIcon",
+        "SendIcon",
+        "ArrowLeftIcon",
+        "ArrowRightIcon",
+        "ArrowUpIcon",
+        "ArrowDownIcon",
+        "ChevronDownIcon",
+        "ChevronRightIcon",
+        "ChevronLeftIcon",
+        "ToggleLeftIcon",
+        "ToggleRightIcon",
+        "MinusIcon",
+        "UsersIcon",
+        "HeartIcon",
+        "FileTextIcon",
+        "CalendarIcon",
+        "MenuIcon",
+        "GitBranchIcon",
+        "PlusCircleIcon",
+        "CodeBracketsIcon",
+        "CubeIcon",
+        "CubeTransparentIcon",
+        "TagIcon",
+        "DocumentDuplicateIcon",
+        "ClipboardIcon",
+        "XCircleIcon",
+        "CheckCircleIcon",
+        "InformationCircleIcon",
+        "ExclamationTriangleIcon",
+        "XMarkIcon",
+        "SearchIcon",
+        "MapIcon",
+        "MapPinIcon",
+        "FolderIcon",
+        "MergeIcon",
+        "CheckIcon",
+        "XIcon",
+        "PencilIcon",
+        "BoldIcon",
+        "ItalicIcon",
+        "StrikethroughIcon",
+        "Heading1Icon",
+        "Heading2Icon",
+        "Heading3Icon",
+        "ListUlIcon",
+        "ListOlIcon",
+        "QuoteIcon",
+        "CodeBlockIcon",
+        "LinkIcon",
+        "HorizontalRuleIcon",
+        "HelpIcon",
+        "SearchSparkleIcon",
+        "SidebarIcon",
+        "DownloadIcon",
+        "ClockIcon",
+        "CurrencyDollarIcon",
+        "BriefcaseIcon",
+        "BoltIcon",
+        "BrainIcon",
+        "ChartBarIcon",
+        "GridIcon",
+        "ColumnsIcon",
+        "ListIcon",
+        "ArrowUpDownIcon",
+        "QrCodeIcon",
+        "MicrophoneIcon",
+        "MoreHorizontalIcon",
+        "DatabaseIcon",
+        "WifiIcon",
+        "ZapIcon",
+        "AlertTriangleIcon",
+        "WifiOffIcon",
+        "HistoryIcon",
+        "ServerIcon"
+      ]
+    },
+    {
+      "name": "Chip",
+      "file": "ui/src/components/ui/kit.tsx",
+      "exports": [
+        "Chip",
+        "Segmented",
+        "Tabs",
+        "Toolbar",
+        "SectionHeader",
+        "ChoiceGrid",
+        "Kbd",
+        "Hint"
+      ]
+    },
+    {
+      "name": "MapView",
+      "file": "ui/src/components/views/MapView.tsx",
+      "exports": [
+        "MapView"
+      ]
+    },
+    {
+      "name": "NetworkView",
+      "file": "ui/src/components/views/NetworkView.tsx",
+      "exports": [
+        "NetworkView"
+      ]
+    },
+    {
+      "name": "NotesView",
+      "file": "ui/src/components/views/NotesView.tsx",
+      "exports": [
+        "NotesView"
+      ]
+    },
+    {
+      "name": "OntologyView",
+      "file": "ui/src/components/views/OntologyView.tsx",
+      "exports": [
+        "OntologyView"
+      ]
+    },
+    {
+      "name": "SettingsView",
+      "file": "ui/src/components/views/SettingsView.tsx",
+      "exports": [
+        "SettingsView"
+      ]
+    },
+    {
+      "name": "TimelineView",
+      "file": "ui/src/components/views/TimelineView.tsx",
+      "exports": [
+        "TimelineView"
+      ]
+    },
+    {
+      "name": "ActivityFeed",
+      "file": "ui/src/components/widgets/ActivityFeed.tsx",
+      "exports": [
+        "ActivityFeed"
+      ]
+    },
+    {
+      "name": "StatCard",
+      "file": "ui/src/components/widgets/StatCard.tsx",
+      "exports": [
+        "StatCard"
+      ]
+    },
+    {
+      "name": "DevBridge",
+      "file": "ui/src/dev/DevBridge.tsx",
+      "exports": [
+        "DevBridge"
+      ]
+    },
+    {
+      "name": "SkeletonRenderer",
+      "file": "ui/src/dev/uisg/SkeletonRenderer.tsx",
+      "exports": [
+        "SkeletonRenderer"
+      ]
+    },
+    {
+      "name": "ConditionalAutomationView",
+      "file": "ui/src/plugins/metaphor/ConditionalAutomationView.tsx",
+      "exports": [
+        "ConditionalAutomationView"
+      ]
+    },
+    {
+      "name": "METAPHOR_PLUGIN_MANIFEST",
+      "file": "ui/src/plugins/metaphor/MetaphorPlugin.tsx",
+      "exports": [
+        "METAPHOR_PLUGIN_MANIFEST",
+        "MetaphorPlugin"
+      ]
+    },
+    {
+      "name": "TestProviders",
+      "file": "ui/src/tests/utils/testProviders.tsx",
+      "exports": [
+        "TestProviders"
+      ]
+    }
+  ],
+  "taxonomy": [],
+  "goldenCases": [],
+  "loopRuns": []
+}

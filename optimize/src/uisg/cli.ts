@@ -49,7 +49,8 @@ Commands:
   to-journey <flowId> [--seed <file>] [--out <file>] [--conditions a,b] [--ready] [--emit-test [--force]]
   run <flowId> [same flags as to-journey]   Compile, emit the journey test if missing, run it
   skeleton [--write] [--check] [--json]      Emit the generated skeleton preview + preview journeys
-  generate [--surface <id>] [--all] [--dry-run] [--check] [--parity]  Generate surface component + test + props schema
+  generate [--surface <id>] [--all] [--dry-run] [--check] [--parity] [--changed]  Generate surface component + test + props schema
+  optimize [--changed] [--dry-run] [--json]   Run full pipeline: types, scan, generate, check
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
   matrix [--flows a,b] [--viewports v] [--themes t] [--profiles hand-built,generated] [--no-build]
                                             Run every flow at 2 themes x 2 viewports; record dimensions
@@ -214,7 +215,7 @@ function generateAll(flags: Map<string, string>): { files: number; manifests: nu
     return { files: files.length, manifests };
 }
 
-function main(): number {
+async function main(): Promise<number> {
     const [command, ...rest] = process.argv.slice(2);
     const { flags, positionals } = parseArgs(rest);
     if (!command || flags.has('help')) { console.log(USAGE); return command ? 0 : 1; }
@@ -376,6 +377,7 @@ function main(): number {
             const surfaceId = flags.get('surface');
             const all = flags.has('all');
             const dryRun = flags.has('dry-run');
+            const changed = flags.has('changed');
             
             if (surfaceId) {
                 const surface = graph.nodes.find(n => n.id === surfaceId && n.type === 'surface') as UisgSurface | undefined;
@@ -405,7 +407,28 @@ function main(): number {
             }
             
             if (all) {
-                const results = generateAllSurfaces(graph);
+                let targets = graph.nodes.filter(n => n.type === 'surface' && !n.seam && 
+                    (n.status === 'implemented' || n.status === 'partial' || n.status === 'planned')) as any[];
+                
+                if (changed) {
+                    const { checkAllParity } = await import('./codegen.js');
+                    const parityResults = checkAllParity(graph);
+                    const changedSurfaceIds = parityResults
+                        .filter(r => !r.deterministic)
+                        .map(r => r.surfaceId);
+                    targets = targets.filter(s => changedSurfaceIds.includes(s.id));
+                    console.log(`Changed surfaces: ${changedSurfaceIds.join(', ') || 'none'}`);
+                }
+                
+                const results = [];
+                for (const surface of targets) {
+                    try {
+                        const result = dryRun ? generateSurface(surface, graph, { dryRun: true }) : generateSurface(surface, graph);
+                        results.push(result);
+                    } catch (e) {
+                        console.error(`Failed to generate ${surface.id}: ${e}`);
+                    }
+                }
                 console.log(`Generated ${results.length} surface(s)`);
                 for (const r of results) {
                     console.log(`  ${r.path}`);
@@ -864,10 +887,167 @@ function main(): number {
             console.log('Generated componentMap.ts');
             return 0;
         }
+        case 'optimize': {
+            return runOptimizePipeline(flags);
+        }
         default:
             console.error(`Unknown command: ${command}\n${USAGE}`);
             return 1;
     }
 }
 
-process.exitCode = main();
+interface StageResult {
+    status: 'ok' | 'error';
+    durationMs: number;
+    error?: string;
+    surfaces?: number;
+    strategies?: number;
+    generated?: number;
+    totalTargets?: number;
+}
+
+interface PipelineResults {
+    timestamp: string;
+    stages: Record<string, StageResult>;
+    totalDurationMs: number;
+}
+
+async function runOptimizePipeline(flags: Map<string, string>): Promise<number> {
+    const dryRun = flags.has('dry-run');
+    const changed = flags.has('changed');
+    const json = flags.has('json');
+    
+    console.log('=== UISG Optimize Pipeline ===');
+    const startTime = Date.now();
+    
+    const results: PipelineResults = {
+        timestamp: new Date().toISOString(),
+        stages: {},
+        totalDurationMs: 0,
+    };
+    
+    // Stage 1: Types
+    console.log('\n[1/4] Generating types (seamProps + componentMap)...');
+    const typesStart = Date.now();
+    try {
+        writeSeamProps();
+        writeComponentMap();
+        results.stages.types = { status: 'ok', durationMs: Date.now() - typesStart };
+        console.log('  ✓ seamProps.ts');
+        console.log('  ✓ componentMap.ts');
+    } catch (e) {
+        results.stages.types = { status: 'error', error: String(e), durationMs: Date.now() - typesStart };
+        console.error('  ✗ Types generation failed:', e);
+        return 1;
+    }
+    
+    // Stage 2: Scan
+    console.log('\n[2/4] Scanning codebase...');
+    const scanStart = Date.now();
+    try {
+        const scanResult = scanAll();
+        if (!dryRun) {
+            const { writeFileSync } = await import('node:fs');
+            writeFileSync(resolve(ROOT, 'doc/uisg/scan.json'), JSON.stringify(scanResult, null, 2));
+        }
+        results.stages.scan = { 
+            status: 'ok', 
+            durationMs: Date.now() - scanStart,
+            surfaces: scanResult.surfaces.length,
+            strategies: scanResult.strategies.length,
+        };
+        console.log(`  ✓ ${scanResult.surfaces.length} surfaces, ${scanResult.strategies.length} strategies`);
+    } catch (e) {
+        results.stages.scan = { status: 'error', error: String(e), durationMs: Date.now() - scanStart };
+        console.error('  ✗ Scan failed:', e);
+        return 1;
+    }
+    
+    // Stage 3: Generate
+    console.log('\n[3/4] Generating surfaces...');
+    const genStart = Date.now();
+    try {
+        const graph = loadGraph(flags);
+        const surfaces = graph.nodes.filter(n => n.type === 'surface' && !n.seam) as any[];
+        
+        let targets = surfaces.filter(s => s.status === 'implemented' || s.status === 'partial' || s.status === 'planned');
+        
+        if (changed) {
+            // Only generate surfaces where source has changed since last generation
+            const { checkAllParity } = await import('./codegen.js');
+            const parityResults = checkAllParity(graph);
+            const changedSurfaceIds = parityResults
+                .filter(r => !r.deterministic)
+                .map(r => r.surfaceId);
+            targets = targets.filter(s => changedSurfaceIds.includes(s.id));
+            console.log(`  Changed surfaces: ${changedSurfaceIds.join(', ') || 'none'}`);
+        }
+        
+        let generated = 0;
+        if (!dryRun) {
+            for (const surface of targets) {
+                try {
+                    generateSurface(surface, graph);
+                    generated++;
+                } catch (e) {
+                    console.error(`  ✗ ${surface.id}: ${e}`);
+                }
+            }
+        } else {
+            generated = targets.length;
+            console.log(`  Would generate ${targets.length} surface(s)`);
+        }
+        
+        results.stages.generate = { 
+            status: 'ok', 
+            durationMs: Date.now() - genStart,
+            generated,
+            totalTargets: targets.length,
+        };
+        console.log(`  ✓ ${generated} surface(s) generated`);
+    } catch (e) {
+        results.stages.generate = { status: 'error', error: String(e), durationMs: Date.now() - genStart };
+        console.error('  ✗ Generation failed:', e);
+        return 1;
+    }
+    
+    // Stage 4: Check
+    console.log('\n[4/4] Running verification checks...');
+    const checkStart = Date.now();
+    try {
+        const { spawnSync } = await import('node:child_process');
+        const checkResult = spawnSync('pnpm', ['uisg:check'], { cwd: ROOT, stdio: 'inherit', encoding: 'utf8' });
+        if (checkResult.status !== 0) {
+            throw new Error(`uisg:check failed with exit code ${checkResult.status}`);
+        }
+        results.stages.check = { status: 'ok', durationMs: Date.now() - checkStart };
+        console.log('  ✓ uisg:check passed');
+    } catch (e) {
+        results.stages.check = { status: 'error', error: String(e), durationMs: Date.now() - checkStart };
+        console.error('  ✗ Check failed:', e);
+        return 1;
+    }
+    
+    const totalDuration = Date.now() - startTime;
+    results.totalDurationMs = totalDuration;
+    
+    if (!dryRun) {
+        const { writeFileSync } = await import('node:fs');
+        writeFileSync(resolve(ROOT, 'doc/uisg/optimize-summary.json'), JSON.stringify(results, null, 2));
+        console.log('\n📄 Summary written to doc/uisg/optimize-summary.json');
+    }
+    
+    if (json) {
+        console.log('\n' + JSON.stringify(results, null, 2));
+    }
+    
+    console.log(`\n✅ Pipeline completed in ${totalDuration}ms`);
+    return 0;
+}
+
+main().then(code => {
+    process.exitCode = code;
+}).catch(e => {
+    console.error(`Fatal: ${e instanceof Error ? e.message : String(e)}`);
+    process.exitCode = 1;
+});

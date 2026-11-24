@@ -1,0 +1,26 @@
+{
+  "timestamp": "2026-11-24T17:56:41.225Z",
+  "stages": {
+    "types": {
+      "status": "ok",
+      "durationMs": 13
+    },
+    "scan": {
+      "status": "ok",
+      "durationMs": 15,
+      "surfaces": 29,
+      "strategies": 7
+    },
+    "generate": {
+      "status": "ok",
+      "durationMs": 27,
+      "generated": 44,
+      "totalTargets": 54
+    },
+    "check": {
+      "status": "ok",
+      "durationMs": 2460
+    }
+  },
+  "totalDurationMs": 2519
+}
