@@ -34,6 +34,8 @@ import {
     skeletonOutputs, skeletonToJourney, type UisgSkeleton,
 } from './skeleton.js';
 import { simulateFlow } from './simulate.js';
+import { emitSeamProps, writeSeamProps } from './seamProps.js';
+import { emitComponentMap, writeComponentMap } from './componentMap.js';
 import type { UisgGraph } from './types.js';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
@@ -63,10 +65,13 @@ Commands:
                                             Compare bundles, update lifecycle, record decision
   canonicalize [--graph <file>] [--check-roundtrip]  Canonicalize graph; verify round-trip
   regressions [--graph <file>]              Apply seeded regressions; every expected finding must fire
-  check [--graph <file>]                    Gate: validate, analyze --strict, sync, regressions, round-trip
+  check [--graph <file>]                    Gate: validate, analyze --strict, sync, regressions, round-trip, types
   diff <baseline> <variant> [--semantic]    Semantic diff of two graphs (files, 'current', or 'hash:<id>')
   findings [--mark-fixed <id> --by <name> --run <runId>] [--verify <id> --run <runId>]  Findings repo
   runs [--repair]                            Show recent run records; resolve bundle paths in place
+  types [--check]                            Generate seamProps.ts and componentMap.ts (or verify they match)
+  seam-props [--check]                       Generate or verify ui/src/strategies/seamProps.ts
+  component-map [--check]                    Generate or verify ui/src/strategies/componentMap.ts
 
 Default graph: doc/uisg/graph.json`;
 
@@ -622,13 +627,25 @@ function main(): number {
             const unresolved = loadRuns().filter(
                 run => !existsSync(resolve(ROOT, run.bundlePath)) && !existsSync(join(evidenceDir, run.runId, 'bundle.json'))
             );
+            // Check generated types
+            const currentSeamProps = existsSync(resolve(ROOT, 'ui/src/strategies/seamProps.ts'))
+                ? readFileSync(resolve(ROOT, 'ui/src/strategies/seamProps.ts'), 'utf8')
+                : '';
+            const currentComponentMap = existsSync(resolve(ROOT, 'ui/src/strategies/componentMap.ts'))
+                ? readFileSync(resolve(ROOT, 'ui/src/strategies/componentMap.ts'), 'utf8')
+                : '';
+            const expectedSeamProps = emitSeamProps();
+            const expectedComponentMap = emitComponentMap();
+            const typesOutOfDate = currentSeamProps !== expectedSeamProps || currentComponentMap !== expectedComponentMap;
+
             console.log(`  findings: ${findings.length}`);
             console.log(`  sync warnings: ${blocked.length}`);
             console.log(`  seeded regressions: ${regressions.length - missed.length}/${regressions.length}`);
             console.log(`  unresolved run records: ${unresolved.length}`);
             console.log(`  skeleton artifacts: ${staleSkeleton.length ? `${staleSkeleton.length} stale` : 'current'}`);
             console.log(`  round-trip: ${roundtrip ? 'PASS' : 'FAIL'}`);
-            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || !roundtrip;
+            console.log(`  types: ${typesOutOfDate ? 'OUT OF DATE' : 'current'}`);
+            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || !roundtrip || typesOutOfDate;
             console.log(failed ? 'CHECK FAILED' : 'CHECK OK');
             return failed ? 1 : 0;
         }
@@ -707,6 +724,71 @@ function main(): number {
             for (const r of runs.slice(-10).reverse()) {
                 console.log(`  ${r.runId} ${r.flowId} ${r.status} ${r.timestamp}`);
             }
+            return 0;
+        }
+        case 'types': {
+            if (flags.has('check')) {
+                const currentSeamProps = existsSync(resolve(ROOT, 'ui/src/strategies/seamProps.ts'))
+                    ? readFileSync(resolve(ROOT, 'ui/src/strategies/seamProps.ts'), 'utf8')
+                    : '';
+                const currentComponentMap = existsSync(resolve(ROOT, 'ui/src/strategies/componentMap.ts'))
+                    ? readFileSync(resolve(ROOT, 'ui/src/strategies/componentMap.ts'), 'utf8')
+                    : '';
+                const expectedSeamProps = emitSeamProps();
+                const expectedComponentMap = emitComponentMap();
+                let failed = false;
+                if (currentSeamProps !== expectedSeamProps) {
+                    console.error('seamProps.ts is out of date');
+                    failed = true;
+                }
+                if (currentComponentMap !== expectedComponentMap) {
+                    console.error('componentMap.ts is out of date');
+                    failed = true;
+                }
+                if (failed) {
+                    console.log('Run "pnpm uisg types" to regenerate');
+                    return 1;
+                }
+                console.log('seamProps.ts and componentMap.ts are up to date');
+                return 0;
+            }
+            writeSeamProps();
+            writeComponentMap();
+            console.log('Generated seamProps.ts and componentMap.ts');
+            return 0;
+        }
+        case 'seam-props': {
+            if (flags.has('check')) {
+                const current = existsSync(resolve(ROOT, 'ui/src/strategies/seamProps.ts'))
+                    ? readFileSync(resolve(ROOT, 'ui/src/strategies/seamProps.ts'), 'utf8')
+                    : '';
+                const expected = emitSeamProps();
+                if (current !== expected) {
+                    console.error('seamProps.ts is out of date');
+                    return 1;
+                }
+                console.log('seamProps.ts is up to date');
+                return 0;
+            }
+            writeSeamProps();
+            console.log('Generated seamProps.ts');
+            return 0;
+        }
+        case 'component-map': {
+            if (flags.has('check')) {
+                const current = existsSync(resolve(ROOT, 'ui/src/strategies/componentMap.ts'))
+                    ? readFileSync(resolve(ROOT, 'ui/src/strategies/componentMap.ts'), 'utf8')
+                    : '';
+                const expected = emitComponentMap();
+                if (current !== expected) {
+                    console.error('componentMap.ts is out of date');
+                    return 1;
+                }
+                console.log('componentMap.ts is up to date');
+                return 0;
+            }
+            writeComponentMap();
+            console.log('Generated componentMap.ts');
             return 0;
         }
         default:
