@@ -27,7 +27,10 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
 | A.6 Variant resolver    | ✅ Done | `resolveSurface()` implemented; `generateSurface` and `matrix` use variants; CLI `--variant` and `--variants` flags added
 | B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
-| B.2 Metric collectors    | ✅ Done | `collectCellMetrics()` in metrics.ts; bundle, runtime, quality, match metrics; quality cache by content hash
+| B.2 Metric collectors    | ✅ Done | `collectCellMetrics()` in metrics.ts; bundle, runtime, quality, match metrics; quality cache by content hash |
+| B.3 Decision engine       | ✅ Done | `decide.ts`; policy.json; hard gates + weighted soft score; PASS/FAIL/REGRESS per variant |
+| B.4 A/B report generator | ✅ Done | `report.ts`; markdown with metric tables, visual diff refs, journey matrix, bundle impact, recommendation |
+| B.5 Promotion pipeline    | ✅ Done | verify.ts L3 integration; uisg matrix + decide; auto-promote on all-PASS |
 | C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
