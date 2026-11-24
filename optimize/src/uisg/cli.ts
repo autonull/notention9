@@ -61,6 +61,8 @@ Commands:
   matrix [--journeys a,b|all] [--contexts c|all] [--themes t|all] [--viewports v|all]
          [--profiles hand-built,generated] [--parallelism N] [--plan] [--no-build]
                                             Run journeys across contexts x themes x viewports; write matrix report
+  visual-diff --baseline=<runId> --compare=<runId> [--contexts c|all] [--themes t|all] [--threshold=0.99] [--update-baselines]
+                                            Visual regression test with pixelmatch
   compare <bundleA> <bundleB>               Diff two evidence bundles (run dirs or bundle.json files)
   inventory                                 Graph stats, journey links, seam coverage, variants
   scan [--out <file>]                       Scan codebase for surfaces, navigation, seams, journeys, strategies
@@ -614,6 +616,34 @@ async function main(): Promise<number> {
                 console.log(`  ${d.surface}/${d.variant}: ${d.status} (score: ${d.softScore.toFixed(2)})${d.hardGateFailures.length ? ` — ${d.hardGateFailures.join('; ')}` : ''}`);
             }
             return decision.rejected.length > 0 ? 1 : 0;
+        }
+        case 'visual-diff': {
+            const { spawnSync } = await import('node:child_process');
+            const baseline = flags.get('baseline');
+            const compare = flags.get('compare');
+            const contexts = flags.get('contexts')?.split(',') ?? [];
+            const themes = flags.get('themes')?.split(',') ?? [];
+            const threshold = parseFloat(flags.get('threshold') ?? '0.99');
+            const updateBaselines = flags.has('update-baselines');
+
+            if (!baseline || !compare) {
+                console.error('visual-diff requires --baseline and --compare');
+                return 1;
+            }
+
+            console.log(`Visual diff: ${baseline} -> ${compare}`);
+            console.log(`Contexts: ${contexts.length ? contexts.join(', ') : 'all'}`);
+            console.log(`Themes: ${themes.length ? themes.join(', ') : 'all'}`);
+            console.log(`Threshold: ${threshold}`);
+
+            const result = spawnSync('tsx', ['scripts/visual-diff.ts', '--baseline', baseline, '--compare', compare,
+                ...(contexts.length ? ['--contexts', contexts.join(',')] : []),
+                ...(themes.length ? ['--themes', themes.join(',')] : []),
+                '--threshold', String(threshold),
+                ...(updateBaselines ? ['--update-baselines'] : []),
+            ], { cwd: ROOT, stdio: 'inherit', encoding: 'utf8' });
+
+            return result.status ?? 1;
         }
         case 'compare': {
             const [pathA, pathB] = positionals;

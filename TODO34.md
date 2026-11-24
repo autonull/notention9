@@ -31,7 +31,8 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | B.3 Decision engine       | ✅ Done | `decide.ts`; policy.json; hard gates + weighted soft score; PASS/FAIL/REGRESS per variant |
 | B.4 A/B report generator | ✅ Done | `report.ts`; markdown with metric tables, visual diff refs, journey matrix, bundle impact, recommendation |
 | B.5 Promotion pipeline    | ✅ Done | verify.ts L3 integration; uisg matrix + decide; auto-promote on all-PASS |
-| C.1–C.5 Automation & DX | ⬜ Pending | Visual diff CI, PR bot, graph UI, playground, debugger |
+| C.1 Visual diff in CI      | ✅ Done | `scripts/visual-diff.ts` with pixelmatch; `uisg visual-diff` command; gallery build + screenshot + diff |
+| C.2–C.5 Automation & DX    | ⬜ Pending | PR bot, graph UI, playground, debugger |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
 **Latest code commit:** Phase A.3 runtime + B.1 — live theme CSS, journey matrix runner (`0496246a`).
@@ -560,7 +561,7 @@ interface UisgFlags {
 - [x] Auto-promotion commits graph update on all-PASS
 
 ### Phase C
-- [ ] Visual diff runs in CI, posts PR comment with screenshots
+- [x] Visual diff runs in CI, posts PR comment with screenshots
 - [ ] PR bot posts full UISG status on every PR
 - [ ] Graph UI at `?uisg=1&mode=graph` edits + previews live
 - [ ] Template Playground at `?uisg=1&mode=template` hot-reloads
