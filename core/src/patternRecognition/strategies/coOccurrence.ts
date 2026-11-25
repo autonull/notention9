@@ -76,16 +76,38 @@ export function discoverCoOccurrencePatterns(
 
 /**
  * Count occurrences within temporal proximity
+ * Optimized: O(n log n + m log m) using two-pointer after sorting
  */
 function countCloseOccurrences(
     timesA: number[],
     timesB: number[],
     windowMs: number
 ): number {
-    return timesA.reduce((count, timeA) => {
-        const hasCloseTime = timesB.some(timeB => Math.abs(timeA - timeB) < windowMs);
-        return count + (hasCloseTime ? 1 : 0);
-    }, 0);
+    if (timesA.length === 0 || timesB.length === 0) return 0;
+    
+    const sortedA = [...timesA].sort((a, b) => a - b);
+    const sortedB = [...timesB].sort((a, b) => a - b);
+    
+    let count = 0;
+    let j = 0;
+    
+    for (let i = 0; i < sortedA.length; i++) {
+        const timeA = sortedA[i];
+        
+        // Move j forward while B[j] is too far before A[i]
+        while (j < sortedB.length && sortedB[j] < timeA - windowMs) {
+            j++;
+        }
+        
+        // Check if any B within window
+        let k = j;
+        while (k < sortedB.length && sortedB[k] <= timeA + windowMs) {
+            count++;
+            k++;
+        }
+    }
+    
+    return count;
 }
 
 /**

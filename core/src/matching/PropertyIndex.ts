@@ -81,33 +81,34 @@ export class PropertyIndex {
      * Current Strategy: Return Intersection of sets for all constraint keys.
      * If a candidate is missing even one key required by constraints, it can't match 
      * (assuming all request properties are required constraints).
+     * Optimized: find smallest set first to minimize iterations
      */
     getCandidates(constraints: Property[]): Set<string> | null {
-        if (constraints.length === 0) return null; // No constraints -> all notes are candidates (or let caller handle)
+        if (constraints.length === 0) return null;
 
-        return constraints.reduce<Set<string> | null>((candidateIds, constraint) => {
-            if (candidateIds !== null && candidateIds.size === 0) return candidateIds;
-
+        // Collect all sets first, find smallest
+        const sets: Set<string>[] = [];
+        for (const constraint of constraints) {
             const idsWithKey = this.keyIndex.get(constraint.key);
+            if (!idsWithKey) return new Set(); // Required key missing entirely
+            sets.push(idsWithKey);
+        }
 
-            if (!idsWithKey) {
-                // If a required key doesn't exist in ANY note, then no candidates possible.
-                return new Set();
-            }
+        // Sort by size (smallest first) to minimize iterations
+        sets.sort((a, b) => a.size - b.size);
 
-            if (candidateIds === null) {
-                return new Set(idsWithKey);
-            }
-
-            // Intersect
-            const intersected = new Set<string>();
+        // Start with smallest set, iterate over it for intersection
+        const candidateIds = new Set(sets[0]);
+        for (let i = 1; i < sets.length; i++) {
+            if (candidateIds.size === 0) break;
+            const currentSet = sets[i];
             for (const id of candidateIds) {
-                if (idsWithKey.has(id)) {
-                    intersected.add(id);
+                if (!currentSet.has(id)) {
+                    candidateIds.delete(id);
                 }
             }
+        }
 
-            return intersected;
-        }, null) || new Set();
+        return candidateIds;
     }
 }
