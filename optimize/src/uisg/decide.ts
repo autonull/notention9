@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -6,6 +6,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../../..');
 const POLICY_FILE = resolve(ROOT, 'doc/uisg/policy.json');
+const BASELINES_DIR = resolve(ROOT, 'doc/uisg/baselines');
 
 export interface DecisionPolicy {
     hardGates: {
@@ -20,6 +21,8 @@ export interface DecisionPolicy {
         matchF1: { weight: number; target: number };
     };
     visualThreshold: number;
+    perSurfaceOverrides?: Record<string, Partial<DecisionPolicy>>;
+    perJourneyOverrides?: Record<string, Partial<DecisionPolicy>>;
 }
 
 export interface VariantDecision {
@@ -54,6 +57,15 @@ export interface DecisionResult {
     flagged: string[];
 }
 
+export interface Baseline {
+    journey: string;
+    variant?: string;
+    metrics: CellMetrics;
+    visualPass?: boolean;
+    sampleCount: number;
+    updatedAt: string;
+}
+
 const DEFAULT_POLICY: DecisionPolicy = {
     hardGates: {
         zeroTypeErrors: true,
@@ -75,6 +87,41 @@ function loadPolicy(file: string = POLICY_FILE): DecisionPolicy {
     } catch {
         return DEFAULT_POLICY;
     }
+}
+
+function getPolicyFor(journey: string, variant: string | undefined, policy: DecisionPolicy): DecisionPolicy {
+    let result = { ...policy };
+    if (policy.perJourneyOverrides?.[journey]) {
+        result = deepMergePolicy(result, policy.perJourneyOverrides[journey]!);
+    }
+    if (variant && policy.perSurfaceOverrides?.[variant]) {
+        result = deepMergePolicy(result, policy.perSurfaceOverrides[variant]!);
+    }
+    return result;
+}
+
+function deepMergePolicy(base: DecisionPolicy, override: Partial<DecisionPolicy>): DecisionPolicy {
+    const result = { ...base };
+    for (const [key, value] of Object.entries(override)) {
+        if (value !== undefined) {
+            if (
+                typeof value === 'object' &&
+                value !== null &&
+                !Array.isArray(value) &&
+                typeof result[key as keyof DecisionPolicy] === 'object' &&
+                result[key as keyof DecisionPolicy] !== null &&
+                !Array.isArray(result[key as keyof DecisionPolicy])
+            ) {
+                (result as Record<string, unknown>)[key] = deepMergePolicy(
+                    (result as Record<string, unknown>)[key] as DecisionPolicy,
+                    value as DecisionPolicy
+                );
+            } else {
+                (result as Record<string, unknown>)[key] = value;
+            }
+        }
+    }
+    return result;
 }
 
 function normalizeMetric(value: number, target: number, lowerIsBetter: boolean = true): number {
@@ -130,6 +177,53 @@ function calculateSoftScore(metrics: CellMetrics, baseline: CellMetrics | undefi
     return totalWeight > 0 ? score / totalWeight : 0;
 }
 
+export function loadBaselines(): Map<string, Baseline> {
+    const baselines = new Map<string, Baseline>();
+    try {
+        if (!existsSync(BASELINES_DIR)) return baselines;
+        const files = readdirSync(BASELINES_DIR);
+        if (!files.length) return baselines;
+        for (const file of files) {
+            if (!file.endsWith('.json')) continue;
+            const content = JSON.parse(readFileSync(resolve(BASELINES_DIR, file), 'utf8')) as Baseline;
+            const key = content.variant ? `${content.journey}/${content.variant}` : content.journey;
+            baselines.set(key, content);
+        }
+    } catch {
+        // ignore
+    }
+    return baselines;
+}
+
+function saveBaseline(baseline: Baseline): void {
+    const filename = baseline.variant ? `${baseline.journey}--${baseline.variant}.json` : `${baseline.journey}.json`;
+    writeFileSync(resolve(BASELINES_DIR, filename), JSON.stringify(baseline, null, 2) + '\n');
+}
+
+export function updateBaseline(
+    journey: string,
+    variant: string | undefined,
+    metrics: CellMetrics,
+    visualPass?: boolean
+): Baseline {
+    const key = variant ? `${journey}/${variant}` : journey;
+    const baselines = loadBaselines();
+    const existing = baselines.get(key);
+    const sampleCount = (existing?.sampleCount ?? 0) + 1;
+
+    // Running median for numeric metrics (simplified: just keep latest for now)
+    const baseline: Baseline = {
+        journey,
+        variant,
+        metrics,
+        visualPass,
+        sampleCount,
+        updatedAt: new Date().toISOString(),
+    };
+    saveBaseline(baseline);
+    return baseline;
+}
+
 export function decide(
     results: { cells: Array<{ journey: string; variant?: string; metrics: CellMetrics; visualPass?: boolean }> },
     baselineResults: { cells: Array<{ journey: string; variant?: string; metrics: CellMetrics; visualPass?: boolean }> } | null,
@@ -139,11 +233,28 @@ export function decide(
     const runId = `decision-${Date.now()}`;
 
     const baselineMap = new Map<string, CellMetrics>();
+    const visualBaselineMap = new Map<string, boolean>();
+
+    // Load persistent baselines
+    const baselines = loadBaselines();
+
+    // Add baseline results from matrix run (baseline variants)
     if (baselineResults) {
         for (const cell of baselineResults.cells) {
             if (!cell.variant) {
                 baselineMap.set(cell.journey, cell.metrics);
+                if (cell.visualPass !== undefined) visualBaselineMap.set(cell.journey, cell.visualPass);
             }
+        }
+    }
+
+    // Merge persistent baselines
+    for (const [key, baseline] of baselines) {
+        if (!baselineMap.has(key)) {
+            baselineMap.set(key, baseline.metrics);
+        }
+        if (baseline.visualPass !== undefined && !visualBaselineMap.has(key)) {
+            visualBaselineMap.set(key, baseline.visualPass);
         }
     }
 
@@ -153,9 +264,10 @@ export function decide(
         if (!cell.variant) continue;
 
         const baseline = baselineMap.get(cell.journey);
-        const hardGateFailures = checkHardGates(cell.metrics, baseline, policy);
-        const softScore = calculateSoftScore(cell.metrics, baseline, policy);
-        const visualPass = cell.visualPass ?? true;
+        const cellPolicy = getPolicyFor(cell.journey, cell.variant, policy);
+        const hardGateFailures = checkHardGates(cell.metrics, baseline, cellPolicy);
+        const softScore = calculateSoftScore(cell.metrics, baseline, cellPolicy);
+        const visualPass = cell.visualPass ?? visualBaselineMap.get(cell.journey) ?? true;
 
         let status: 'PASS' | 'FAIL' | 'REGRESS' = 'PASS';
 

@@ -181,6 +181,42 @@ export function exportVariants(surface: string, format: 'md' | 'json' = 'md'): s
     ].join('\n');
 }
 
+export function rollbackVariant(surface: string, variantId: string): VariantRecord {
+    const data = loadVariants();
+    const record = findVariant(data, surface, variantId);
+    if (record.status !== 'promoted') {
+        throw new Error(`Variant ${surface}/${variantId} is not promoted; cannot rollback`);
+    }
+    const now = new Date().toISOString();
+    record.status = 'candidate';
+    record.updatedAt = now;
+    saveVariants(data);
+
+    // Update graph.json - restore previous default variant if available
+    const graph = loadGraph(new Map());
+    const surfaceIdx = graph.nodes.findIndex(n => n.id === surface && n.type === 'surface');
+    if (surfaceIdx >= 0) {
+        const surfaceNode = graph.nodes[surfaceIdx] as UisgSurface;
+        const variants = { ...surfaceNode.variants };
+        if (variants[variantId]) {
+            variants[variantId] = { ...variants[variantId], status: 'candidate' };
+        }
+        // Find the most recently promoted variant (excluding the one being rolled back)
+        let previousDefault: string | undefined;
+        let previousPromotedAt = '';
+        for (const [id, v] of Object.entries(variants)) {
+            if (id !== variantId && v.promotedAt && v.promotedAt > previousPromotedAt) {
+                previousPromotedAt = v.promotedAt;
+                previousDefault = id;
+            }
+        }
+        graph.nodes[surfaceIdx] = { ...surfaceNode, variants, defaultVariant: previousDefault };
+        saveGraph(graph);
+    }
+
+    return record;
+}
+
 export function syncVariants(): { added: number; updated: number; removed: number } {
     const variantsData = loadVariants();
     const graph = loadGraph(new Map());

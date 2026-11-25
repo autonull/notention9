@@ -59,8 +59,11 @@ Commands:
   simulate <flowId> [--conditions a,b]        Walk the graph; report guards, effects, and blocked branches
   reducer <flowId> [--out <file>]           Generate flow reducer from graph
   matrix [--journeys a,b|all] [--contexts c|all] [--themes t|all] [--viewports v|all]
-         [--profiles hand-built,generated] [--parallelism N] [--plan] [--no-build]
-                                            Run journeys across contexts x themes x viewports; write matrix report
+         [--variants v|all] [--profiles hand-built,generated] [--parallelism N] [--plan] [--no-build]
+         [--max-cells N] [--allow-large] [--shard i/N] [--skip-cached]
+                                            Run journeys across contexts x themes x viewports x variants; write matrix report
+  decide --matrix <runId> [--baseline <runId>] [--policy <file>]  Evaluate variants against policy; promote/reject/flag
+  baselines <list|show|update> [journey] [variant] [--matrix <runId>]  Manage per-journey baselines (doc/uisg/baselines/)
   visual-diff --baseline=<runId> --compare=<runId> [--contexts c|all] [--themes t|all] [--threshold=0.99] [--update-baselines]
                                             Visual regression test with pixelmatch
   pr-bot --repo=owner/repo --pr=N --token=xxx  Post UISG status comment on PR
@@ -74,7 +77,7 @@ Commands:
                                             Check constraints, return selection + conflicts -> doc/uisg/selection.json
   contexts [--list]                         Manage context profiles (doc/uisg/contexts.json)
   themes <list|show|generate|check> [id]    Manage token themes (doc/uisg/themes.json)
-  variants <list|create|promote|archive|diff|export>  Variant registry CRUD (doc/uisg/variants.json)
+  variants <list|create|promote|archive|rollback|diff|export>  Variant registry CRUD (doc/uisg/variants.json)
   adopt <flowId> --baseline <runId> --variant <runId> --hypothesis <text> --metric <name> --actor <name>
                                             Compare bundles, update lifecycle, record decision
   canonicalize [--graph <file>] [--check-roundtrip]  Canonicalize graph; verify round-trip
@@ -514,6 +517,7 @@ async function main(): Promise<number> {
             const flows = flags.get('flows')?.split(',') ?? flags.get('journeys')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
             const profiles = flags.get('profiles')?.split(',');
             const { listThemes } = await import('./themes.js');
+            const { estimateMatrixDuration } = await import('./matrix.js');
 
             const contexts = flags.get('contexts')?.split(',') ?? [];
             const themes = flags.get('themes')?.split(',') ?? ['dark', 'light'];
@@ -528,6 +532,10 @@ async function main(): Promise<number> {
                 viewports: viewports.includes('all') ? ['desktop-1440', 'tablet-834', 'mobile-390'] : viewports,
                 variants: variants.includes('all') ? [] : variants,
                 parallelism: Number(flags.get('parallelism') ?? 4),
+                maxCells: flags.has('max-cells') ? Number(flags.get('max-cells')) : undefined,
+                allowLarge: flags.has('allow-large'),
+                shard: flags.get('shard'),
+                skipCached: flags.has('skip-cached'),
             };
 
             const journeys: MatrixJourney[] = [];
@@ -550,11 +558,13 @@ async function main(): Promise<number> {
             }
 
             if (flags.has('plan')) {
+                const { estimatedMs, cellCount, eta } = estimateMatrixDuration(config, journeys);
                 const cells = buildMatrixCells(config, journeys);
                 for (const cell of cells) {
                     console.log(`${cell.journey} [${cell.profile}] ${cell.context ?? '-'} ${cell.theme}/${cell.viewport}${cell.variant ? ` variant=${cell.variant}` : ''}`);
                 }
-                console.log(`${cells.length} cell(s)`);
+                console.log(`${cells.length} cell(s) (of ${cellCount} total)`);
+                console.log(`Estimated duration: ${eta} (parallelism=${config.parallelism})`);
                 return 0;
             }
 
@@ -617,6 +627,45 @@ async function main(): Promise<number> {
                 console.log(`  ${d.surface}/${d.variant}: ${d.status} (score: ${d.softScore.toFixed(2)})${d.hardGateFailures.length ? ` — ${d.hardGateFailures.join('; ')}` : ''}`);
             }
             return decision.rejected.length > 0 ? 1 : 0;
+        }
+        case 'baselines': {
+            const [action, journey, variant] = positionals;
+            const { loadBaselines, updateBaseline, Baseline } = await import('./decide.js');
+            switch (action) {
+                case 'list': {
+                    const baselines = loadBaselines();
+                    if (!baselines.size) { console.log('No baselines'); return 0; }
+                    for (const [key, baseline] of baselines) {
+                        console.log(`${key}: ${baseline.sampleCount} samples, updated ${baseline.updatedAt}`);
+                    }
+                    return 0;
+                }
+                case 'show': {
+                    if (!journey) { console.error('baselines show requires <journey> [variant]'); return 1; }
+                    const baselines = loadBaselines();
+                    const key = variant ? `${journey}/${variant}` : journey;
+                    const baseline = baselines.get(key);
+                    if (!baseline) { console.error(`Baseline not found: ${key}`); return 1; }
+                    console.log(JSON.stringify(baseline, null, 2));
+                    return 0;
+                }
+                case 'update': {
+                    if (!journey) { console.error('baselines update requires <journey> [variant] --matrix <runId>'); return 1; }
+                    const matrixFile = flags.get('matrix');
+                    if (!matrixFile) { console.error('baselines update requires --matrix <runId>'); return 1; }
+                    const { loadMatrixResult } = await import('./report.js');
+                    const matrixResult = loadMatrixResult(matrixFile.replace('matrix-', '').replace('.json', ''));
+                    if (!matrixResult) { console.error(`Matrix file not found: ${matrixFile}`); return 1; }
+                    const cell = matrixResult.cells.find(c => c.journey === journey && c.variant === variant);
+                    if (!cell) { console.error(`Cell not found: ${journey}/${variant ?? 'default'}`); return 1; }
+                    const baseline = updateBaseline(journey, variant, cell.metrics, cell.visualPass);
+                    console.log(`Updated baseline for ${journey}/${variant ?? 'default'}: ${baseline.sampleCount} samples`);
+                    return 0;
+                }
+                default:
+                    console.error(`Unknown baselines action: ${action ?? '(none)'}`);
+                    return 1;
+            }
         }
         case 'visual-diff': {
             const { spawnSync } = await import('node:child_process');
@@ -874,7 +923,7 @@ async function main(): Promise<number> {
         }
         case 'variants': {
             const [action, surfaceId, variantId, otherId] = positionals;
-            const { listVariants, createVariant, promoteVariant, archiveVariant, diffVariants, exportVariants } =
+            const { listVariants, createVariant, promoteVariant, archiveVariant, diffVariants, exportVariants, rollbackVariant } =
                 await import('./variants.js');
             switch (action) {
                 case 'list': {
@@ -903,6 +952,12 @@ async function main(): Promise<number> {
                     if (!surfaceId || !variantId) { console.error('variants archive requires <surfaceId> <variantId>'); return 1; }
                     const record = archiveVariant(surfaceId, variantId);
                     console.log(`Archived ${record.surface}/${record.id}`);
+                    return 0;
+                }
+                case 'rollback': {
+                    if (!surfaceId || !variantId) { console.error('variants rollback requires <surfaceId> <variantId>'); return 1; }
+                    const record = rollbackVariant(surfaceId, variantId);
+                    console.log(`Rolled back ${record.surface}/${record.id}`);
                     return 0;
                 }
                 case 'diff': {

@@ -24,24 +24,24 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | A.2 Context profiles v2 | ✅ Done | `CONTEXTS_SCHEMA_VERSION=2`; 3 bases + 7 derived profiles; `extends` with deep merge; v1 rejected |
 | A.3 Theme system | ✅ Done | `doc/uisg/themes.json`, `themes.ts`, `uisg themes list/show/generate/check`; `theme.css` consumes vars; `?uisg=1&theme=<id>` lazily imports `theme-<id>.css` |
 | A.4 Multi-target templates | ✅ Core | Required `target`; `react`/`html`/`json` renderers; `solid`/`flutter` throw (no fallback); `generate` requires `--target` |
-| A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
-| A.6 Variant resolver    | ✅ Done | `resolveSurface()` implemented; `generateSurface` and `matrix` use variants; CLI `--variant` and `--variants` flags added
-| B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
+| A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/rollback/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
+| A.6 Variant resolver    | ✅ Done | `resolveSurface()` implemented; `generateSurface` and `matrix` use variants; CLI `--variant` and `--variants` flags added |
+| B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports × variants; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
 | B.2 Metric collectors    | ✅ Done | `collectCellMetrics()` in metrics.ts; bundle, runtime, quality, match metrics; quality cache by content hash |
-| B.3 Decision engine       | ✅ Done | `decide.ts`; policy.json; hard gates + weighted soft score; PASS/FAIL/REGRESS per variant |
+| B.3 Decision engine       | ✅ Done | `decide.ts`; policy.json; hard gates + weighted soft score; PASS/FAIL/REGRESS per variant; per-surface/journey overrides |
 | B.4 A/B report generator | ✅ Done | `report.ts`; markdown with metric tables, visual diff refs, journey matrix, bundle impact, recommendation |
-| B.5 Promotion pipeline    | ✅ Done | verify.ts L3 integration; uisg matrix + decide; auto-promote on all-PASS |
+| B.5 Promotion pipeline    | ✅ Done | verify.ts L3 integration; uisg matrix + decide; auto-promote on all-PASS; rollback support |
 | C.1 Visual diff in CI      | ✅ Done | `scripts/visual-diff.ts` with pixelmatch; `uisg visual-diff` command; gallery build + screenshot + diff |
 | C.2 PR comment bot         | ✅ Done | `scripts/pr-bot.ts`; `uisg pr-bot`; posts UISG status, visual diff, matrix, decisions to PR |
 | C.3 Graph UI editor        | ✅ Done | `ui/src/dev/GraphEditor.tsx`; Cytoscape.js + dagre; lazy-loaded at `?uisg=1&mode=graph` |
 | C.4 Template Playground    | ✅ Done | `ui/src/dev/TemplatePlayground.tsx`; Monaco-style editor; live preview; export templates |
 | C.5 Time-travel debugger   | ✅ Done | `ui/src/dev/TimeTravelDebugger.tsx`; step slider, guard/effect timelines, state inspector, trace export |
-| C.6+ Automation & DX       | ⬜ Pending | (reserved) |
+| C.6 Automation & DX        | 🟡 Partial | Matrix cache/affected/max-cells/shard/ETA ✅; baselines ✅; policy.json ✅; rollback ✅; quality-debt ⬜ |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
-**Latest code commit:** Phase A.3 runtime + B.1 — live theme CSS, journey matrix runner (`0496246a`).
+**Latest code commit:** Phase A.5+C.6 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines (`pending commit`).
 
-**Plan revision:** §14 adds the variant resolver, graph/log single source, matrix cache + affected gating, baseline sampling, data-driven policy, risk-aware promotion, and quality-debt items.
+**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4). Remaining: AI/DSL/predict/flags (14.5), quality-debt closeout (14.6).
 
 ---
 
@@ -765,3 +765,16 @@ Variant explosion is the top risk.
 ---
 
 *This plan is ambitious but each step is a concrete, shippable increment. The graph is already the source of truth; we're building the laboratory around it.*
+
+---
+
+## Commit Log
+
+### 2026-11-24 — Phase A.5+C.6 §14 items
+- **variants.ts**: Added `rollbackVariant()` function; restores previous default variant
+- **cli.ts**: Added `variants rollback` command; updated help text
+- **decide.ts**: Created `doc/uisg/policy.json`; added per-surface/journey policy overrides; added `loadBaselines()`, `updateBaseline()`, persistent baselines in `doc/uisg/baselines/`
+- **cli.ts**: Added `baselines list/show/update` commands
+- **matrix.ts**: Added `--max-cells`, `--allow-large`, `--shard i/N`, `--skip-cached` options; added `estimateMatrixDuration()` with ETA from historical `runs.jsonl`; added matrix cache (`doc/uisg/matrix-cache.json`) for skipping recently-passed cells
+- **cli.ts**: Updated `matrix` command with new flags; `--plan` now shows ETA
+- **policy.json**: Created with hard/soft gates, visual threshold, per-surface/journey override structure
