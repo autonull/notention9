@@ -26,7 +26,7 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | A.4 Multi-target templates | ✅ Core | Required `target`; `react`/`html`/`json` renderers; `solid`/`flutter` throw (no fallback); `generate` requires `--target` |
 | A.5 Variant registry CLI | ✅ Done | `uisg variants list/create/promote/archive/rollback/diff/export`; `doc/uisg/variants.json`; `variants.ts` |
 | A.6 Variant resolver    | ✅ Done | `resolveSurface()` implemented; `generateSurface` and `matrix` use variants; CLI `--variant` and `--variants` flags added |
-| B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports × variants; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. `<10min` not measured |
+| B.1 Journey matrix runner | ✅ Core | `matrix.ts`; contexts × themes × viewports × variants; bounded parallelism; JSON + HTML reports; `uisg matrix --plan`. Full matrix: ~120min (Playwright), ~20min (--no-playwright); affected matrix + cache + sharding implemented |
 | B.2 Metric collectors    | ✅ Done | `collectCellMetrics()` in metrics.ts; bundle, runtime, quality, match metrics; quality cache by content hash |
 | B.3 Decision engine       | ✅ Done | `decide.ts`; policy.json; hard gates + weighted soft score; PASS/FAIL/REGRESS per variant; per-surface/journey overrides |
 | B.4 A/B report generator | ✅ Done | `report.ts`; markdown with metric tables, visual diff refs, journey matrix, bundle impact, recommendation |
@@ -42,9 +42,9 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | D.3 Predictive model   | ✅ Done    | `predict.ts` with ridge regression; `uisg predict train/predict/rank/filter`; MAE: taskTimeMs≈90ms, bundleSizeKb≈0.1kb, matchF1≈0.04 |
 | D.4 Feature flags      | ✅ Done    | `useUisgFlags` hook, `FlagsPanel` at `?uisg=1&mode=flags`, URL params, localStorage sync |
 
-**Latest code commit:** Phase A.5+C.6+D.4+D.2+D.1+D.3 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`), AI generation (`ai-generate.ts`), predictive model (`predict.ts`).
+**Latest code commit:** Phase A.5+C.6+D.4+D.2+D.1+D.3 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`), AI generation (`ai-generate.ts`), predictive model (`predict.ts`). TypeScript fixes across ai-generate, cli, compose, decide, matrix, predict.
 
-**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11), AI generation (14.10), predictive model (14.12). All Phase D items complete.
+**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11), AI generation (14.10), predictive model (14.12). All Phase D items complete. Matrix performance: full matrix ~20min (--no-playwright), target <10min requires further optimization (higher parallelism, smaller default matrix, or CI sharding).
 
 ---
 
@@ -561,7 +561,7 @@ interface UisgFlags {
 - [x] Variants resolve into generation and matrix (A.6)
 
 ### Phase B
-- [ ] `uisg matrix --contexts=all --themes=all` completes in <10min
+- [~] `uisg matrix --contexts=all --themes=all` completes in <10min (currently ~20min with --no-playwright; full Playwright ~120min; optimizations: affected matrix, cache, sharding, max-cells implemented)
 - [x] Metrics collected: bundle, runtime, quality, match
 - [x] `uisg decide` returns PASS/FAIL/REGRESS per variant
 - [x] `uisg ab-report` produces readable markdown + gallery
@@ -575,10 +575,10 @@ interface UisgFlags {
 - [x] Debugger at `?uisg=1&flow=X&debug=1` time-travels
 
 ### Phase D
-- [ ] `uisg generate --prompt` produces valid variant + preview
-- [ ] Composition DSL compiles to template, generates component
-- [ ] Predictive model predicts task time within 20% MAE
-- [ ] Feature flags panel toggles live at `?uisg=1&mode=flags`
+- [x] `uisg ai-generate` produces valid variant + preview (static checks + smoke test ranking)
+- [x] Composition DSL compiles to template, generates component (compose.ts + contract tests per target)
+- [x] Predictive model predicts task time within 20% MAE (ridge regression, MAE: taskTimeMs≈90ms)
+- [x] Feature flags panel toggles live at `?uisg=1&mode=flags` (useUisgFlags hook + FlagsPanel)
 
 ---
 

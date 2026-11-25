@@ -1,4 +1,6 @@
-import type { UisgGraph, UisgSurface, ParamDef, TemplateTarget } from './types.js';
+import type { UisgGraph, UisgSurface } from './types.js';
+import type { ParamDef } from '@notention/core/ui/strategy.js';
+import type { TemplateTarget } from './templates/render.js';
 import { getTemplate, registerTemplate, type Template, type TemplateShape } from './templates/index.js';
 import { renderTargetComponent, renderTargetTest } from './templates/render.js';
 
@@ -23,7 +25,7 @@ export type PrimitiveName =
 
 export interface PrimitiveProp {
     key: string;
-    value: string | boolean | number | PrimitiveProp[] | { ref: string } | string[];
+    value: string | boolean | number | PrimitiveProp[] | { ref: string } | string[] | Record<string, unknown>;
 }
 
 export interface Primitive {
@@ -58,7 +60,7 @@ function compileChildren(children: Composition[], target: TemplateTarget): strin
 
 const PRIMITIVE_REGISTRY: Record<PrimitiveName, PrimitiveDefinition> = {
     Card: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const className = props.className ? ` ${props.className}` : '';
             const testId = props.testId ? ` data-testid="${props.testId}"` : '';
             const onClick = props.onClick ? ` onClick={${props.onClick}}` : '';
@@ -73,7 +75,7 @@ const PRIMITIVE_REGISTRY: Record<PrimitiveName, PrimitiveDefinition> = {
         },
     },
     Header: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const score = props.score ? `<span className="text-[12px] font-semibold tabular-nums text-[var(--app-text-secondary)]">{score}%</span>` : '';
             const label = props.label ? `<span className="text-[11px] text-[var(--app-faint)]">${props.label}</span>` : '';
             const direction = props.direction ? `{direction && <span className="text-[11px] text-[var(--app-faint)]">· {direction}</span>}` : '';
@@ -88,7 +90,7 @@ const PRIMITIVE_REGISTRY: Record<PrimitiveName, PrimitiveDefinition> = {
         },
     },
     Body: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const truncate = props.truncate ? ` className="line-clamp-${props.truncate}"` : '';
             const markup = props.markup ? ' dangerouslySetInnerHTML={{ __html: content }}' : '';
             const content = props.markup ? '{markup}' : '{content}';
@@ -102,7 +104,7 @@ const PRIMITIVE_REGISTRY: Record<PrimitiveName, PrimitiveDefinition> = {
         },
     },
     BadgeRow: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const open = `<div className="flex flex-wrap gap-1.5">`;
             const close = '</div>';
             return { open, close, children: compileChildren(children, target) };
@@ -110,7 +112,7 @@ const PRIMITIVE_REGISTRY: Record<PrimitiveName, PrimitiveDefinition> = {
         propsSchema: {},
     },
     Footer: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const actions = props.actions ? `actions={${JSON.stringify(props.actions)}}` : '';
             const explanation = props.explanation ? `explanation={${JSON.stringify(props.explanation)}}` : '';
             const open = `<div className="flex items-center gap-2 pt-1 border-t border-[var(--app-line)]">${actions}${explanation}`;
@@ -123,8 +125,8 @@ const PRIMITIVE_REGISTRY: Record<PrimitiveName, PrimitiveDefinition> = {
         },
     },
     ActionBar: {
-        render: (props, children, target) => {
-            const actions = props.actions ?? [];
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
+            const actions = (props.actions as string[] ?? []);
             const buttons = actions.map((action: string) => {
                 const variants: Record<string, string> = {
                     connect: 'onConnect',
@@ -148,71 +150,72 @@ const PRIMITIVE_REGISTRY: Record<PrimitiveName, PrimitiveDefinition> = {
         },
     },
     Avatar: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: `<div className="w-8 h-8 rounded-full bg-[var(--app-accent)] flex items-center justify-center text-white text-xs font-semibold">{author?.charAt(0)}</div>`, close: '', children: '' };
         },
         propsSchema: {},
     },
     Icon: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const name = props.name || 'SparklesIcon';
             return { open: `<${name} className="h-3 w-3 shrink-0" />`, close: '', children: '' };
         },
         propsSchema: { name: { type: 'string', optional: true } },
     },
     Text: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const className = props.className ? ` className="${props.className}"` : '';
-            return { open: `<span${className}>`, close: '</span>', children: props.content ?? '{content}' };
+            const content = typeof props.content === 'string' ? props.content : '{content}';
+            return { open: `<span${className}>`, close: '</span>', children: content };
         },
         propsSchema: { content: { type: 'string', optional: true }, className: { type: 'string', optional: true } },
     },
     Score: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: '<span className="text-[12px] font-semibold tabular-nums text-[var(--app-text-secondary)]">{score}%</span>', close: '', children: '' };
         },
         propsSchema: {},
     },
     Direction: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: '{direction && <span className="text-[11px] text-[var(--app-faint)]">· {direction}</span>}', close: '', children: '' };
         },
         propsSchema: {},
     },
     Author: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: '{note.author && !isLocal && <span className="ml-auto flex max-w-[9rem] items-center gap-1 truncate font-mono text-[11px] text-[var(--app-faint)]"><NetworkIcon className="h-3 w-3 shrink-0" />{note.author}</span>}', close: '', children: '' };
         },
         propsSchema: {},
     },
     Explanation: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             const expandable = props.expandable ? 'true' : 'false';
             const defaultClosed = props.defaultClosed ? 'true' : 'false';
-            return { open: `<ExplanationPanel expandable={${expandable}} defaultClosed={${defaultClosed}} />`, close: '', children: '' };
+            return { open: `<ExplanationPanel expandable={${expandable}} defaultClosed=${defaultClosed} />`, close: '', children: '' };
         },
         propsSchema: { expandable: { type: 'boolean', optional: true }, defaultClosed: { type: 'boolean', optional: true } },
     },
     Matches: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: '{result.matches.map((m, i) => <MatchBadge key={i} match={m} />)}', close: '', children: '' };
         },
         propsSchema: {},
     },
     Conflicts: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: '{result.conflicts?.map((c, i) => <ConflictBadge key={i} conflict={c} />)}', close: '', children: '' };
         },
         propsSchema: {},
     },
     Missing: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: '{result.missing?.map((m, i) => <MissingBadge key={i} missing={m} />)}', close: '', children: '' };
         },
         propsSchema: {},
     },
     ExplanationToggle: {
-        render: (props, children, target) => {
+        render: (props: Record<string, unknown>, children: Composition[], target: TemplateTarget): { open: string; close: string; children: string } => {
             return { open: '<Button variant="ghost" size="sm" onClick={() => handleExplanationToggle(!explanationsOpen)}><ChevronDownIcon className={`h-4 w-4 transition-transform ${explanationsOpen ? "rotate-180" : ""}`} /></Button>', close: '', children: '' };
         },
         propsSchema: {},

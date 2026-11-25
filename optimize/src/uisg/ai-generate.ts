@@ -1,4 +1,5 @@
-import type { UisgGraph, UisgSurface, SurfaceVariant, TemplateTarget } from './types.js';
+import type { UisgGraph, UisgSurface, SurfaceVariant } from './types.js';
+import type { TemplateTarget } from './templates/render.js';
 import { loadGraph } from './cli.js';
 import { getTemplate, type Template } from './templates/index.js';
 import { resolveSurface } from './resolve.js';
@@ -59,14 +60,16 @@ Respond with ONLY valid JSON:
 }`;
 
 function buildContext(surface: UisgSurface, graph: UisgGraph, contextId?: string): string {
-    const context = contextId
-        ? graph.nodes.find(n => n.id === contextId && n.type === 'surface')
+    const contextNode = contextId
+        ? graph.nodes.find((n): n is UisgSurface => n.id === contextId && n.type === 'surface')
         : null;
 
     const relatedSurfaces = graph.edges
         .filter(e => e.from === surface.id || e.to === surface.id)
-        .map(e => graph.nodes.find(n => n.id === (e.from === surface.id ? e.to : e.from)))
-        .filter(Boolean);
+        .map(e => graph.nodes.find((n): n is UisgSurface => n.id === (e.from === surface.id ? e.to : e.from) && n.type === 'surface'))
+        .filter((n): n is UisgSurface => Boolean(n));
+
+    const context = contextNode ? { id: contextNode.id, name: contextNode.name, template: contextNode.template } : null;
 
     return JSON.stringify({
         surface: {
@@ -77,11 +80,11 @@ function buildContext(surface: UisgSurface, graph: UisgGraph, contextId?: string
             variants: surface.variants,
             defaultVariant: surface.defaultVariant,
         },
-        context: context ? { id: context.id, name: context.name, template: context.template } : null,
+        context,
         relatedSurfaces: relatedSurfaces.map(s => ({
-            id: s?.id,
-            name: s?.name,
-            template: s?.template,
+            id: s.id,
+            name: s.name,
+            template: s.template,
         })),
         templates: Object.values(getTemplate('item') ? { item: getTemplate('item') } : {}),
     }, null, 2);
@@ -304,7 +307,7 @@ export async function aiGenerateVariant(options: AiGenerateOptions): Promise<AiG
     const maxCandidates = options.maxCandidates ?? 3;
     
     const contextInfo = buildContext(surface, graph, options.contextId);
-    const baseVariant = options.fromVariant ? surface.variants?.[options.fromVariant] : surface.defaultVariant ? surface.variants?.[options.defaultVariant] : undefined;
+    const baseVariant = options.fromVariant ? surface.variants?.[options.fromVariant] : surface.defaultVariant ? surface.variants?.[surface.defaultVariant] : undefined;
     const baseInfo = baseVariant ? JSON.stringify(baseVariant, null, 2) : 'none (base surface)';
     
     const userPrompt = `

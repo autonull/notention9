@@ -107,23 +107,25 @@ interface RunRecord {
     };
 }
 
+interface MatrixCell {
+    flowId: string;
+    journey: string;
+    profile: string;
+    viewport: string;
+    theme: string;
+    context?: string;
+    variant?: string;
+    status: string;
+    durationMs: number;
+    runId: string;
+    metrics: Record<string, number>;
+}
+
 interface MatrixResult {
     runId: string;
     startedAt: string;
     completedAt: string;
-    cells: Array<{
-        flowId: string;
-        journey: string;
-        profile: string;
-        viewport: string;
-        theme: string;
-        context?: string;
-        variant?: string;
-        status: string;
-        durationMs: number;
-        runId: string;
-        metrics: Record<string, number>;
-    }>;
+    cells: MatrixCell[];
 }
 
 function loadRuns(): RunRecord[] {
@@ -149,39 +151,43 @@ function loadMatrixResults(): MatrixResult[] {
     return results.sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
 }
 
+type CellWithTimestamp = MatrixCell & { timestamp?: string };
+
 function extractFeatures(
-    cell: MatrixResult['cells'][0],
+    cell: CellWithTimestamp,
     graphDiff?: PredictionInput['graphDiff']
 ): Record<string, number> {
+    // Ensure we have a valid cell with all required properties
+    const { flowId, journey, profile, viewport, theme, context, variant, status, durationMs, runId, metrics } = cell;
     const features: Record<string, number> = {};
 
     // Categorical features (one-hot encoded)
     const contexts = ['desktop', 'mobile', 'tablet', 'mobile-dense', 'desktop-novice-dark', 'desktop-expert-light', 'mobile-novice-dark', 'mobile-expert-degraded', 'desktop-a11y-high-contrast', 'tablet-multilingual'];
     for (const ctx of contexts) {
-        features[`context_${ctx}`] = cell.context === ctx ? 1 : 0;
+        features[`context_${ctx}`] = context === ctx ? 1 : 0;
     }
-    features['context_unknown'] = cell.context && !contexts.includes(cell.context) ? 1 : 0;
+    features['context_unknown'] = context && !contexts.includes(context) ? 1 : 0;
 
     const themes = ['default', 'brand-acme', 'brand-beta', 'high-contrast'];
-    for (const theme of themes) {
-        features[`theme_${theme}`] = cell.theme === theme ? 1 : 0;
+    for (const t of themes) {
+        features[`theme_${t}`] = theme === t ? 1 : 0;
     }
 
     const viewports = ['desktop-1440', 'mobile-390', 'tablet-834'];
     for (const vp of viewports) {
-        features[`viewport_${vp}`] = cell.viewport === vp ? 1 : 0;
+        features[`viewport_${vp}`] = viewport === vp ? 1 : 0;
     }
 
     // Variant features
-    if (cell.variant) {
+    if (variant) {
         features['has_variant'] = 1;
-        features[`variant_${cell.variant}`] = 1;
+        features[`variant_${variant}`] = 1;
     } else {
         features['has_variant'] = 0;
     }
 
     // Journey features
-    features[`journey_${cell.journey}`] = 1;
+    features[`journey_${journey}`] = 1;
 
     // Graph diff features
     if (graphDiff) {
@@ -259,7 +265,7 @@ function buildTrainingData(): TrainingSample[] {
         if (!run.dimensions || run.status !== 'passed') continue;
 
         // Try to load bundle metrics
-        let bundleMetrics: Record<string, number> = {};
+        let bundleMetrics: TrainingSample['targets'] = { taskTimeMs: 0, bundleSizeKb: 0, matchF1: 0, interactionCount: 0, errorCount: 0 };
         try {
             if (run.bundlePath && existsSync(run.bundlePath)) {
                 const bundle = JSON.parse(readFileSync(run.bundlePath, 'utf8'));
@@ -276,12 +282,17 @@ function buildTrainingData(): TrainingSample[] {
         }
 
         const features = extractFeatures({
+            flowId: run.flowId,
             journey: run.flowId,
             profile: run.dimensions.profile ?? '',
             context: run.dimensions.context,
             theme: run.dimensions.theme ?? 'default',
             viewport: run.dimensions.viewport ?? 'desktop-1440',
             variant: run.dimensions.variant,
+            status: 'passed',
+            durationMs: 0,
+            runId: run.runId,
+            metrics: bundleMetrics,
             timestamp: run.timestamp,
         });
 
@@ -374,13 +385,23 @@ function generateSyntheticSamples(existingSamples?: TrainingSample[]): TrainingS
         const n = noise(seed);
 
         const features = extractFeatures({
+            flowId: journey,
             journey,
             profile: 'hand-built',
             context,
             theme,
             viewport,
             variant,
-            timestamp: new Date(baseTime + i * 3600000).toISOString(),
+            status: 'passed',
+            durationMs: Math.round(baseTaskTime + mobileBonus + tabletBonus + denseBonus + compactBonus + hcBonus + journeyFactor + n * 100),
+            runId: `synthetic-${i}`,
+            metrics: {
+                taskTimeMs: Math.round(baseTaskTime + mobileBonus + tabletBonus + denseBonus + compactBonus + hcBonus + journeyFactor + n * 100),
+                bundleSizeKb: Math.round(baseBundle + mobileBundleBonus + denseBundleBonus + brandAcmeBonus + brandBetaBonus + n * 2),
+                matchF1: Math.min(1, Math.max(0, baseF1 + denseF1Bonus + compactF1Bonus + n)),
+                interactionCount: Math.max(0, Math.round(baseInteractions + mobileInteractions + n * 2)),
+                errorCount: Math.max(0, Math.round(n * 2)),
+            },
         });
 
         samples.push({
@@ -553,7 +574,7 @@ export function trainModel(): PredictiveModel {
         errorCount: trainSamples.map(s => s.targets.errorCount),
     };
 
-    const coefficients: ModelCoefficients = {
+    const coefficients = {
         taskTimeMs: linearRegression(trainX, targets.taskTimeMs),
         bundleSizeKb: linearRegression(trainX, targets.bundleSizeKb),
         matchF1: linearRegression(trainX, targets.matchF1),
@@ -633,12 +654,17 @@ export function predictMetrics(input: PredictionInput, model?: PredictiveModel):
     const graphDiff = input.graphDiff ?? computeGraphDiff(graph);
 
     const features = extractFeatures({
+        flowId: input.journey,
         journey: input.journey,
         profile: '',
         context: input.context,
         theme: input.theme,
         viewport: input.viewport,
         variant: input.variant,
+        status: 'passed',
+        durationMs: 0,
+        runId: 'prediction',
+        metrics: {},
         timestamp: new Date().toISOString(),
     }, graphDiff);
 

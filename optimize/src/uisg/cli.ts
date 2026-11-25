@@ -28,6 +28,7 @@ import { adoptFlow } from './adopt.js';
 import { canonicalize, graphHash, roundTripTest } from './canonicalize.js';
 import { diffGraphsCommand, printDiff } from './diff.js';
 import { appendRunRecord, loadRuns, loadFindings, markFindingFixed, verifyFinding } from './records.js';
+import type { Baseline } from './decide.js';
 import { loadRegressionCatalogue, runSeededRegressions } from './regressions.js';
 import {
     buildSkeleton, emitSkeletonJourneyTest, skeletonJourneyFlows, skeletonJourneyId,
@@ -538,6 +539,7 @@ async function main(): Promise<number> {
                 allowLarge: flags.has('allow-large'),
                 shard: flags.get('shard'),
                 skipCached: flags.has('skip-cached'),
+                noPlaywright: flags.has('no-playwright'),
             };
 
             const journeys: MatrixJourney[] = [];
@@ -657,7 +659,7 @@ async function main(): Promise<number> {
         }
         case 'baselines': {
             const [action, journey, variant] = positionals;
-            const { loadBaselines, updateBaseline, Baseline } = await import('./decide.js');
+            const { loadBaselines, updateBaseline } = await import('./decide.js');
             switch (action) {
                 case 'list': {
                     const baselines = loadBaselines();

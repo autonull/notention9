@@ -114,7 +114,7 @@ function deepMergePolicy(base: DecisionPolicy, override: Partial<DecisionPolicy>
             ) {
                 (result as Record<string, unknown>)[key] = deepMergePolicy(
                     (result as Record<string, unknown>)[key] as DecisionPolicy,
-                    value as DecisionPolicy
+                    value as Partial<DecisionPolicy>
                 );
             } else {
                 (result as Record<string, unknown>)[key] = value;

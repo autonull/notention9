@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-25T02:16:39.768Z",
+  "updatedAt": "2026-11-25T03:18:20.612Z",
   "variants": [
     {
       "template": "item",
@@ -32,6 +32,19 @@
       "id": "dense-ai",
       "createdAt": "2026-11-25T02:16:39.768Z",
       "updatedAt": "2026-11-25T02:16:39.768Z"
+    },
+    {
+      "template": "item",
+      "strategyOverrides": {
+        "layout": "stacked",
+        "display": "inline"
+      },
+      "description": "Dense list view for mobile",
+      "status": "experimental",
+      "surface": "surface.notesview",
+      "id": "ai-dense-v2",
+      "createdAt": "2026-11-25T03:18:20.611Z",
+      "updatedAt": "2026-11-25T03:18:20.611Z"
     }
   ]
 }

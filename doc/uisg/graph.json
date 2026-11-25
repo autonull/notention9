@@ -219,6 +219,15 @@
           },
           "description": "Dense list view for mobile",
           "status": "experimental"
+        },
+        "ai-dense-v2": {
+          "template": "item",
+          "strategyOverrides": {
+            "layout": "stacked",
+            "display": "inline"
+          },
+          "description": "Dense list view for mobile",
+          "status": "experimental"
         }
       }
     },

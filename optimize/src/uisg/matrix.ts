@@ -2,6 +2,7 @@ import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createRunId } from '../runner.js';
+import type { UisgGraph } from './types.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,6 +20,7 @@ export interface MatrixConfig {
     allowLarge?: boolean;
     shard?: string; // format: "i/N"
     skipCached?: boolean;
+    noPlaywright?: boolean;
 }
 
 export interface MatrixJourney {
@@ -190,10 +192,12 @@ export function buildMatrixCells(config: MatrixConfig, journeys: MatrixJourney[]
 }
 
 export function estimateMatrixDuration(config: MatrixConfig, journeys: MatrixJourney[]): { estimatedMs: number; cellCount: number; eta: string } {
-    const cells = buildMatrixCells({ ...config, maxCells: undefined, allowLarge: true, shard: undefined, skipCached: false }, journeys);
+    const cells = buildMatrixCells({ ...config, allowLarge: true }, journeys);
     let totalMs = 0;
     for (const cell of cells) {
-        totalMs += estimateCellDuration(cell.flowId, cell.profile, cell.viewport, cell.theme);
+        const baseMs = estimateCellDuration(cell.flowId, cell.profile, cell.viewport, cell.theme);
+        // If noPlaywright, assume unit tests only (~5s vs 30s for Playwright)
+        totalMs += config.noPlaywright ? 5000 : baseMs;
     }
     const parallelism = config.parallelism || 4;
     const estimatedMs = Math.ceil(totalMs / parallelism);
