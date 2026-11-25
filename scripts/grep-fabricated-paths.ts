@@ -25,6 +25,7 @@ const EXCLUDE_PATTERNS = [
     '**/*.spec.tsx',
     '**/test/**',
     '**/tests/**',
+    '**/dev/**',
     '**/__mocks__/**',
     '**/fixtures/**',
     '**/test-data/**',

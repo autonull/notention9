@@ -3,25 +3,25 @@
     "cellKey": "journey.a|hand-built|desktop|default|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-25T05:17:47.905Z"
+    "timestamp": "2026-11-25T16:11:57.052Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|default|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-25T05:17:47.906Z"
+    "timestamp": "2026-11-25T16:11:57.053Z"
   },
   {
     "cellKey": "journey.a|hand-built|desktop|brand-acme|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-25T05:17:47.905Z"
+    "timestamp": "2026-11-25T16:11:57.053Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|brand-acme|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-25T05:17:47.906Z"
+    "timestamp": "2026-11-25T16:11:57.053Z"
   },
   {
     "cellKey": "uisg.skeleton.flow.ontology-conflict|generated|desktop|default|desktop-1440|&#39;",
@@ -34,5 +34,443 @@
     "runId": "run_1795582892208_jz51u10",
     "status": "passed",
     "timestamp": "2026-11-25T05:01:44.624Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop|default|mobile-390|&#39;",
+    "runId": "run_1795623449216_kpkello",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:17:49.203Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile|default|desktop-1440|&#39;",
+    "runId": "run_1795623449219_610oayx",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:17:49.282Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|tablet|default|tablet-834|&#39;",
+    "runId": "run_1795623469283_i3hhpk6",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:05.787Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile|default|mobile-390|&#39;",
+    "runId": "run_1795623469276_719nntv",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:05.801Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|tablet|default|mobile-390|&#39;",
+    "runId": "run_1795623485788_ys3rf02",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:27.006Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-novice-dark|default|tablet-834|&#39;",
+    "runId": "run_1795623485802_eogiodb",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:26.992Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-novice-dark|default|mobile-390|&#39;",
+    "runId": "run_1795623485805_hn0gwf7",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:27.012Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-expert-light|default|tablet-834|&#39;",
+    "runId": "run_1795623507007_3m04m35",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:43.630Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-novice-dark|default|tablet-834|&#39;",
+    "runId": "run_1795623523631_hnkgb3n",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:19:01.355Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-novice-dark|default|mobile-390|&#39;",
+    "runId": "run_1795623523643_ilrqlhd",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:19:01.307Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-expert-degraded|default|mobile-390|&#39;",
+    "runId": "run_1795619311474_cgxkif8",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:08:44.040Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|tablet-multilingual|default|tablet-834|&#39;",
+    "runId": "run_1795619324200_suyd787",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:08:59.003Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-dense|default|mobile-390|&#39;",
+    "runId": "run_1795618528061_wcajp8w",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:55:40.629Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop|default|mobile-390|&#39;",
+    "runId": "run_1795619356292_pdzrr76",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:09:30.316Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile|default|desktop-1440|&#39;",
+    "runId": "run_1795619356338_6z29p6b",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:09:30.408Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|tablet|default|desktop-1440|&#39;",
+    "runId": "run_1795619370316_hm4c3au",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:09:45.385Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|tablet|default|tablet-834|&#39;",
+    "runId": "run_1795618554849_8h33vqd",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:56:09.145Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop-novice-dark|default|mobile-390|&#39;",
+    "runId": "run_1795619385484_d5ljo95",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:02.344Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop|default|tablet-834|&#39;",
+    "runId": "run_1795623449214_weoj4ym",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:17:49.279Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile|default|tablet-834|&#39;",
+    "runId": "run_1795623469203_mg64pft",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:05.797Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-expert-light|default|desktop-1440|&#39;",
+    "runId": "run_1795623507000_iaeujfg",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:43.642Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|tablet-multilingual|default|desktop-1440|&#39;",
+    "runId": "run_1795619324040_atlgvcg",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:08:59.011Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop-novice-dark|default|tablet-834|&#39;",
+    "runId": "run_1795619385386_r8vvd76",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:02.349Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop-expert-light|default|mobile-390|&#39;",
+    "runId": "run_1795619402345_y7dao1z",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:21.159Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-expert-degraded|default|desktop-1440|&#39;",
+    "runId": "run_1795619421161_votwxac",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:44.178Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop-a11y-high-contrast|default|mobile-390|&#39;",
+    "runId": "run_1795619444179_odo81wx",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:13.772Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|tablet-multilingual|default|mobile-390|&#39;",
+    "runId": "run_1795619473746_6m2im9u",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:37.886Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795616033010_bptj3l4",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:14:04.941Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795623449210_fktpjaj",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:17:49.275Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-expert-light|default|mobile-390|&#39;",
+    "runId": "run_1795623507009_w0pp8uk",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:43.644Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-expert-degraded|default|desktop-1440|&#39;",
+    "runId": "run_1795623523645_4fr4any",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:19:01.305Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-expert-degraded|default|tablet-834|&#39;",
+    "runId": "run_1795623523647_oaybzci",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:19:01.365Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-a11y-high-contrast|default|desktop-1440|&#39;",
+    "runId": "run_1795617364293_89z56fz",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:36:25.540Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-a11y-high-contrast|default|mobile-390|&#39;",
+    "runId": "run_1795617364300_e80n6wz",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:36:25.546Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|tablet-multilingual|default|mobile-390|&#39;",
+    "runId": "run_1795617385547_9ebqlgb",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:36:43.263Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop-expert-light|default|desktop-1440|&#39;",
+    "runId": "run_1795617468330_8zrpauh",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:38:14.595Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-novice-dark|default|mobile-390|&#39;",
+    "runId": "run_1795619404047_0kwt01o",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:21.181Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-expert-degraded|default|tablet-834|&#39;",
+    "runId": "run_1795619421174_q1h7ezh",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:44.180Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|desktop|default|mobile-390|&#39;",
+    "runId": "run_1795619497889_6nxjsmc",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:56.663Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|mobile|default|mobile-390|&#39;",
+    "runId": "run_1795617587245_yxq9x72",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:39:58.900Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|tablet|default|mobile-390|&#39;",
+    "runId": "run_1795617598900_326kxmt",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:40:10.539Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|desktop-expert-light|default|mobile-390|&#39;",
+    "runId": "run_1795617610597_dllqqph",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:40:34.394Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|mobile-novice-dark|default|tablet-834|&#39;",
+    "runId": "run_1795617634394_x5bglbu",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:40:58.263Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|mobile-novice-dark|default|mobile-390|&#39;",
+    "runId": "run_1795617634653_5uaxi4e",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:40:58.323Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|mobile-expert-degraded|default|desktop-1440|&#39;",
+    "runId": "run_1795617634752_rq9xawd",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:40:58.327Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|mobile-expert-degraded|default|tablet-834|&#39;",
+    "runId": "run_1795617634867_okkgvc2",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:40:58.331Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|mobile-expert-degraded|default|mobile-390|&#39;",
+    "runId": "run_1795617658284_6mp7cui",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:41:21.464Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|desktop-a11y-high-contrast|default|mobile-390|&#39;",
+    "runId": "run_1795617658333_jq3x466",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:41:21.470Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|desktop-a11y-high-contrast|default|desktop-1440|&#39;",
+    "runId": "run_1795617658324_tj56on6",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:41:21.478Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|desktop-a11y-high-contrast|default|tablet-834|&#39;",
+    "runId": "run_1795617658328_zfgob7a",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:41:21.486Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|tablet-multilingual|default|mobile-390|&#39;",
+    "runId": "run_1795617681478_rhayvol",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:41:38.501Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|desktop|default|tablet-834|&#39;",
+    "runId": "run_1795617698604_8j47284",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:41:48.921Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|desktop|default|mobile-390|&#39;",
+    "runId": "run_1795617708921_utqoaae",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:41:58.875Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|tablet|default|desktop-1440|&#39;",
+    "runId": "run_1795617718875_9k6b8c6",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:42:08.927Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|desktop-novice-dark|default|tablet-834|&#39;",
+    "runId": "run_1795617728927_mdhihix",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:42:19.061Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|desktop-expert-light|default|mobile-390|&#39;",
+    "runId": "run_1795617739061_f9u1j8j",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:42:28.967Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|mobile-expert-degraded|default|desktop-1440|&#39;",
+    "runId": "run_1795617748968_2hcxids",
+    "status": "passed",
+    "timestamp": "2026-11-25T14:42:41.165Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-novice-dark|default|tablet-834|&#39;",
+    "runId": "run_1795619403115_cdky616",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:21.178Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-novice-dark|default|desktop-1440|&#39;",
+    "runId": "run_1795619402349_lb519r4",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:21.170Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-expert-degraded|default|mobile-390|&#39;",
+    "runId": "run_1795619421179_veq9tq7",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:44.183Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-dense|default|desktop-1440|&#39;",
+    "runId": "run_1795619324321_o9ma29m",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:08:58.957Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-dense|default|tablet-834|&#39;",
+    "runId": "run_1795619338960_v0aw6rh",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:09:16.337Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop-a11y-high-contrast|default|desktop-1440|&#39;",
+    "runId": "run_1795619421182_891nmte",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:10:44.158Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop-a11y-high-contrast|default|tablet-834|&#39;",
+    "runId": "run_1795619444159_41xyoeb",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:13.744Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|tablet-multilingual|default|desktop-1440|&#39;",
+    "runId": "run_1795619444181_2p63jdc",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:13.774Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|tablet-multilingual|default|tablet-834|&#39;",
+    "runId": "run_1795619444183_mpraasc",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:13.776Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-dense|default|desktop-1440|&#39;",
+    "runId": "run_1795619473772_b8d6tj5",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:37.874Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-dense|default|tablet-834|&#39;",
+    "runId": "run_1795619473774_7c83mv3",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:37.888Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|mobile-dense|default|mobile-390|&#39;",
+    "runId": "run_1795619473776_rtu6kng",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:37.890Z"
+  },
+  {
+    "cellKey": "publish-gate|hand-built|mobile|default|desktop-1440|&#39;",
+    "runId": "run_1795619497891_m7utmj6",
+    "status": "passed",
+    "timestamp": "2026-11-25T15:11:56.491Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|tablet|default|desktop-1440|&#39;",
+    "runId": "run_1795623469280_n1ri2ue",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:05.804Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|desktop-novice-dark|default|desktop-1440|&#39;",
+    "runId": "run_1795623485798_b9pm3yh",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:27.009Z"
+  },
+  {
+    "cellKey": "capture-and-edit|hand-built|mobile-novice-dark|default|desktop-1440|&#39;",
+    "runId": "run_1795623507013_3ebl5q6",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:18:43.647Z"
   }
 ]

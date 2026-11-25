@@ -676,8 +676,14 @@ async function main(): Promise<number> {
             if (!matrixFile) { console.error('decide requires --matrix <file>'); return 1; }
             const { loadMatrixResult } = await import('./report.js');
             const { decide } = await import('./decide.js');
-            const matrixResult = loadMatrixResult(matrixFile.replace('matrix-', '').replace('.json', ''));
-            const baselineResult = baselineFile ? loadMatrixResult(baselineFile.replace('matrix-', '').replace('.json', '')) : null;
+            const extractRunId = (file: string) => {
+                const match = file.match(/matrix-([^/]+)\.json$/);
+                return match ? match[1] : file.replace(/^.*matrix-/, '').replace(/\.json$/, '');
+            };
+            const matrixRunId = extractRunId(matrixFile);
+            const baselineRunId = baselineFile ? extractRunId(baselineFile) : null;
+            const matrixResult = loadMatrixResult(matrixRunId);
+            const baselineResult = baselineRunId ? loadMatrixResult(baselineRunId) : null;
             if (!matrixResult) { console.error(`Matrix file not found: ${matrixFile}`); return 1; }
             const decision = decide(matrixResult, baselineResult, policyFile);
             console.log(`Decision: ${decision.runId}`);
@@ -715,7 +721,11 @@ async function main(): Promise<number> {
                     const matrixFile = flags.get('matrix');
                     if (!matrixFile) { console.error('baselines update requires --matrix <runId>'); return 1; }
                     const { loadMatrixResult } = await import('./report.js');
-                    const matrixResult = loadMatrixResult(matrixFile.replace('matrix-', '').replace('.json', ''));
+                    const extractRunId = (file: string) => {
+                        const match = file.match(/matrix-([^/]+)\.json$/);
+                        return match ? match[1] : file.replace(/^.*matrix-/, '').replace(/\.json$/, '');
+                    };
+                    const matrixResult = loadMatrixResult(extractRunId(matrixFile));
                     if (!matrixResult) { console.error(`Matrix file not found: ${matrixFile}`); return 1; }
                     const cell = matrixResult.cells.find(c => c.journey === journey && c.variant === variant);
                     if (!cell) { console.error(`Cell not found: ${journey}/${variant ?? 'default'}`); return 1; }

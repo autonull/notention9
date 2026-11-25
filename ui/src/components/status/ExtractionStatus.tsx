@@ -141,15 +141,6 @@ export function ExtractionStatus({
                     </span>
                 )}
                 {fallbackUsed && <span className={cn('ml-1', tone.warning.text)} aria-label="Fell back">↓</span>}
-                {onRetry && !isLoading && (
-                    <button
-                        onClick={onRetry}
-                        className="ml-1 underline hover:no-underline focus:outline-none focus:ring-1 focus:ring-current"
-                        aria-label={retryLabel}
-                    >
-                        {retryLabel}
-                    </button>
-                )}
             </span>
         );
     }

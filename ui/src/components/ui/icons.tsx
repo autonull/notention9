@@ -727,6 +727,9 @@ export function InformationCircleIcon(props: IconProps) { return (
     </OutlineIcon>
 ); }
 
+// Alias for status template
+export const InfoIcon = InformationCircleIcon;
+
 export function ExclamationTriangleIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path

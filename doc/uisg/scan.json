@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "scannedAt": "2026-11-24T20:23:51.199Z",
+  "scannedAt": "2026-11-25T16:15:29.628Z",
   "surfaces": [
     {
       "id": "surface.quickcapture",
@@ -288,6 +288,22 @@
       "file": "ui/src/components/status/OfflineBanner.tsx",
       "exports": [
         "OfflineBanner"
+      ]
+    },
+    {
+      "id": "surface.flagspanel",
+      "component": "FlagsPanel",
+      "file": "ui/src/dev/FlagsPanel.tsx",
+      "exports": [
+        "FlagsPanel"
+      ]
+    },
+    {
+      "id": "surface.grapheditor",
+      "component": "GraphEditor",
+      "file": "ui/src/dev/GraphEditor.tsx",
+      "exports": [
+        "GraphEditor"
       ]
     }
   ],
@@ -1920,6 +1936,7 @@
         "XCircleIcon",
         "CheckCircleIcon",
         "InformationCircleIcon",
+        "InfoIcon",
         "ExclamationTriangleIcon",
         "XMarkIcon",
         "SearchIcon",
@@ -2046,10 +2063,39 @@
       ]
     },
     {
+      "name": "FlagsPanel",
+      "file": "ui/src/dev/FlagsPanel.tsx",
+      "exports": [
+        "FlagsPanel"
+      ]
+    },
+    {
+      "name": "GraphEditor",
+      "file": "ui/src/dev/GraphEditor.tsx",
+      "exports": [
+        "GraphEditor"
+      ]
+    },
+    {
       "name": "SkeletonRenderer",
       "file": "ui/src/dev/SkeletonRenderer.tsx",
       "exports": [
         "SkeletonRenderer"
+      ]
+    },
+    {
+      "name": "MyCustomTemplate",
+      "file": "ui/src/dev/TemplatePlayground.tsx",
+      "exports": [
+        "MyCustomTemplate",
+        "TemplatePlayground"
+      ]
+    },
+    {
+      "name": "TimeTravelDebugger",
+      "file": "ui/src/dev/TimeTravelDebugger.tsx",
+      "exports": [
+        "TimeTravelDebugger"
       ]
     },
     {

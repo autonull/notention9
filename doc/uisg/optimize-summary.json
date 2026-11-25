@@ -1,27 +1,27 @@
 {
-  "timestamp": "2026-11-24T20:23:51.185Z",
+  "timestamp": "2026-11-25T16:15:29.612Z",
   "stages": {
     "types": {
       "status": "ok",
-      "durationMs": 14
+      "durationMs": 16
     },
     "scan": {
       "status": "ok",
       "durationMs": 25,
-      "surfaces": 36,
+      "surfaces": 38,
       "strategies": 7
     },
     "generate": {
       "status": "ok",
-      "durationMs": 65,
+      "durationMs": 70,
       "generated": 54,
       "totalTargets": 54
     },
     "check": {
       "status": "ok",
-      "durationMs": 2610
+      "durationMs": 2439
     }
   },
-  "totalDurationMs": 2714,
+  "totalDurationMs": 2550,
   "context": "default"
 }
