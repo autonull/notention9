@@ -526,7 +526,7 @@ async function main(): Promise<number> {
             const { estimateMatrixDuration } = await import('./matrix.js');
 
             const isQuick = flags.has('quick');
-            const defaultParallelism = Math.min(8, cpus().length);
+            const defaultParallelism = Math.min(4, cpus().length);
 
             let contexts = flags.get('contexts')?.split(',') ?? [];
             let themes = flags.get('themes')?.split(',') ?? [];
