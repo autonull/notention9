@@ -2,31 +2,40 @@ export const levenshteinDistance = (a: string, b: string): number => {
   if (a.length === 0) return b.length;
   if (b.length === 0) return a.length;
 
-  const matrix: number[][] = [];
-
-  for (let i = 0; i <= b.length; i++) {
-    matrix[i] = [i];
+  // Ensure a is the shorter string for less memory
+  if (a.length > b.length) {
+    [a, b] = [b, a];
   }
 
+  const previousRow = new Array(a.length + 1);
   for (let j = 0; j <= a.length; j++) {
-    matrix[0][j] = j;
+    previousRow[j] = j;
   }
+
+  let currentRowValue: number;
+  let previousDiagonal: number;
 
   for (let i = 1; i <= b.length; i++) {
+    previousDiagonal = i - 1;
+    currentRowValue = i;
+
     for (let j = 1; j <= a.length; j++) {
-      if (b.charAt(i - 1) === a.charAt(j - 1)) {
-        matrix[i][j] = matrix[i - 1][j - 1];
+      const temp = previousRow[j];
+      if (b[i - 1] === a[j - 1]) {
+        currentRowValue = previousDiagonal;
       } else {
-        matrix[i][j] = Math.min(
-          matrix[i - 1][j - 1] + 1,
-          matrix[i][j - 1] + 1,
-          matrix[i - 1][j] + 1,
+        currentRowValue = Math.min(
+          previousDiagonal + 1,
+          previousRow[j] + 1,
+          currentRowValue + 1,
         );
       }
+      previousRow[j] = currentRowValue;
+      previousDiagonal = temp;
     }
   }
 
-  return matrix[b.length][a.length];
+  return currentRowValue;
 };
 
 export const escapeAttribute = (value: string): string =>

@@ -7,7 +7,7 @@
 import type { Note, Property } from '../types/index.js';
 import type { ScoredMatch } from './bidirectional.js';
 import type { MatchResult, PropertyMatch } from './types.js';
-import { loadPreferenceWeights, calculatePreferenceBoost } from './feedback.js';
+import { calculatePreferenceBoost, type PreferenceWeights } from './feedback.js';
 import { getEffectiveCrossKeyMap } from './crossKeyMap.js';
 import type { AppSettings } from '../types/ui.js';
 
@@ -118,30 +118,39 @@ export function computeRankingScore(
 
 /**
  * Compute ranking score with preference weights applied
+ * @param match - The match to score
+ * @param request - The request note
+ * @param config - Ranking configuration
+ * @param settings - App settings for cross-key map
+ * @param weights - Pre-loaded preference weights (optional, will load if not provided)
  */
 export function computeRankingScoreWithPreferences(
     match: ScoredMatch,
     request: Note,
     config: RankingConfig = DEFAULT_RANKING_CONFIG,
-    settings?: Partial<AppSettings>
+    settings?: Partial<AppSettings>,
+    weights?: PreferenceWeights
 ): number {
     const crossKeyMap = getEffectiveCrossKeyMap(settings);
     const baseScore = computeRankingScore(match, request, config);
     
     // Apply preference boost to the match score component
-    const weights = loadPreferenceWeights();
+    const w = weights ?? (typeof window !== 'undefined' ? require('./feedback.js').loadPreferenceWeights() : { 
+        keyWeights: {}, operatorWeights: {}, crossKeyWeights: {}, matchTypeWeights: {}, 
+        minEvents: 3, decayFactor: 0.95, updatedAt: new Date().toISOString() 
+    });
     let preferenceBoost = 0;
     let totalCompatibility = 0;
     
     for (const m of match.result.matches) {
-        const boost = calculatePreferenceBoost(m, weights, crossKeyMap);
+        const boost = calculatePreferenceBoost(m, w, crossKeyMap);
         if (boost !== 0) {
             preferenceBoost += boost;
             totalCompatibility += m.compatibility;
         }
     }
     for (const m of match.result.conflicts) {
-        const boost = calculatePreferenceBoost(m, weights, crossKeyMap);
+        const boost = calculatePreferenceBoost(m, w, crossKeyMap);
         if (boost !== 0) {
             preferenceBoost += boost;
             totalCompatibility += Math.abs(m.compatibility);
@@ -186,11 +195,15 @@ export function rankMatchesWithPreferences(
     settings?: Partial<AppSettings>
 ): ScoredMatch[] {
     const fullConfig = { ...DEFAULT_RANKING_CONFIG, ...config };
+    // Load weights once for all matches
+    const weights = typeof window !== 'undefined' 
+        ? require('./feedback.js').loadPreferenceWeights() 
+        : { keyWeights: {}, operatorWeights: {}, crossKeyWeights: {}, matchTypeWeights: {}, minEvents: 3, decayFactor: 0.95, updatedAt: new Date().toISOString() };
     
     return matches
         .map(match => ({
             ...match,
-            rankingScore: computeRankingScoreWithPreferences(match, request, fullConfig, settings),
+            rankingScore: computeRankingScoreWithPreferences(match, request, fullConfig, settings, weights),
         }))
         .sort((a, b) => (b.rankingScore ?? 0) - (a.rankingScore ?? 0));
 }

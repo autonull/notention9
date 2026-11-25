@@ -13,6 +13,13 @@ export interface InferenceRule {
   priority: number;
 }
 
+/** Compiled rule with pre-built regex patterns for fast matching */
+interface CompiledRule {
+  patterns: RegExp[];
+  infer: Property[];
+  priority: number;
+}
+
 /**
  * Default inference rules for common need patterns.
  * Rules are applied in priority order (highest first).
@@ -222,32 +229,55 @@ export const DEFAULT_INFERENCE_RULES: InferenceRule[] = [
 ];
 
 /**
- * Check if a need value matches a rule's keywords.
- * Any keyword in the rule can trigger the rule (case-insensitive, word boundary).
+ * Compile inference rules into regex patterns for fast matching.
+ * Call this once at startup to avoid re-compiling regexes on each match.
  */
-function matchesRule(needValue: string, rule: InferenceRule): boolean {
+export function compileInferenceRules(rules: InferenceRule[] = DEFAULT_INFERENCE_RULES): CompiledRule[] {
+  return rules
+    .map(rule => ({
+      patterns: rule.keywords.map(keyword => {
+        const escaped = keyword.toLowerCase().replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        return new RegExp(`\\b${escaped}\\b`);
+      }),
+      infer: rule.infer,
+      priority: rule.priority,
+    }))
+    .sort((a, b) => b.priority - a.priority);
+}
+
+/** Pre-compiled default rules for optimal performance */
+export const COMPILED_DEFAULT_RULES = compileInferenceRules();
+
+/**
+ * Check if a need value matches a rule's keywords using pre-compiled regex.
+ */
+function matchesRule(needValue: string, rule: CompiledRule): boolean {
   const lowerValue = needValue.toLowerCase();
-  return rule.keywords.some(keyword => {
-    const lowerKeyword = keyword.toLowerCase();
-    // Use word boundary matching to avoid partial matches like "now" in "unknown"
-    const regex = new RegExp(`\\b${lowerKeyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
-    return regex.test(lowerValue);
-  });
+  return rule.patterns.some(pattern => pattern.test(lowerValue));
 }
 
 /**
  * Infer additional properties from a need property value.
  * Returns an array of inferred properties, deduplicated by key+operator+values.
+ * @param needProp - The need property to infer from
+ * @param rules - Pre-compiled rules (use COMPILED_DEFAULT_RULES for defaults) or legacy InferenceRule[]
  */
-export function inferFromNeed(needProp: Property, rules: InferenceRule[] = DEFAULT_INFERENCE_RULES): Property[] {
+export function inferFromNeed(
+  needProp: Property,
+  rules: CompiledRule[] | InferenceRule[] = COMPILED_DEFAULT_RULES
+): Property[] {
+  // Check if rules are already compiled
+  const isCompiled = Array.isArray(rules) && rules.length > 0 && 'patterns' in rules[0];
+  const compiledRules = isCompiled
+    ? (rules as CompiledRule[])
+    : compileInferenceRules(rules as InferenceRule[]);
+
   const inferred: Property[] = [];
   const seen = new Set<string>();
 
   for (const value of needProp.values) {
-    // Sort rules by priority (highest first)
-    const sortedRules = [...rules].sort((a, b) => b.priority - a.priority);
-
-    for (const rule of sortedRules) {
+    // Rules are already sorted by priority (highest first)
+    for (const rule of compiledRules) {
       if (matchesRule(value, rule)) {
         for (const inferredProp of rule.infer) {
           const key = `${inferredProp.key}:${inferredProp.operator}:${inferredProp.values.join(',')}`;
