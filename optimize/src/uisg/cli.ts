@@ -78,6 +78,7 @@ Commands:
   contexts [--list]                         Manage context profiles (doc/uisg/contexts.json)
   themes <list|show|generate|check> [id]    Manage token themes (doc/uisg/themes.json)
   variants <list|create|promote|archive|rollback|diff|export>  Variant registry CRUD (doc/uisg/variants.json)
+  ai-generate <surfaceId> <variantId> --prompt <text> [--context <id>] [--from <variant>] [--target <t>] [--create]  AI-assisted variant generation
   adopt <flowId> --baseline <runId> --variant <runId> --hypothesis <text> --metric <name> --actor <name>
                                             Compare bundles, update lifecycle, record decision
   canonicalize [--graph <file>] [--check-roundtrip]  Canonicalize graph; verify round-trip
@@ -945,6 +946,52 @@ async function main(): Promise<number> {
             console.log(`  Comparison: delta=${result.comparison.durationDeltaMs}ms kindMismatch=${result.comparison.kindMismatch}`);
             if (result.error) console.log(`  Error: ${result.error}`);
             return result.success && result.decision === 'adopt' ? 0 : 1;
+        }
+        case 'ai-generate': {
+            const surfaceId = positionals[0];
+            const variantId = positionals[1];
+            const prompt = flags.get('prompt');
+            if (!surfaceId || !variantId || !prompt) {
+                console.error('ai-generate requires <surfaceId> <variantId> --prompt <text>');
+                return 1;
+            }
+            const { aiGenerateVariant, aiGenerateAndCreate } = await import('./ai-generate.js');
+            const options = {
+                surfaceId,
+                prompt,
+                variantId,
+                contextId: flags.get('context'),
+                fromVariant: flags.get('from'),
+                target: flags.get('target') as TemplateTarget | undefined,
+                maxCandidates: flags.has('max-candidates') ? Number(flags.get('max-candidates')) : undefined,
+            };
+            if (flags.has('create')) {
+                const { variantId: createdId, result } = await aiGenerateAndCreate(options);
+                console.log(`Created variant: ${createdId}`);
+                console.log(`Confidence: ${result.selected?.confidence ?? 0}`);
+                console.log(`Reasoning: ${result.selected?.reasoning ?? ''}`);
+                for (const check of result.selected?.staticChecks ?? []) {
+                    console.log(`  ${check.check}: ${check.passed ? 'PASS' : 'FAIL'} ${check.errors.join(', ')}`);
+                }
+                return result.selected?.staticChecks.every(c => c.passed) ? 0 : 1;
+            } else {
+                const result = await aiGenerateVariant(options);
+                console.log(`Generated ${result.candidates.length} candidates for ${surfaceId}`);
+                for (let i = 0; i < result.candidates.length; i++) {
+                    const c = result.candidates[i];
+                    console.log(`\n[${i + 1}] confidence=${c.confidence.toFixed(2)}`);
+                    console.log(`    template: ${c.variant.template ?? 'inherit'}`);
+                    console.log(`    description: ${c.variant.description}`);
+                    console.log(`    reasoning: ${c.reasoning}`);
+                    for (const check of c.staticChecks) {
+                        console.log(`    ${check.check}: ${check.passed ? 'PASS' : 'FAIL'} ${check.errors.join(', ')}`);
+                    }
+                }
+                if (result.selected) {
+                    console.log(`\nSelected: ${result.selected.variant.description} (confidence=${result.selected.confidence.toFixed(2)})`);
+                }
+                return 0;
+            }
         }
         case 'variants': {
             const [action, surfaceId, variantId, otherId] = positionals;

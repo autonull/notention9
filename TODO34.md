@@ -37,14 +37,14 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | C.4 Template Playground    | ✅ Done | `ui/src/dev/TemplatePlayground.tsx`; Monaco-style editor; live preview; export templates |
 | C.5 Time-travel debugger   | ✅ Done | `ui/src/dev/TimeTravelDebugger.tsx`; step slider, guard/effect timelines, state inspector, trace export |
 | C.6 Automation & DX        | ✅ Done | Matrix cache/affected/max-cells/shard/ETA ✅; baselines ✅; policy.json ✅; rollback ✅; quality-debt ✅ (identifiers, schemas, compile check); test efficiency ✅ (affected matrix, vitest --changed, playwright skip) |
-| D.1 AI-assisted variant gen | ⬜ Pending | `uisg generate --prompt` produces valid variant + preview |
+| D.1 AI-assisted variant gen | ✅ Done    | `uisg ai-generate` with mock/Ollama/Anthropic providers; static checks (schema/tone/types); smoke test ranking; `--create` to persist |
 | D.2 Composition DSL    | ✅ Done    | `compose.ts` with typed primitives, `compose()`, `primitive()`, `sequence()`, `conditional()`, `slot()`; compiles to template AST; contract tests per target |
 | D.3 Predictive model   | ⬜ Pending | Linear/GBM regression from `runs.jsonl`, predicts task time within 20% MAE |
 | D.4 Feature flags      | ✅ Done    | `useUisgFlags` hook, `FlagsPanel` at `?uisg=1&mode=flags`, URL params, localStorage sync |
 
-**Latest code commit:** Phase A.5+C.6+D.4+D.2 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`).
+**Latest code commit:** Phase A.5+C.6+D.4+D.2+D.1 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`), AI generation (`ai-generate.ts`).
 
-**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11). Remaining: AI generation (14.10), predictive model (14.12).
+**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11), AI generation (14.10). Remaining: predictive model (14.12).
 
 ---
 
@@ -810,3 +810,11 @@ Variant explosion is the top risk.
 - **Built-ins**: `MatchItemComposition`, `DenseMatchItemComposition` as examples
 - **Tests**: `compose.test.ts` with 12 tests covering generation, registration, helpers
 - Contract tests per target (react/html/json) to prevent divergence
+
+### 2026-11-24 — AI Generation (§14.10 / D.1)
+- **ai-generate.ts**: `aiGenerateVariant()` and `aiGenerateAndCreate()` with mock/Ollama/Anthropic providers
+- **CLI**: `uisg ai-generate <surfaceId> <variantId> --prompt <text> [--context <id>] [--from <variant>] [--target <t>] [--create]`
+- **Static checks**: Schema (Zod), tone, types — candidates rejected on any hard gate failure
+- **Ranking**: Confidence + static check results + smoke test (one matrix cell) → top candidate selected
+- **Mock provider**: Template-aware responses for dense/compact, card/detailed, editor, status prompts
+- **Create flag**: `--create` persists validated variant to graph + variants.json

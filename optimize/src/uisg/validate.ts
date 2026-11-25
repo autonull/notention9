@@ -353,3 +353,12 @@ export function validateMatrix(input: unknown): ValidationResult {
     }
     return { ok: true, graph: undefined, issues: [] };
 }
+
+export function validateSurfaceVariant(variant: unknown): string[] {
+    const parsed = VariantPatchSchema.safeParse(variant);
+    if (!parsed.success) {
+        return parsed.error.issues.map(({ path, message }) =>
+            `SurfaceVariant: ${path.join('.') || 'root'}: ${message}`);
+    }
+    return [];
+}

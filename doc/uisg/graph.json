@@ -210,6 +210,15 @@
           "template": "item",
           "description": "Compact desktop view",
           "status": "experimental"
+        },
+        "dense-ai": {
+          "template": "item",
+          "strategyOverrides": {
+            "layout": "stacked",
+            "display": "inline"
+          },
+          "description": "Dense list view for mobile",
+          "status": "experimental"
         }
       }
     },
