@@ -11,6 +11,13 @@ const MATRIX_DIR = resolve(ROOT, 'doc/uisg');
 const MODEL_DIR = resolve(ROOT, 'doc/uisg/models');
 const MODEL_FILE = resolve(MODEL_DIR, 'predictive-model.json');
 
+// Caches for expensive file operations
+let _cachedRuns: ReturnType<typeof loadRuns> | null = null;
+let _cachedRunsMtime: number = 0;
+let _cachedMatrixResults: ReturnType<typeof loadMatrixResults> | null = null;
+let _cachedMatrixMtimes: Map<string, number> = new Map();
+let _cachedTrainingData: ReturnType<typeof buildTrainingData> | null = null;
+
 export interface TrainingSample {
     features: Record<string, number>;
     targets: {
@@ -130,25 +137,50 @@ interface MatrixResult {
 
 function loadRuns(): RunRecord[] {
     try {
+        const stat = statSync(RUNS_FILE);
+        if (_cachedRuns && stat.mtimeMs <= _cachedRunsMtime) {
+            return _cachedRuns;
+        }
         const content = readFileSync(RUNS_FILE, 'utf8');
-        return content.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
+        _cachedRuns = content.trim().split('\n').filter(Boolean).map(line => JSON.parse(line));
+        _cachedRunsMtime = stat.mtimeMs;
+        return _cachedRuns;
     } catch {
         return [];
     }
 }
 
 function loadMatrixResults(): MatrixResult[] {
-    const results: MatrixResult[] = [];
     try {
         const files = readdirSync(MATRIX_DIR).filter(f => f.startsWith('matrix-') && f.endsWith('.json'));
+        
+        // Check if cache is valid
+        let cacheValid = _cachedMatrixResults !== null;
+        for (const file of files) {
+            const stat = statSync(resolve(MATRIX_DIR, file));
+            const cachedMtime = _cachedMatrixMtimes.get(file);
+            if (!cachedMtime || stat.mtimeMs > cachedMtime) {
+                cacheValid = false;
+                break;
+            }
+        }
+        
+        if (cacheValid) {
+            return _cachedMatrixResults!;
+        }
+        
+        const results: MatrixResult[] = [];
+        _cachedMatrixMtimes.clear();
         for (const file of files) {
             const content = JSON.parse(readFileSync(resolve(MATRIX_DIR, file), 'utf8'));
             results.push(content);
+            _cachedMatrixMtimes.set(file, statSync(resolve(MATRIX_DIR, file)).mtimeMs);
         }
+        _cachedMatrixResults = results.sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
+        return _cachedMatrixResults;
     } catch {
-        // ignore
+        return [];
     }
-    return results.sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
 }
 
 type CellWithTimestamp = MatrixCell & { timestamp?: string };
@@ -224,6 +256,32 @@ function extractTargets(cell: MatrixResult['cells'][0]): TrainingSample['targets
 }
 
 function buildTrainingData(): TrainingSample[] {
+    // Check cache validity based on source file mtimes
+    let cacheValid = _cachedTrainingData !== null;
+    try {
+        const runsStat = statSync(RUNS_FILE);
+        if (runsStat.mtimeMs > _cachedRunsMtime) cacheValid = false;
+    } catch {
+        cacheValid = false;
+    }
+    try {
+        const files = readdirSync(MATRIX_DIR).filter(f => f.startsWith('matrix-') && f.endsWith('.json'));
+        for (const file of files) {
+            const stat = statSync(resolve(MATRIX_DIR, file));
+            const cachedMtime = _cachedMatrixMtimes.get(file);
+            if (!cachedMtime || stat.mtimeMs > cachedMtime) {
+                cacheValid = false;
+                break;
+            }
+        }
+    } catch {
+        cacheValid = false;
+    }
+    
+    if (cacheValid && _cachedTrainingData) {
+        return _cachedTrainingData;
+    }
+
     const runs = loadRuns();
     const matrixResults = loadMatrixResults();
 
@@ -320,6 +378,7 @@ function buildTrainingData(): TrainingSample[] {
         samples.push(...syntheticSamples);
     }
 
+    _cachedTrainingData = samples;
     return samples;
 }
 

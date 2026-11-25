@@ -6,6 +6,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../../..');
 
+// Cache for scanAll with mtime-based invalidation
+let _cachedScanResult: ScanResult | null = null;
+let _cachedScanMtime: number = 0;
+
 export interface ScanResult {
     version: number;
     scannedAt: string;
@@ -504,7 +508,18 @@ export function scanLoopRuns(): ScannedLoopRun[] {
 }
 
 export function scanAll(): ScanResult {
-    return {
+    // Check cache validity based on ui/src directory mtime
+    try {
+        const uiSrcDir = resolve(ROOT, 'ui/src');
+        const dirStat = statSync(uiSrcDir);
+        if (_cachedScanResult && dirStat.mtimeMs <= _cachedScanMtime) {
+            return _cachedScanResult;
+        }
+    } catch {
+        // If we can't stat the directory, don't use cache
+    }
+
+    const result = {
         version: 1,
         scannedAt: new Date().toISOString(),
         surfaces: scanSurfaces(),
@@ -517,4 +532,12 @@ export function scanAll(): ScanResult {
         goldenCases: scanGoldenCases(),
         loopRuns: scanLoopRuns(),
     };
+    
+    _cachedScanResult = result;
+    try {
+        _cachedScanMtime = statSync(resolve(ROOT, 'ui/src')).mtimeMs;
+    } catch {
+        _cachedScanMtime = Date.now();
+    }
+    return result;
 }
