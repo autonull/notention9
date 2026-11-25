@@ -3,25 +3,25 @@
     "cellKey": "journey.a|hand-built|desktop|default|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-25T16:11:57.052Z"
+    "timestamp": "2026-11-25T16:33:47.837Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|default|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-25T16:11:57.053Z"
+    "timestamp": "2026-11-25T16:33:47.838Z"
   },
   {
     "cellKey": "journey.a|hand-built|desktop|brand-acme|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-25T16:11:57.053Z"
+    "timestamp": "2026-11-25T16:33:47.838Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|brand-acme|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-25T16:11:57.053Z"
+    "timestamp": "2026-11-25T16:33:47.838Z"
   },
   {
     "cellKey": "uisg.skeleton.flow.ontology-conflict|generated|desktop|default|desktop-1440|&#39;",
@@ -472,5 +472,23 @@
     "runId": "run_1795623507013_3ebl5q6",
     "status": "passed",
     "timestamp": "2026-11-25T16:18:43.647Z"
+  },
+  {
+    "cellKey": "golden-path|hand-built|desktop|default|desktop-1440|dense",
+    "runId": "run_1795624584841_hodmhdi",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:36:28.665Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|desktop|default|desktop-1440|dense",
+    "runId": "run_1795624595185_qqbkroi",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:36:51.644Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.ontology-conflict|generated|desktop|default|desktop-1440|dense",
+    "runId": "run_1795624616669_6d706xj",
+    "status": "passed",
+    "timestamp": "2026-11-25T16:37:08.697Z"
   }
 ]

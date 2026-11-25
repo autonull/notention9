@@ -1,0 +1,81 @@
+{
+  "runId": "decision-1795624650035",
+  "decisions": [
+    {
+      "surface": "capture-and-edit-keyboard",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "capture-and-edit-palette",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "capture-and-edit",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "golden-path",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "ontology-conflict",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "publish-gate",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "uisg.skeleton.flow.ontology-conflict",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "uisg.skeleton.flow.publish-gate",
+      "variant": "dense",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    }
+  ],
+  "promoted": [
+    "capture-and-edit-keyboard/dense",
+    "capture-and-edit-palette/dense",
+    "capture-and-edit/dense",
+    "golden-path/dense",
+    "ontology-conflict/dense",
+    "publish-gate/dense",
+    "uisg.skeleton.flow.ontology-conflict/dense",
+    "uisg.skeleton.flow.publish-gate/dense"
+  ],
+  "rejected": [],
+  "flagged": []
+}
