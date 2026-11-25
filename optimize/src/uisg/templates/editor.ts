@@ -20,7 +20,7 @@ import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { cn } from '../../utils/ui';
 import { Button } from '../ui/Button';
 import { Toolbar } from '../ui/kit';
-import { SparklesIcon, BoldIcon, ItalicIcon, ListIcon, CodeIcon, LinkIcon } from '../ui/icons';
+import { SparklesIcon, BoldIcon, ItalicIcon, ListIcon, CodeBlockIcon, LinkIcon } from '../ui/icons';
 import type { Property, OntologyNode } from '@notention/core';
 
 interface ${componentName}Props {
@@ -60,7 +60,7 @@ const TOOLBAR_BUTTONS = [
     { id: 'bold', icon: BoldIcon, label: 'Bold', shortcut: 'Mod+B' },
     { id: 'italic', icon: ItalicIcon, label: 'Italic', shortcut: 'Mod+I' },
     { id: 'list', icon: ListIcon, label: 'List', shortcut: 'Mod+Shift+L' },
-    { id: 'code', icon: CodeIcon, label: 'Inline code', shortcut: 'Mod+E' },
+    { id: 'code', icon: CodeBlockIcon, label: 'Inline code', shortcut: 'Mod+E' },
     { id: 'link', icon: LinkIcon, label: 'Link', shortcut: 'Mod+K' },
 ] as const;
 

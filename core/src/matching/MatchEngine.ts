@@ -53,6 +53,7 @@ export interface MatchEngineOptions {
 
 export class MatchEngine {
   private ontologyNodes: OntologyNode[];
+  private ontologyNodeMap: Map<string, OntologyNode>;
   private ontologyTypes: Map<string, { operators?: { real: string[]; imaginary: string[] } }>;
   private crossKeyMap: Record<string, string[]>;
   private useNeedInference: boolean;
@@ -66,6 +67,7 @@ export class MatchEngine {
       this.ontologyNodes = ontology ?? ontologyMapToArray(getOntology().nodes);
       this.ontologyTypes = getOntology().types;
     }
+    this.ontologyNodeMap = new Map(this.ontologyNodes.map(n => [n.id, n]));
     this.crossKeyMap = options?.crossKeyMap ?? REQUEST_TO_OFFER_KEY_MAP;
     this.useNeedInference = options?.useNeedInference ?? false;
   }
@@ -144,10 +146,8 @@ export class MatchEngine {
   }
 
   private evaluateConstraint(req: Property, off: Property): PropertyMatch {
-    // Use new loader's findAttributeDef which searches across all nodes
-    // Convert ontologyNodes array to Map for the new API
-    const nodesMap = new Map(this.ontologyNodes.map(n => [n.id, n]));
-    const attributeDef = findAttributeDef(nodesMap, '', req.key);
+    // Use cached ontology node map for findAttributeDef
+    const attributeDef = findAttributeDef(this.ontologyNodeMap, '', req.key);
     return evaluateProperty(req, off, attributeDef);
   }
 }

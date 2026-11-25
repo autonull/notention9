@@ -197,6 +197,7 @@ export function rankMatchesWithPreferences(
 
 /**
  * Check if two notes are near-duplicates based on title and key properties
+ * Optimized to avoid creating intermediate Sets
  */
 export function areNearDuplicates(noteA: Note, noteB: Note, similarityThreshold = 0.8): boolean {
     // Title similarity (simple Jaccard on words)
@@ -205,16 +206,23 @@ export function areNearDuplicates(noteA: Note, noteB: Note, similarityThreshold 
     
     const titleSetA = new Set(titleA);
     const titleSetB = new Set(titleB);
-    const intersection = new Set([...titleSetA].filter(x => titleSetB.has(x)));
-    const union = new Set([...titleSetA, ...titleSetB]);
-    const titleSimilarity = union.size > 0 ? intersection.size / union.size : 0;
+    let titleIntersection = 0;
+    for (const x of titleSetA) {
+        if (titleSetB.has(x)) titleIntersection++;
+    }
+    const titleUnion = titleSetA.size + titleSetB.size - titleIntersection;
+    const titleSimilarity = titleUnion > 0 ? titleIntersection / titleUnion : 0;
     
     // Property key overlap
-    const keysA = new Set(noteA.properties.map(p => p.key));
-    const keysB = new Set(noteB.properties.map(p => p.key));
-    const keyIntersection = new Set([...keysA].filter(x => keysB.has(x)));
-    const keyUnion = new Set([...keysA, ...keysB]);
-    const keySimilarity = keyUnion.size > 0 ? keyIntersection.size / keyUnion.size : 0;
+    const keysA = noteA.properties.map(p => p.key);
+    const keysB = noteB.properties.map(p => p.key);
+    const keysSetB = new Set(keysB);
+    let keyIntersection = 0;
+    for (const key of keysA) {
+        if (keysSetB.has(key)) keyIntersection++;
+    }
+    const keyUnion = keysA.length + keysB.length - keyIntersection;
+    const keySimilarity = keyUnion > 0 ? keyIntersection / keyUnion : 0;
     
     // Combined similarity
     const combinedSimilarity = (titleSimilarity + keySimilarity) / 2;

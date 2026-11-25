@@ -1,0 +1,150 @@
+{
+  "runId": "matrix_1795636248907_ernkel6",
+  "startedAt": "2026-11-25T19:50:48.903Z",
+  "completedAt": "2026-11-25T19:50:48.907Z",
+  "config": {
+    "contexts": [
+      "desktop"
+    ],
+    "themes": [
+      "default"
+    ],
+    "viewports": [
+      "desktop-1440"
+    ],
+    "variants": [],
+    "parallelism": 4,
+    "allowLarge": false,
+    "skipCached": false,
+    "noPlaywright": true
+  },
+  "cells": [
+    {
+      "flowId": "flow.capture-and-edit-keyboard",
+      "journey": "capture-and-edit-keyboard",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 0,
+      "runId": "run_1795636248906_t04y7ip",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    },
+    {
+      "flowId": "flow.capture-and-edit-palette",
+      "journey": "capture-and-edit-palette",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 0,
+      "runId": "run_1795636248906_np3df2h",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    },
+    {
+      "flowId": "flow.capture-and-edit",
+      "journey": "capture-and-edit",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 0,
+      "runId": "run_1795636248904_na6gkmn",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    },
+    {
+      "flowId": "flow.golden-path",
+      "journey": "golden-path",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795636248904_meu2d58",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "ontology-conflict",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 0,
+      "runId": "run_1795636248906_2m9xvuk",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "publish-gate",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795636248904_0a3gcnc",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "uisg.skeleton.flow.ontology-conflict",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 0,
+      "runId": "run_1795636248906_nd1j92f",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "uisg.skeleton.flow.publish-gate",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795636248904_4an7hu3",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": ""
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": 0
+  }
+}

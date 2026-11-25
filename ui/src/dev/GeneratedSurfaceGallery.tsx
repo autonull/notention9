@@ -1,7 +1,7 @@
 import React, { Suspense, useState } from 'react';
 import { Card } from '../components/ui/Primitives';
 import { Button } from '../components/ui/Button';
-import { SectionHeader } from '../components/patterns/PageSurface';
+import { SectionHeader } from '../components/ui/kit';
 
 // Generated item components
 const MatchItem = React.lazy(() => import('../components/items/MatchItem'));

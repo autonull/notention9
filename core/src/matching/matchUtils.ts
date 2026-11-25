@@ -257,30 +257,42 @@ export function partitionProperties(properties: Property[]): {
 
 /**
  * Calculate Jaccard similarity between two sets of property keys
+ * Optimized to avoid creating intermediate Sets
  */
 export function jaccardSimilarity<T>(setA: Set<T>, setB: Set<T>): number {
     if (setA.size === 0 || setB.size === 0) return 0;
     
-    const intersection = new Set([...setA].filter(x => setB.has(x)));
-    const union = new Set([...setA, ...setB]);
+    let intersectionSize = 0;
+    for (const x of setA) {
+        if (setB.has(x)) intersectionSize++;
+    }
+    const unionSize = setA.size + setB.size - intersectionSize;
     
-    return intersection.size / union.size;
+    return intersectionSize / unionSize;
 }
 
 /**
  * Calculate semantic overlap between two notes based on shared property keys
  * Weighted by note priorities
+ * Optimized to avoid creating intermediate Sets
  */
 export function calculateSemanticOverlap(
     noteA: { properties: { key: string }[]; priority?: number },
     noteB: { properties: { key: string }[]; priority?: number }
 ): number {
-    const keysA = new Set(noteA.properties.map(p => p.key));
-    const keysB = new Set(noteB.properties.map(p => p.key));
+    const keysA = noteA.properties.map(p => p.key);
+    const keysB = noteB.properties.map(p => p.key);
     
-    if (keysA.size === 0 || keysB.size === 0) return 0;
+    if (keysA.length === 0 || keysB.length === 0) return 0;
     
-    const baseScore = jaccardSimilarity(keysA, keysB);
+    const setB = new Set(keysB);
+    let intersectionSize = 0;
+    for (const key of keysA) {
+        if (setB.has(key)) intersectionSize++;
+    }
+    const unionSize = keysA.length + keysB.length - intersectionSize;
+    const baseScore = intersectionSize / unionSize;
+    
     const priorityA = noteA.priority ?? 1.0;
     const priorityB = noteB.priority ?? 1.0;
     
