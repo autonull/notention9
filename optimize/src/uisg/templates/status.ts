@@ -358,7 +358,7 @@ describe('${componentName} (generated)', () => {
 
 import { z } from 'zod';
 
-export const ${surface.id.replace(/\./g, '_')}_PropsSchema = z.object({
+export const ${surface.id.replace(/[.-]/g, '_')}_PropsSchema = z.object({
     kind: z.enum(['loading', 'success', 'warning', 'error', 'info']),
     message: z.string(),
     detail: z.string().optional(),
@@ -375,7 +375,7 @@ export const ${surface.id.replace(/\./g, '_')}_PropsSchema = z.object({
     testId: z.string().optional(),
 });
 
-export type ${surface.id.replace(/\./g, '_').replace(/-./g, (m: string) => m[1].toUpperCase())}Props = z.infer<typeof ${surface.id.replace(/\./g, '_')}_PropsSchema>;
+export type ${surface.id.replace(/[.-]/g, '_').replace(/-./g, (m: string) => m[1].toUpperCase())}Props = z.infer<typeof ${surface.id.replace(/[.-]/g, '_')}_PropsSchema>;
 `;
     },
 };

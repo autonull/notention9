@@ -473,7 +473,7 @@ describe('${componentName} (generated)', () => {
 
 import { z } from 'zod';
 
-export const ${surface.id.replace(/\./g, '_')}_PropsSchema = z.object({
+export const ${surface.id.replace(/[.-]/g, '_')}_PropsSchema = z.object({
     match: z.object({
         note: z.object({
             id: z.string(),
@@ -531,7 +531,7 @@ export const ${surface.id.replace(/\./g, '_')}_PropsSchema = z.object({
     onExplanation: z.function().args(z.union([z.literal('explained'), z.literal('dismissed')])).returns(z.void()).optional(),
 });
 
-export type ${surface.id.replace(/\./g, '_').replace(/-./g, (m: string) => m[1].toUpperCase())}Props = z.infer<typeof ${surface.id.replace(/\./g, '_')}_PropsSchema>;
+export type ${surface.id.replace(/[.-]/g, '_').replace(/-./g, (m: string) => m[1].toUpperCase())}Props = z.infer<typeof ${surface.id.replace(/[.-]/g, '_')}_PropsSchema>;
 `;
     },
 };

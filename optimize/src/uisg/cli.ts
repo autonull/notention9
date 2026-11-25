@@ -82,7 +82,7 @@ Commands:
                                             Compare bundles, update lifecycle, record decision
   canonicalize [--graph <file>] [--check-roundtrip]  Canonicalize graph; verify round-trip
   regressions [--graph <file>]              Apply seeded regressions; every expected finding must fire
-  check [--graph <file>]                    Gate: validate, analyze --strict, sync, regressions, round-trip, types
+  check [--graph <file>] [--compile]          Gate: validate, analyze --strict, sync, regressions, round-trip, types, schemas; --compile runs tsc --noEmit
   diff <baseline> <variant> [--semantic]    Semantic diff of two graphs (files, 'current', or 'hash:<id>')
   findings [--mark-fixed <id> --by <name> --run <runId>] [--verify <id> --run <runId>]  Findings repo
   runs [--repair]                            Show recent run records; resolve bundle paths in place
@@ -1041,6 +1041,53 @@ async function main(): Promise<number> {
                 })
                 .map(theme => themeCssPath(theme.id));
 
+            // Schema validation for doc/uisg/*.json
+            const { validateContextProfiles, validateThemes, validateVariants, validatePolicy, validateMatrix } = await import('./validate.js');
+            const schemaResults = [];
+            for (const [file, validator] of [
+                ['contexts.json', validateContextProfiles],
+                ['themes.json', validateThemes],
+                ['variants.json', validateVariants],
+                ['policy.json', validatePolicy],
+            ] as const) {
+                try {
+                    const content = JSON.parse(readFileSync(resolve(ROOT, `doc/uisg/${file}`), 'utf8'));
+                    const result = validator(content);
+                    if (!result.ok) {
+                        schemaResults.push({ file, issues: result.issues });
+                    }
+                } catch (e) {
+                    schemaResults.push({ file, issues: [{ severity: 'error' as const, code: 'read', message: String(e), ref: file }] });
+                }
+            }
+            // Validate latest matrix file
+            try {
+                const { readdirSync } = await import('node:fs');
+                const matrixFiles = readdirSync(resolve(ROOT, 'doc/uisg'))
+                    .filter(f => f.startsWith('matrix-') && f.endsWith('.json') && !f.includes('cache'))
+                    .sort()
+                    .reverse();
+                if (matrixFiles.length > 0) {
+                    const content = JSON.parse(readFileSync(resolve(ROOT, `doc/uisg/${matrixFiles[0]}`), 'utf8'));
+                    const result = validateMatrix(content);
+                    if (!result.ok) {
+                        schemaResults.push({ file: matrixFiles[0], issues: result.issues });
+                    }
+                }
+            } catch {
+                // ignore
+            }
+
+            // Compile check: typecheck generated artifacts
+            let compileErrors: string[] = [];
+            if (flags.has('compile')) {
+                const { spawnSync } = await import('node:child_process');
+                const result = spawnSync('pnpm', ['tsc', '--noEmit'], { cwd: ROOT, encoding: 'utf8', stdio: 'pipe' });
+                if (result.status !== 0) {
+                    compileErrors = result.stdout.split('\n').filter(l => l.includes('error TS')).slice(0, 20);
+                }
+            }
+
             console.log(`  findings: ${findings.length}`);
             console.log(`  sync warnings: ${blocked.length}`);
             console.log(`  seeded regressions: ${regressions.length - missed.length}/${regressions.length}`);
@@ -1050,7 +1097,15 @@ async function main(): Promise<number> {
             console.log(`  theme css: ${staleThemes.length ? `${staleThemes.length} stale` : 'current'}`);
             console.log(`  round-trip: ${roundtrip ? 'PASS' : 'FAIL'}`);
             console.log(`  types: ${typesOutOfDate ? 'OUT OF DATE' : 'current'}`);
-            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || staleGenerated.length > 0 || staleThemes.length > 0 || !roundtrip || typesOutOfDate;
+            console.log(`  schemas: ${schemaResults.length ? `${schemaResults.length} invalid` : 'valid'}`);
+            for (const { file, issues } of schemaResults) {
+                for (const iss of issues) console.log(`    ${file}: ${iss.code} - ${iss.message}`);
+            }
+            if (flags.has('compile')) {
+                console.log(`  compile: ${compileErrors.length ? `${compileErrors.length} errors` : 'OK'}`);
+                for (const err of compileErrors) console.log(`    ${err.trim()}`);
+            }
+            const failed = findings.length > 0 || blocked.length > 0 || missed.length > 0 || unresolved.length > 0 || staleSkeleton.length > 0 || staleGenerated.length > 0 || staleThemes.length > 0 || !roundtrip || typesOutOfDate || schemaResults.length > 0 || compileErrors.length > 0;
             console.log(failed ? 'CHECK FAILED' : 'CHECK OK');
             return failed ? 1 : 0;
         }

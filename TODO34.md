@@ -36,7 +36,7 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | C.3 Graph UI editor        | ✅ Done | `ui/src/dev/GraphEditor.tsx`; Cytoscape.js + dagre; lazy-loaded at `?uisg=1&mode=graph` |
 | C.4 Template Playground    | ✅ Done | `ui/src/dev/TemplatePlayground.tsx`; Monaco-style editor; live preview; export templates |
 | C.5 Time-travel debugger   | ✅ Done | `ui/src/dev/TimeTravelDebugger.tsx`; step slider, guard/effect timelines, state inspector, trace export |
-| C.6 Automation & DX        | 🟡 Partial | Matrix cache/affected/max-cells/shard/ETA ✅; baselines ✅; policy.json ✅; rollback ✅; quality-debt ⬜ |
+| C.6 Automation & DX        | ✅ Done | Matrix cache/affected/max-cells/shard/ETA ✅; baselines ✅; policy.json ✅; rollback ✅; quality-debt ✅ (identifiers, schemas, compile check) |
 | D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
 
 **Latest code commit:** Phase A.5+C.6 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines (`pending commit`).
@@ -778,3 +778,9 @@ Variant explosion is the top risk.
 - **matrix.ts**: Added `--max-cells`, `--allow-large`, `--shard i/N`, `--skip-cached` options; added `estimateMatrixDuration()` with ETA from historical `runs.jsonl`; added matrix cache (`doc/uisg/matrix-cache.json`) for skipping recently-passed cells
 - **cli.ts**: Updated `matrix` command with new flags; `--plan` now shows ETA
 - **policy.json**: Created with hard/soft gates, visual threshold, per-surface/journey override structure
+
+### 2026-11-24 — Quality-debt (§14.14)
+- **templates/*.ts**: Fixed identifier sanitization — `surface.id.replace(/[.-]/g, '_')` for valid TS identifiers (was `replace(/\./g, '_')` leaving hyphens)
+- **validate.ts**: Added Zod schemas for contexts.json, themes.json, variants.json, policy.json, matrix.json
+- **cli.ts**: Added schema validation to `uisg check` (validates all doc/uisg/*.json)
+- **cli.ts**: Added `--compile` flag to `uisg check` — runs `tsc --noEmit` on generated artifacts

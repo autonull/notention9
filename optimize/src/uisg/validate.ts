@@ -160,3 +160,196 @@ export function validateGraph(input: unknown): ValidationResult {
     const issues = semanticIssues(parsed.data as UisgGraph);
     return { ok: !issues.some(({ severity }) => severity === 'error'), graph: parsed.data as UisgGraph, issues };
 }
+
+export const ContextProfileSchema = z.object({
+    id: z.string().min(1),
+    name: z.string().min(1),
+    description: z.string().optional(),
+    actor: z.string().optional(),
+    expertise: z.enum(['expert', 'intermediate', 'novice']).optional(),
+    device: z.enum(['desktop', 'mobile', 'tablet']).optional(),
+    connectivity: z.enum(['online', 'offline', 'intermittent', 'degraded']).optional(),
+    locale: z.string().optional(),
+    viewport: z.string().optional(),
+    density: z.enum(['comfortable', 'compact', 'dense']).optional(),
+    modality: z.enum(['pointer', 'touch', 'voice', 'keyboard']).optional(),
+    profile: z.string().optional(),
+    theme: z.string().optional(),
+    extends: z.string().optional(),
+    a11yConstraints: z.array(z.string()).optional(),
+    strategyOverrides: z.record(z.string(), z.string()).optional(),
+    templateVariants: z.record(z.string(), z.string()).optional(),
+    featureFlags: z.array(z.string()).optional(),
+});
+
+export const ContextProfilesSchema = z.object({
+    version: z.number().int().positive(),
+    updatedAt: z.string().datetime(),
+    profiles: z.array(ContextProfileSchema),
+});
+
+export const ThemeSchema = z.object({
+    accent: z.string().regex(/^#[0-9A-Fa-f]{6}$/),
+    radius: z.string().regex(/^\d+px$/),
+    font: z.string().min(1),
+});
+
+export const ThemesSchema = z.record(ThemeSchema);
+
+export const VariantPatchSchema = z.object({
+    template: z.string().optional(),
+    propsSchema: z.record(z.unknown()).optional(),
+    strategyOverrides: z.record(z.string(), z.string()).optional(),
+    description: z.string().optional(),
+    status: z.enum(['experimental', 'candidate', 'promoted', 'archived']).optional(),
+    promotedAt: z.string().optional(),
+    metrics: z.object({
+        bundleKb: z.number().optional(),
+        f1: z.number().optional(),
+        taskTimeMs: z.number().optional(),
+        visualPass: z.boolean().optional(),
+    }).optional(),
+});
+
+export const VariantRecordSchema = z.object({
+    surface: z.string().min(1),
+    id: z.string().min(1),
+    createdAt: z.string().datetime(),
+    updatedAt: z.string().datetime(),
+    template: z.string().optional(),
+    propsSchema: z.record(z.unknown()).optional(),
+    strategyOverrides: z.record(z.string(), z.string()).optional(),
+    description: z.string().min(1),
+    status: z.enum(['experimental', 'candidate', 'promoted', 'archived']),
+    promotedAt: z.string().optional(),
+    metrics: z.object({
+        bundleKb: z.number().optional(),
+        f1: z.number().optional(),
+        taskTimeMs: z.number().optional(),
+        visualPass: z.boolean().optional(),
+    }).optional(),
+});
+
+export const VariantsSchema = z.object({
+    version: z.number().int().positive(),
+    updatedAt: z.string().datetime(),
+    variants: z.array(VariantRecordSchema),
+});
+
+export const PolicyHardGatesSchema = z.object({
+    zeroTypeErrors: z.boolean(),
+    zeroAccessibilityViolations: z.boolean(),
+    toneViolationsBaseline: z.number().int().nonnegative(),
+    bundleSizeDeltaKb: z.number().int().nonnegative(),
+});
+
+export const PolicySoftGatesSchema = z.object({
+    taskTimeMs: z.object({ weight: z.number().positive(), target: z.number().positive() }),
+    interactionCount: z.object({ weight: z.number().positive(), target: z.number().positive() }),
+    matchF1: z.object({ weight: z.number().positive(), target: z.number().min(0).max(1) }),
+});
+
+export const PolicySchema = z.object({
+    version: z.number().int().positive().optional(),
+    updatedAt: z.string().datetime().optional(),
+    hardGates: PolicyHardGatesSchema,
+    softGates: PolicySoftGatesSchema,
+    visualThreshold: z.number().min(0).max(1),
+    perSurfaceOverrides: z.record(z.string(), z.unknown()).optional(),
+    perJourneyOverrides: z.record(z.string(), z.unknown()).optional(),
+});
+
+export const MatrixConfigSchema = z.object({
+    contexts: z.array(z.string()),
+    themes: z.array(z.string()),
+    viewports: z.array(z.string()),
+    variants: z.array(z.string()),
+    parallelism: z.number().int().positive(),
+    maxCells: z.number().int().positive().optional(),
+    allowLarge: z.boolean().optional(),
+    shard: z.string().optional(),
+    skipCached: z.boolean().optional(),
+});
+
+export const MatrixCellResultSchema = z.object({
+    flowId: z.string(),
+    journey: z.string(),
+    profile: z.string(),
+    viewport: z.string(),
+    theme: z.string(),
+    context: z.string().optional(),
+    variant: z.string().optional(),
+    status: z.enum(['passed', 'failed', 'skipped', 'error']),
+    durationMs: z.number().int().nonnegative(),
+    runId: z.string(),
+    assertions: z.array(z.unknown()),
+    metrics: z.record(z.number()),
+    screenshots: z.array(z.string()),
+    bundlePath: z.string(),
+    error: z.string().optional(),
+});
+
+export const MatrixResultSchema = z.object({
+    runId: z.string(),
+    startedAt: z.string().datetime(),
+    completedAt: z.string().datetime(),
+    config: MatrixConfigSchema,
+    cells: z.array(MatrixCellResultSchema),
+    summary: z.object({
+        total: z.number().int().nonnegative(),
+        passed: z.number().int().nonnegative(),
+        failed: z.number().int().nonnegative(),
+        skipped: z.number().int().nonnegative(),
+        errors: z.number().int().nonnegative(),
+    }),
+});
+
+export function validateContextProfiles(input: unknown): ValidationResult {
+    const parsed = ContextProfilesSchema.safeParse(input);
+    if (!parsed.success) {
+        const issues = parsed.error.issues.map(({ path, message }) =>
+            issue('error', 'schema', `contexts.json: ${path.join('.') || 'root'}: ${message}`, path.join('.')));
+        return { ok: false, issues };
+    }
+    return { ok: true, graph: undefined, issues: [] };
+}
+
+export function validateThemes(input: unknown): ValidationResult {
+    const parsed = ThemesSchema.safeParse(input);
+    if (!parsed.success) {
+        const issues = parsed.error.issues.map(({ path, message }) =>
+            issue('error', 'schema', `themes.json: ${path.join('.') || 'root'}: ${message}`, path.join('.')));
+        return { ok: false, issues };
+    }
+    return { ok: true, graph: undefined, issues: [] };
+}
+
+export function validateVariants(input: unknown): ValidationResult {
+    const parsed = VariantsSchema.safeParse(input);
+    if (!parsed.success) {
+        const issues = parsed.error.issues.map(({ path, message }) =>
+            issue('error', 'schema', `variants.json: ${path.join('.') || 'root'}: ${message}`, path.join('.')));
+        return { ok: false, issues };
+    }
+    return { ok: true, graph: undefined, issues: [] };
+}
+
+export function validatePolicy(input: unknown): ValidationResult {
+    const parsed = PolicySchema.safeParse(input);
+    if (!parsed.success) {
+        const issues = parsed.error.issues.map(({ path, message }) =>
+            issue('error', 'schema', `policy.json: ${path.join('.') || 'root'}: ${message}`, path.join('.')));
+        return { ok: false, issues };
+    }
+    return { ok: true, graph: undefined, issues: [] };
+}
+
+export function validateMatrix(input: unknown): ValidationResult {
+    const parsed = MatrixResultSchema.safeParse(input);
+    if (!parsed.success) {
+        const issues = parsed.error.issues.map(({ path, message }) =>
+            issue('error', 'schema', `matrix.json: ${path.join('.') || 'root'}: ${message}`, path.join('.')));
+        return { ok: false, issues };
+    }
+    return { ok: true, graph: undefined, issues: [] };
+}
