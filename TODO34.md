@@ -38,13 +38,13 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | C.5 Time-travel debugger   | ✅ Done | `ui/src/dev/TimeTravelDebugger.tsx`; step slider, guard/effect timelines, state inspector, trace export |
 | C.6 Automation & DX        | ✅ Done | Matrix cache/affected/max-cells/shard/ETA ✅; baselines ✅; policy.json ✅; rollback ✅; quality-debt ✅ (identifiers, schemas, compile check); test efficiency ✅ (affected matrix, vitest --changed, playwright skip) |
 | D.1 AI-assisted variant gen | ⬜ Pending | `uisg generate --prompt` produces valid variant + preview |
-| D.2 Composition DSL    | ⬜ Pending | DSL compiles to template AST, generates component |
+| D.2 Composition DSL    | ✅ Done    | `compose.ts` with typed primitives, `compose()`, `primitive()`, `sequence()`, `conditional()`, `slot()`; compiles to template AST; contract tests per target |
 | D.3 Predictive model   | ⬜ Pending | Linear/GBM regression from `runs.jsonl`, predicts task time within 20% MAE |
 | D.4 Feature flags      | ✅ Done    | `useUisgFlags` hook, `FlagsPanel` at `?uisg=1&mode=flags`, URL params, localStorage sync |
 
-**Latest code commit:** Phase A.5+C.6+D.4 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`).
+**Latest code commit:** Phase A.5+C.6+D.4+D.2 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`).
 
-**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13). Remaining: AI generation (14.10), DSL (14.11), predictive model (14.12).
+**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11). Remaining: AI generation (14.10), predictive model (14.12).
 
 ---
 
@@ -802,3 +802,11 @@ Variant explosion is the top risk.
 - **useFlowState.ts → useFlowState.tsx**: Renamed to `.tsx` since it returns JSX (FlowContext.Provider)
 - Resolves flags from context `featureFlags` + URL params; rejects unknown flags; records resolved flags in state
 - No persisted defaults — base flags from context, overridden by URL
+
+### 2026-11-24 — Composition DSL (§14.11 / D.2)
+- **compose.ts**: Typed primitive registry (Card, Header, Body, BadgeRow, Footer, ActionBar, Avatar, Icon, Text, Score, Direction, Author, Explanation, Matches, Conflicts, Missing, ExplanationToggle)
+- **Combinators**: `compose()`, `primitive()`, `sequence()`, `conditional()`, `slot()` for declarative composition
+- **Compilation**: `compileComposition()` → template AST → `generateComponent`/`generateTest`/`generatePropsSchema` per target (react/html/json)
+- **Built-ins**: `MatchItemComposition`, `DenseMatchItemComposition` as examples
+- **Tests**: `compose.test.ts` with 12 tests covering generation, registration, helpers
+- Contract tests per target (react/html/json) to prevent divergence
