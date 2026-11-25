@@ -73,6 +73,8 @@ async function main(): Promise<void> {
     // Find latest matrix file and run decide
     run('pnpm exec tsx -e \'import {readdirSync} from "fs"; import {resolve} from "path"; const files = readdirSync(resolve("doc/uisg")).filter(f => f.startsWith("matrix-") && f.endsWith(".json")).sort().reverse(); if (files[0]) console.log(`pnpm uisg decide --matrix=doc/uisg/${files[0]}`); else console.log("no matrix file");\'', 'Find latest matrix file');
     run('pnpm exec tsx -e \'import {readdirSync} from "fs"; import {resolve} from "path"; const files = readdirSync(resolve("doc/uisg")).filter(f => f.startsWith("matrix-") && f.endsWith(".json")).sort().reverse(); if (files[0]) { const {execSync} = require("child_process"); execSync(`pnpm uisg decide --matrix=doc/uisg/${files[0]}`, {stdio: "inherit"}); }\'', 'L3: UISG decision gate');
+    // Auto-promote PASS variants
+    run('pnpm uisg auto-promote', 'L3: UISG auto-promote PASS variants');
 
     // Performance budget
     run('pnpm optimize perf:budget', 'L3: Performance budget check');

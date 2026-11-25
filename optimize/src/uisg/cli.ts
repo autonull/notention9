@@ -66,6 +66,7 @@ Commands:
                                             Run journeys across contexts x themes x viewports x variants; write matrix report
                                             --quick: minimal matrix (1 context, 1 theme, 1 viewport) for fast feedback
   decide --matrix <runId> [--baseline <runId>] [--policy <file>]  Evaluate variants against policy; promote/reject/flag
+  auto-promote [--decision <runId>]        Auto-promote PASS variants from latest decision (or specified)
   baselines <list|show|update> [journey] [variant] [--matrix <runId>]  Manage per-journey baselines (doc/uisg/baselines/)
   visual-diff --baseline=<runId> --compare=<runId> [--contexts c|all] [--themes t|all] [--threshold=0.99] [--update-baselines]
                                             Visual regression test with pixelmatch
@@ -114,11 +115,17 @@ function parseArgs(argv: string[]) {
 // Simple in-memory cache for graph loading within a single process
 let _cachedGraph: UisgGraph | null = null;
 let _cachedGraphPath: string | null = null;
+let _cachedGraphMtime: number = 0;
 
 export function loadGraph(flags: Map<string, string>): UisgGraph {
     const file = resolve(ROOT, flags.get('graph') ?? 'doc/uisg/graph.json');
-    if (_cachedGraph && _cachedGraphPath === file) {
-        return _cachedGraph;
+    try {
+        const stat = statSync(file);
+        if (_cachedGraph && _cachedGraphPath === file && stat.mtimeMs <= _cachedGraphMtime) {
+            return _cachedGraph;
+        }
+    } catch {
+        // If we can't stat, don't use cache
     }
     const result = validateGraph(JSON.parse(readFileSync(file, 'utf8')));
     if (!result.graph) {
@@ -127,6 +134,11 @@ export function loadGraph(flags: Map<string, string>): UisgGraph {
     }
     _cachedGraph = result.graph;
     _cachedGraphPath = file;
+    try {
+        _cachedGraphMtime = statSync(file).mtimeMs;
+    } catch {
+        _cachedGraphMtime = Date.now();
+    }
     return _cachedGraph;
 }
 
@@ -708,6 +720,85 @@ async function main(): Promise<number> {
                 console.log(`  ${d.surface}/${d.variant}: ${d.status} (score: ${d.softScore.toFixed(2)})${d.hardGateFailures.length ? ` — ${d.hardGateFailures.join('; ')}` : ''}`);
             }
             return decision.rejected.length > 0 ? 1 : 0;
+        }
+        case 'auto-promote': {
+            const decisionRunId = flags.get('decision');
+            let decisionFile: string;
+            if (decisionRunId) {
+                decisionFile = resolve(ROOT, `doc/uisg/decision-${decisionRunId}.json`);
+            } else {
+                // Find latest decision file
+                const { readdirSync } = await import('node:fs');
+                const files = readdirSync(resolve(ROOT, 'doc/uisg'))
+                    .filter(f => f.startsWith('decision-') && f.endsWith('.json'))
+                    .sort()
+                    .reverse();
+                if (files.length === 0) {
+                    console.error('No decision files found');
+                    return 1;
+                }
+                decisionFile = resolve(ROOT, `doc/uisg/${files[0]}`);
+            }
+            const decision = JSON.parse(readFileSync(decisionFile, 'utf8'));
+            console.log(`Using decision: ${decision.runId}`);
+            console.log(`Promoting ${decision.promoted.length} variant(s)...`);
+            
+            // Load graph to resolve journey/flow -> surface
+            const graph = loadGraph(flags);
+            const { indexGraph, edgesFrom } = await import('./query.js');
+            const index = indexGraph(graph);
+            
+            // Build map: journey/flow -> surface
+            const journeyToSurface = new Map<string, string>();
+            for (const node of graph.nodes) {
+                if (node.type === 'flow') {
+                    const contained = new Set(edgesFrom(index, node.id, 'contains').map(({ to }) => to));
+                    for (const stepId of contained) {
+                        const rendered = edgesFrom(index, stepId, 'renders').map(({ to }) => to);
+                        for (const surfaceId of rendered) {
+                            const surface = index.byId.get(surfaceId);
+                            if (surface?.type === 'surface') {
+                                journeyToSurface.set(node.id, surfaceId);
+                                if (node.journey) journeyToSurface.set(node.journey, surfaceId);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            const { promoteVariant } = await import('./variants.js');
+const { hasVariant } = await import('./resolve.js');
+            let promotedCount = 0;
+            for (const promo of decision.promoted) {
+                const [journeyOrFlow, variant] = promo.split('/');
+                if (!journeyOrFlow || !variant) {
+                    console.warn(`Skipping invalid promotion: ${promo}`);
+                    continue;
+                }
+                // Resolve journey/flow to surface
+                const surface = journeyToSurface.get(journeyOrFlow);
+                if (!surface) {
+                    console.warn(`  ⚠️ No surface found for ${journeyOrFlow}, skipping`);
+                    continue;
+                }
+                // Check if surface has this variant
+                if (!hasVariant(graph.nodes.find(n => n.id === surface) as any, variant)) {
+                    console.warn(`  ⚠️ Surface ${surface} does not have variant ${variant}, skipping`);
+                    continue;
+                }
+                // Find the decision entry for this surface/variant to get metrics
+                const decisionEntry = decision.decisions.find((d: any) => d.surface === journeyOrFlow && d.variant === variant);
+                const metrics = decisionEntry?.metrics;
+                try {
+                    const record = promoteVariant(surface, variant, metrics);
+                    console.log(`  ✅ Promoted ${surface}/${variant} (from ${journeyOrFlow})`);
+                    promotedCount++;
+                } catch (e) {
+                    console.error(`  ❌ Failed to promote ${surface}/${variant} (from ${journeyOrFlow}): ${e}`);
+                }
+            }
+            console.log(`Auto-promotion complete: ${promotedCount}/${decision.promoted.length} promoted`);
+            return 0;
         }
         case 'baselines': {
             const [action, journey, variant] = positionals;

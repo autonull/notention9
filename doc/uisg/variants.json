@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-25T03:18:20.612Z",
+  "updatedAt": "2026-11-25T18:35:30.655Z",
   "variants": [
     {
       "template": "item",
@@ -45,6 +45,66 @@
       "id": "ai-dense-v2",
       "createdAt": "2026-11-25T03:18:20.611Z",
       "updatedAt": "2026-11-25T03:18:20.611Z"
+    },
+    {
+      "template": "item",
+      "description": "Dense list view for mobile",
+      "status": "promoted",
+      "surface": "surface.editormanager",
+      "id": "dense",
+      "createdAt": "2026-11-25T18:35:24.106400Z",
+      "updatedAt": "2026-11-25T18:35:30.655Z",
+      "promotedAt": "2026-11-25T18:35:30.655Z",
+      "metrics": {}
+    },
+    {
+      "template": "item",
+      "description": "Dense list view for mobile",
+      "status": "experimental",
+      "surface": "surface.propertyeditor",
+      "id": "dense",
+      "createdAt": "2026-11-25T18:35:24.106400Z",
+      "updatedAt": "2026-11-25T18:35:24.106400Z"
+    },
+    {
+      "template": "item",
+      "description": "Dense list view for mobile",
+      "status": "experimental",
+      "surface": "surface.confirmationmodal",
+      "id": "dense",
+      "createdAt": "2026-11-25T18:35:24.106400Z",
+      "updatedAt": "2026-11-25T18:35:24.106400Z"
+    },
+    {
+      "template": "item",
+      "description": "Dense list view for mobile",
+      "status": "experimental",
+      "surface": "surface.notecontextrail",
+      "id": "dense",
+      "createdAt": "2026-11-25T18:35:24.106400Z",
+      "updatedAt": "2026-11-25T18:35:24.106400Z"
+    },
+    {
+      "template": "item",
+      "description": "Dense list view for mobile",
+      "status": "promoted",
+      "surface": "surface.ontologyview",
+      "id": "dense",
+      "createdAt": "2026-11-25T18:35:24.106400Z",
+      "updatedAt": "2026-11-25T18:35:30.604Z",
+      "promotedAt": "2026-11-25T18:35:30.604Z",
+      "metrics": {}
+    },
+    {
+      "template": "item",
+      "description": "Dense list view for mobile",
+      "status": "promoted",
+      "surface": "surface.matchitem",
+      "id": "dense",
+      "createdAt": "2026-11-25T18:35:24.106400Z",
+      "updatedAt": "2026-11-25T18:35:30.600Z",
+      "promotedAt": "2026-11-25T18:35:30.600Z",
+      "metrics": {}
     }
   ]
 }
