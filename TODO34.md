@@ -37,11 +37,14 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | C.4 Template Playground    | ✅ Done | `ui/src/dev/TemplatePlayground.tsx`; Monaco-style editor; live preview; export templates |
 | C.5 Time-travel debugger   | ✅ Done | `ui/src/dev/TimeTravelDebugger.tsx`; step slider, guard/effect timelines, state inspector, trace export |
 | C.6 Automation & DX        | ✅ Done | Matrix cache/affected/max-cells/shard/ETA ✅; baselines ✅; policy.json ✅; rollback ✅; quality-debt ✅ (identifiers, schemas, compile check); test efficiency ✅ (affected matrix, vitest --changed, playwright skip) |
-| D.1–D.4 Intelligence | ⬜ Pending | AI generation, DSL, predictive model, feature flags |
+| D.1 AI-assisted variant gen | ⬜ Pending | `uisg generate --prompt` produces valid variant + preview |
+| D.2 Composition DSL    | ⬜ Pending | DSL compiles to template AST, generates component |
+| D.3 Predictive model   | ⬜ Pending | Linear/GBM regression from `runs.jsonl`, predicts task time within 20% MAE |
+| D.4 Feature flags      | ✅ Done    | `useUisgFlags` hook, `FlagsPanel` at `?uisg=1&mode=flags`, URL params, localStorage sync |
 
-**Latest code commit:** Phase A.5+C.6 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines (`pending commit`).
+**Latest code commit:** Phase A.5+C.6+D.4 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`).
 
-**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4). Remaining: AI/DSL/predict/flags (14.5), quality-debt closeout (14.6).
+**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13). Remaining: AI generation (14.10), DSL (14.11), predictive model (14.12).
 
 ---
 
@@ -791,3 +794,11 @@ Variant explosion is the top risk.
 - **cli.ts**: Added `--no-playwright` flag to skip browser tests
 - **scripts/verify.ts**: Updated to use `--affected --no-playwright` for matrix; `--compile` for check
 - **package.json**: Added `test:changed` scripts to root, core, agent, cli, optimize, simulator using `vitest --changed`
+
+### 2026-11-24 — Feature Flags (§14.13 / D.4)
+- **useUisgFlags.ts**: Created hook with `useSyncExternalStore` for reactive flags; parses URL params (`?uisg=1&flags=a,-b`), localStorage, context presets
+- **FlagsPanel.tsx**: Dev UI at `?uisg=1&mode=flags` with context presets, URL flag editor, core settings (density, animations, theme), experimental flag toggles
+- **MainView.tsx**: Added `FlagsPanel` lazy-loaded at `uisgMode === 'flags'`
+- **useFlowState.ts → useFlowState.tsx**: Renamed to `.tsx` since it returns JSX (FlowContext.Provider)
+- Resolves flags from context `featureFlags` + URL params; rejects unknown flags; records resolved flags in state
+- No persisted defaults — base flags from context, overridden by URL

@@ -12,6 +12,7 @@ import {SettingsView} from './views/SettingsView';
 const GraphEditor = React.lazy(() => import('../dev/GraphEditor').then(m => ({ default: m.GraphEditor })));
 const TemplatePlayground = React.lazy(() => import('../dev/TemplatePlayground').then(m => ({ default: m.TemplatePlayground })));
 const TimeTravelDebugger = React.lazy(() => import('../dev/TimeTravelDebugger').then(m => ({ default: m.TimeTravelDebugger })));
+const FlagsPanel = React.lazy(() => import('../dev/FlagsPanel').then(m => ({ default: m.FlagsPanel })));
 
 interface MainViewProps {
     loading?: boolean;
@@ -42,6 +43,7 @@ export function MainView({loading = false}: MainViewProps) {
             <React.Suspense fallback={<div className="flex h-full items-center justify-center"><LoadingSpinner className="h-12 w-12"/></div>}>
                 {uisgMode === 'template' ? <TemplatePlayground/> :
                  uisgMode === 'debug' ? <TimeTravelDebugger/> :
+                 uisgMode === 'flags' ? <FlagsPanel/> :
                  <GraphEditor/>}
             </React.Suspense>
         );
