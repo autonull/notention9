@@ -1,26 +1,14 @@
-// Polyfill localStorage/sessionStorage for Node.js test environment
-if (typeof globalThis.localStorage === 'undefined') {
-    const storage = new Map<string, string>();
-    const createStorage = () => ({
-        getItem: (key: string) => storage.get(key) ?? null,
-        setItem: (key: string, value: string) => { storage.set(key, String(value)); },
-        removeItem: (key: string) => { storage.delete(key); },
-        clear: () => { storage.clear(); },
-        get length() { return storage.size; },
-        key: (index: number) => Array.from(storage.keys())[index] ?? null,
-    });
-    Object.defineProperty(globalThis, 'localStorage', { value: createStorage(), writable: true });
-    Object.defineProperty(globalThis, 'sessionStorage', { value: createStorage(), writable: true });
-}
+// Per-test setup for Vitest
+// Runs before each test file
 
-// Do NOT polyfill window globally - it breaks testSetup.ts checks
-
-import { setupTestEnvironment, cleanupTestEnvironment, initMemoryGuard } from './testSetup.js';
-
-setupTestEnvironment();
-initMemoryGuard();
-
+import { cleanupTestEnvironment, initMemoryGuard } from './testSetup.js';
 import { metaphorRegistry } from '../index.js';
+
+// Initialize metaphor registry for each test file (fresh state)
+metaphorRegistry.clear();
+
+// Initialize memory guard for each test file
+initMemoryGuard();
 
 afterEach(() => {
     cleanupTestEnvironment();
@@ -35,4 +23,4 @@ afterAll(() => {
     }
 });
 
-export { setupTestEnvironment, cleanupTestEnvironment, initMemoryGuard };
+export { cleanupTestEnvironment };

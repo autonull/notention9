@@ -7,6 +7,7 @@ export default defineConfig({
         globals: true,
         environment: 'node',
         pool: 'forks',
+        fileParallelism: true,
     },
     resolve: {
         alias: {

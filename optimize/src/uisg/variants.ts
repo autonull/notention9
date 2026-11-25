@@ -33,9 +33,18 @@ const variantsFile = (): string => process.env.NOTENTION_UISG_VARIANTS ?? DEFAUL
 
 const empty = (): VariantsData => ({ version: 1, updatedAt: new Date().toISOString(), variants: [] });
 
+let _cachedVariants: VariantsData | null = null;
+let _cachedVariantsPath: string | null = null;
+
 export function loadVariants(): VariantsData {
+    const path = variantsFile();
+    if (_cachedVariants && _cachedVariantsPath === path) {
+        return _cachedVariants;
+    }
     try {
-        return JSON.parse(readFileSync(variantsFile(), 'utf8')) as VariantsData;
+        _cachedVariants = JSON.parse(readFileSync(path, 'utf8')) as VariantsData;
+        _cachedVariantsPath = path;
+        return _cachedVariants;
     } catch {
         return empty();
     }

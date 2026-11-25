@@ -111,14 +111,23 @@ function parseArgs(argv: string[]) {
     return { flags, positionals };
 }
 
+// Simple in-memory cache for graph loading within a single process
+let _cachedGraph: UisgGraph | null = null;
+let _cachedGraphPath: string | null = null;
+
 export function loadGraph(flags: Map<string, string>): UisgGraph {
     const file = resolve(ROOT, flags.get('graph') ?? 'doc/uisg/graph.json');
+    if (_cachedGraph && _cachedGraphPath === file) {
+        return _cachedGraph;
+    }
     const result = validateGraph(JSON.parse(readFileSync(file, 'utf8')));
     if (!result.graph) {
         for (const { severity, code, message } of result.issues) console.error(`${severity.toUpperCase()} ${code}: ${message}`);
         throw new Error(`Graph ${file} failed schema validation`);
     }
-    return result.graph;
+    _cachedGraph = result.graph;
+    _cachedGraphPath = file;
+    return _cachedGraph;
 }
 
 export function saveGraph(graph: UisgGraph, file?: string): void {
@@ -126,7 +135,11 @@ export function saveGraph(graph: UisgGraph, file?: string): void {
     writeFileSync(targetFile, JSON.stringify(graph, null, 2) + '\n');
 }
 
+let _cachedTestIds: Set<string> | null = null;
+
 export function uiTestIds(): Set<string> {
+    if (_cachedTestIds) return _cachedTestIds;
+    
     const ids = new Set<string>();
     const walk = (dir: string) => {
         for (const entry of readdirSync(dir, { withFileTypes: true })) {
@@ -140,6 +153,7 @@ export function uiTestIds(): Set<string> {
         }
     };
     walk(resolve(ROOT, 'ui/src'));
+    _cachedTestIds = ids;
     return ids;
 }
 

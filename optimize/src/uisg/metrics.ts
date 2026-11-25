@@ -15,6 +15,11 @@ const ROOT = resolve(__dirname, '../../..');
 const METRICS_FILE = resolve(ROOT, 'doc/uisg/metrics.json');
 const QUALITY_CACHE_FILE = resolve(ROOT, 'doc/uisg/quality-cache.json');
 
+// Caches for expensive directory scans
+let _cachedLoopLatency: LoopLatencyEntry[] | null = null;
+let _cachedFailingAssertions: FailingAssertion[] | null = null;
+let _cachedRunsDirMtime: number = 0;
+
 export interface CellMetrics {
     bundleSizeKb: number;
     chunkCount: number;
@@ -264,6 +269,12 @@ function loadFrictionDigest(days: number = 7): FrictionEntry[] {
 function loadLoopLatency(): LoopLatencyEntry[] {
     const runsDir = resolve(ROOT, 'data/loop/runs');
     if (!statSync(runsDir, { throwIfNoEntry: false })?.isDirectory()) return [];
+    
+    const runsDirMtime = statSync(runsDir).mtimeMs;
+    if (_cachedLoopLatency && runsDirMtime <= _cachedRunsDirMtime) {
+        return _cachedLoopLatency;
+    }
+    
     const entries: LoopLatencyEntry[] = [];
     for (const entry of readdirSync(runsDir, { withFileTypes: true })) {
         if (!entry.isDirectory() || !entry.name.startsWith('run-')) continue;
@@ -282,6 +293,8 @@ function loadLoopLatency(): LoopLatencyEntry[] {
             // ignore
         }
     }
+    _cachedLoopLatency = entries;
+    _cachedRunsDirMtime = runsDirMtime;
     return entries;
 }
 
@@ -315,6 +328,12 @@ function loadDriftFindings(graph: UisgGraph): DriftFinding[] {
 function loadFailingAssertions(): FailingAssertion[] {
     const runsDir = resolve(ROOT, 'data/loop/runs');
     if (!statSync(runsDir, { throwIfNoEntry: false })?.isDirectory()) return [];
+    
+    const runsDirMtime = statSync(runsDir).mtimeMs;
+    if (_cachedFailingAssertions && runsDirMtime <= _cachedRunsDirMtime) {
+        return _cachedFailingAssertions;
+    }
+    
     const entries: FailingAssertion[] = [];
     for (const entry of readdirSync(runsDir, { withFileTypes: true })) {
         if (!entry.isDirectory() || !entry.name.startsWith('run-')) continue;
@@ -340,6 +359,8 @@ function loadFailingAssertions(): FailingAssertion[] {
             // ignore
         }
     }
+    _cachedFailingAssertions = entries;
+    _cachedRunsDirMtime = runsDirMtime;
     return entries;
 }
 

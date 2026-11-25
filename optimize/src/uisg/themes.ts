@@ -21,8 +21,17 @@ export interface ThemeSummary extends ThemeTokens {
     id: string;
 }
 
+let _cachedThemes: ThemesData | null = null;
+let _cachedThemesPath: string | null = null;
+
 export function loadThemes(): ThemesData {
-    return JSON.parse(readFileSync(themesFile(), 'utf8')) as ThemesData;
+    const path = themesFile();
+    if (_cachedThemes && _cachedThemesPath === path) {
+        return _cachedThemes;
+    }
+    _cachedThemes = JSON.parse(readFileSync(path, 'utf8')) as ThemesData;
+    _cachedThemesPath = path;
+    return _cachedThemes;
 }
 
 export function listThemes(): ThemeSummary[] {

@@ -276,13 +276,22 @@ function resolveFrom(profiles: ContextProfile[], id: string): ContextProfile | n
     return chain.reduce(mergeProfile);
 }
 
+let _cachedContexts: ContextsData | null = null;
+let _cachedContextsPath: string | null = null;
+
 export function loadContexts(): ContextsData | null {
+    const path = contextsFile();
+    if (_cachedContexts && _cachedContextsPath === path) {
+        return _cachedContexts;
+    }
     try {
-        const data = JSON.parse(readFileSync(contextsFile(), 'utf8')) as ContextsData;
+        const data = JSON.parse(readFileSync(path, 'utf8')) as ContextsData;
         if (data.version !== CONTEXTS_SCHEMA_VERSION) {
             throw new Error(`contexts.json version ${data.version} is not ${CONTEXTS_SCHEMA_VERSION}`);
         }
-        return data;
+        _cachedContexts = data;
+        _cachedContextsPath = path;
+        return _cachedContexts;
     } catch (error) {
         if ((error as NodeJS.ErrnoException).code === 'ENOENT') return null;
         throw error;

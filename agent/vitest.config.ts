@@ -10,6 +10,8 @@ export default defineConfig({
   },
   test: {
     globals: true,
-    environment: 'node'
+    environment: 'node',
+    pool: 'forks',
+    fileParallelism: true
   }
 });

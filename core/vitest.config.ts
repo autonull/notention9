@@ -4,6 +4,8 @@ export default defineConfig({
     test: {
         environment: 'node',
         globals: true,
+        pool: 'forks',
+        fileParallelism: true,
         define: {
             'import.meta.env': {
                 DEV: true,
