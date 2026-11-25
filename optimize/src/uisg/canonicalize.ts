@@ -213,9 +213,32 @@ export function canonicalize(graph: UisgGraph, options: CanonicalizeOptions = DE
     };
 }
 
+function hashableVariant(variant: SurfaceVariant): SurfaceVariant {
+    return {
+        template: variant.template,
+        propsSchema: variant.propsSchema,
+        strategyOverrides: variant.strategyOverrides,
+        description: variant.description,
+        status: variant.status,
+    };
+}
+
+function hashableGraph(graph: UisgGraph): UisgGraph {
+    return {
+        ...graph,
+        nodes: graph.nodes.map(node => node.type === 'surface' && node.variants
+            ? {
+                ...node,
+                variants: Object.fromEntries(Object.entries(node.variants)
+                    .map(([id, variant]) => [id, hashableVariant(variant)])),
+            }
+            : node),
+    };
+}
+
 export function graphHash(graph: UisgGraph): string {
     const canonical = canonicalize(graph);
-    const json = JSON.stringify(canonical);
+    const json = JSON.stringify(hashableGraph(canonical));
     return createHash('sha256').update(json).digest('hex');
 }
 

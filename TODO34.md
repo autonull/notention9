@@ -41,8 +41,9 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | D.2 Composition DSL    | ✅ Done    | `compose.ts` with typed primitives, `compose()`, `primitive()`, `sequence()`, `conditional()`, `slot()`; compiles to template AST; contract tests per target |
 | D.3 Predictive model   | ✅ Done    | `predict.ts` with ridge regression; `uisg predict train/predict/rank/filter`; MAE: taskTimeMs≈90ms, bundleSizeKb≈0.1kb, matchF1≈0.04 |
 | D.4 Feature flags      | ✅ Done    | `useUisgFlags` hook, `FlagsPanel` at `?uisg=1&mode=flags`, URL params, localStorage sync |
+| E.1 Graph v4 edges & hyperedges | ✅ Done | 16 new binary edge types + `weight`/`confidence`; first-class `hyperedges` (8 types, roles, arity); validation, canonicalization, diff, query; seed hyperedges; `UISG_SCHEMA_VERSION=4`; 11 v4 tests |
 
-**Latest code commit:** Phase A.5+C.6+D.4+D.2+D.1+D.3 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`), AI generation (`ai-generate.ts`), predictive model (`predict.ts`). TypeScript fixes across ai-generate, cli, compose, decide, matrix, predict.
+**Latest code commit:** `cca7efd2` — Graph v4: 16 new binary edge types, first-class hyperedges, validation/canonicalization/diff/query support, 5 seed hyperedges, `graph-v4.test.ts`. Prior: Phase A.5+C.6+D.4+D.2+D.1+D.3 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags, Composition DSL, AI generation, predictive model.
 
 **Recent commits:**
 - `1c16faf2`: Cap default parallelism at 4 cores for shared machine
@@ -776,7 +777,69 @@ Variant explosion is the top risk.
 
 ---
 
+## 15. Graph v4 — Richer Edges & Hyperedges (Implemented)
+
+**Status:** implemented. Schema v4 is canonical; v3 is rejected. No migration shim.
+
+### 15.1 Binary edge types
+The original 10 stay; add 16:
+- Composition/requirements: `composes`, `requires`, `provides`, `satisfies`.
+- Ordering/conflict: `dependsOn`, `conflicts`, `excludes`, `fallback`, `precedes`, `parallel`.
+- Variants/implementation: `variantOf`, `overrides`, `evidencedBy`, `documents`, `owns`, `tests`.
+- Edge metadata: `weight`, `confidence`.
+- `EDGE_RULES` enforces direction per type; evidence/document/test edges target files as references.
+
+### 15.2 Hyperedges
+`UisgHyperedge { id, type, nodes, roles?, when?, notes?, weight?, confidence? }`
+- `nodes` is the participant set; `roles` maps named roles to participants.
+- Types: `requiresAll`, `requiresAny`, `composition`, `parallelSet`, `alternativeSet`, `conflictSet`, `journeyBundle`, `variantSet`.
+- Minimum arity per type; `requiresAll`/`requiresAny` need ≥2 participants.
+
+### 15.3 Validation
+- duplicate hyperedge id; duplicate participant; dangling participant.
+- role pointing outside the participant set.
+- per-type arity.
+- direction rules for every binary edge type.
+
+### 15.4 Canonicalization, hash, diff
+- Sort participants, role keys, and hyperedges by id.
+- Hyperedges included in `graphHash` and `roundTripTest`.
+- `diffGraphs` returns `addedHyperedges`, `removedHyperedges`, `changedHyperedges`, plus semantic changes for type/participants/roles.
+
+### 15.5 Query
+- `indexGraph` indexes incident hyperedges per node.
+- `hyperedgesFor(index, nodeId, type?)`.
+- `hyperedgeParticipants(index, hyperedgeId)`.
+
+### 15.6 Seed data
+`doc/uisg/graph.json` (v4) contains 5 hyperedges:
+- `hyper.golden-path.requires` (`requiresAll`)
+- `hyper.capture-palette.requires` (`requiresAll`)
+- `hyper.capture-alternatives` (`alternativeSet`)
+- `hyper.publish-branches` (`alternativeSet`)
+- `hyper.notesview.variants` (`variantSet`)
+
+### 15.7 Acceptance
+- [x] v4 graph with hyperedges loads; v3 rejected
+- [x] every new binary edge type validates
+- [x] hyperedge arity, roles, and participants validate
+- [x] canonicalization, hash, and diff include hyperedges
+- [x] query resolves incident hyperedges and participants
+- [x] `graph-v4.test.ts` 11/11; full UISG suite 108/108
+
+**Remaining:** wire hyperedges into `analyze`, `simulate`, `select`, and the graph UI; replace `source`-encoded constraints with edges when they appear.
+
+---
+
 ## Commit Log
+
+### 2026-11-25 — Graph v4: richer edges + hyperedges
+- **types.ts**: `UISG_SCHEMA_VERSION=4`; 16 new binary edge types; `weight`/`confidence` on edges; `UisgHyperedge` + 8 hyperedge types; `hyperedges` on `UisgGraph`
+- **validate.ts**: edge rules for every type; hyperedge schema; duplicate id/participant, dangling participant, arity, role checks
+- **canonicalize.ts**: hyperedge canonicalization; sorted participants/roles/hyperedges; hash + diff include hyperedges
+- **query.ts**: incident-hyperedge index; `hyperedgesFor`; `hyperedgeParticipants`
+- **doc/uisg/graph.json**: v4; 5 seed hyperedges
+- **tests**: `graph-v4.test.ts` 11 tests; all UISG tests 108/108
 
 ### 2026-11-24 — Phase A.5+C.6 §14 items
 - **variants.ts**: Added `rollbackVariant()` function; restores previous default variant
