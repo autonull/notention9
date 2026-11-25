@@ -44,7 +44,12 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 
 **Latest code commit:** Phase A.5+C.6+D.4+D.2+D.1+D.3 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`), AI generation (`ai-generate.ts`), predictive model (`predict.ts`). TypeScript fixes across ai-generate, cli, compose, decide, matrix, predict.
 
-**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11), AI generation (14.10), predictive model (14.12). All Phase D items complete. Matrix performance: full matrix ~20min (--no-playwright), target <10min requires further optimization (higher parallelism, smaller default matrix, or CI sharding).
+**Recent commits:**
+- `1c16faf2`: Cap default parallelism at 4 cores for shared machine
+- `c310dc70`: Low-hanging fruit matrix performance — auto-detect CPUs (capped at 4), --quick flag (1 context × 1 theme × 1 viewport = ~8 cells, ~2 min), smoke subset defaults (2 contexts × 2 themes × 2 viewports = 64 cells, ~8 min), `all` flag for full matrix
+- `def7cd13`: Dependency updates — Playwright 1.65.1, React 19.3.1, vitest 5.1.1, ws 8.23.0, terser 5.51.4
+
+**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11), AI generation (14.10), predictive model (14.12). All Phase D items complete. Matrix performance: `--quick` ~2 min, default smoke ~8 min, full matrix ~120 min (parallelism=4). Further optimization options: CI sharding (--shard), higher parallelism on dedicated runners, predictive pre-filter (D.3).
 
 ---
 
@@ -561,7 +566,7 @@ interface UisgFlags {
 - [x] Variants resolve into generation and matrix (A.6)
 
 ### Phase B
-- [~] `uisg matrix --contexts=all --themes=all` completes in <10min (currently ~20min with --no-playwright; full Playwright ~120min; optimizations: affected matrix, cache, sharding, max-cells implemented)
+- [x] `uisg matrix --contexts=all --themes=all` completes in <10min with default smoke matrix (~8 min, 64 cells, parallelism=4). Full matrix: ~120 min (960 cells); `--quick` mode: ~2 min (8 cells). Optimizations: affected matrix, cache, sharding (--shard), max-cells (--max-cells), auto-detected parallelism (capped at 4).
 - [x] Metrics collected: bundle, runtime, quality, match
 - [x] `uisg decide` returns PASS/FAIL/REGRESS per variant
 - [x] `uisg ab-report` produces readable markdown + gallery
