@@ -5,6 +5,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { getEvidenceDirSync } from '@notention/core/constants/paths';
 import { SEAM_ROLES } from '@notention/core/constants/seams';
+import { cpus } from 'node:os';
 import '../journeys.js';
 import { getAllJourneys, getJourney } from '../registry.js';
 import { generateTestFile } from '../journeyFileGenerator.js';
@@ -61,8 +62,9 @@ Commands:
   reducer <flowId> [--out <file>]           Generate flow reducer from graph
   matrix [--journeys a,b|all] [--contexts c|all] [--themes t|all] [--viewports v|all]
          [--variants v|all] [--profiles hand-built,generated] [--parallelism N] [--plan] [--no-build]
-         [--max-cells N] [--allow-large] [--shard i/N] [--skip-cached] [--affected] [--no-playwright]
+         [--max-cells N] [--allow-large] [--shard i/N] [--skip-cached] [--affected] [--no-playwright] [--quick]
                                             Run journeys across contexts x themes x viewports x variants; write matrix report
+                                            --quick: minimal matrix (1 context, 1 theme, 1 viewport) for fast feedback
   decide --matrix <runId> [--baseline <runId>] [--policy <file>]  Evaluate variants against policy; promote/reject/flag
   baselines <list|show|update> [journey] [variant] [--matrix <runId>]  Manage per-journey baselines (doc/uisg/baselines/)
   visual-diff --baseline=<runId> --compare=<runId> [--contexts c|all] [--themes t|all] [--threshold=0.99] [--update-baselines]
@@ -520,21 +522,51 @@ async function main(): Promise<number> {
             const flows = flags.get('flows')?.split(',') ?? flags.get('journeys')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
             const profiles = flags.get('profiles')?.split(',');
             const { listThemes } = await import('./themes.js');
+            const { listProfiles: listContextProfiles } = await import('./contexts.js');
             const { estimateMatrixDuration } = await import('./matrix.js');
 
-            const contexts = flags.get('contexts')?.split(',') ?? [];
-            const themes = flags.get('themes')?.split(',') ?? ['dark', 'light'];
-            const viewports = flags.get('viewports')?.split(',') ?? ['desktop-1440', 'mobile-390'];
+            const isQuick = flags.has('quick');
+            const defaultParallelism = Math.min(8, cpus().length);
+
+            let contexts = flags.get('contexts')?.split(',') ?? [];
+            let themes = flags.get('themes')?.split(',') ?? [];
+            let viewports = flags.get('viewports')?.split(',') ?? [];
             const variants = flags.get('variants')?.split(',') ?? [];
 
+            // Quick mode: minimal matrix for fast feedback
+            if (isQuick) {
+                contexts = ['desktop'];
+                themes = ['default'];
+                viewports = ['desktop-1440'];
+            } else if (!contexts.length) {
+                // Default: smoke subset (not all)
+                contexts = ['desktop', 'mobile'];
+            } else if (contexts.includes('all')) {
+                contexts = listContextProfiles().map(({ id }) => id);
+            }
+
+            if (!isQuick && !themes.length) {
+                themes = ['default', 'dark'];
+            } else if (themes.includes('all')) {
+                themes = [...new Set([...listThemes().map(({ id }) => id), 'dark', 'light'])];
+            } else if (isQuick && !themes.length) {
+                themes = ['default'];
+            }
+
+            if (!isQuick && !viewports.length) {
+                viewports = ['desktop-1440', 'mobile-390'];
+            } else if (viewports.includes('all')) {
+                viewports = ['desktop-1440', 'tablet-834', 'mobile-390'];
+            } else if (isQuick && !viewports.length) {
+                viewports = ['desktop-1440'];
+            }
+
             const config: MatrixConfig = {
-                contexts: contexts.includes('all') ? listProfiles().map(({ id }) => id) : contexts,
-                themes: themes.includes('all')
-                    ? [...new Set([...listThemes().map(({ id }) => id), 'dark', 'light'])]
-                    : themes,
-                viewports: viewports.includes('all') ? ['desktop-1440', 'tablet-834', 'mobile-390'] : viewports,
+                contexts,
+                themes,
+                viewports,
                 variants: variants.includes('all') ? [] : variants,
-                parallelism: Number(flags.get('parallelism') ?? 4),
+                parallelism: Number(flags.get('parallelism') ?? defaultParallelism),
                 maxCells: flags.has('max-cells') ? Number(flags.get('max-cells')) : undefined,
                 allowLarge: flags.has('allow-large'),
                 shard: flags.get('shard'),
