@@ -1,0 +1,150 @@
+{
+  "runId": "matrix_1795582922316_rykhva1",
+  "startedAt": "2026-11-25T05:01:32.201Z",
+  "completedAt": "2026-11-25T05:02:02.317Z",
+  "config": {
+    "contexts": [
+      "desktop"
+    ],
+    "themes": [
+      "default"
+    ],
+    "viewports": [
+      "desktop-1440"
+    ],
+    "variants": [],
+    "parallelism": 4,
+    "allowLarge": false,
+    "skipCached": false,
+    "noPlaywright": true
+  },
+  "cells": [
+    {
+      "flowId": "flow.capture-and-edit-keyboard",
+      "journey": "capture-and-edit-keyboard",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 13942,
+      "runId": "run_1795582904625_ryafowm",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582904625_ryafowm/bundle.json"
+    },
+    {
+      "flowId": "flow.capture-and-edit-palette",
+      "journey": "capture-and-edit-palette",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 14751,
+      "runId": "run_1795582907564_lua1jfm",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582907564_lua1jfm/bundle.json"
+    },
+    {
+      "flowId": "flow.capture-and-edit",
+      "journey": "capture-and-edit",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 13739,
+      "runId": "run_1795582892202_wh2g2on",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582892202_wh2g2on/bundle.json"
+    },
+    {
+      "flowId": "flow.golden-path",
+      "journey": "golden-path",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 15359,
+      "runId": "run_1795582892205_5n7hthf",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582892205_5n7hthf/bundle.json"
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "ontology-conflict",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 12166,
+      "runId": "run_1795582904901_m4owfhr",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582904901_m4owfhr/bundle.json"
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "publish-gate",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 12694,
+      "runId": "run_1795582892207_1hagewd",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582892207_1hagewd/bundle.json"
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "uisg.skeleton.flow.ontology-conflict",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 9914,
+      "runId": "run_1795582905941_5cfx31x",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582905941_5cfx31x/bundle.json"
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "uisg.skeleton.flow.publish-gate",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 12415,
+      "runId": "run_1795582892208_jz51u10",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795582892208_jz51u10/bundle.json"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 2,
+    "failed": 6,
+    "skipped": 0,
+    "errors": 0
+  }
+}

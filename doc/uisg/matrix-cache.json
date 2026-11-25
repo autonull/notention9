@@ -3,30 +3,36 @@
     "cellKey": "journey.a|hand-built|desktop|default|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-25T04:33:01.933Z"
+    "timestamp": "2026-11-25T05:17:47.905Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|default|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-25T04:33:01.934Z"
+    "timestamp": "2026-11-25T05:17:47.906Z"
   },
   {
     "cellKey": "journey.a|hand-built|desktop|brand-acme|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-25T04:33:01.933Z"
+    "timestamp": "2026-11-25T05:17:47.905Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|brand-acme|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-25T04:33:01.934Z"
+    "timestamp": "2026-11-25T05:17:47.906Z"
   },
   {
     "cellKey": "uisg.skeleton.flow.ontology-conflict|generated|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795579630750_9bnxuv4",
+    "runId": "run_1795582905941_5cfx31x",
     "status": "passed",
-    "timestamp": "2026-11-25T04:07:27.458Z"
+    "timestamp": "2026-11-25T05:01:55.855Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.publish-gate|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795582892208_jz51u10",
+    "status": "passed",
+    "timestamp": "2026-11-25T05:01:44.624Z"
   }
 ]
