@@ -1,0 +1,150 @@
+{
+  "runId": "matrix_1795633310660_sjsx894",
+  "startedAt": "2026-11-25T19:01:50.656Z",
+  "completedAt": "2026-11-25T19:01:50.660Z",
+  "config": {
+    "contexts": [
+      "desktop"
+    ],
+    "themes": [
+      "default"
+    ],
+    "viewports": [
+      "desktop-1440"
+    ],
+    "variants": [],
+    "parallelism": 4,
+    "allowLarge": false,
+    "skipCached": false,
+    "noPlaywright": true
+  },
+  "cells": [
+    {
+      "flowId": "flow.capture-and-edit-keyboard",
+      "journey": "capture-and-edit-keyboard",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795633310658_171gslk",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310658_171gslk/bundle.json"
+    },
+    {
+      "flowId": "flow.capture-and-edit-palette",
+      "journey": "capture-and-edit-palette",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 0,
+      "runId": "run_1795633310659_e6wsf27",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310659_e6wsf27/bundle.json"
+    },
+    {
+      "flowId": "flow.capture-and-edit",
+      "journey": "capture-and-edit",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795633310656_earr91n",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310656_earr91n/bundle.json"
+    },
+    {
+      "flowId": "flow.golden-path",
+      "journey": "golden-path",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795633310657_3qgp90c",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310657_3qgp90c/bundle.json"
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "ontology-conflict",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795633310658_1cfxg0w",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310658_1cfxg0w/bundle.json"
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "publish-gate",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795633310657_91dbb18",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310657_91dbb18/bundle.json"
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "uisg.skeleton.flow.ontology-conflict",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 0,
+      "runId": "run_1795633310659_59ilqyu",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310659_59ilqyu/bundle.json"
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "uisg.skeleton.flow.publish-gate",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 1,
+      "runId": "run_1795633310657_op3oinm",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795633310657_op3oinm/bundle.json"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "errors": 0
+  }
+}

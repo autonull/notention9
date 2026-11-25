@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-25T18:35:30.655Z",
+  "updatedAt": "2026-11-25T19:14:40.816Z",
   "variants": [
     {
       "template": "item",
@@ -53,8 +53,8 @@
       "surface": "surface.editormanager",
       "id": "dense",
       "createdAt": "2026-11-25T18:35:24.106400Z",
-      "updatedAt": "2026-11-25T18:35:30.655Z",
-      "promotedAt": "2026-11-25T18:35:30.655Z",
+      "updatedAt": "2026-11-25T19:14:40.816Z",
+      "promotedAt": "2026-11-25T19:14:40.816Z",
       "metrics": {}
     },
     {
@@ -91,8 +91,8 @@
       "surface": "surface.ontologyview",
       "id": "dense",
       "createdAt": "2026-11-25T18:35:24.106400Z",
-      "updatedAt": "2026-11-25T18:35:30.604Z",
-      "promotedAt": "2026-11-25T18:35:30.604Z",
+      "updatedAt": "2026-11-25T19:14:40.812Z",
+      "promotedAt": "2026-11-25T19:14:40.812Z",
       "metrics": {}
     },
     {
@@ -102,8 +102,8 @@
       "surface": "surface.matchitem",
       "id": "dense",
       "createdAt": "2026-11-25T18:35:24.106400Z",
-      "updatedAt": "2026-11-25T18:35:30.600Z",
-      "promotedAt": "2026-11-25T18:35:30.600Z",
+      "updatedAt": "2026-11-25T19:14:40.808Z",
+      "promotedAt": "2026-11-25T19:14:40.808Z",
       "metrics": {}
     }
   ]

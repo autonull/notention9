@@ -12,7 +12,7 @@ import {
     generateComposedPropsSchema,
 } from './compose.js';
 import { getTemplate } from './templates/index.js';
-import type { UisgSurface, UisgGraph, TemplateTarget } from './types.js';
+import { UISG_SCHEMA_VERSION, type UisgSurface, type UisgGraph, type TemplateTarget } from './types.js';
 
 const mockSurface: UisgSurface = {
     id: 'surface.testmatch',
@@ -28,10 +28,10 @@ const mockSurface: UisgSurface = {
 };
 
 const mockGraph: UisgGraph = {
-    version: 3,
-    updatedAt: new Date().toISOString(),
+    version: UISG_SCHEMA_VERSION,
     nodes: [],
     edges: [],
+    hyperedges: [],
 };
 
 describe('Composition DSL', () => {

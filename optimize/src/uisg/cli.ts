@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, writeFileSync, statSync } from 'node:fs';
 import { spawnSync } from 'node:child_process';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -145,6 +145,12 @@ export function loadGraph(flags: Map<string, string>): UisgGraph {
 export function saveGraph(graph: UisgGraph, file?: string): void {
     const targetFile = resolve(ROOT, file ?? 'doc/uisg/graph.json');
     writeFileSync(targetFile, JSON.stringify(graph, null, 2) + '\n');
+    // Invalidate graph cache
+    if (targetFile === resolve(ROOT, 'doc/uisg/graph.json')) {
+        _cachedGraph = null;
+        _cachedGraphPath = null;
+        _cachedGraphMtime = 0;
+    }
 }
 
 let _cachedTestIds: Set<string> | null = null;
@@ -660,20 +666,31 @@ async function main(): Promise<number> {
                 console.log('Skipping Playwright tests (--no-playwright)');
             }
 
+            const skipPlaywright = flags.has('no-playwright');
+            
             const result = await runMatrix(config, journeys, async cell => {
                 const runId = createRunId();
                 console.log(`Running ${cell.journey} ${cell.context ?? '-'} ${cell.theme}/${cell.viewport}${cell.variant ? ` variant=${cell.variant}` : ''} — ${runId}`);
-                const { status } = await runOptimizeTestAsync({
-                    runId,
-                    grep: grepFor(cell.journey),
-                    env: {
-                        ...dimensionEnv(flags),
-                        NOTENTION_VIEWPORT: cell.viewport,
-                        NOTENTION_THEME: cell.theme,
-                        ...(cell.context ? { NOTENTION_CONTEXT: cell.context } : {}),
-                        ...(cell.variant ? { NOTENTION_UISG_VARIANT: cell.variant } : {}),
-                    },
-                });
+                
+                let status = 0;
+                
+                if (!skipPlaywright) {
+                    // Run Playwright E2E tests
+                    const { status: s } = await runOptimizeTestAsync({
+                        runId,
+                        grep: grepFor(cell.journey),
+                        env: {
+                            ...dimensionEnv(flags),
+                            NOTENTION_VIEWPORT: cell.viewport,
+                            NOTENTION_THEME: cell.theme,
+                            ...(cell.context ? { NOTENTION_CONTEXT: cell.context } : {}),
+                            ...(cell.variant ? { NOTENTION_UISG_VARIANT: cell.variant } : {}),
+                        },
+                    });
+                    status = s ?? 1;
+                }
+                // When --no-playwright, we skip test execution entirely (smoke test = 0)
+                
                 const bundlePath = join(getEvidenceDirSync(), runId, 'bundle.json');
                 appendRunRecord({
                     flowId: cell.flowId,

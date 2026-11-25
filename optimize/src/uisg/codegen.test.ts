@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { generateSurface } from './codegen.js';
-import type { UisgGraph, UisgSurface } from './types.js';
+import { UISG_SCHEMA_VERSION, type UisgGraph, type UisgSurface } from './types.js';
 
 const surface: UisgSurface = {
     id: 'surface.test',
@@ -11,7 +11,7 @@ const surface: UisgSurface = {
     template: 'item',
 };
 
-const graph: UisgGraph = { version: 3, nodes: [surface], edges: [] };
+const graph: UisgGraph = { version: UISG_SCHEMA_VERSION, nodes: [surface], edges: [], hyperedges: [] };
 
 describe('multi-target generation', () => {
     it('emits React by default path', () => {

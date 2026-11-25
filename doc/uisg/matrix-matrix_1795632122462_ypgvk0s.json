@@ -1,0 +1,150 @@
+{
+  "runId": "matrix_1795632122462_ypgvk0s",
+  "startedAt": "2026-11-25T18:41:30.227Z",
+  "completedAt": "2026-11-25T18:42:02.462Z",
+  "config": {
+    "contexts": [
+      "desktop"
+    ],
+    "themes": [
+      "default"
+    ],
+    "viewports": [
+      "desktop-1440"
+    ],
+    "variants": [],
+    "parallelism": 4,
+    "allowLarge": false,
+    "skipCached": false,
+    "noPlaywright": false
+  },
+  "cells": [
+    {
+      "flowId": "flow.capture-and-edit-keyboard",
+      "journey": "capture-and-edit-keyboard",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 14047,
+      "runId": "run_1795632103708_902ygiv",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632103708_902ygiv/bundle.json"
+    },
+    {
+      "flowId": "flow.capture-and-edit-palette",
+      "journey": "capture-and-edit-palette",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 14877,
+      "runId": "run_1795632107584_jpie8m0",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632107584_jpie8m0/bundle.json"
+    },
+    {
+      "flowId": "flow.capture-and-edit",
+      "journey": "capture-and-edit",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 15952,
+      "runId": "run_1795632090228_fcnj2tc",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632090228_fcnj2tc/bundle.json"
+    },
+    {
+      "flowId": "flow.golden-path",
+      "journey": "golden-path",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 17353,
+      "runId": "run_1795632090231_rz31rdw",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632090231_rz31rdw/bundle.json"
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "ontology-conflict",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 12404,
+      "runId": "run_1795632105054_bdn6zog",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632105054_bdn6zog/bundle.json"
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "publish-gate",
+      "profile": "hand-built",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "failed",
+      "durationMs": 14821,
+      "runId": "run_1795632090233_3odmg8d",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632090233_3odmg8d/bundle.json"
+    },
+    {
+      "flowId": "flow.ontology-conflict",
+      "journey": "uisg.skeleton.flow.ontology-conflict",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 10275,
+      "runId": "run_1795632106180_hygpn43",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632106180_hygpn43/bundle.json"
+    },
+    {
+      "flowId": "flow.publish-gate",
+      "journey": "uisg.skeleton.flow.publish-gate",
+      "profile": "generated",
+      "viewport": "desktop-1440",
+      "theme": "default",
+      "context": "desktop",
+      "status": "passed",
+      "durationMs": 13473,
+      "runId": "run_1795632090235_x6rwv83",
+      "assertions": [],
+      "metrics": {},
+      "screenshots": [],
+      "bundlePath": "/home/me/.notention/evidence/run_1795632090235_x6rwv83/bundle.json"
+    }
+  ],
+  "summary": {
+    "total": 8,
+    "passed": 2,
+    "failed": 6,
+    "skipped": 0,
+    "errors": 0
+  }
+}

@@ -2,13 +2,23 @@ import type { SeamRole } from '@notention/core/ui/strategy';
 import type { Step, Target } from '../journey.js';
 import type { ParamDef } from '@notention/core/ui/strategy.js';
 
-export const UISG_SCHEMA_VERSION = 3 as const;
+export const UISG_SCHEMA_VERSION = 4 as const;
 
 export type UisgStatus = 'implemented' | 'partial' | 'planned' | 'candidate' | 'experimental' | 'removed' | 'rejected';
 export type UisgNodeType = 'intent' | 'capability' | 'flow' | 'step' | 'surface' | 'predicate' | 'effect';
 export type UisgEdgeType =
     | 'supports' | 'uses' | 'invokes' | 'contains' | 'renders'
-    | 'next' | 'alternative' | 'implementedBy' | 'guards' | 'effects';
+    | 'next' | 'alternative' | 'implementedBy' | 'guards' | 'effects'
+    | 'composes' | 'requires' | 'provides' | 'satisfies'
+    | 'dependsOn' | 'conflicts' | 'excludes'
+    | 'fallback' | 'precedes' | 'parallel'
+    | 'variantOf' | 'overrides'
+    | 'evidencedBy' | 'documents' | 'owns' | 'tests';
+export type UisgHyperedgeType =
+    | 'requiresAll' | 'requiresAny'
+    | 'composition' | 'parallelSet'
+    | 'alternativeSet' | 'conflictSet'
+    | 'journeyBundle' | 'variantSet';
 export type UisgConfidence = 'high' | 'medium' | 'low';
 export type UisgRisk = 'normal' | 'caution' | 'destructive';
 export type UisgStepKind = 'show' | 'action' | 'choice' | 'confirm' | 'result';
@@ -113,10 +123,24 @@ export interface UisgEdge {
     to: string;
     when?: string;
     notes?: string;
+    weight?: number;
+    confidence?: UisgConfidence;
+}
+
+export interface UisgHyperedge {
+    id: string;
+    type: UisgHyperedgeType;
+    nodes: string[];
+    roles?: Record<string, string>;
+    when?: string;
+    notes?: string;
+    weight?: number;
+    confidence?: UisgConfidence;
 }
 
 export interface UisgGraph {
     version: number;
     nodes: UisgNode[];
     edges: UisgEdge[];
+    hyperedges: UisgHyperedge[];
 }

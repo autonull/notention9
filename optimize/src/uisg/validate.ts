@@ -50,18 +50,60 @@ const NodeSchema = z.discriminatedUnion('type', [
     z.object({ ...baseFields, type: z.literal('effect'), reversibility: ReversibilitySchema, risk: EffectRiskSchema, confirmationRequired: z.boolean(), failureModes: z.array(z.string()), registryId: z.string().min(1) }),
 ]);
 
+const EDGE_TYPES = [
+    'supports', 'uses', 'invokes', 'contains', 'renders',
+    'next', 'alternative', 'implementedBy', 'guards', 'effects',
+    'composes', 'requires', 'provides', 'satisfies',
+    'dependsOn', 'conflicts', 'excludes',
+    'fallback', 'precedes', 'parallel',
+    'variantOf', 'overrides',
+    'evidencedBy', 'documents', 'owns', 'tests',
+] as const;
+
+const HYPEREDGE_TYPES = [
+    'requiresAll', 'requiresAny',
+    'composition', 'parallelSet',
+    'alternativeSet', 'conflictSet',
+    'journeyBundle', 'variantSet',
+] as const;
+
+const HYPEREDGE_MIN_NODES: Record<(typeof HYPEREDGE_TYPES)[number], number> = {
+    requiresAll: 2,
+    requiresAny: 2,
+    composition: 2,
+    parallelSet: 2,
+    alternativeSet: 2,
+    conflictSet: 2,
+    journeyBundle: 2,
+    variantSet: 1,
+};
+
 const EdgeSchema = z.object({
     from: z.string().min(1),
-    type: z.enum(['supports', 'uses', 'invokes', 'contains', 'renders', 'next', 'alternative', 'implementedBy', 'guards', 'effects']),
+    type: z.enum(EDGE_TYPES),
     to: z.string().min(1),
     when: z.string().optional(),
     notes: z.string().optional(),
+    weight: z.number().optional(),
+    confidence: ConfidenceSchema.optional(),
+});
+
+const HyperedgeSchema = z.object({
+    id: z.string().min(1),
+    type: z.enum(HYPEREDGE_TYPES),
+    nodes: z.array(z.string().min(1)).min(1),
+    roles: z.record(z.string(), z.string()).optional(),
+    when: z.string().optional(),
+    notes: z.string().optional(),
+    weight: z.number().optional(),
+    confidence: ConfidenceSchema.optional(),
 });
 
 export const UisgGraphSchema = z.object({
     version: z.literal(UISG_SCHEMA_VERSION),
     nodes: z.array(NodeSchema),
     edges: z.array(EdgeSchema),
+    hyperedges: z.array(HyperedgeSchema),
 });
 
 export interface GraphIssue {
@@ -77,6 +119,8 @@ export interface ValidationResult {
     issues: GraphIssue[];
 }
 
+const ALL_NODE_TYPES: UisgNodeType[] = ['intent', 'capability', 'flow', 'step', 'surface', 'predicate', 'effect'];
+
 const EDGE_RULES: Record<UisgEdgeType, { from: UisgNodeType[]; to: UisgNodeType[] | 'reference' }> = {
     supports: { from: ['capability'], to: ['intent'] },
     uses: { from: ['flow'], to: ['capability'] },
@@ -88,6 +132,22 @@ const EDGE_RULES: Record<UisgEdgeType, { from: UisgNodeType[]; to: UisgNodeType[
     implementedBy: { from: ['capability', 'surface'], to: 'reference' },
     guards: { from: ['step'], to: ['predicate'] },
     effects: { from: ['capability', 'step'], to: ['effect'] },
+    composes: { from: ['flow', 'intent'], to: ['flow', 'capability', 'surface'] },
+    requires: { from: ['flow', 'step', 'capability', 'surface'], to: ['capability', 'predicate', 'surface'] },
+    provides: { from: ['capability', 'surface'], to: ['intent', 'capability'] },
+    satisfies: { from: ['capability', 'flow'], to: ['intent'] },
+    dependsOn: { from: ALL_NODE_TYPES, to: ALL_NODE_TYPES },
+    conflicts: { from: ALL_NODE_TYPES, to: ALL_NODE_TYPES },
+    excludes: { from: ALL_NODE_TYPES, to: ALL_NODE_TYPES },
+    fallback: { from: ['flow', 'step'], to: ['flow', 'step'] },
+    precedes: { from: ['flow', 'step'], to: ['flow', 'step'] },
+    parallel: { from: ['flow', 'step'], to: ['flow', 'step'] },
+    variantOf: { from: ['surface'], to: ['surface'] },
+    overrides: { from: ['capability', 'surface', 'flow'], to: ['capability', 'surface', 'flow'] },
+    evidencedBy: { from: ALL_NODE_TYPES, to: 'reference' },
+    documents: { from: ALL_NODE_TYPES, to: 'reference' },
+    owns: { from: ['flow', 'capability', 'surface'], to: ['flow', 'capability', 'surface', 'step'] },
+    tests: { from: ALL_NODE_TYPES, to: 'reference' },
 };
 
 const issue = (severity: GraphIssue['severity'], code: string, message: string, ref?: string): GraphIssue =>
@@ -146,6 +206,35 @@ function semanticIssues(graph: UisgGraph): GraphIssue[] {
         const from = byId.get(edge.from);
         if (from?.type === 'step' && from.kind === 'choice' && (next.get(edge.from) ?? []).length > 1)
             issues.push(issue('warning', 'unlabeled-branch', `Choice step ${edge.from} has an unlabeled branch to ${edge.to}`, edge.from));
+    }
+    issues.push(...hyperedgeIssues(graph, byId));
+    return issues;
+}
+
+function hyperedgeIssues(graph: UisgGraph, byId: Map<string, UisgNode>): GraphIssue[] {
+    const issues: GraphIssue[] = [];
+    const ids = new Set<string>();
+    for (const hyperedge of graph.hyperedges) {
+        if (ids.has(hyperedge.id)) issues.push(issue('error', 'duplicate-hyperedge-id', `Duplicate hyperedge id ${hyperedge.id}`, hyperedge.id));
+        ids.add(hyperedge.id);
+        const participants = new Set(hyperedge.nodes);
+        if (participants.size !== hyperedge.nodes.length) {
+            issues.push(issue('error', 'duplicate-hyperedge-node', `Hyperedge ${hyperedge.id} repeats a node`, hyperedge.id));
+        }
+        for (const nodeId of participants) {
+            if (!byId.has(nodeId)) {
+                issues.push(issue('error', 'dangling-hyperedge', `Hyperedge ${hyperedge.id} references missing node ${nodeId}`, hyperedge.id));
+            }
+        }
+        const min = HYPEREDGE_MIN_NODES[hyperedge.type];
+        if (participants.size < min) {
+            issues.push(issue('error', 'hyperedge-arity', `Hyperedge ${hyperedge.id} (${hyperedge.type}) needs at least ${min} node(s)`, hyperedge.id));
+        }
+        for (const [role, nodeId] of Object.entries(hyperedge.roles ?? {})) {
+            if (!participants.has(nodeId)) {
+                issues.push(issue('error', 'hyperedge-role', `Hyperedge ${hyperedge.id} role "${role}" points to non-participant ${nodeId}`, hyperedge.id));
+            }
+        }
     }
     return issues;
 }

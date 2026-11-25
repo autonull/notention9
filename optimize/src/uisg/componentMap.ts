@@ -7,9 +7,9 @@ const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../../..');
 
 // Cache for generated strategies and scanned strategies
-let _cachedGeneratedStrategies: StrategyConfig[] | null = null;
+let _cachedGeneratedStrategies: StrategyConfig[] = [];
 let _cachedGeneratedStrategiesMtime: number = 0;
-let _cachedScannedStrategies: ScannedStrategy[] | null = null;
+let _cachedScannedStrategies: ScannedStrategy[] = [];
 let _cachedScannedStrategiesMtime: number = 0;
 
 interface ScannedSurface {
@@ -67,7 +67,7 @@ function loadGeneratedStrategies(): StrategyConfig[] {
     
     try {
         const stat = statSync(defsPath);
-        if (_cachedGeneratedStrategies && stat.mtimeMs <= _cachedGeneratedStrategiesMtime) {
+        if (_cachedGeneratedStrategies.length > 0 && stat.mtimeMs <= _cachedGeneratedStrategiesMtime) {
             return _cachedGeneratedStrategies;
         }
     } catch {
@@ -121,7 +121,7 @@ function scanStrategies(): ScannedStrategy[] {
         resolve(ROOT, 'ui/src/components/assistant'),
     ];
 
-    let cacheValid = _cachedScannedStrategies !== null;
+    let cacheValid = _cachedScannedStrategies.length > 0;
     for (const dir of strategyDirs) {
         try {
             const stat = statSync(dir);
@@ -135,7 +135,7 @@ function scanStrategies(): ScannedStrategy[] {
         }
     }
 
-    if (cacheValid && _cachedScannedStrategies) {
+    if (cacheValid) {
         return _cachedScannedStrategies;
     }
 

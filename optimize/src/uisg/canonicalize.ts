@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import { UISG_SCHEMA_VERSION } from './types.js';
-import type { UisgGraph, UisgNode, UisgEdge, SurfaceVariant } from './types.js';
+import type { UisgGraph, UisgNode, UisgEdge, UisgHyperedge, SurfaceVariant } from './types.js';
 
 export interface CanonicalizeOptions {
     schemaVersion: number;
@@ -26,7 +26,8 @@ const NODE_FIELDS: Record<UisgNode['type'], readonly string[]> = {
     predicate: ['expression', 'registryId'],
     effect: ['reversibility', 'risk', 'confirmationRequired', 'failureModes', 'registryId'],
 };
-const EDGE_FIELDS = ['from', 'type', 'to', 'when', 'notes'];
+const EDGE_FIELDS = ['from', 'type', 'to', 'when', 'notes', 'weight', 'confidence'];
+const HYPEREDGE_FIELDS = ['id', 'type', 'nodes', 'roles', 'when', 'notes', 'weight', 'confidence'];
 const VARIANT_FIELDS = ['template', 'propsSchema', 'strategyOverrides', 'description', 'status', 'promotedAt', 'metrics'];
 
 function canonicalizeVariant(variant: SurfaceVariant, label: string, options: CanonicalizeOptions): SurfaceVariant {
@@ -178,17 +179,37 @@ function canonicalizeEdge(edge: UisgEdge, options: CanonicalizeOptions): UisgEdg
         to: edge.to,
         when: edge.when ?? undefined,
         notes: edge.notes ?? undefined,
+        weight: edge.weight ?? undefined,
+        confidence: edge.confidence ?? undefined,
+    };
+}
+
+function canonicalizeHyperedge(hyperedge: UisgHyperedge, options: CanonicalizeOptions): UisgHyperedge {
+    return {
+        ...unknownFields(hyperedge, HYPEREDGE_FIELDS, `hyperedge ${hyperedge.id}`, options),
+        id: hyperedge.id,
+        type: hyperedge.type,
+        nodes: stableSort(hyperedge.nodes, nodeId => nodeId),
+        roles: hyperedge.roles
+            ? Object.fromEntries(Object.entries(hyperedge.roles).sort(([a], [b]) => a.localeCompare(b)))
+            : undefined,
+        when: hyperedge.when ?? undefined,
+        notes: hyperedge.notes ?? undefined,
+        weight: hyperedge.weight ?? undefined,
+        confidence: hyperedge.confidence ?? undefined,
     };
 }
 
 export function canonicalize(graph: UisgGraph, options: CanonicalizeOptions = DEFAULT_CANONICALIZE_OPTIONS): UisgGraph {
     const canonicalNodes = stableSort(graph.nodes.map(node => canonicalizeNode(node, options)), n => n.id);
     const canonicalEdges = stableSort(graph.edges.map(edge => canonicalizeEdge(edge, options)), e => `${e.from}|${e.type}|${e.to}|${e.when ?? ''}`);
+    const canonicalHyperedges = stableSort(graph.hyperedges.map(hyperedge => canonicalizeHyperedge(hyperedge, options)), h => h.id);
 
     return {
         version: options.schemaVersion,
         nodes: canonicalNodes,
         edges: canonicalEdges,
+        hyperedges: canonicalHyperedges,
     };
 }
 
@@ -213,6 +234,9 @@ export function diffGraphs(graphA: UisgGraph, graphB: UisgGraph): {
     changedNodes: { before: UisgNode; after: UisgNode }[];
     addedEdges: UisgEdge[];
     removedEdges: UisgEdge[];
+    addedHyperedges: UisgHyperedge[];
+    removedHyperedges: UisgHyperedge[];
+    changedHyperedges: { before: UisgHyperedge; after: UisgHyperedge }[];
     semanticChanges: string[];
 } {
     const canonA = canonicalize(graphA);
@@ -237,6 +261,18 @@ export function diffGraphs(graphA: UisgGraph, graphB: UisgGraph): {
     const addedEdges = canonB.edges.filter(e => !edgesA.has(`${e.from}|${e.type}|${e.to}|${e.when ?? ''}`));
     const removedEdges = canonA.edges.filter(e => !edgesB.has(`${e.from}|${e.type}|${e.to}|${e.when ?? ''}`));
 
+    const hyperedgesA = new Map(canonA.hyperedges.map(h => [h.id, h]));
+    const hyperedgesB = new Map(canonB.hyperedges.map(h => [h.id, h]));
+    const addedHyperedges = canonB.hyperedges.filter(h => !hyperedgesA.has(h.id));
+    const removedHyperedges = canonA.hyperedges.filter(h => !hyperedgesB.has(h.id));
+    const changedHyperedges: { before: UisgHyperedge; after: UisgHyperedge }[] = [];
+    for (const hyperedge of canonA.hyperedges) {
+        const hyperedgeB = hyperedgesB.get(hyperedge.id);
+        if (hyperedgeB && JSON.stringify(hyperedge) !== JSON.stringify(hyperedgeB)) {
+            changedHyperedges.push({ before: hyperedge, after: hyperedgeB });
+        }
+    }
+
     const semanticChanges: string[] = [];
     for (const { before, after } of changedNodes) {
         if (before.status !== after.status) {
@@ -254,5 +290,22 @@ export function diffGraphs(graphA: UisgGraph, graphB: UisgGraph): {
         }
     }
 
-    return { addedNodes, removedNodes, changedNodes, addedEdges, removedEdges, semanticChanges };
+    for (const { before, after } of changedHyperedges) {
+        if (before.type !== after.type) {
+            semanticChanges.push(`Hyperedge ${before.id}: type ${before.type} -> ${after.type}`);
+        }
+        if (JSON.stringify(before.nodes) !== JSON.stringify(after.nodes)) {
+            semanticChanges.push(`Hyperedge ${before.id}: participants changed`);
+        }
+        if (JSON.stringify(before.roles) !== JSON.stringify(after.roles)) {
+            semanticChanges.push(`Hyperedge ${before.id}: roles changed`);
+        }
+    }
+
+    return {
+        addedNodes, removedNodes, changedNodes,
+        addedEdges, removedEdges,
+        addedHyperedges, removedHyperedges, changedHyperedges,
+        semanticChanges,
+    };
 }

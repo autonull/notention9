@@ -52,6 +52,8 @@ export function loadVariants(): VariantsData {
 
 function saveVariants(data: VariantsData): void {
     writeFileSync(variantsFile(), JSON.stringify({ ...data, updatedAt: new Date().toISOString() }, null, 2) + '\n');
+    _cachedVariants = null;
+    _cachedVariantsPath = null;
 }
 
 function findVariant(data: VariantsData, surface: string, id: string): VariantRecord {

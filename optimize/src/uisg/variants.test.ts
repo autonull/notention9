@@ -13,6 +13,7 @@ const graph = (version: number): UisgGraph => ({
     version,
     nodes: [{ id: 'surface.test', name: 'Test surface', status: 'implemented', type: 'surface', component: 'Test' }],
     edges: [],
+    hyperedges: [],
 });
 
 describe('graph v3 schema', () => {
@@ -33,6 +34,7 @@ describe('graph v3 schema', () => {
                 },
             }],
             edges: [],
+            hyperedges: [],
         });
         expect(result.ok).toBe(true);
         expect((result.graph!.nodes[0] as UisgSurface).variants!.dense.template).toBe('item-dense');
@@ -50,6 +52,7 @@ describe('graph v3 schema', () => {
                 },
             }],
             edges: [],
+            hyperedges: [],
         });
         const surface = canon.nodes[0] as UisgSurface;
         expect(Object.keys(surface.variants!)).toEqual(['dense', 'sparse']);

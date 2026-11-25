@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "nodes": [
     {
       "id": "intent.structured-note",
@@ -93,7 +93,7 @@
           "template": "item",
           "description": "Dense list view for mobile",
           "status": "promoted",
-          "promotedAt": "2026-11-25T18:35:30.655Z",
+          "promotedAt": "2026-11-25T19:14:40.816Z",
           "metrics": {}
         }
       },
@@ -575,7 +575,7 @@
           "template": "item",
           "description": "Dense list view for mobile",
           "status": "promoted",
-          "promotedAt": "2026-11-25T18:35:30.604Z",
+          "promotedAt": "2026-11-25T19:14:40.812Z",
           "metrics": {}
         }
       },
@@ -597,7 +597,7 @@
           "template": "item",
           "description": "Dense list view for mobile",
           "status": "promoted",
-          "promotedAt": "2026-11-25T18:35:30.600Z",
+          "promotedAt": "2026-11-25T19:14:40.808Z",
           "metrics": {}
         }
       },
@@ -2219,6 +2219,83 @@
       "type": "alternative",
       "to": "flow.capture-and-edit-palette",
       "notes": "palette path, same outcome"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "hyper.golden-path.requires",
+      "type": "requiresAll",
+      "nodes": [
+        "flow.golden-path",
+        "cap.note.capture",
+        "cap.match.display",
+        "cap.notes.display",
+        "cap.match.explain"
+      ],
+      "roles": {
+        "flow": "flow.golden-path",
+        "capture": "cap.note.capture",
+        "matchDisplay": "cap.match.display",
+        "notesDisplay": "cap.notes.display",
+        "explain": "cap.match.explain"
+      },
+      "notes": "Golden path needs capture, match display, notes display, and match explanation"
+    },
+    {
+      "id": "hyper.capture-palette.requires",
+      "type": "requiresAll",
+      "nodes": [
+        "flow.capture-and-edit-palette",
+        "cap.capture.palette",
+        "cap.elicit.property-palette"
+      ],
+      "roles": {
+        "flow": "flow.capture-and-edit-palette",
+        "palette": "cap.capture.palette",
+        "elicit": "cap.elicit.property-palette"
+      },
+      "notes": "Palette path needs palette capture and palette elicitation"
+    },
+    {
+      "id": "hyper.capture-alternatives",
+      "type": "alternativeSet",
+      "nodes": [
+        "flow.capture-and-edit",
+        "flow.inline-detail",
+        "flow.capture-and-edit-keyboard",
+        "flow.capture-and-edit-palette"
+      ],
+      "roles": {
+        "primary": "flow.capture-and-edit",
+        "inline": "flow.inline-detail",
+        "keyboard": "flow.capture-and-edit-keyboard",
+        "palette": "flow.capture-and-edit-palette"
+      },
+      "notes": "Mutually exclusive capture entry paths with the same outcome"
+    },
+    {
+      "id": "hyper.publish-branches",
+      "type": "alternativeSet",
+      "nodes": [
+        "step.pub.private",
+        "step.pub.published"
+      ],
+      "roles": {
+        "cancelled": "step.pub.private",
+        "confirmed": "step.pub.published"
+      },
+      "notes": "Mutually exclusive publish outcomes"
+    },
+    {
+      "id": "hyper.notesview.variants",
+      "type": "variantSet",
+      "nodes": [
+        "surface.notesview"
+      ],
+      "roles": {
+        "base": "surface.notesview"
+      },
+      "notes": "NotesView variant family"
     }
   ]
 }

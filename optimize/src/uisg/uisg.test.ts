@@ -40,6 +40,7 @@ const minimal: UisgGraph = {
         { from: 'step.act', type: 'renders', to: 'surface.test' },
         { from: 'step.act', type: 'next', to: 'step.done', when: 'ok' },
     ],
+    hyperedges: [],
 };
 
 const clone = (): UisgGraph => JSON.parse(JSON.stringify(minimal));
@@ -79,7 +80,7 @@ describe('validateGraph', () => {
     });
 
     it('rejects schema violations', () => {
-        const { ok, issues } = validateGraph({ version: 0, nodes: [], edges: [] });
+        const { ok, issues } = validateGraph({ version: 0, nodes: [], edges: [], hyperedges: [] });
         expect(ok).toBe(false);
         expect(issues[0].code).toBe('schema');
     });
@@ -346,6 +347,7 @@ const testGraph: UisgGraph = {
     edges: [
         { from: 'flow.test', type: 'uses', to: 'cap.test' },
     ],
+    hyperedges: [],
 };
 
 const testEvidence: EvidenceBundle = {
@@ -468,6 +470,7 @@ describe('records', () => {
                 { id: 'flow.transition', type: 'flow', name: 'Transition flow', status: 'planned', entry: 'step.act', outcome: 'Done.' },
             ],
             edges: [],
+            hyperedges: [],
         };
         transitionLifecycle(graph, 'flow.transition', 'implemented', 'actor', 'reason', testEvidence, 'impact');
         const decisions = loadDecisions();
