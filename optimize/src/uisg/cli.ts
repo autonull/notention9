@@ -79,6 +79,7 @@ Commands:
   themes <list|show|generate|check> [id]    Manage token themes (doc/uisg/themes.json)
   variants <list|create|promote|archive|rollback|diff|export>  Variant registry CRUD (doc/uisg/variants.json)
   ai-generate <surfaceId> <variantId> --prompt <text> [--context <id>] [--from <variant>] [--target <t>] [--create]  AI-assisted variant generation
+  predict <train|predict|rank|filter> [--journey <id>] [--variant <id>] [--theme <id>] [--viewport <id>] [--context <id>] [--max-task-time <ms>] [--max-bundle <kb>] [--min-f1 <val>]  Predictive quality model
   adopt <flowId> --baseline <runId> --variant <runId> --hypothesis <text> --metric <name> --actor <name>
                                             Compare bundles, update lifecycle, record decision
   canonicalize [--graph <file>] [--check-roundtrip]  Canonicalize graph; verify round-trip
@@ -991,6 +992,119 @@ async function main(): Promise<number> {
                     console.log(`\nSelected: ${result.selected.variant.description} (confidence=${result.selected.confidence.toFixed(2)})`);
                 }
                 return 0;
+            }
+        }
+        case 'predict': {
+            const action = positionals[0];
+            const { trainModel, loadModel, predictMetrics, rankVariantsByPrediction, filterVariantsByThreshold } = await import('./predict.js');
+            
+            switch (action) {
+                case 'train': {
+                    console.log('Training predictive model...');
+                    try {
+                        const model = trainModel();
+                        console.log(`Model trained: ${model.trainingSamples} samples`);
+                        console.log(`MAE: taskTimeMs=${model.mae.taskTimeMs.toFixed(0)}ms bundleSizeKb=${model.mae.bundleSizeKb.toFixed(1)}kb matchF1=${model.mae.matchF1.toFixed(3)} interactionCount=${model.mae.interactionCount.toFixed(1)} errorCount=${model.mae.errorCount.toFixed(1)}`);
+                        console.log(`Features: ${model.featureNames.length}`);
+                    } catch (e) {
+                        console.error('Training failed:', (e as Error).message);
+                        return 1;
+                    }
+                    return 0;
+                }
+                case 'predict': {
+                    const journey = flags.get('journey');
+                    const variant = flags.get('variant');
+                    const theme = flags.get('theme') ?? 'default';
+                    const viewport = flags.get('viewport') ?? 'desktop-1440';
+                    const context = flags.get('context');
+                    
+                    if (!journey) {
+                        console.error('predict requires --journey <id>');
+                        return 1;
+                    }
+                    
+                    const model = loadModel();
+                    if (!model) {
+                        console.error('No trained model found. Run `uisg predict train` first.');
+                        return 1;
+                    }
+                    
+                    const prediction = predictMetrics({ journey, variant, theme, viewport, context }, model);
+                    console.log(`Prediction for ${journey}${variant ? `/${variant}` : ''} (${theme}/${viewport}):`);
+                    console.log(`  taskTimeMs: ${prediction.taskTimeMs.toFixed(0)}ms`);
+                    console.log(`  bundleSizeKb: ${prediction.bundleSizeKb.toFixed(1)}kb`);
+                    console.log(`  matchF1: ${prediction.matchF1.toFixed(3)}`);
+                    console.log(`  interactionCount: ${prediction.interactionCount}`);
+                    console.log(`  errorCount: ${prediction.errorCount}`);
+                    console.log(`  confidence: ${(prediction.confidence * 100).toFixed(1)}%`);
+                    return 0;
+                }
+                case 'rank': {
+                    const journey = flags.get('journey');
+                    const theme = flags.get('theme') ?? 'default';
+                    const viewport = flags.get('viewport') ?? 'desktop-1440';
+                    const context = flags.get('context');
+                    const variantList = flags.get('variants')?.split(',') ?? ['dense', 'compact', 'default'];
+                    
+                    if (!journey) {
+                        console.error('rank requires --journey <id>');
+                        return 1;
+                    }
+                    
+                    const model = loadModel();
+                    if (!model) {
+                        console.error('No trained model found. Run `uisg predict train` first.');
+                        return 1;
+                    }
+                    
+                    const ranked = rankVariantsByPrediction(variantList, { journey, theme, viewport, context }, model);
+                    console.log(`Ranked variants for ${journey} (${theme}/${viewport}):`);
+                    for (let i = 0; i < ranked.length; i++) {
+                        const { variant, prediction } = ranked[i];
+                        console.log(`  ${i + 1}. ${variant}: taskTimeMs=${prediction.taskTimeMs.toFixed(0)}ms bundleSizeKb=${prediction.bundleSizeKb.toFixed(1)}kb matchF1=${prediction.matchF1.toFixed(3)} confidence=${(prediction.confidence * 100).toFixed(1)}%`);
+                    }
+                    return 0;
+                }
+                case 'filter': {
+                    const journey = flags.get('journey');
+                    const theme = flags.get('theme') ?? 'default';
+                    const viewport = flags.get('viewport') ?? 'desktop-1440';
+                    const context = flags.get('context');
+                    const variantList = flags.get('variants')?.split(',') ?? ['dense', 'compact', 'default'];
+                    const maxTaskTime = flags.has('max-task-time') ? Number(flags.get('max-task-time')) : undefined;
+                    const maxBundle = flags.has('max-bundle') ? Number(flags.get('max-bundle')) : undefined;
+                    const minF1 = flags.has('min-f1') ? parseFloat(flags.get('max-bundle')!) : undefined;
+                    
+                    if (!journey) {
+                        console.error('filter requires --journey <id>');
+                        return 1;
+                    }
+                    
+                    const model = loadModel();
+                    if (!model) {
+                        console.error('No trained model found. Run `uisg predict train` first.');
+                        return 1;
+                    }
+                    
+                    const filtered = filterVariantsByThreshold(variantList, { journey, theme, viewport, context }, {
+                        maxTaskTimeMs: maxTaskTime,
+                        maxBundleSizeKb: maxBundle,
+                        minMatchF1: minF1,
+                    }, model);
+                    
+                    console.log(`Filtered variants for ${journey} (${theme}/${viewport}):`);
+                    for (const variant of filtered) {
+                        console.log(`  ${variant}`);
+                    }
+                    if (filtered.length === 0) {
+                        console.log('  (none pass thresholds)');
+                    }
+                    return 0;
+                }
+                default:
+                    console.error(`Unknown predict action: ${action ?? '(none)'}. Use: train, predict, rank, filter`);
+                    return 1;
             }
         }
         case 'variants': {

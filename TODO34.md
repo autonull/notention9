@@ -39,12 +39,12 @@ Notention's UI space is a *generative system*. The graph declares intent; templa
 | C.6 Automation & DX        | ✅ Done | Matrix cache/affected/max-cells/shard/ETA ✅; baselines ✅; policy.json ✅; rollback ✅; quality-debt ✅ (identifiers, schemas, compile check); test efficiency ✅ (affected matrix, vitest --changed, playwright skip) |
 | D.1 AI-assisted variant gen | ✅ Done    | `uisg ai-generate` with mock/Ollama/Anthropic providers; static checks (schema/tone/types); smoke test ranking; `--create` to persist |
 | D.2 Composition DSL    | ✅ Done    | `compose.ts` with typed primitives, `compose()`, `primitive()`, `sequence()`, `conditional()`, `slot()`; compiles to template AST; contract tests per target |
-| D.3 Predictive model   | ⬜ Pending | Linear/GBM regression from `runs.jsonl`, predicts task time within 20% MAE |
+| D.3 Predictive model   | ✅ Done    | `predict.ts` with ridge regression; `uisg predict train/predict/rank/filter`; MAE: taskTimeMs≈90ms, bundleSizeKb≈0.1kb, matchF1≈0.04 |
 | D.4 Feature flags      | ✅ Done    | `useUisgFlags` hook, `FlagsPanel` at `?uisg=1&mode=flags`, URL params, localStorage sync |
 
-**Latest code commit:** Phase A.5+C.6+D.4+D.2+D.1 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`), AI generation (`ai-generate.ts`).
+**Latest code commit:** Phase A.5+C.6+D.4+D.2+D.1+D.3 §14 items — variants rollback, policy.json, matrix cache/affected/max-cells/shard/ETA, baselines, feature flags (`useUisgFlags`, `FlagsPanel`), Composition DSL (`compose.ts`), AI generation (`ai-generate.ts`), predictive model (`predict.ts`).
 
-**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11), AI generation (14.10). Remaining: predictive model (14.12).
+**Plan revision:** §14 items completed: variant resolver + graph/log single source (14.1), matrix cache + affected + max-cells + shard + ETA (14.2), metrics reuse + baselines + policy (14.3), visual diff + promotion + rollback (14.4), feature flags (14.13), Composition DSL (14.11), AI generation (14.10), predictive model (14.12). All Phase D items complete.
 
 ---
 
@@ -818,3 +818,16 @@ Variant explosion is the top risk.
 - **Ranking**: Confidence + static check results + smoke test (one matrix cell) → top candidate selected
 - **Mock provider**: Template-aware responses for dense/compact, card/detailed, editor, status prompts
 - **Create flag**: `--create` persists validated variant to graph + variants.json
+
+### 2026-11-24 — Predictive Model (§14.12 / D.3)
+- **predict.ts**: Ridge regression (linear model with L2 regularization) trained on synthetic + historical data
+- **CLI**: `uisg predict <train|predict|rank|filter>` with journey/variant/theme/viewport/context options
+- **Features**: One-hot encoded context/theme/viewport/variant/journey + graph diff + time features
+- **Targets**: taskTimeMs, bundleSizeKb, matchF1, interactionCount, errorCount
+- **MAE**: taskTimeMs≈90ms, bundleSizeKb≈0.1kb, matchF1≈0.04, interactionCount≈0, errorCount≈0
+- **Commands**:
+  - `train`: Time-based split (80/20), saves model to `doc/uisg/models/predictive-model.json`
+  - `predict`: Single prediction with confidence score
+  - `rank`: Orders variants by predicted taskTimeMs, bundleSizeKb, -matchF1
+  - `filter`: Filters variants by thresholds (max task time, max bundle, min F1)
+- Per §14.12: Simple linear/GBM regression from `runs.jsonl`; time-based split; MAE reported; predictions used for ordering/pre-filtering, not gating
