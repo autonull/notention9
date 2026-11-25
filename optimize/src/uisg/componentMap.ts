@@ -6,6 +6,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../../..');
 
+// Cache for generated strategies and scanned strategies
+let _cachedGeneratedStrategies: StrategyConfig[] | null = null;
+let _cachedGeneratedStrategiesMtime: number = 0;
+let _cachedScannedStrategies: ScannedStrategy[] | null = null;
+let _cachedScannedStrategiesMtime: number = 0;
+
 interface ScannedSurface {
     id: string;
     component: string;
@@ -58,6 +64,16 @@ interface StrategyConfig {
 
 function loadGeneratedStrategies(): StrategyConfig[] {
     const defsPath = resolve(ROOT, 'core/src/schemas/generated/seam-definitions.ts');
+    
+    try {
+        const stat = statSync(defsPath);
+        if (_cachedGeneratedStrategies && stat.mtimeMs <= _cachedGeneratedStrategiesMtime) {
+            return _cachedGeneratedStrategies;
+        }
+    } catch {
+        // If we can't stat, don't use cache
+    }
+
     const source = readFileSync(defsPath, 'utf8');
 
     const strategiesMatch = source.match(/export const STRATEGY_CONFIGS = (\[[\s\S]*?\]);/);
@@ -65,7 +81,9 @@ function loadGeneratedStrategies(): StrategyConfig[] {
         throw new Error('Failed to parse STRATEGY_CONFIGS from generated definitions');
     }
 
-    return JSON.parse(strategiesMatch[1]);
+    _cachedGeneratedStrategies = JSON.parse(strategiesMatch[1]);
+    _cachedGeneratedStrategiesMtime = statSync(defsPath).mtimeMs;
+    return _cachedGeneratedStrategies;
 }
 
 function walkDir(dir: string, filter: (file: string) => boolean): string[] {
@@ -95,7 +113,7 @@ function extractExports(source: string): string[] {
 }
 
 function scanStrategies(): ScannedStrategy[] {
-    const strategies: ScannedStrategy[] = [];
+    // Check cache validity based on strategy directories mtime
     const strategyDirs = [
         resolve(ROOT, 'ui/src/strategies'),
         resolve(ROOT, 'ui/src/components/editor'),
@@ -103,6 +121,25 @@ function scanStrategies(): ScannedStrategy[] {
         resolve(ROOT, 'ui/src/components/assistant'),
     ];
 
+    let cacheValid = _cachedScannedStrategies !== null;
+    for (const dir of strategyDirs) {
+        try {
+            const stat = statSync(dir);
+            if (stat.mtimeMs > _cachedScannedStrategiesMtime) {
+                cacheValid = false;
+                break;
+            }
+        } catch {
+            cacheValid = false;
+            break;
+        }
+    }
+
+    if (cacheValid && _cachedScannedStrategies) {
+        return _cachedScannedStrategies;
+    }
+
+    const strategies: ScannedStrategy[] = [];
     const knownStrategyNames = new Set([
         'QuickCapture', 'PropertyForm', 'DescribeItComposer', 'TemplateSelector',
         'TagInput', 'InlineDetailStrategy', 'LocalMatchesPanel'
@@ -127,6 +164,15 @@ function scanStrategies(): ScannedStrategy[] {
                 }
             }
         }
+    }
+    
+    _cachedScannedStrategies = strategies;
+    try {
+        _cachedScannedStrategiesMtime = Math.max(
+            ...strategyDirs.map(dir => statSync(dir).mtimeMs)
+        );
+    } catch {
+        _cachedScannedStrategiesMtime = Date.now();
     }
     return strategies;
 }

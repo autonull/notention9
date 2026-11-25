@@ -1,10 +1,14 @@
-import { readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync, statSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../../..');
+
+// Cache for generated definitions file
+let _cachedGeneratedDefinitions: { seams: SeamDefinition[]; strategies: StrategyConfig[] } | null = null;
+let _cachedDefinitionsMtime: number = 0;
 
 interface SeamDefinition {
     id: string;
@@ -47,6 +51,16 @@ interface StrategyConfig {
 
 function loadGeneratedDefinitions(): { seams: SeamDefinition[]; strategies: StrategyConfig[] } {
     const defsPath = resolve(ROOT, 'core/src/schemas/generated/seam-definitions.ts');
+    
+    try {
+        const stat = statSync(defsPath);
+        if (_cachedGeneratedDefinitions && stat.mtimeMs <= _cachedDefinitionsMtime) {
+            return _cachedGeneratedDefinitions;
+        }
+    } catch {
+        // If we can't stat, don't use cache
+    }
+
     const source = readFileSync(defsPath, 'utf8');
 
     const seamsMatch = source.match(/export const SEAM_DEFINITIONS: SeamDefinition\[\] = (\[[\s\S]*?\]);/);
@@ -56,10 +70,12 @@ function loadGeneratedDefinitions(): { seams: SeamDefinition[]; strategies: Stra
         throw new Error('Failed to parse generated definitions');
     }
 
-    const seams = JSON.parse(seamsMatch[1]);
-    const strategies = JSON.parse(strategiesMatch[1]);
-
-    return { seams, strategies };
+    _cachedGeneratedDefinitions = {
+        seams: JSON.parse(seamsMatch[1]),
+        strategies: JSON.parse(strategiesMatch[1]),
+    };
+    _cachedDefinitionsMtime = statSync(defsPath).mtimeMs;
+    return _cachedGeneratedDefinitions;
 }
 
 function getDefaultPropsForRole(seams: SeamDefinition[], strategies: StrategyConfig[], role: string): Record<string, unknown> {
