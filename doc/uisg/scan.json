@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "scannedAt": "2026-11-25T18:40:11.839Z",
+  "scannedAt": "2026-11-25T19:48:38.665Z",
   "surfaces": [
     {
       "id": "surface.quickcapture",
@@ -179,6 +179,14 @@
       ]
     },
     {
+      "id": "surface.notecontextrail",
+      "component": "NoteContextRail",
+      "file": "ui/src/components/items/NoteContextRail.tsx",
+      "exports": [
+        "NoteContextRail"
+      ]
+    },
+    {
       "id": "surface.notesview",
       "component": "NotesView",
       "file": "ui/src/components/items/NotesView.tsx",
@@ -232,14 +240,6 @@
       "file": "ui/src/components/items/Toast.tsx",
       "exports": [
         "Toast"
-      ]
-    },
-    {
-      "id": "surface.notecontextrail",
-      "component": "NoteContextRail",
-      "file": "ui/src/components/note/NoteContextRail.tsx",
-      "exports": [
-        "NoteContextRail"
       ]
     },
     {
@@ -863,6 +863,13 @@
       ]
     },
     {
+      "name": "EditorManager",
+      "file": "ui/src/components/items/EditorManager.tsx",
+      "exports": [
+        "EditorManager"
+      ]
+    },
+    {
       "name": "EmptyState",
       "file": "ui/src/components/items/EmptyState.tsx",
       "exports": [
@@ -926,6 +933,13 @@
       ]
     },
     {
+      "name": "NoteContextRail",
+      "file": "ui/src/components/items/NoteContextRail.tsx",
+      "exports": [
+        "NoteContextRail"
+      ]
+    },
+    {
       "name": "NotesView",
       "file": "ui/src/components/items/NotesView.tsx",
       "exports": [
@@ -951,6 +965,13 @@
       "file": "ui/src/components/items/PermissionDenied.tsx",
       "exports": [
         "PermissionDenied"
+      ]
+    },
+    {
+      "name": "PropertyEditor",
+      "file": "ui/src/components/items/PropertyEditor.tsx",
+      "exports": [
+        "PropertyEditor"
       ]
     },
     {

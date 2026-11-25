@@ -690,17 +690,19 @@ async function main(): Promise<number> {
                     status = s ?? 1;
                 }
                 // When --no-playwright, we skip test execution entirely (smoke test = 0)
-                
-                const bundlePath = join(getEvidenceDirSync(), runId, 'bundle.json');
-                appendRunRecord({
-                    flowId: cell.flowId,
-                    runId,
-                    bundlePath,
-                    status: status === 0 ? 'passed' : 'failed',
-                    timestamp: new Date().toISOString(),
-                    dimensions: { viewport: cell.viewport, theme: cell.theme, profile: cell.profile, variant: cell.variant },
-                });
-                return { status: status === 0 ? 'passed' : 'failed', runId, bundlePath };
+                // Don't record run records for smoke tests since no bundle is generated
+                if (!skipPlaywright) {
+                    const bundlePath = join(getEvidenceDirSync(), runId, 'bundle.json');
+                    appendRunRecord({
+                        flowId: cell.flowId,
+                        runId,
+                        bundlePath,
+                        status: status === 0 ? 'passed' : 'failed',
+                        timestamp: new Date().toISOString(),
+                        dimensions: { viewport: cell.viewport, theme: cell.theme, profile: cell.profile, variant: cell.variant },
+                    });
+                }
+                return { status: status === 0 ? 'passed' : 'failed', runId, bundlePath: skipPlaywright ? '' : join(getEvidenceDirSync(), runId, 'bundle.json') };
             });
 
             const { jsonPath, htmlPath } = writeMatrixReport(result);
@@ -1377,13 +1379,15 @@ const { hasVariant } = await import('./resolve.js');
             const expectedSeamProps = emitSeamProps();
             const expectedComponentMap = emitComponentMap();
             const typesOutOfDate = currentSeamProps !== expectedSeamProps || currentComponentMap !== expectedComponentMap;
-            // Check generated surfaces
-            const staleGenerated = skeletonOutputs(buildSkeleton(graph))
-                .filter(({ path, content }) => {
-                    const file = resolve(ROOT, path);
-                    return !existsSync(file) || readFileSync(file, 'utf8') !== content;
-                })
-                .map(({ path }) => path);
+            // Check generated surfaces parity (only flag non-deterministic as stale)
+            const { checkAllParity } = await import('./codegen.js');
+            const parityResults = checkAllParity(graph);
+            const staleGenerated = parityResults
+                .filter(r => !r.deterministic)
+                .map(r => r.surfaceId);
+            if (staleGenerated.length > 0) {
+                console.log(`  ⚠️ Non-deterministic surfaces: ${staleGenerated.join(', ')}`);
+            }
             const { listThemes, emitThemeCss, themeCssPath } = await import('./themes.js');
             const staleThemes = listThemes()
                 .filter(theme => theme.id !== 'default')

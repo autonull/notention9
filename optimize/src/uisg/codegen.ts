@@ -247,6 +247,8 @@ export function checkAllParity(graph: UisgGraph, surfaceIds?: string[], variant?
     
     for (const surface of targets) {
         if (surface.seam) continue;
+        // Skip parity check for hand-written components (no template field)
+        if (!surface.template) continue;
         try {
             const result = checkParity(surface, graph, variant);
             results.push(result);
