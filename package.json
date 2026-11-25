@@ -26,6 +26,7 @@
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "pnpm --filter @notention/core test && pnpm --filter @notention/agent test && pnpm --filter @notention/cli test && pnpm --filter @notention/optimize test && pnpm --filter @notention/simulator test",
+    "test:changed": "pnpm --filter @notention/core test --changed && pnpm --filter @notention/agent test --changed && pnpm --filter @notention/cli test --changed && pnpm --filter @notention/optimize test --changed",
     "test:ui": "tsx scripts/test-ui-batched.ts",
     "check:ui": "pnpm lint:type && pnpm lint:tone && pnpm lint:ui-layers && pnpm --filter @notention/ui typecheck && pnpm --filter @notention/ui exec playwright test --config test/playwright.config.ts --project=journeys journeys/golden-path.spec.ts journeys/axe-audit.spec.ts",
     "lint:type": "node scripts/check-type-scale.mjs",

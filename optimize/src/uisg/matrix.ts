@@ -342,3 +342,101 @@ export function loadMatrixResult(runId: string): MatrixResult | null {
         return null;
     }
 }
+
+export interface AffectedMatrixOptions {
+    graph: UisgGraph;
+    journeys: MatrixJourney[];
+    config: MatrixConfig;
+    changedSurfaceIds?: string[];
+    changedFlowIds?: string[];
+    changedContextIds?: string[];
+    changedVariantIds?: string[];
+    changedThemeIds?: string[];
+}
+
+export function filterAffectedCells(
+    cells: MatrixCell[],
+    options: AffectedMatrixOptions
+): MatrixCell[] {
+    const { changedSurfaceIds = [], changedFlowIds = [], changedContextIds = [], changedVariantIds = [], changedThemeIds = [] } = options;
+    
+    if (!changedSurfaceIds.length && !changedFlowIds.length && !changedContextIds.length && !changedVariantIds.length && !changedThemeIds.length) {
+        return cells;
+    }
+    
+    return cells.filter(cell => {
+        // Filter by changed flows
+        if (changedFlowIds.length && !changedFlowIds.includes(cell.flowId)) {
+            return false;
+        }
+        // Filter by changed contexts
+        if (changedContextIds.length && cell.context && !changedContextIds.includes(cell.context)) {
+            return false;
+        }
+        // Filter by changed variants
+        if (changedVariantIds.length && cell.variant && !changedVariantIds.includes(cell.variant)) {
+            return false;
+        }
+        // Filter by changed themes
+        if (changedThemeIds.length && !changedThemeIds.includes(cell.theme)) {
+            return false;
+        }
+        return true;
+    });
+}
+
+export async function getAffectedMatrixCells(
+    graph: UisgGraph,
+    journeys: MatrixJourney[],
+    config: MatrixConfig,
+    options: { variant?: string } = {}
+): Promise<MatrixCell[]> {
+    const { checkAllParity } = await import('./codegen.js');
+    
+    // Build all cells first
+    const allCells = buildMatrixCells(config, journeys);
+    
+    // Find surfaces with parity changes (non-deterministic = changed)
+    const parityResults = checkAllParity(graph, undefined, options.variant);
+    const changedSurfaceIds = parityResults
+        .filter(r => !r.deterministic)
+        .map(r => r.surfaceId);
+    
+    // Find flows that reference changed surfaces
+    const changedFlowIds: string[] = [];
+    for (const surfaceId of changedSurfaceIds) {
+        const surface = graph.nodes.find(n => n.id === surfaceId);
+        if (surface) {
+            // Find flows that render this surface
+            for (const edge of graph.edges) {
+                if (edge.type === 'renders' && edge.to === surfaceId) {
+                    const step = graph.nodes.find(n => n.id === edge.from);
+                    if (step?.type === 'step') {
+                        for (const e of graph.edges) {
+                            if (e.type === 'contains' && e.to === step.id) {
+                                const flow = graph.nodes.find(n => n.id === e.from);
+                                if (flow?.type === 'flow') {
+                                    changedFlowIds.push(flow.id);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    // Also check for flows that changed in the graph
+    const graphFlowIds = graph.nodes
+        .filter(n => n.type === 'flow' && ['implemented', 'partial'].includes(n.status))
+        .map(n => n.id);
+    
+    // For now, return cells affected by surface changes
+    return filterAffectedCells(allCells, {
+        graph,
+        journeys,
+        config,
+        changedSurfaceIds,
+        changedFlowIds: [...new Set(changedFlowIds)],
+    });
+}

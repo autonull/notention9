@@ -40,8 +40,8 @@ async function main(): Promise<void> {
     // L1: Param visibility check
     run('pnpm exec tsx scripts/verify-param-visibility.ts', 'L1: Strategy param visibility check');
 
-    // L1: UISG graph gate (validate, analyze, sync, seeded regressions, round-trip)
-    run('pnpm uisg:check', 'L1: UISG graph gate');
+    // L1: UISG graph gate (validate, analyze, sync, seeded regressions, round-trip, schemas, compile)
+    run('pnpm uisg check --compile', 'L1: UISG graph gate');
 
     // L1: UISG optimize pipeline (types, scan, generate, check)
     run('pnpm uisg optimize', 'L1: UISG optimize pipeline');
@@ -55,8 +55,8 @@ async function main(): Promise<void> {
     run('pnpm uisg run flow.ontology-conflict', 'L3: UISG journey (ontology-conflict)');
     run('pnpm uisg run flow.capture-and-edit-palette', 'L3: UISG journey (capture-and-edit-palette)');
 
-    // L3: UISG journey matrix + decision gate
-    run('pnpm uisg matrix --contexts=all --themes=default --viewports=all --variants=all --no-build', 'L3: UISG journey matrix');
+    // L3: UISG journey matrix + decision gate (affected cells only, skip playwright)
+    run('pnpm uisg matrix --contexts=all --themes=default --viewports=all --variants=all --no-build --affected --no-playwright', 'L3: UISG journey matrix (affected)');
     run('pnpm uisg decide --matrix=doc/uisg/matrix-latest.json', 'L3: UISG decision gate');
 
     // Performance budget

@@ -17,6 +17,7 @@
     "build:ui": "vite build --config vite.config.ts",
     "ui:dev": "vite dev --config vite.config.ts",
     "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run --passWithNoTests",
+    "test:changed": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run --changed --passWithNoTests",
     "test:calibrate": "CALIBRATE=1 NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run src/scenarios/measurementSuite.test.ts --reporter=verbose"
   },
   "dependencies": {

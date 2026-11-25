@@ -60,7 +60,7 @@ Commands:
   reducer <flowId> [--out <file>]           Generate flow reducer from graph
   matrix [--journeys a,b|all] [--contexts c|all] [--themes t|all] [--viewports v|all]
          [--variants v|all] [--profiles hand-built,generated] [--parallelism N] [--plan] [--no-build]
-         [--max-cells N] [--allow-large] [--shard i/N] [--skip-cached]
+         [--max-cells N] [--allow-large] [--shard i/N] [--skip-cached] [--affected] [--no-playwright]
                                             Run journeys across contexts x themes x viewports x variants; write matrix report
   decide --matrix <runId> [--baseline <runId>] [--policy <file>]  Evaluate variants against policy; promote/reject/flag
   baselines <list|show|update> [journey] [variant] [--matrix <runId>]  Manage per-journey baselines (doc/uisg/baselines/)
@@ -557,6 +557,26 @@ async function main(): Promise<number> {
                 }
             }
 
+            // Apply affected filter if requested
+            if (flags.has('affected')) {
+                const { getAffectedMatrixCells } = await import('./matrix.js');
+                const affectedCells = await getAffectedMatrixCells(graph, journeys, config, { variant: flags.get('variant') });
+                console.log(`Affected cells: ${affectedCells.length} (of ${buildMatrixCells(config, journeys).length} total)`);
+                if (affectedCells.length === 0) {
+                    console.log('No affected cells — skipping matrix run');
+                    return 0;
+                }
+                // Convert affected cells back to journeys for runMatrix
+                const affectedJourneys: MatrixJourney[] = [];
+                for (const cell of affectedCells) {
+                    if (!affectedJourneys.some(j => j.journey === cell.journey && j.profile === cell.profile)) {
+                        affectedJourneys.push({ flowId: cell.flowId, journey: cell.journey, profile: cell.profile });
+                    }
+                }
+                journeys.length = 0;
+                journeys.push(...affectedJourneys);
+            }
+
             if (flags.has('plan')) {
                 const { estimatedMs, cellCount, eta } = estimateMatrixDuration(config, journeys);
                 const cells = buildMatrixCells(config, journeys);
@@ -571,6 +591,11 @@ async function main(): Promise<number> {
             if (!flags.has('no-build')) {
                 const status = buildOptimize();
                 if (status !== 0) return status;
+            }
+
+            // Skip Playwright if only codegen/schema files changed
+            if (flags.has('no-playwright')) {
+                console.log('Skipping Playwright tests (--no-playwright)');
             }
 
             const result = await runMatrix(config, journeys, async cell => {

@@ -372,6 +372,7 @@
     "generate:browser-index": "node scripts/generate-browser-index.mjs",
     "dev": "tsup --watch",
     "test": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run",
+    "test:changed": "NODE_OPTIONS='--no-warnings=ExperimentalWarning' vitest run --changed",
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [
