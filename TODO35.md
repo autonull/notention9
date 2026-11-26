@@ -450,7 +450,7 @@ Validated against `HEAD` and re-run after this work:
 *Status: Week 7 Optimization Loop Complete — Post-Week 6 Polish Complete — `pnpm optimize:ci` passes (axe dual-theme ✅, lint ✅, typecheck ✅, build ✅)*
 *Last updated: 2026-11-26*
 *Verified: 2026-11-26 — All quality gates pass:*
-*  `pnpm check:ui` — 20/20 journey tests pass (axe dual-theme ✅)*
+*  `pnpm check:ui` — 21/21 journey tests pass (axe dual-theme ✅)*
 *  `pnpm --filter @notention/optimize test` — 240 passed, 4 skipped*
 *  `pnpm test` — 1178 tests passed across all workspaces*
 *  `pnpm build` — production build succeeds*
