@@ -36,34 +36,38 @@ export function SkillManagementView() {
     const [executor] = useState(() => new SkillExecutor());
 
     useEffect(() => {
-        executor.registerSkill(new IndeedSkill());
-        executor.registerSkill(new GitHubSkill());
-        executor.registerSkill(new CraigslistSkill());
-        executor.registerSkill(new ReminderSkill());
+        try {
+            executor.registerSkill(new IndeedSkill());
+            executor.registerSkill(new GitHubSkill());
+            executor.registerSkill(new CraigslistSkill());
+            executor.registerSkill(new ReminderSkill());
 
-        const approvals = executor.getApprovedSkills();
-        const execHistory = executor.getExecutionHistory();
-        
-        const skillDisplays = executor.getAllSkills().map(skill => {
-            const approval = approvals.find(a => a.skillId === skill.id);
-            const skillHistory = execHistory.filter(h => h.skillId === skill.id);
-            return {
-                id: skill.id,
-                name: skill.name,
-                description: skill.description,
-                version: skill.version,
-                approved: approval?.autoExecute ?? false,
-                autoExecute: approval?.autoExecute ?? false,
-                domains: skill.metadata?.domains || [],
-                requiresAuth: skill.metadata?.requiresAuth || false,
-                lastExecuted: skillHistory.length > 0 ? skillHistory[skillHistory.length - 1].timestamp : undefined,
-                executionCount: skillHistory.length,
-                successCount: skillHistory.filter(h => h.success).length
-            };
-        });
+            const approvals = executor.getApprovedSkills();
+            const execHistory = executor.getExecutionHistory();
+            
+            const skillDisplays = executor.getAllSkills().map(skill => {
+                const approval = approvals.find(a => a.skillId === skill.id);
+                const skillHistory = execHistory.filter(h => h.skillId === skill.id);
+                return {
+                    id: skill.id,
+                    name: skill.name,
+                    description: skill.description,
+                    version: skill.version,
+                    approved: approval?.autoExecute ?? false,
+                    autoExecute: approval?.autoExecute ?? false,
+                    domains: skill.metadata?.domains || [],
+                    requiresAuth: skill.metadata?.requiresAuth || false,
+                    lastExecuted: skillHistory.length > 0 ? skillHistory[skillHistory.length - 1].timestamp : undefined,
+                    executionCount: skillHistory.length,
+                    successCount: skillHistory.filter(h => h.success).length
+                };
+            });
 
-        setSkills(skillDisplays);
-        setHistory(execHistory);
+            setSkills(skillDisplays);
+            setHistory(execHistory);
+        } catch (err) {
+            console.error('SkillManagementView useEffect error:', err);
+        }
     }, []);
 
     const refreshSkills = useCallback(() => {
@@ -248,8 +252,8 @@ export function SkillManagementView() {
                             <div className="rounded-md bg-[var(--app-raised)] p-2.5">
                                 <div className="text-[11px] text-[var(--app-faint)]">External domains</div>
                                 <div className="mt-1 text-[12px] text-[var(--app-text-secondary)]">
-                                    {skill.domains.length > 0 ? (
-                                        skill.domains.map(d => (
+                                    {(skill.domains ?? []).length > 0 ? (
+                                        (skill.domains ?? []).map(d => (
                                             <span key={d} className="mr-1 inline-block rounded border border-[var(--app-line)] px-1.5 py-0.5 text-[11px]">{d}</span>
                                         ))
                                     ) : (

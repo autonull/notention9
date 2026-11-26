@@ -21,6 +21,7 @@ export function useUrlRouting() {
         setUisgMode,
     } = useView();
 
+    const isInitialMount = useRef(true);
     const pendingFromUrl = useRef<Route | null>(null);
 
     const applyRoute = useCallback((route: Route) => {
@@ -48,6 +49,7 @@ export function useUrlRouting() {
         }
     }, [setActiveView, setSelectedNoteId, setNotesMode, setNotesSection, setSettingsTab, setNoteTab, setIsPaletteOpen, setUisgMode]);
 
+    // Handle URL changes (popstate, hashchange, initial mount)
     useEffect(() => {
         const handleUrlChange = () => {
             const route = parseRoute(window.location.hash);
@@ -58,7 +60,10 @@ export function useUrlRouting() {
             }
         };
 
+        // Initial mount: apply current hash
         handleUrlChange();
+
+        // Listen for navigation events
         window.addEventListener('popstate', handleUrlChange);
         window.addEventListener('hashchange', handleUrlChange);
         return () => {
@@ -67,7 +72,14 @@ export function useUrlRouting() {
         };
     }, [applyRoute]);
 
+    // Sync URL to state (only for internal state changes, not URL navigation)
     useEffect(() => {
+        // Skip on initial mount - URL already reflects initial state
+        if (isInitialMount.current) {
+            isInitialMount.current = false;
+            return;
+        }
+
         const state: Route = {
             view: activeView,
             noteId: activeView === 'notes' ? selectedNoteId : null,
@@ -80,6 +92,8 @@ export function useUrlRouting() {
             chat: false,
             uisgMode: activeView === 'uisg-dev' ? uisgMode : undefined,
         };
+
+        // If this change came from URL navigation, pendingFromUrl will match; skip sync
         const pending = pendingFromUrl.current;
         if (pending) {
             const settled =
@@ -92,8 +106,8 @@ export function useUrlRouting() {
                 pending.uisgMode === state.uisgMode;
             if (settled) {
                 pendingFromUrl.current = null;
+                return;
             }
-            return;
         }
 
         const hash = routeToHash(state);

@@ -2,8 +2,31 @@ import React, { createContext, ReactNode, useState } from 'react';
 import { useLocalForage } from '../../hooks/useLocalForage';
 import type { NoteMode, NoteTab, NotesGroup, NotesSection, SettingsTab, SidebarViewMode, SortOrder, View } from '@notention/core';
 import { STORAGE_KEYS } from '../../config/storageKeys';
+import { parseRoute } from '../../utils/navigation';
 
 export type { NoteMode, NoteTab, NotesSection, SettingsTab };
+
+function getInitialView(): View {
+    if (typeof window !== 'undefined') {
+        try {
+            return parseRoute(window.location.hash).view;
+        } catch {
+            return 'notes';
+        }
+    }
+    return 'notes';
+}
+
+function getInitialSettingsTab(): SettingsTab {
+    if (typeof window !== 'undefined') {
+        try {
+            return parseRoute(window.location.hash).settingsTab;
+        } catch {
+            return 'general';
+        }
+    }
+    return 'general';
+}
 
 export interface ViewNavigationContextType {
     activeView: View;
@@ -49,10 +72,10 @@ export function ViewNavigationProvider({ children }: { children: ReactNode }) {
     const [isContextOpen, setIsContextOpen] = useLocalForage<boolean>(STORAGE_KEYS.contextOpen, false);
 
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const [activeView, setActiveView] = useState<View>('notes');
+    const [activeView, setActiveView] = useState<View>(getInitialView);
     const [searchTerm, setSearchTerm] = useState('');
     const [noteTab, setNoteTab] = useState<NoteTab>('next');
-    const [settingsTab, setSettingsTab] = useState<SettingsTab>('general');
+    const [settingsTab, setSettingsTab] = useState<SettingsTab>(getInitialSettingsTab);
     const [uisgMode, setUisgMode] = useState<string>('graph');
 
     return (

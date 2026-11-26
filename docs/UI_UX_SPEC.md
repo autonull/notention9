@@ -1,6 +1,6 @@
 # UI/UX Specification
 
-Generated from `optimize/uisg.yaml` on 2026-11-26T20:43:37.291Z
+Generated from `optimize/uisg.yaml` on 2026-11-26T22:03:13.170Z
 
 ## Surfaces
 

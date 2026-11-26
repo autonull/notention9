@@ -106,9 +106,9 @@ export function SettingsView() {
                         onChange={(event) => selectTab(event.target.value as SettingsTab)}
                         className="h-9 w-full rounded-lg border border-[var(--app-line)] bg-[var(--app-surface)] px-2.5 text-[13px] text-[var(--app-text)] focus:border-[var(--app-accent-line)] focus:outline-none"
                     >
-                        {SETTINGS_GROUPS.map(group => (
+                        {(SETTINGS_GROUPS ?? []).map(group => (
                             <optgroup key={group.id} label={group.label}>
-                                {group.tabs.map(tab => (
+                                {(group.tabs ?? []).map(tab => (
                                     <option key={tab.id} value={tab.id}>{tab.label}</option>
                                 ))}
                             </optgroup>
