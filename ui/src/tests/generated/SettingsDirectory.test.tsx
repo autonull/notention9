@@ -4,7 +4,7 @@
 // Source surface: surface.settings-directory
 
 import { render, screen } from '@testing-library/react';
-import { SettingsDirectory } from '@/components/settings/SettingsDirectory';
+import { SettingsDirectory } from '../../components/settings/SettingsDirectory';
 
 test('surface.settings-directory renders', () => {
     render(<SettingsDirectory />);

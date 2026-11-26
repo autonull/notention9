@@ -200,3 +200,309 @@ registerJourney(captureAndEditPalette);
 registerJourney(publishGate);
 registerJourney(ontologyConflict);
 registerJourney(goldenPath);
+
+// Help System Journeys (from uisg.yaml)
+const helpSystemCompletion: JourneySpec = {
+    id: 'help-system-completion',
+    version: 1,
+    intent: 'User completes a help topic from start to finish',
+    journeysTouched: ['help', 'onboarding'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/help' },
+        { kind: 'act', target: { testId: 'help-sidebar' }, action: 'click' },
+        { kind: 'act', target: { testId: 'help-topic-card' }, action: 'click' },
+        { kind: 'waitForState', path: 'help.currentTopic', equals: 'create-first-note', timeoutMs: 5000 },
+        { kind: 'assertState', path: 'help.currentTopic', equals: 'create-first-note' },
+        { kind: 'capture', label: 'help-topic-completed' },
+    ],
+    status: 'ready',
+};
+
+const helpSearch: JourneySpec = {
+    id: 'help-search',
+    version: 1,
+    intent: 'User searches for help topic',
+    journeysTouched: ['help', 'search'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/help' },
+        { kind: 'act', target: { testId: 'help-search-input' }, action: 'fill', value: 'create note' },
+        { kind: 'act', target: { testId: 'help-search-result' }, action: 'click' },
+        { kind: 'waitForState', path: 'help.currentTopic', equals: 'create-first-note', timeoutMs: 5000 },
+        { kind: 'assertState', path: 'help.currentTopic', equals: 'create-first-note' },
+        { kind: 'capture', label: 'help-search-completed' },
+    ],
+    status: 'ready',
+};
+
+const helpVideo: JourneySpec = {
+    id: 'help-video',
+    version: 1,
+    intent: 'User watches help video',
+    journeysTouched: ['help', 'video'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/help' },
+        { kind: 'act', target: { testId: 'help-topic-card' }, action: 'click' },
+        { kind: 'act', target: { testId: 'help-video-play' }, action: 'click' },
+        { kind: 'waitForState', path: 'help.videoProgress', equals: 1, timeoutMs: 10000 },
+        { kind: 'assertState', path: 'help.videoProgress', equals: 1 },
+        { kind: 'capture', label: 'help-video-completed' },
+    ],
+    status: 'ready',
+};
+
+const helpInteractive: JourneySpec = {
+    id: 'help-interactive',
+    version: 1,
+    intent: 'User completes interactive demo',
+    journeysTouched: ['help', 'interactive'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/help' },
+        { kind: 'act', target: { testId: 'help-topic-card' }, action: 'click' },
+        { kind: 'act', target: { testId: 'help-interactive-start' }, action: 'click' },
+        { kind: 'waitForState', path: 'help.demoCompleted', equals: true, timeoutMs: 10000 },
+        { kind: 'assertState', path: 'help.demoCompleted', equals: true },
+        { kind: 'capture', label: 'help-interactive-completed' },
+    ],
+    status: 'ready',
+};
+
+const helpProgress: JourneySpec = {
+    id: 'help-progress',
+    version: 1,
+    intent: 'User tracks progress across topics',
+    journeysTouched: ['help', 'progress'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/help' },
+        { kind: 'act', target: { testId: 'help-progress-bar' }, action: 'click' },
+        { kind: 'waitForState', path: 'help.progressVisible', equals: true, timeoutMs: 3000 },
+        { kind: 'assertState', path: 'help.progressVisible', equals: true },
+        { kind: 'capture', label: 'help-progress-viewed' },
+    ],
+    status: 'ready',
+};
+
+const helpContextual: JourneySpec = {
+    id: 'help-contextual',
+    version: 1,
+    intent: 'Help appears contextually (idle, error, feature gate)',
+    journeysTouched: ['help', 'contextual'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/notes' },
+        { kind: 'waitForState', path: 'help.contextualPromptVisible', equals: true, timeoutMs: 15000 },
+        { kind: 'act', target: { testId: 'help-contextual-accept' }, action: 'click' },
+        { kind: 'waitForState', path: 'help.currentTopic', equals: 'create-first-note', timeoutMs: 5000 },
+        { kind: 'assertState', path: 'help.currentTopic', equals: 'create-first-note' },
+        { kind: 'capture', label: 'help-contextual-accepted' },
+    ],
+    status: 'ready',
+};
+
+// Mobile Journeys (from uisg.yaml)
+const mobilePropertyEditor: JourneySpec = {
+    id: 'mobile-property-editor',
+    version: 1,
+    intent: 'User edits property on mobile',
+    journeysTouched: ['mobile', 'properties'],
+    seed: { notes: [testNote], settings: { ...baseSettings, density: 'compact' } },
+    steps: [
+        { kind: 'seed', notes: [testNote], settings: { ...baseSettings, density: 'compact' } },
+        { kind: 'act', target: { testId: 'note-property-framework' }, action: 'click' },
+        { kind: 'act', target: { testId: 'mobile-property-editor-input' }, action: 'fill', value: 'React Native' },
+        { kind: 'act', target: { testId: 'mobile-property-editor-save' }, action: 'click' },
+        { kind: 'waitForState', path: 'note.propertyIndex.framework', equals: ['React Native'], timeoutMs: 3000 },
+        { kind: 'assertState', path: 'note.propertyIndex.framework', equals: ['React Native'] },
+        { kind: 'capture', label: 'mobile-property-edited' },
+    ],
+    status: 'ready',
+};
+
+const mobileArrangeMenu: JourneySpec = {
+    id: 'mobile-arrange-menu',
+    version: 1,
+    intent: 'User arranges items via bottom sheet',
+    journeysTouched: ['mobile', 'arrange'],
+    seed: { notes: [testNote], settings: { ...baseSettings, density: 'compact' } },
+    steps: [
+        { kind: 'seed', notes: [testNote], settings: { ...baseSettings, density: 'compact' } },
+        { kind: 'act', target: { testId: 'mobile-arrange-trigger' }, action: 'click' },
+        { kind: 'act', target: { testId: 'mobile-arrange-sheet' }, action: 'press', value: 'ArrowDown' },
+        { kind: 'act', target: { testId: 'mobile-arrange-confirm' }, action: 'click' },
+        { kind: 'waitForState', path: 'note.order', equals: 1, timeoutMs: 3000 },
+        { kind: 'assertState', path: 'note.order', equals: 1 },
+        { kind: 'capture', label: 'mobile-arrange-completed' },
+    ],
+    status: 'ready',
+};
+
+const mobileContextRail: JourneySpec = {
+    id: 'mobile-context-rail',
+    version: 1,
+    intent: 'User navigates context rail',
+    journeysTouched: ['mobile', 'context'],
+    seed: { notes: [testNote], settings: { ...baseSettings, density: 'compact' } },
+    steps: [
+        { kind: 'seed', notes: [testNote], settings: { ...baseSettings, density: 'compact' } },
+        { kind: 'act', target: { testId: 'mobile-context-rail-tab-1' }, action: 'click' },
+        { kind: 'act', target: { testId: 'mobile-context-rail-tab-2' }, action: 'click' },
+        { kind: 'waitForState', path: 'context.activeTab', equals: 'tab-2', timeoutMs: 3000 },
+        { kind: 'assertState', path: 'context.activeTab', equals: 'tab-2' },
+        { kind: 'capture', label: 'mobile-context-rail-navigated' },
+    ],
+    status: 'ready',
+};
+
+const mobileMap: JourneySpec = {
+    id: 'mobile-map',
+    version: 1,
+    intent: 'User interacts with map on mobile',
+    journeysTouched: ['mobile', 'map'],
+    seed: { notes: [], settings: { ...baseSettings, density: 'compact' } },
+    steps: [
+        { kind: 'seed', notes: [], settings: { ...baseSettings, density: 'compact' } },
+        { kind: 'navigate', hash: '#/map' },
+        { kind: 'act', target: { testId: 'mobile-map-fab' }, action: 'click' },
+        { kind: 'act', target: { testId: 'mobile-map-geolocation' }, action: 'click' },
+        { kind: 'waitForState', path: 'map.userLocation', equals: true, timeoutMs: 10000 },
+        { kind: 'assertState', path: 'map.userLocation', equals: true },
+        { kind: 'capture', label: 'mobile-map-interacted' },
+    ],
+    status: 'ready',
+};
+
+const mobileHeader: JourneySpec = {
+    id: 'mobile-header',
+    version: 1,
+    intent: 'User opens sidebar via hamburger',
+    journeysTouched: ['mobile', 'navigation'],
+    seed: { notes: [], settings: { ...baseSettings, density: 'compact' } },
+    steps: [
+        { kind: 'seed', notes: [], settings: { ...baseSettings, density: 'compact' } },
+        { kind: 'act', target: { testId: 'mobile-hamburger' }, action: 'click' },
+        { kind: 'waitForState', path: 'sidebar.isOpen', equals: true, timeoutMs: 3000 },
+        { kind: 'act', target: { testId: 'sidebar-nav-notes' }, action: 'click' },
+        { kind: 'waitForState', path: 'view.active', equals: 'notes', timeoutMs: 3000 },
+        { kind: 'assertState', path: 'view.active', equals: 'notes' },
+        { kind: 'capture', label: 'mobile-header-navigated' },
+    ],
+    status: 'ready',
+};
+
+// Empty State Journeys
+const emptyStateNotesAll: JourneySpec = {
+    id: 'empty-state-notes-all',
+    version: 1,
+    intent: 'New user sees empty notes view',
+    journeysTouched: ['empty-state', 'onboarding'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/notes' },
+        { kind: 'act', target: { testId: 'empty-state-primary-cta' }, action: 'click' },
+        { kind: 'waitForState', path: 'note.title', equals: 'New Note', timeoutMs: 5000 },
+        { kind: 'assertState', path: 'note.title', equals: 'New Note' },
+        { kind: 'capture', label: 'empty-state-notes-cta-clicked' },
+    ],
+    status: 'ready',
+};
+
+const emptyStateNetwork: JourneySpec = {
+    id: 'empty-state-network',
+    version: 1,
+    intent: 'User has no network connections',
+    journeysTouched: ['empty-state', 'network'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/network' },
+        { kind: 'act', target: { testId: 'empty-state-primary-cta' }, action: 'click' },
+        { kind: 'waitForState', path: 'network.connecting', equals: true, timeoutMs: 5000 },
+        { kind: 'assertState', path: 'network.connecting', equals: true },
+        { kind: 'capture', label: 'empty-state-network-cta-clicked' },
+    ],
+    status: 'ready',
+};
+
+const emptyStateMatches: JourneySpec = {
+    id: 'empty-state-matches',
+    version: 1,
+    intent: 'User has no matches',
+    journeysTouched: ['empty-state', 'matching'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/matches' },
+        { kind: 'act', target: { testId: 'empty-state-primary-cta' }, action: 'click' },
+        { kind: 'waitForState', path: 'describeIt.open', equals: true, timeoutMs: 5000 },
+        { kind: 'assertState', path: 'describeIt.open', equals: true },
+        { kind: 'capture', label: 'empty-state-matches-cta-clicked' },
+    ],
+    status: 'ready',
+};
+
+// Settings Journeys
+const settingsTask: JourneySpec = {
+    id: 'settings-task',
+    version: 1,
+    intent: 'User completes a settings task',
+    journeysTouched: ['settings'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/settings' },
+        { kind: 'act', target: { testId: 'settings-search' }, action: 'fill', value: 'theme' },
+        { kind: 'act', target: { testId: 'setting-theme' }, action: 'click' },
+        { kind: 'act', target: { testId: 'theme-option-dark' }, action: 'click' },
+        { kind: 'waitForState', path: 'settings.theme', equals: 'dark', timeoutMs: 3000 },
+        { kind: 'assertState', path: 'settings.theme', equals: 'dark' },
+        { kind: 'capture', label: 'settings-task-completed' },
+    ],
+    status: 'ready',
+};
+
+const settingsWizard: JourneySpec = {
+    id: 'settings-wizard',
+    version: 1,
+    intent: 'First-run user completes settings wizard',
+    journeysTouched: ['settings', 'onboarding'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/settings' },
+        { kind: 'act', target: { testId: 'settings-wizard-next' }, action: 'click' },
+        { kind: 'act', target: { testId: 'settings-wizard-next' }, action: 'click' },
+        { kind: 'act', target: { testId: 'settings-wizard-complete' }, action: 'click' },
+        { kind: 'waitForState', path: 'settings.wizardCompleted', equals: true, timeoutMs: 5000 },
+        { kind: 'assertState', path: 'settings.wizardCompleted', equals: true },
+        { kind: 'capture', label: 'settings-wizard-completed' },
+    ],
+    status: 'ready',
+};
+
+registerJourney(helpSystemCompletion);
+registerJourney(helpSearch);
+registerJourney(helpVideo);
+registerJourney(helpInteractive);
+registerJourney(helpProgress);
+registerJourney(helpContextual);
+registerJourney(mobilePropertyEditor);
+registerJourney(mobileArrangeMenu);
+registerJourney(mobileContextRail);
+registerJourney(mobileMap);
+registerJourney(mobileHeader);
+registerJourney(emptyStateNotesAll);
+registerJourney(emptyStateNetwork);
+registerJourney(emptyStateMatches);
+registerJourney(settingsTask);
+registerJourney(settingsWizard);

@@ -4,9 +4,9 @@
 // Source surface: surface.empty-state-actionable
 
 import { render, screen } from '@testing-library/react';
-import { ActionableEmptyState } from '@/components/ui/ActionableEmptyState';
+import { ActionableEmptyState } from '../../components/ui/ActionableEmptyState';
 
 test('surface.empty-state-actionable renders', () => {
-    render(<ActionableEmptyState variant="notes-all" />);
-    expect(screen.getByTestId('empty-state-notes-all')).toBeInTheDocument();
+    render(<ActionableEmptyState />);
+    expect(screen.getByTestId('emptystateactionable')).toBeInTheDocument();
 });

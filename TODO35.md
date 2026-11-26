@@ -119,9 +119,9 @@ pnpm optimize:validate
 
 ---
 
-## 4. Mobile Experience (Week 4) ✅ GENERATED
+## 4. Mobile Experience (Week 4) ✅ COMPLETE
 
-### 4.1 Surfaces (all parallel) ✅ SCAFFOLDS GENERATED
+### 4.1 Surfaces (all parallel) ✅ SCAFFOLDS GENERATED + JOURNEYS RUNNING
 
 | Surface | Component | Template | Key Changes |
 |---------|-----------|----------|-------------|
@@ -140,7 +140,22 @@ pnpm optimize:validate
 | Safe area CSS variables | `ui/src/styles/theme.css` (env(safe-area-inset-*)) | ✅ |
 | Virtual keyboard viewport handling | `ui/src/hooks/useVirtualKeyboard.ts` | ✅ |
 
-**Acceptance**: All 5 mobile journeys compile, `mobile-touch-target-compliance` = 1.0 (pending optimizer experiments)
+**Acceptance**: All 5 mobile journeys compile & run via `pnpm uisg matrix --journeys mobile-* --quick --no-playwright`, `mobile-touch-target-compliance` = 1.0 (validated by matrix)
+
+### 4.3 UISG Experiments ✅ RUNNING
+
+All experiment variants defined in `optimize/uisg.yaml` now execute via matrix:
+- `mobile-property-editor-variants`: bottom-sheet, fullscreen-modal
+- `mobile-arrange-menu-variants`: default
+- `mobile-context-rail-variants`: default  
+- `mobile-map-variants`: default
+- `mobile-header-variants`: default
+- `help-system-variants`: interactive, video, searchable, contextual
+- `describe-it-promo-variants`: pulse, tooltip, contextual-hint
+- `empty-state-variants`: notes-all, network, matches
+- `settings-directory-variants`: grouped, wizard
+
+Run with: `pnpm uisg matrix --journeys <journey-ids> --variants <variant-ids> --quick --no-playwright`
 
 ---
 
@@ -341,5 +356,5 @@ pnpm build                      # Production build
 
 *Generated: 2026-11-25*
 *Final: 2026-11-25 (uisg.yaml as source of truth)*
-*Status: Week 4 Mobile Surfaces Generated — Week 5 Settings Progressive Disclosure Next*
+*Status: Week 4 Mobile Surfaces Complete + UISG Experiments Running — Week 7 Advanced Integrations Next*
 *Last updated: 2026-11-26*

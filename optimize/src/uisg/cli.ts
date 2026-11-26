@@ -127,7 +127,8 @@ export function loadGraph(flags: Map<string, string>): UisgGraph {
     } catch {
         // If we can't stat, don't use cache
     }
-    const result = validateGraph(JSON.parse(readFileSync(file, 'utf8')));
+    const rawGraph = JSON.parse(readFileSync(file, 'utf8'));
+    const result = validateGraph(rawGraph);
     if (!result.graph) {
         for (const { severity, code, message } of result.issues) console.error(`${severity.toUpperCase()} ${code}: ${message}`);
         throw new Error(`Graph ${file} failed schema validation`);
@@ -551,7 +552,9 @@ async function main(): Promise<number> {
             const implemented = graph.nodes
                 .filter(node => node.type === 'flow' && ['implemented', 'partial'].includes(node.status))
                 .map(node => node.id);
-            const flows = flags.get('flows')?.split(',') ?? flags.get('journeys')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
+            let flows = flags.get('flows')?.split(',') ?? flags.get('journeys')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
+            // Convert journey IDs to flow IDs if needed
+            flows = flows.map(f => f.startsWith('flow.') ? f : `flow.${f}`);
             const profiles = flags.get('profiles')?.split(',');
             const { listThemes } = await import('./themes.js');
             const { listProfiles: listContextProfiles } = await import('./contexts.js');
@@ -609,9 +612,10 @@ async function main(): Promise<number> {
             const journeys: MatrixJourney[] = [];
             for (const flowId of flows) {
                 const flow = graph.nodes.find(node => node.id === flowId);
-                const handId = flow?.type === 'flow' && flow.journey
-                    && (!!getJourney(flow.journey) || existsSync(journeyTestFile(flow.journey)))
-                    ? flow.journey
+                const flowJourney = (flow as any).journey;
+                const handId = flow?.type === 'flow' && flowJourney
+                    && (!!getJourney(flowJourney) || existsSync(journeyTestFile(flowJourney)))
+                    ? flowJourney
                     : undefined;
                 const journeyVariants: Array<{ id: string; profile: string }> = [];
                 if (handId) journeyVariants.push({ id: handId, profile: 'hand-built' });
