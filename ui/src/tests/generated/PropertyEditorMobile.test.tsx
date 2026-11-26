@@ -4,7 +4,7 @@
 // Source surface: surface.mobile-property-editor
 
 import { render, screen } from '@testing-library/react';
-import { PropertyEditorMobile } from './PropertyEditorMobile';
+import { PropertyEditorMobile } from '@/components/properties/PropertyEditorMobile';
 
 test('surface.mobile-property-editor renders', () => {
     render(<PropertyEditorMobile />);

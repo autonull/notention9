@@ -359,7 +359,7 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
                 }}
               >
                 <div className="absolute inset-0 rounded-lg border-2 border-[var(--app-accent)] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] animate-pulse" />
-                <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[var(--app-accent)] text-white text-xs rounded whitespace-nowrap">
+                <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[var(--app-accent)] text-[var(--app-accent-text)] text-xs rounded whitespace-nowrap">
                   {currentStep?.spotlight?.position || 'Focus here'}
                 </div>
               </div>

@@ -12,7 +12,7 @@ export const levenshteinDistance = (a: string, b: string): number => {
     previousRow[j] = j;
   }
 
-  let currentRowValue: number;
+  let currentRowValue = 0;
   let previousDiagonal: number;
 
   for (let i = 1; i <= b.length; i++) {

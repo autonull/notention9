@@ -64,6 +64,7 @@ const browserEntries = {
   'suggestions/note/index': 'src/suggestions/note/index.ts',
   'validation/index': 'src/validation/index.ts',
   'events/index': 'src/events/index.ts',
+  'help/index': 'src/help/index.ts',
   'extraction/confidenceCalibration': 'src/extraction/confidenceCalibration.ts',
   'extraction/propertyGrounding': 'src/extraction/propertyGrounding.ts',
   // UI
@@ -124,6 +125,7 @@ const nodeEntries = [
   'src/suggestions/note/index.ts',
   'src/validation/index.ts',
   'src/config/index.ts',
+  'src/help/index.ts',
   'src/events/index.ts',
   'src/ui/index.ts',
   // Optimizer

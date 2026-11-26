@@ -3,7 +3,7 @@ import path from 'path';
 
 export default defineConfig({
     resolve: {
-        conditions: ['development', 'browser', 'import'],
+        conditions: ['development', 'node', 'import'],
         alias: {
             '@': path.resolve(__dirname, './src'),
             '@notention/ui/strategies/strategyConfigs': path.resolve(__dirname, './src/strategies/strategyConfigs.ts'),
@@ -40,6 +40,7 @@ export default defineConfig({
             '@notention/core/suggestions/note': path.resolve(__dirname, '../core/src/suggestions/note/index.ts'),
             '@notention/core/feedback': path.resolve(__dirname, '../core/src/feedback/index.ts'),
             '@notention/core/events': path.resolve(__dirname, '../core/src/events/index.ts'),
+            '@notention/core/help': path.resolve(__dirname, '../core/help'),
             '@notention/core/utils': path.resolve(__dirname, '../core/src/utils/index.browser.ts'),
             '@notention/core/constants': path.resolve(__dirname, '../core/src/constants/index.ts'),
             '@notention/core': path.resolve(__dirname, '../core/src/index.browser.ts'),
@@ -101,9 +102,9 @@ export default defineConfig({
                 '@notention/core/security': path.resolve(__dirname, '../core/src/security/index.ts'),
                 '@notention/core/feedback': path.resolve(__dirname, '../core/src/feedback/index.ts'),
                 '@notention/core/events': path.resolve(__dirname, '../core/src/events/index.ts'),
+                '@notention/core/help': path.resolve(__dirname, '../core/help'),
                 '@notention/core/utils': path.resolve(__dirname, '../core/src/utils/index.browser.ts'),
                 '@notention/core/constants': path.resolve(__dirname, '../core/src/constants/index.ts'),
-                '@notention/core': path.resolve(__dirname, '../core/src/index.browser.ts'),
             },
         },
     },

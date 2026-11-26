@@ -23,6 +23,7 @@ interface UseKeyboardShortcutsProps {
 	onEscape?: () => void;
 	onShortcutsHelp?: () => void;
 	onNavigateView?: (view: View) => void;
+	onOpenDescribeIt?: () => void;
 }
 
 export function useKeyboardShortcuts({
@@ -59,6 +60,15 @@ export function useKeyboardShortcuts({
 				if (!(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true')) {
 					e.preventDefault();
 					onShortcutsHelp?.();
+				}
+			}
+
+			// Describe It shortcut: Ctrl+Shift+/ (or Cmd+Shift+/)
+			if (isMeta && isShift && e.key === '/') {
+				const target = e.target as HTMLElement;
+				if (!(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.contentEditable === 'true')) {
+					e.preventDefault();
+					onOpenDescribeIt?.();
 				}
 			}
 
@@ -207,5 +217,6 @@ export function useKeyboardShortcuts({
 		onEscape,
 		onShortcutsHelp,
 		onNavigateView,
+		onOpenDescribeIt,
 	]);
 };

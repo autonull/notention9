@@ -1,48 +1,78 @@
-import React, {useMemo} from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 
-import {useView} from '../../hooks/useViewContext';
-import {useSettingsView} from '../../hooks/useSettingsView';
-import {useDirection} from '../../hooks/useI18n';
-import {AITab} from '../settings/AITab';
-import {DataTab} from '../settings/DataTab';
-import {MetricsTab} from '../settings/MetricsTab';
-import {NostrTab} from '../settings/NostrTab';
-import {LabelsTab} from '../settings/LabelsTab';
-import {AutomationTab} from '../settings/AutomationTab';
-import {MatchDigestTab} from '../settings/MatchDigestTab';
-import {NetworkManagementSection} from '../settings/NetworkManagementSection';
-import {ProfileSettings} from '../settings/ProfileSettings';
-import {RevisionsTab} from '../settings/RevisionsTab';
-import {AccessibilityTab} from '../settings/AccessibilityTab';
-import {LanguageTab} from '../settings/LanguageTab';
-import {ShortcutsTab} from '../settings/ShortcutsTab';
-import {SyncTab} from '../settings/SyncTab';
-import {RelayDiscoverySection} from '../settings/RelayDiscoverySection';
-import {AppearanceTab} from '../settings/AppearanceTab';
-import {OntologyView} from './OntologyView';
-import {SkillManagementView} from '../skills';
-import type {SettingsTab} from '@notention/core';
-import {SETTINGS_GROUPS} from '../../config/uiSurfaces';
-import {SettingsDirectory} from '../patterns/SettingsDirectory';
+import { useView } from '../../hooks/useViewContext';
+import { useSettingsView } from '../../hooks/useSettingsView';
+import { useDirection } from '../../hooks/useI18n';
+import { AITab } from '../settings/AITab';
+import { DataTab } from '../settings/DataTab';
+import { MetricsTab } from '../settings/MetricsTab';
+import { NostrTab } from '../settings/NostrTab';
+import { LabelsTab } from '../settings/LabelsTab';
+import { AutomationTab } from '../settings/AutomationTab';
+import { MatchDigestTab } from '../settings/MatchDigestTab';
+import { NetworkManagementSection } from '../settings/NetworkManagementSection';
+import { ProfileSettings } from '../settings/ProfileSettings';
+import { RevisionsTab } from '../settings/RevisionsTab';
+import { AccessibilityTab } from '../settings/AccessibilityTab';
+import { LanguageTab } from '../settings/LanguageTab';
+import { ShortcutsTab } from '../settings/ShortcutsTab';
+import { SyncTab } from '../settings/SyncTab';
+import { RelayDiscoverySection } from '../settings/RelayDiscoverySection';
+import { AppearanceTab } from '../settings/AppearanceTab';
+import { OntologyView } from './OntologyView';
+import { SkillManagementView } from '../skills';
+import type { SettingsTab } from '@notention/core';
+import { SETTINGS_GROUPS } from '../../config/uiSurfaces';
+import { SettingsDirectory } from '../settings/SettingsDirectory';
+import { SettingsWizard } from '../settings/SettingsWizard';
+import { useSettings } from '../../hooks/useSettingsContext';
 
 const TABS = SETTINGS_GROUPS.flatMap(group => group.tabs);
+const FIRST_RUN_KEY = 'notention:settings:wizard:completed';
 
 export function SettingsView() {
-    const {settings, setSettings} = useSettingsView();
+    const { settings, setSettings } = useSettingsView();
+    const { settings: allSettings, setSettings: setAllSettings } = useSettings();
     const isRTL = useDirection() === 'rtl';
-    const {settingsTab, setSettingsTab, setActiveView} = useView();
+    const { settingsTab, setSettingsTab, setActiveView } = useView();
+    const [showWizard, setShowWizard] = useState(false);
 
     const activeLabel = useMemo(
         () => TABS.find(tab => tab.id === settingsTab)?.label ?? 'Settings',
         [settingsTab]
     );
 
+    useEffect(() => {
+        const hasCompletedWizard = localStorage.getItem(FIRST_RUN_KEY);
+        if (!hasCompletedWizard) {
+            setShowWizard(true);
+        }
+    }, []);
+
     const selectTab = (id: SettingsTab) => {
         setSettingsTab(id);
         setActiveView('settings');
     };
 
+    const handleWizardComplete = () => {
+        localStorage.setItem(FIRST_RUN_KEY, 'true');
+        setShowWizard(false);
+    };
+
+    const handleWizardSkip = () => {
+        localStorage.setItem(FIRST_RUN_KEY, 'true');
+        setShowWizard(false);
+    };
+
     const renderTab = () => {
+        if (showWizard) {
+            return (
+              <SettingsWizard 
+                onComplete={handleWizardComplete} 
+                onSkip={handleWizardSkip} 
+              />
+            );
+        }
         switch (settingsTab) {
             case 'ai': return <AITab settings={settings} setSettings={setSettings}/>;
             case 'automation': return <AutomationTab/>;
@@ -88,9 +118,9 @@ export function SettingsView() {
 
                 <div className="grid min-h-0 flex-1 gap-6 pb-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-10">
                     <SettingsDirectory
-                        value={settingsTab}
-                        onSelect={selectTab}
-                        rtl={isRTL}
+                        showWizard={showWizard}
+                        onWizardComplete={handleWizardComplete}
+                        onWizardSkip={handleWizardSkip}
                         className="hidden lg:block"
                     />
 

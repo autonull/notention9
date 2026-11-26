@@ -175,7 +175,7 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
                   aria-label="Seek"
                   data-testid="video-seek"
                 />
-                <span className="text-white text-sm font-mono w-20 text-right">
+                <span className="text-[var(--app-text)] text-sm font-mono w-20 text-right">
                   {formatTime(currentTime)} / {formatTime(duration)}
                 </span>
               </div>
@@ -310,7 +310,7 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
         <div className="absolute top-2 right-2 z-10">
           <div className="flex items-center gap-2">
             {metadata && (
-              <span className="px-2 py-1 bg-black/70 text-white text-xs rounded">
+              <span className="px-2 py-1 bg-[var(--app-bg)]/80 text-[var(--app-text)] text-xs rounded">
                 {metadata.title}
               </span>
             )}

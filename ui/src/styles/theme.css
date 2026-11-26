@@ -17,12 +17,36 @@
         --app-muted: #9aa0ad;
         --app-faint: #828896;
         --app-accent: var(--accent-color, #6366f1);
-        --app-radius: var(--theme-radius, 9px);
-        --app-font: var(--theme-font, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
-        --app-accent-text: color-mix(in srgb, var(--app-accent) 58%, white);
+        --app-accent-hover: color-mix(in srgb, var(--app-accent) 88%, black);
         --app-accent-soft: color-mix(in srgb, var(--app-accent) 14%, transparent);
         --app-accent-line: color-mix(in srgb, var(--app-accent) 38%, transparent);
+        --app-accent-alt: #a855f7;
+        --app-accent-alt-soft: color-mix(in srgb, var(--app-accent-alt) 14%, transparent);
+        --app-accent-text: color-mix(in srgb, var(--app-accent) 58%, white);
+        --app-radius: var(--theme-radius, 9px);
+        --app-font: var(--theme-font, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
         --app-shadow: 0 1px 2px rgb(0 0 0 / 0.4), 0 8px 24px -12px rgb(0 0 0 / 0.5);
+
+        /* Semantic color tokens for visual consistency */
+        --color-error: #e08a96;
+        --color-error-text: #fecaca;
+        --color-error-bg: #2a1519;
+        --color-error-line: #4a1f26;
+
+        --color-success: #6fbf9b;
+        --color-success-text: #a7f3d0;
+        --color-success-bg: #142a1f;
+        --color-success-line: #1e4a35;
+
+        --color-warning: #fbbf24;
+        --color-warning-text: #fde68a;
+        --color-warning-bg: #2a2414;
+        --color-warning-line: #4a3f1e;
+
+        --color-info: #60a5fa;
+        --color-info-text: #bfdbfe;
+        --color-info-bg: #14263f;
+        --color-info-line: #1e3a5a;
 
         --note-accent: var(--accent-neutral);
         --chrome-height: 3rem;
@@ -45,10 +69,7 @@
         --color-text: var(--app-text);
         --color-text-muted: var(--app-muted);
         --color-accent: var(--app-accent);
-        --color-accent-hover: var(--app-accent);
-        --color-success: #6fbf9b;
-        --color-error: #e08a96;
-        --color-error-bg: #2a1519;
+        --color-accent-hover: var(--app-accent-hover);
     }
 
     :root[data-theme='light'] {
@@ -65,10 +86,36 @@
         --app-muted: #5a5f69;
         --app-faint: #666b75;
         --app-shadow: 0 1px 2px rgb(28 25 23 / 0.06), 0 8px 24px -16px rgb(28 25 23 / 0.18);
+        --app-accent-hover: color-mix(in srgb, var(--app-accent) 82%, black);
+
+        /* Semantic color tokens for light theme */
+        --color-error: #b3414f;
+        --color-error-text: #fff1f2;
+        --color-error-bg: #fbeaec;
+        --color-error-line: #fecaca;
 
         --color-success: #2f8a63;
-        --color-error: #b3414f;
-        --color-error-bg: #fbeaec;
+        --color-success-text: #f0fdf4;
+        --color-success-bg: #ecfdf5;
+        --color-success-line: #bbf7d0;
+
+        --color-warning: #b45309;
+        --color-warning-text: #fffbeb;
+        --color-warning-bg: #fffbeb;
+        --color-warning-line: #fde68a;
+
+        --color-info: #2563eb;
+        --color-info-text: #eff6ff;
+        --color-info-bg: #eff6ff;
+        --color-info-line: #bfdbfe;
+    }
+
+    /* Safe area insets for mobile */
+    :root {
+        --safe-area-inset-top: env(safe-area-inset-top, 0px);
+        --safe-area-inset-right: env(safe-area-inset-right, 0px);
+        --safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+        --safe-area-inset-left: env(safe-area-inset-left, 0px);
     }
 
     html {

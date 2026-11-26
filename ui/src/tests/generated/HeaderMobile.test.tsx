@@ -4,9 +4,9 @@
 // Source surface: surface.mobile-header
 
 import { render, screen } from '@testing-library/react';
-import { HeaderMobile } from './HeaderMobile';
+import { HeaderMobile } from '@/components/layout/HeaderMobile';
 
 test('surface.mobile-header renders', () => {
-    render(<HeaderMobile />);
+    render(<HeaderMobile onOpenSidebar={() => {}} />);
     expect(screen.getByTestId('mobileheader')).toBeInTheDocument();
 });

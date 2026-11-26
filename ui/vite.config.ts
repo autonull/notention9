@@ -219,6 +219,7 @@ export default defineConfig(({mode}) => {
                 { find: '@notention/core/suggestions/note', replacement: path.resolve(__dirname, isDev ? '../core/src/suggestions/note/index.ts' : '../core/dist/browser/suggestions/note/index.js') },
                 { find: '@notention/core/feedback', replacement: path.resolve(__dirname, isDev ? '../core/src/feedback/index.ts' : '../core/dist/browser/feedback/index.js') },
                 { find: '@notention/core/events', replacement: path.resolve(__dirname, isDev ? '../core/src/events/index.ts' : '../core/dist/browser/events/index.js') },
+                { find: '@notention/core/help', replacement: path.resolve(__dirname, isDev ? '../core/src/help/index.ts' : '../core/dist/browser/help/index.js') },
                 { find: '@notention/core/utils', replacement: path.resolve(__dirname, isDev ? '../core/src/utils/index.browser.ts' : '../core/dist/browser/utils/index.js') },
                 { find: '@notention/core/constants', replacement: path.resolve(__dirname, isDev ? '../core/src/constants/index.ts' : '../core/dist/browser/constants/index.js') },
                 // @notention/core - directory-based resolution for main entry (MUST be LAST to not shadow subpath aliases)

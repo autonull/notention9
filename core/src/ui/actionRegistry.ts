@@ -432,6 +432,127 @@ export function registerBuiltinActions(): void {
         priority: 50,
         tags: ['help', 'shortcuts'],
     });
+
+    actionRegistry.register({
+        id: 'help.open',
+        label: 'Open Help System',
+        description: 'Open the help system to browse topics',
+        category: 'Help',
+        shortcut: { key: 'h', ctrl: true, description: 'Open help system' },
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelp'));
+        },
+        priority: 49,
+        tags: ['help', 'system'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.create-first-note',
+        label: 'Help: Create Your First Note',
+        description: 'Learn how to create your first note',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'create-first-note' } }));
+        },
+        priority: 48,
+        tags: ['help', 'topic', 'getting-started'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.tags-and-filters',
+        label: 'Help: Tags and Filters',
+        description: 'Learn how to organize and filter notes with tags',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'tags-and-filters' } }));
+        },
+        priority: 47,
+        tags: ['help', 'topic', 'organization'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.connect-network',
+        label: 'Help: Connect to Network',
+        description: 'Learn how to connect to Nostr relays',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'connect-network' } }));
+        },
+        priority: 46,
+        tags: ['help', 'topic', 'network'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.use-map',
+        label: 'Help: Use Map View',
+        description: 'Learn how to use the map view for location-based notes',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'use-map' } }));
+        },
+        priority: 45,
+        tags: ['help', 'topic', 'map'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.use-timeline',
+        label: 'Help: Use Timeline View',
+        description: 'Learn how to use the timeline view for date-based notes',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'use-timeline' } }));
+        },
+        priority: 44,
+        tags: ['help', 'topic', 'timeline'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.semantic-matching',
+        label: 'Help: Semantic Matching',
+        description: 'Learn how AI matching works to connect requests and offers',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'semantic-matching' } }));
+        },
+        priority: 43,
+        tags: ['help', 'topic', 'matching'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.chat-basics',
+        label: 'Help: Chat Basics',
+        description: 'Learn how to use encrypted chat',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'chat-basics' } }));
+        },
+        priority: 42,
+        tags: ['help', 'topic', 'chat'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.skills-and-ontology',
+        label: 'Help: Skills and Ontology',
+        description: 'Learn how to use skills and ontology for smart features',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'skills-and-ontology' } }));
+        },
+        priority: 41,
+        tags: ['help', 'topic', 'skills', 'ontology'],
+    });
+
+    actionRegistry.register({
+        id: 'help.topic.describe-it-basics',
+        label: 'Help: Describe It Basics',
+        description: 'Learn how to use Describe It for AI-powered note creation',
+        category: 'Help',
+        run: (ctx) => {
+            window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId: 'describe-it-basics' } }));
+        },
+        priority: 40,
+        tags: ['help', 'topic', 'describe-it'],
+    });
 }
 
 /** React hook for using action registry */

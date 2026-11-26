@@ -51,55 +51,55 @@ pnpm optimize:validate
 
 **Acceptance**: Core engine compiles, ready for UI integration
 
-### 1.2 UI Components (Week 2) ✅ SCAFFOLDS COMPLETE
+### 1.2 UI Components (Week 2) ✅ IMPLEMENTED
 
 | Task | File | Depends On | Status |
 |------|------|------------|--------|
-| HelpSystem (container, routing) | `ui/src/components/help/HelpSystem.tsx` | HelpEngine | ✅ Scaffold |
-| HelpSidebar (category tree, search, progress) | `ui/src/components/help/HelpSidebar.tsx` | HelpSystem | ✅ Scaffold |
-| HelpTopicCard (preview, rating, video thumb) | `ui/src/components/help/HelpTopicCard.tsx` | HelpSidebar | ✅ Scaffold |
-| HelpStepRenderer (step UI, spotlight, validation) | `ui/src/components/help/HelpStepRenderer.tsx` | StepExecutor | ✅ Scaffold |
-| HelpVideoPlayer (Movie Studio embed) | `ui/src/components/help/HelpVideoPlayer.tsx` | VideoPlayer | ✅ Scaffold |
-| HelpInteractiveDemo (live sandbox) | `ui/src/components/help/HelpInteractiveDemo.tsx` | InteractiveExample | ✅ Scaffold |
-| HelpSearch (fuzzy, keyboard nav) | `ui/src/components/help/HelpSearch.tsx` | HelpEngine | ✅ Scaffold |
-| HelpFeedback (rating, comments) | `ui/src/components/help/HelpFeedback.tsx` | ProgressStore | ✅ Scaffold |
-| HelpProgressBar (topic + overall) | `ui/src/components/help/HelpProgressBar.tsx` | ProgressStore | ✅ Scaffold |
+| HelpSystem (container, routing) | `ui/src/components/help/HelpSystem.tsx` | HelpEngine | ✅ |
+| HelpSidebar (category tree, search, progress) | `ui/src/components/help/HelpSidebar.tsx` | HelpSystem | ✅ |
+| HelpTopicCard (preview, rating, video thumb) | `ui/src/components/help/HelpTopicCard.tsx` | HelpSidebar | ✅ |
+| HelpStepRenderer (step UI, spotlight, validation) | `ui/src/components/help/HelpStepRenderer.tsx` | StepExecutor | ✅ |
+| HelpVideoPlayer (Movie Studio embed) | `ui/src/components/help/HelpVideoPlayer.tsx` | VideoPlayer | ✅ |
+| HelpInteractiveDemo (live sandbox) | `ui/src/components/help/HelpInteractiveDemo.tsx` | InteractiveExample | ✅ |
+| HelpSearch (fuzzy, keyboard nav) | `ui/src/components/help/HelpSearch.tsx` | HelpEngine | ✅ |
+| HelpFeedback (rating, comments) | `ui/src/components/help/HelpFeedback.tsx` | ProgressStore | ✅ |
+| HelpProgressBar (topic + overall) | `ui/src/components/help/HelpProgressBar.tsx` | ProgressStore | ✅ |
 | useHelp (reactive progress, actions, search) | `ui/src/hooks/useHelp.ts` | HelpEngine | ✅ |
 | useHelpContextual (idle/error/feature-gate triggers) | `ui/src/hooks/useHelpContextual.ts` | useHelp | ✅ |
 | useHelpAnalytics (telemetry, friction mapping) | `ui/src/hooks/useHelpAnalytics.ts` | useHelp | ✅ |
 
-**Acceptance**: All 9 help UI components scaffolded, hooks implemented, type-checking clean
+**Acceptance**: All 9 help UI components implemented, hooks implemented, type-checking clean
 
 ### 1.3 Integration & Content (Week 3)
 
-| Task | File | Depends On |
-|------|------|------------|
-| Header Help menu + Settings Help tab | `ui/src/components/layout/Header.tsx`, `ui/src/components/settings/SettingsView.tsx` | HelpSystem |
-| Wire `?` shortcut → HelpSystem | `ui/src/hooks/useKeyboardShortcuts.ts` | HelpSystem |
-| Command Palette: "Help: [topic]" entries | `ui/src/components/command/CommandPalette.tsx` | HelpEngine |
-| Empty state CTAs → Help topics | `ui/src/components/ui/EmptyState.tsx` | HelpEngine |
-| Record 8 MVP videos via Simulator | `simulator/` (Movie Studio) | VideoPlayer |
-| Contextual triggers (idle, error, feature gate) | `useHelpContextual.ts` | Week 2 |
+| Task | File | Depends On | Status |
+|------|------|------------|--------|
+| Header Help menu + Settings Help tab | `ui/src/components/layout/Header.tsx`, `ui/src/components/settings/SettingsView.tsx` | HelpSystem | ✅ |
+| Wire `?` shortcut → HelpSystem | `ui/src/hooks/useKeyboardShortcuts.ts` | HelpSystem | ✅ |
+| Command Palette: "Help: [topic]" entries | `ui/src/components/command/CommandPalette.tsx` | HelpEngine | ✅ |
+| Empty state CTAs → Help topics | `ui/src/components/ui/EmptyState.tsx` | HelpEngine | ✅ |
+| Record 8 MVP videos via Simulator | `simulator/` (Movie Studio) | VideoPlayer | Pending |
+| Contextual triggers (idle, error, feature gate) | `useHelpContextual.ts` | Week 2 | ✅ |
 
 **Acceptance**: `pnpm optimize:evaluate` shows help metrics ≥ thresholds
 
 ---
 
-## 2. Describe It Discoverability (Week 2, parallel) ✅ SCAFFOLDS COMPLETE
+## 2. Describe It Discoverability (Week 2, parallel) ✅ IMPLEMENTED
 
 | Task | File | Depends On | Status |
 |------|------|------------|--------|
-| DescribeItPromo component (all variants) | `ui/src/components/editor/DescribeItPromo.tsx` | uisg.yaml | ✅ Scaffold |
+| DescribeItPromo component (all variants) | `ui/src/components/editor/DescribeItPromo.tsx` | uisg.yaml | ✅ |
 | useDescribeItPromo hook (triggers) | `ui/src/hooks/useDescribeItPromo.ts` | DescribeItPromo | ✅ |
-| Shortcut `Ctrl+Shift+/` → Describe It | `ui/src/hooks/useKeyboardShortcuts.ts` | — | Pending |
-| Command Palette entry (verify) | `ui/src/components/command/CommandPalette.tsx` | — | Pending |
-| Empty state variant (Notes/Network/Matches) | `ui/src/components/ui/EmptyState.tsx` | HelpSystem | Pending |
+| Shortcut `Ctrl+Shift+/` → Describe It | `ui/src/hooks/useKeyboardShortcuts.ts` | — | ✅ |
+| Command Palette entry (verify) | `ui/src/components/command/CommandPalette.tsx` | — | ✅ |
+| Empty state variant (Notes/Network/Matches) | `ui/src/components/ui/EmptyState.tsx` | HelpSystem | ✅ |
 
 **Acceptance**: `describe-it-discovery-rate` ≥ 0.5, `describe-it-time-to-first-use` ≤ 120s
 
 ---
 
-## 3. Actionable Empty States (Week 3, parallel)
+## 3. Actionable Empty States (Week 3, parallel) ✅ IMPLEMENTED
 
 | View | Primary CTA | Secondary CTA | Help Topic |
 |------|-------------|---------------|------------|
@@ -113,8 +113,8 @@ pnpm optimize:validate
 | Ontology | Import schema | Help: Ontology | `skills-and-ontology` |
 | Skills | Browse registry | Help: Skills | `skills-and-ontology` |
 
-**Implementation**: Extend `EmptyState` with `action`, `secondaryAction`, `helpTopicId` props
-**Files**: `NotesView`, `NetworkView`, `MapView`, `TimelineView`, `MatchesView`, `ChatView`, `OntologyView`, `SkillManagementView`
+**Implementation**: Extend `EmptyState` with `action`, `secondaryAction`, `helpTopicId` props via `ActionableEmptyState` component
+**Files**: `ActionableEmptyState.tsx`, `EmptyState.tsx`, `ActionableEmptyStateProps.ts`
 **Acceptance**: `empty-state-cta-click-rate` ≥ 0.3 per view
 
 ---
@@ -131,20 +131,20 @@ pnpm optimize:validate
 | mobile-map | MapViewMobile | map-full | FAB bottom safe area, geolocation button |
 | mobile-header | HeaderMobile | header-compact | Hamburger menu, swipe sidebar |
 
-### 4.2 Shared Mobile Infrastructure
+### 4.2 Shared Mobile Infrastructure ✅ HOOKS IMPLEMENTED
 
-| Task | File |
-|------|------|
-| Mobile detection hook | `ui/src/hooks/useMobile.ts` (max-width: 767px + pointer: coarse) |
-| Touch gestures (swipe back, pull-to-refresh, long-press) | `ui/src/hooks/useTouchGestures.ts` |
-| Safe area CSS variables | `ui/src/styles/theme.css` (env(safe-area-inset-*)) |
-| Virtual keyboard viewport handling | `ui/src/hooks/useVirtualKeyboard.ts` |
+| Task | File | Status |
+|------|------|--------|
+| Mobile detection hook | `ui/src/hooks/useMobile.ts` (max-width: 767px + pointer: coarse) | ✅ |
+| Touch gestures (swipe back, pull-to-refresh, long-press) | `ui/src/hooks/useTouchGestures.ts` | ✅ (pre-existing) |
+| Safe area CSS variables | `ui/src/styles/theme.css` (env(safe-area-inset-*)) | ✅ |
+| Virtual keyboard viewport handling | `ui/src/hooks/useVirtualKeyboard.ts` | ✅ |
 
 **Acceptance**: All 5 mobile journeys pass, `mobile-touch-target-compliance` = 1.0
 
 ---
 
-## 5. Settings Progressive Disclosure (Week 5)
+## 5. Settings Progressive Disclosure (Week 5) ✅ IMPLEMENTED
 
 | Task | File | Acceptance |
 |------|------|------------|
@@ -160,19 +160,20 @@ pnpm optimize:validate
 
 ---
 
-## 6. Visual Consistency Audit (Week 5, parallel)
+## 6. Visual Consistency Audit (Week 5, parallel) ✅ SEMANTIC TOKENS ADDED
 
 | Hardcoded | → | Semantic Token | Scope |
 |-----------|---|----------------|-------|
-| `red-500/400/600` | → | `--color-error`, `--color-error-text`, `--color-error-bg` | All components |
-| `green-500/400`, `emerald-500` | → | `--color-success`, `--color-success-text`, `--color-success-bg` | All components |
-| `yellow-500`, `amber-500`, `orange-500` | → | `--color-warning`, `--color-warning-text`, `--color-warning-bg` | All components |
-| `blue-500/600`, `sky-500` | → | `--app-accent`, `--app-accent-hover`, `--app-accent-soft` | All components |
+| `red-500/400/600` | → | `--color-error`, `--color-error-text`, `--color-error-bg`, `--color-error-line` | All components |
+| `green-500/400`, `emerald-500` | → | `--color-success`, `--color-success-text`, `--color-success-bg`, `--color-success-line` | All components |
+| `yellow-500`, `amber-500`, `orange-500` | → | `--color-warning`, `--color-warning-text`, `--color-warning-bg`, `--color-warning-line` | All components |
+| `blue-500/600`, `sky-500` | → | `--app-accent`, `--app-accent-hover`, `--app-accent-soft`, `--app-accent-line` | All components |
 | `purple-500`, `violet-500`, `fuchsia-500` | → | `--app-accent-alt`, `--app-accent-alt-soft` | All components |
 | `gray-900/800`, `slate-900` (text) | → | `--app-text`, `--app-text-secondary`, `--app-muted` | All components |
 | `gray-100/200`, `slate-100` (bg) | → | `--app-surface`, `--app-raised`, `--app-panel` | All components |
 | `zinc-800`, `neutral-800` (borders) | → | `--app-line`, `--app-line-strong` | All components |
 
+**Semantic tokens added to `theme.css`**: `--color-error*`, `--color-success*`, `--color-warning*`, `--color-info*`, `--app-accent-hover`, `--app-accent-alt`, `--app-accent-alt-soft`
 **Keep hardcoded**: Status indicators (online/offline), syntax highlighting, charts
 **Verify**: Light/dark/high-contrast after each replacement
 **Acceptance**: `token-consistency-score` = 1.0 (0 hardcoded in components)
@@ -340,5 +341,5 @@ pnpm build                      # Production build
 
 *Generated: 2026-11-25*
 *Final: 2026-11-25 (uisg.yaml as source of truth)*
-*Status: Week 2 Scaffolds Complete — Week 2 Manual Implementation Next*
+*Status: Week 2-3 Manual Implementation Complete — Week 4 Mobile Surfaces Next*
 *Last updated: 2026-11-26*

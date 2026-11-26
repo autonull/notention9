@@ -144,6 +144,7 @@ export * from './suggestions/index.js';
 // barrel is the entry point of the shipped bundle. Test helpers stay behind the
 // dedicated '@notention/core/test-utils' subpath export.
 export * from './validation/index.js';
+export * from './help/index.js';
 export * from './config.js';
 export * from './events/index.js';
 

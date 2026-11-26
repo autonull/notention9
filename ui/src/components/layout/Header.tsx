@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {useView} from '../../hooks/useViewContext';
 import {useNotes} from '../../hooks/useNotes';
 import {Button, IconButton} from '../ui/Button';
 import {BrandMark} from './BrandMark';
-import {PlusIcon, SearchIcon, SettingsIcon} from '../ui/icons';
+import {PlusIcon, SearchIcon, SettingsIcon, HelpCircleIcon} from '../ui/icons';
 import {modShortcut} from '../../utils/platform';
+import {cn} from '../../utils/ui';
 
 export function Header() {
     const {
@@ -39,8 +40,47 @@ export function Header() {
     const isFirstRun = activeView === 'notes' && notes.length === 0;
     const notesAreTheTask = activeView === 'notes' && notesMode !== 'map';
 
+    const [helpMenuOpen, setHelpMenuOpen] = useState(false);
+
+    const openHelp = () => {
+        window.dispatchEvent(new CustomEvent('action:openHelp'));
+        setHelpMenuOpen(false);
+    };
+
+    const openHelpTopic = (topicId: string) => {
+        window.dispatchEvent(new CustomEvent('action:openHelpTopic', { detail: { topicId } }));
+        setHelpMenuOpen(false);
+    };
+
+    const helpMenuItems = [
+        { id: 'help.open', label: 'Help Center', action: openHelp, shortcut: '⌘H' },
+        { id: 'help.topic.create-first-note', label: 'Create Your First Note', action: () => openHelpTopic('create-first-note') },
+        { id: 'help.topic.tags-and-filters', label: 'Tags & Filters', action: () => openHelpTopic('tags-and-filters') },
+        { id: 'help.topic.connect-network', label: 'Connect to Network', action: () => openHelpTopic('connect-network') },
+        { id: 'help.topic.use-map', label: 'Use Map View', action: () => openHelpTopic('use-map') },
+        { id: 'help.topic.use-timeline', label: 'Use Timeline', action: () => openHelpTopic('use-timeline') },
+        { id: 'help.topic.semantic-matching', label: 'Semantic Matching', action: () => openHelpTopic('semantic-matching') },
+        { id: 'help.topic.chat-basics', label: 'Chat Basics', action: () => openHelpTopic('chat-basics') },
+        { id: 'help.topic.skills-and-ontology', label: 'Skills & Ontology', action: () => openHelpTopic('skills-and-ontology') },
+        { id: 'help.topic.describe-it-basics', label: 'Describe It', action: () => openHelpTopic('describe-it-basics') },
+        { id: 'help.shortcuts', label: 'Keyboard Shortcuts', action: () => window.dispatchEvent(new CustomEvent('action:openShortcutsHelp')), shortcut: '?' },
+    ];
+
+    const helpMenuRef = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (helpMenuRef.current && !helpMenuRef.current.contains(event.target as Node)) {
+                setHelpMenuOpen(false);
+            }
+        };
+        if (helpMenuOpen) {
+            document.addEventListener('mousedown', handleClickOutside);
+        }
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [helpMenuOpen]);
+
     const actions = (
-        <div className="ml-auto flex shrink-0 items-center gap-1">
+        <div className="ml-auto flex shrink-0 items-center gap-1 relative">
             <IconButton
                 onClick={openSearch}
                 tooltip={`Search (${modShortcut('K')})`}
@@ -64,6 +104,49 @@ export function Header() {
                     <span className="hidden md:inline">New note</span>
                 </Button>
             )}
+            <div className="relative">
+                <IconButton
+                    onClick={() => setHelpMenuOpen(!helpMenuOpen)}
+                    tooltip="Help (⌘H)"
+                    tooltipPosition="bottom"
+                    icon={HelpCircleIcon}
+                    variant="ghost"
+                    size="sm"
+                    aria-label="Help menu"
+                    aria-expanded={helpMenuOpen}
+                    aria-haspopup="true"
+                />
+                {helpMenuOpen && (
+                    <div 
+                        ref={helpMenuRef}
+                        className="absolute right-0 top-full mt-1 z-50 min-w-[200px] rounded-lg border border-[var(--app-line)] bg-[var(--app-panel)] shadow-[var(--app-shadow)] overflow-hidden animate-slide-in-down"
+                        role="menu"
+                        data-testid="help-menu"
+                    >
+                        {helpMenuItems.map((item, index) => (
+                            <button
+                                key={item.id}
+                                onClick={item.action}
+                                role="menuitem"
+                                tabIndex={-1}
+                                className={cn(
+                                    'w-full px-3 py-2 text-left text-sm',
+                                    'text-[var(--app-text)] hover:bg-[var(--app-raised)] transition-colors',
+                                    'flex items-center justify-between gap-2'
+                                )}
+                                data-testid={`help-menu-${item.id}`}
+                            >
+                                <span>{item.label}</span>
+                                {item.shortcut && (
+                                    <kbd className="text-xs text-[var(--app-muted)] font-mono px-1.5 py-0.5 rounded bg-[var(--app-surface)] border border-[var(--app-line)]">
+                                        {item.shortcut}
+                                    </kbd>
+                                )}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
             <IconButton
                 onClick={() => setActiveView('settings')}
                 tooltip="Settings"

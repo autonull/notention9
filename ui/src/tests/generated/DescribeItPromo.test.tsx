@@ -4,7 +4,7 @@
 // Source surface: surface.describe-it-promo
 
 import { render, screen } from '@testing-library/react';
-import { DescribeItPromo } from './DescribeItPromo';
+import { DescribeItPromo } from '@/components/editor/DescribeItPromo';
 
 test('surface.describe-it-promo renders', () => {
     render(<DescribeItPromo />);

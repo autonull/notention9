@@ -84,6 +84,12 @@
       "node": "./dist/extraction/confidenceCalibration.js",
       "browser": "./dist/browser/extraction/confidenceCalibration.js"
     },
+    "./help": {
+      "import": "./dist/browser/help/index.js",
+      "node": "./dist/help/index.js",
+      "browser": "./dist/browser/help/index.js",
+      "types": "./dist/help/index.d.ts"
+    },
     "./telemetry/journal": {
       "import": "./dist/telemetry/journal.js",
       "node": "./dist/telemetry/journal.js",

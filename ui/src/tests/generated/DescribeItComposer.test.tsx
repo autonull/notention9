@@ -13,9 +13,11 @@ const mockOntology: OntologyNode[] = [
     { id: 'budget', label: 'Budget', type: 'numeric', unit: 'USD' },
 ];
 
+import type { PropertyRole, PropertyProvenance } from '@notention/core';
+
 const mockProposals = [
-    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint', confidence: 1, provenance: 'deterministic' }, confidence: 0.9, status: 'pending' as const },
-    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'preference', confidence: 0.8, provenance: 'heuristic' }, confidence: 0.75, status: 'pending' as const },
+    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint' as PropertyRole, confidence: 1, provenance: 'deterministic' as PropertyProvenance }, confidence: 0.9, status: 'pending' as const },
+    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'preference' as PropertyRole, confidence: 0.8, provenance: 'heuristic' as PropertyProvenance }, confidence: 0.75, status: 'pending' as const },
 ];
 
 describe('DescribeItComposer (generated)', () => {

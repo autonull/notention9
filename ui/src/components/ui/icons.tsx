@@ -1127,24 +1127,6 @@ export function ServerIcon(props: IconProps) { return (
     </OutlineIcon>
 ); }
 
-export function MenuIcon(props: IconProps) { return (
-    <OutlineIcon {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
-    </OutlineIcon>
-); }
-
-export function ChevronLeftIcon(props: IconProps) { return (
-    <OutlineIcon {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-    </OutlineIcon>
-); }
-
-export function ChevronRightIcon(props: IconProps) { return (
-    <OutlineIcon {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-    </OutlineIcon>
-); }
-
 export function SkipBackIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M10.03 5.5a1.75 1.75 0 013.5-.5v13a1.75 1.75 0 01-3.5.5v-13zM4.25 11.562a.75.75 0 011.06-.98l5.162-3a.75.75 0 011.248.98v6a.75.75 0 01-1.248.98l-5.162 3a.75.75 0 01-1.06-.98v-6z" />
@@ -1217,18 +1199,6 @@ export function StopIcon(props: IconProps) { return (
     </OutlineIcon>
 ); }
 
-export function SendIcon(props: IconProps) { return (
-    <OutlineIcon {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-    </OutlineIcon>
-); }
-
-export function ArrowDownIcon(props: IconProps) { return (
-    <OutlineIcon {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-    </OutlineIcon>
-); }
-
 export function EnterIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18m-12 0l-3 3m3-3l3 3" />
@@ -1247,22 +1217,6 @@ export function TrendingUpIcon(props: IconProps) { return (
     </OutlineIcon>
 ); }
 
-export function MaximizeIcon(props: IconProps) { return (
-    <OutlineIcon {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v16.5h16.5" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12h.008v.008H12V12z" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3.75V21" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12H21" />
-    </OutlineIcon>
-); }
-
-export function MinimizeIcon(props: IconProps) { return (
-    <OutlineIcon {...props}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v16.5h16.5" />
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12h.008v.008H12V12z" />
-    </OutlineIcon>
-); }
-
 export function MessageSquareIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
@@ -1278,6 +1232,24 @@ export function StarIcon(props: IconProps) { return (
 export function AlertCircleIcon(props: IconProps) { return (
     <OutlineIcon {...props}>
         <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15h.008v.008H12V15z" />
+    </OutlineIcon>
+); }
+
+export function HelpCircleIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zM12 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" />
+    </OutlineIcon>
+); }
+
+export function UploadIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5" />
+    </OutlineIcon>
+); }
+
+export function GitCompareIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18M12 3v18M12 12l4-4m0 0l4 4m-4-4l-4 4m0 0l-4-4" />
     </OutlineIcon>
 ); }
 

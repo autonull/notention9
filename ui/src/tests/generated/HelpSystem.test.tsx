@@ -4,9 +4,9 @@
 // Source surface: surface.help-system
 
 import { render, screen } from '@testing-library/react';
-import { HelpSystem } from './HelpSystem';
+import { HelpSystem } from '@/components/help/HelpSystem';
 
 test('surface.help-system renders', () => {
     render(<HelpSystem />);
-    expect(screen.getByTestId('helpsystem')).toBeInTheDocument();
+    expect(screen.getByTestId('help-system')).toBeInTheDocument();
 });
