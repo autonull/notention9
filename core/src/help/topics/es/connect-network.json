@@ -1,0 +1,60 @@
+{
+  "id": "connect-network",
+  "title": "Conectar a la red",
+  "category": "network",
+  "description": "Configura tu identidad y conecta con la red Notention",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 5,
+  "tags": ["red", "nostr", "identidad", "conexión", "reles"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Sobre la red Notention",
+      "description": "Notention usa el protocolo Nostr para la comunicación descentralizada. Tu identidad es un par de claves criptográficas que te permite publicar notas, chatear y descubrir coincidencias a través de reles.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "network-status" },
+        "style": "highlight",
+        "position": "right"
+      }
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Abrir configuración de red",
+      "description": "Haz clic en el indicador de estado de red en el encabezado o ve a Configuración > Red",
+      "target": { "testId": "network-status" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Generar o importar identidad",
+      "description": "Genera una nueva identidad Nostr o importa una existente (nsec/npub)",
+      "target": { "testId": "identity-generate" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Agregar reles",
+      "description": "Agrega al menos 2 reles para conectividad redundante. Se incluyen reles recomendados por defecto.",
+      "target": { "testId": "relay-add" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "validation",
+      "title": "Conexión establecida",
+      "description": "Verifica que el estado de red muestra 'Conectado' con reles verdes",
+      "validation": { "type": "stateEquals", "statePath": "network.connected", "expectedValue": true }
+    }
+  ],
+  "relatedTopics": ["nostr-keys", "relay-management", "encrypted-chat", "semantic-matching"],
+  "version": 1,
+  "locale": "es"
+}

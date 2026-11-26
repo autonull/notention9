@@ -1,0 +1,62 @@
+{
+  "id": "quick-capture-shortcuts",
+  "title": "Atajos de captura rápida",
+  "category": "getting-started",
+  "description": "Atajos de teclado esenciales para la captura rápida de notas",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 2,
+  "tags": ["atajos", "teclado", "captura-rápida", "productividad"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Abrir captura rápida",
+      "description": "Presiona Ctrl+N (Windows/Linux) o Cmd+N (Mac) en cualquier momento para abrir el diálogo de captura rápida.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "quick-capture-button" },
+        "style": "pulse",
+        "position": "top"
+      }
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Guardar nota",
+      "description": "En el diálogo de captura rápida, presiona Ctrl+Enter (Windows/Linux) o Cmd+Enter (Mac) para guardar.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "quick-capture-save" },
+        "style": "pulse",
+        "position": "bottom"
+      }
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Cancelar",
+      "description": "Presiona Escape para cerrar el diálogo de captura rápida sin guardar.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "quick-capture-cancel" },
+        "style": "pulse",
+        "position": "bottom"
+      }
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Navegar entre campos",
+      "description": "Usa Tab para moverte entre el título, el contenido y las etiquetas. Shift+Tab para ir hacia atrás.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "quick-capture-editor" },
+        "style": "dim",
+        "position": "right"
+      }
+    }
+  ],
+  "relatedTopics": ["create-first-note", "keyboard-shortcuts-reference", "edit-note-properties"],
+  "version": 1,
+  "locale": "es"
+}

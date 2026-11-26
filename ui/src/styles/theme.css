@@ -492,6 +492,62 @@ html.high-contrast [class*='border-'] {
     border-color: var(--app-line-strong) !important;
 }
 
+/* Screen reader only utility */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: more) {
+    :root {
+        --app-line: var(--app-line-strong);
+        --app-muted: var(--app-text-secondary);
+    }
+}
+
+html.high-contrast,
+@media (prefers-contrast: more) {
+    --app-line: var(--app-line-strong);
+    --app-muted: var(--app-text-secondary);
+}
+
+html.high-contrast .help-step-renderer,
+html.reduced-motion .help-step-renderer {
+    /* Additional high contrast / reduced motion styles for help step renderer */
+}
+
+html.high-contrast [data-testid="spotlight-overlay"] .absolute.inset-0 {
+    border-width: 3px !important;
+    border-color: var(--app-text) !important;
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .help-step-renderer .transition-all,
+    .help-step-renderer .animate-pulse,
+    .help-step-renderer .animate-spin {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+html.reduced-motion .help-step-renderer .transition-all,
+html.reduced-motion .help-step-renderer .animate-pulse,
+html.reduced-motion .help-step-renderer .animate-spin {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
 @media print {
     header, aside, nav, .skip-link {
         display: none !important;

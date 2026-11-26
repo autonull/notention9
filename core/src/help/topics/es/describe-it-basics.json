@@ -1,0 +1,69 @@
+{
+  "id": "describe-it-basics",
+  "title": "Conceptos básicos de Describe It",
+  "category": "ai-features",
+  "description": "Usa IA para estructurar tus notas automáticamente",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["ia", "describe-it", "estructura", "automatización"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "¿Qué es Describe It?",
+      "description": "Describe It usa IA para analizar tu nota en texto libre y extraer automáticamente propiedades estructuradas como etiquetas, fechas, personas, enlaces y más. Ahorra tiempo al eliminar la necesidad de etiquetar manualmente.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "describe-it-button" },
+        "style": "highlight",
+        "position": "top"
+      }
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Abrir Describe It",
+      "description": "Haz clic en el botón Describe It en el editor de notas o usa el atajo Ctrl+Shift+/",
+      "target": { "testId": "describe-it-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Introducir o seleccionar texto",
+      "description": "Escribe una nota en lenguaje natural o selecciona una nota existente para estructurar",
+      "target": { "testId": "describe-it-input" },
+      "action": { "type": "fill", "value": "Reunión con Sarah mañana a las 2pm sobre el proyecto Alpha. Traer el presupuesto." },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Ejecutar Describe It",
+      "description": "Haz clic en Analizar para extraer propiedades estructuradas",
+      "target": { "testId": "describe-it-analyze", "role": "button", "name": "Analizar" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "validation",
+      "title": "Propiedades extraídas",
+      "description": "Verifica que las etiquetas, fechas, personas y enlaces se extrajeron correctamente",
+      "validation": { "type": "elementExists", "target": { "testId": "extracted-properties" } }
+    },
+    {
+      "id": "step-6",
+      "type": "action",
+      "title": "Aplicar a la nota",
+      "description": "Haz clic en Aplicar para guardar las propiedades extraídas en tu nota",
+      "target": { "testId": "describe-it-apply", "role": "button", "name": "Aplicar" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    }
+  ],
+  "relatedTopics": ["quick-capture-shortcuts", "edit-note-properties", "tags-and-filters", "semantic-matching"],
+  "version": 1,
+  "locale": "es"
+}

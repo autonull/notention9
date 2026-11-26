@@ -51,7 +51,7 @@ export class TopicLoader {
   private async fetchTopic(topicId: string): Promise<HelpTopic | null> {
     const topic = this.engine.getTopic(topicId);
     if (topic) {
-      return this.localizeTopic(topic);
+      return topic;
     }
 
     try {
@@ -61,27 +61,11 @@ export class TopicLoader {
         throw new Error(`Failed to load topic: ${response.statusText}`);
       }
       const topic = await response.json() as HelpTopic;
-      return this.localizeTopic(topic);
+      return topic;
     } catch (error) {
       console.error(`Failed to fetch topic ${topicId}:`, error);
       return null;
     }
-  }
-
-  private localizeTopic(topic: HelpTopic): HelpTopic {
-    if (topic.locale === this.locale) return topic;
-    
-    return {
-      ...topic,
-      locale: this.locale,
-      title: topic.title,
-      description: topic.description,
-      steps: topic.steps.map(step => ({
-        ...step,
-        title: step.title,
-        description: step.description,
-      })),
-    };
   }
 
   async preloadTopics(topicIds: string[]): Promise<void> {

@@ -1,0 +1,99 @@
+{
+  "id": "match-explanations",
+  "title": "Understanding Match Explanations",
+  "category": "ai-features",
+  "description": "Learn how Notention explains why notes, people, and opportunities match your needs",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 5,
+  "tags": ["matching", "ai", "explanations", "semantic", "network"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "What Are Match Explanations?",
+      "description": "When Notention finds matches for your notes — whether it's relevant notes, potential connections, or opportunities — it provides explanations showing why each match was made. These explanations help you understand the reasoning and decide whether to act on the match.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "matches-view" },
+        "style": "highlight",
+        "position": "top"
+      }
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Explanation Components",
+      "description": "Each match explanation includes: 1) Match score (0-100%), 2) Key matching factors (shared tags, semantic similarity, network proximity), 3) Specific evidence (common topics, mutual connections, complementary skills), 4) Confidence level based on data completeness.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "match-explanation-card" },
+        "style": "highlight",
+        "position": "left"
+      }
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "View Match Details",
+      "description": "Click on any match card to see the full explanation breakdown",
+      "target": { "testId": "match-card-0" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Semantic Similarity",
+      "description": "Notention uses embedding-based semantic similarity to find conceptually related content, even when exact keywords don't match. This means 'project planning' can match 'task management' because they share underlying concepts.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "semantic-similarity-section" },
+        "style": "dim",
+        "position": "bottom"
+      }
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Network Proximity",
+      "description": "Matches from your network connections are boosted based on relationship strength. Direct connections have the highest boost, followed by second-degree connections. This helps you discover opportunities through people you trust.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "network-proximity-section" },
+        "style": "dim",
+        "position": "bottom"
+      }
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Skill Complementarity",
+      "description": "For collaboration matches, Notention identifies complementary skills — where one person's strengths fill another's gaps. This is shown as 'You have X, they need X' or 'They have Y, you need Y' pairs.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "skill-complementarity-section" },
+        "style": "dim",
+        "position": "bottom"
+      }
+    },
+    {
+      "id": "step-7",
+      "type": "action",
+      "title": "Provide Feedback on Explanations",
+      "description": "Rate the helpfulness of explanations to improve future matches",
+      "target": { "testId": "explanation-feedback-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-8",
+      "type": "validation",
+      "title": "Feedback Recorded",
+      "description": "Your feedback helps refine the matching algorithm",
+      "validation": { "type": "elementExists", "target": { "testId": "feedback-thanks" } }
+    }
+  ],
+  "relatedTopics": ["semantic-matching", "skills-and-ontology", "connect-network", "describe-it-basics"],
+  "version": 1,
+  "locale": "en"
+}

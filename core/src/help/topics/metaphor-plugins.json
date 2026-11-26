@@ -1,0 +1,81 @@
+{
+  "id": "metaphor-plugins",
+  "title": "Metaphors and Plugins",
+  "category": "plugins-skills",
+  "description": "Extend Notention with UI metaphors and plugins for custom workflows",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 8,
+  "tags": ["metaphor", "plugin", "ui", "extensibility", "customization"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "What are UI Metaphors?",
+      "description": "UI Metaphors are visual representations of concepts in Notention. They map abstract concepts (like tasks, projects, meetings) to concrete UI components with specific properties and actions. This makes complex data more intuitive to work with.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "metaphor-selector" },
+        "style": "highlight",
+        "position": "top"
+      }
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "How Metaphors Work",
+      "description": "Each metaphor defines a set of properties and a visual template. When you create a note with a metaphor type, Notention renders it using the metaphor's template. This allows you to see tasks as cards, projects as boards, meetings as calendar events, etc.",
+      "spotlight": {
+        "enabled": true,
+        "target": { "testId": "metaphor-example" },
+        "style": "dim",
+        "position": "right"
+      }
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Plugins vs Skills vs Metaphors",
+      "description": "Plugins extend Notention's core functionality. Skills are AI workflows that process notes. Metaphors define how concepts are displayed. Together they let you customize Notention for any workflow.",
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Open Metaphor Settings",
+      "description": "Go to Settings → Metaphors to manage UI metaphors",
+      "target": { "testId": "settings-metaphors-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Creating Custom Metaphors",
+      "description": "You can create custom metaphors by defining a name, icon, color, category, and property schema. The system will generate a UI component automatically.",
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Plugin System",
+      "description": "Plugins can add new metaphors, skills, commands, and UI components. They are loaded at startup and integrate seamlessly with the core app.",
+    },
+    {
+      "id": "step-7",
+      "type": "action",
+      "title": "Browse Plugins",
+      "description": "Go to Settings → Plugins to see available plugins",
+      "target": { "testId": "settings-plugins-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-8",
+      "type": "validation",
+      "title": "Plugin System Ready",
+      "description": "Verify you can access plugin and metaphor settings",
+      "validation": { "type": "elementExists", "target": { "testId": "settings-plugins-tab" } }
+    }
+  ],
+  "relatedTopics": ["skills-and-ontology", "automation-basics", "agent-capabilities", "skill-management"],
+  "version": 1,
+  "locale": "en"
+}

@@ -1,10 +1,11 @@
 import type { HelpTopic, HelpCategory, HelpSearchResult, HelpEngineConfig, ContextualTrigger } from '../types/help.js';
 import { validateHelpTopic } from './validation.js';
+import MiniSearch from 'minisearch';
 
 export class HelpEngine {
   private topics: Map<string, HelpTopic> = new Map();
   private categories: Map<string, HelpCategory> = new Map();
-  private searchIndex: Map<string, Set<string>> = new Map();
+  private miniSearch: MiniSearch<HelpTopic>;
   readonly config: HelpEngineConfig;
   
   private contextualTriggers: ContextualTrigger[] = [
@@ -73,6 +74,20 @@ export class HelpEngine {
       searchIndexPath: config.searchIndexPath,
       videoBaseUrl: config.videoBaseUrl,
     };
+    
+    this.miniSearch = new MiniSearch({
+      fields: ['title', 'description', 'tags', 'category'],
+      storeFields: ['id', 'title', 'description', 'category', 'tags', 'locale', 'difficulty', 'estimatedTimeMinutes'],
+      searchOptions: {
+        boost: { title: 4, tags: 3, description: 2, category: 1 },
+        fuzzy: 0.2,
+        prefix: true,
+      },
+      extractField: (document, fieldName) => {
+        if (fieldName === 'tags') return document.tags.join(' ');
+        return (document as Record<string, unknown>)[fieldName] as string;
+      },
+    });
   }
 
   async initialize(): Promise<void> {
@@ -85,11 +100,28 @@ export class HelpEngine {
     const fs = await import('node:fs/promises');
     const path = await import('node:path');
     
+    const locale = this.config.defaultLocale ?? 'en';
+    const localePath = path.join(this.config.topicsPath, locale);
+    const basePath = this.config.topicsPath;
+    
+    // Load base (English) topics first
+    await this.loadTopicsFromDirectory(basePath);
+    
+    // If locale is not English, load locale-specific topics to override
+    if (locale !== 'en') {
+      await this.loadTopicsFromDirectory(localePath);
+    }
+  }
+
+  private async loadTopicsFromDirectory(dirPath: string): Promise<void> {
+    const fs = await import('node:fs/promises');
+    const path = await import('node:path');
+    
     try {
-      const files = await fs.readdir(this.config.topicsPath);
+      const files = await fs.readdir(dirPath);
       for (const file of files) {
         if (file.endsWith('.json')) {
-          const content = await fs.readFile(path.join(this.config.topicsPath, file), 'utf-8');
+          const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
           const topic = JSON.parse(content) as HelpTopic;
           
           const validation = validateHelpTopic(topic);
@@ -102,28 +134,25 @@ export class HelpEngine {
         }
       }
     } catch (error) {
-      console.error('Failed to load help topics:', error);
-    }
-  }
-
-  private buildSearchIndex(): void {
-    for (const [topicId, topic] of this.topics) {
-      const tokens = this.tokenize(`${topic.title} ${topic.description} ${topic.tags.join(' ')}`);
-      for (const token of tokens) {
-        if (!this.searchIndex.has(token)) {
-          this.searchIndex.set(token, new Set());
-        }
-        this.searchIndex.get(token)!.add(topicId);
+      // Directory might not exist for locale, that's okay
+      if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
+        console.error(`Failed to load help topics from ${dirPath}:`, error);
       }
     }
   }
 
-  private tokenize(text: string): string[] {
-    return text
-      .toLowerCase()
-      .replace(/[^\w\s]/g, ' ')
-      .split(/\s+/)
-      .filter(t => t.length > 1);
+  private buildSearchIndex(): void {
+    const documents = Array.from(this.topics.values()).map(topic => ({
+      id: topic.id,
+      title: topic.title,
+      description: topic.description,
+      tags: topic.tags,
+      category: topic.category,
+      locale: topic.locale,
+      difficulty: topic.difficulty,
+      estimatedTimeMinutes: topic.estimatedTimeMinutes,
+    }));
+    this.miniSearch.addAll(documents);
   }
 
   private buildCategories(): void {
@@ -192,42 +221,32 @@ export class HelpEngine {
   }
 
   search(query: string, options: { category?: string; limit?: number; locale?: string } = {}): HelpSearchResult[] {
-    const tokens = this.tokenize(query);
-    const scores = new Map<string, number>();
+    const searchOptions = {
+      ...this.miniSearch.options.searchOptions,
+      filter: (result: { id: string; title: string; description: string; category: string; tags: string[]; locale: string }) => {
+        const topic = this.topics.get(result.id);
+        if (!topic) return false;
+        if (options.category && topic.category !== options.category) return false;
+        if (options.locale && topic.locale !== options.locale) return false;
+        return true;
+      },
+    };
 
-    for (const token of tokens) {
-      const matchingTopics = this.searchIndex.get(token);
-      if (matchingTopics) {
-        for (const topicId of matchingTopics) {
-          const topic = this.topics.get(topicId);
-          if (!topic) continue;
-          if (options.category && topic.category !== options.category) continue;
-          if (options.locale && topic.locale !== options.locale) continue;
-          
-          let score = 1;
-          if (topic.title.toLowerCase().includes(query.toLowerCase())) score += 10;
-          if (topic.tags.some(t => t.toLowerCase().includes(query.toLowerCase()))) score += 5;
-          scores.set(topicId, (scores.get(topicId) || 0) + score);
-        }
-      }
-    }
-
-    const results = Array.from(scores.entries())
-      .sort((a, b) => b[1] - a[1])
+    const results = this.miniSearch.search(query, searchOptions);
+    
+    return results
       .slice(0, options.limit ?? 10)
-      .map(([topicId, score]) => {
-        const topic = this.topics.get(topicId)!;
+      .map(result => {
+        const topic = this.topics.get(result.id)!;
         return {
-          topicId,
+          topicId: result.id,
           title: topic.title,
           category: topic.category,
           snippet: this.generateSnippet(topic, query),
-          score,
+          score: result.score,
           matchedTags: topic.tags.filter(t => query.toLowerCase().includes(t.toLowerCase())),
         };
       });
-
-    return results;
   }
 
   private generateSnippet(topic: HelpTopic, query: string): string {

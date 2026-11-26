@@ -1,0 +1,48 @@
+{
+  "id": "create-first-note",
+  "title": "Crea tu primera nota",
+  "category": "getting-started",
+  "description": "Aprende cómo crear y guardar tu primera nota en Notention",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 3,
+  "tags": ["notas", "básico", "captura-rápida"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Abrir Captura Rápida",
+      "description": "Presiona Ctrl+N o haz clic en el botón + para abrir el diálogo de captura rápida",
+      "target": { "testId": "quick-capture-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Introducir contenido de la nota",
+      "description": "Escribe el contenido de tu nota en el editor",
+      "target": { "testId": "quick-capture-editor" },
+      "action": { "type": "fill", "value": "¡Mi primera nota en Notention!" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Guardar la nota",
+      "description": "Presiona Ctrl+Enter o haz clic en Guardar para crear la nota",
+      "target": { "testId": "quick-capture-save", "role": "button", "name": "Guardar" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "validation",
+      "title": "Nota creada",
+      "description": "Verifica que la nota aparece en la lista de notas",
+      "validation": { "type": "elementExists", "target": { "testId": "note-item-0" } }
+    }
+  ],
+  "relatedTopics": ["quick-capture-shortcuts", "edit-note-properties", "tags-and-filters"],
+  "version": 1,
+  "locale": "es"
+}

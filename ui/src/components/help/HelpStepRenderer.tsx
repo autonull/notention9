@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useHelp, useHelpAnalytics } from '@/hooks';
 import { StepExecutor, createStepExecutor, helpEngine, type StepExecutionContext, type StepResult } from '@notention/core/help';
 import { Button } from '../ui/Button';
@@ -10,6 +10,30 @@ import {
   SkipForwardIcon, SkipBackIcon
 } from '../ui/icons';
 import type { HelpTopic, HelpStep, SpotlightConfig, HelpTarget } from '@notention/core/help';
+
+function useReducedMotion(): boolean {
+  const [reduced, setReduced] = useState(false);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReduced(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setReduced(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+  return reduced;
+}
+
+function useHighContrast(): boolean {
+  const [highContrast, setHighContrast] = useState(false);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-contrast: more)');
+    setHighContrast(mediaQuery.matches);
+    const handler = (e: MediaQueryListEvent) => setHighContrast(e.matches);
+    mediaQuery.addEventListener('change', handler);
+    return () => mediaQuery.removeEventListener('change', handler);
+  }, []);
+  return highContrast;
+}
 
 export interface HelpStepRendererProps {
   className?: string;
@@ -33,11 +57,18 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
   const [isExecuting, setIsExecuting] = useState(false);
   const [showSpotlight, setShowSpotlight] = useState<{ target: HelpTarget; style?: string } | null>(null);
   const [autoAdvanceEnabled, setAutoAdvanceEnabled] = useState(true);
-
+  const [announcement, setAnnouncement] = useState<string>('');
+  
   const progress = currentTopicId ? getProgress(currentTopicId) : undefined;
   const currentStepIndex = progress?.currentStepIndex ?? 0;
   const currentStep = currentTopic?.steps[currentStepIndex];
   const isTopicComplete = progress?.completedAt;
+  
+  const previousStepIndexRef = useRef(currentStepIndex);
+  const liveRegionRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const reducedMotion = useReducedMotion();
+  const highContrast = useHighContrast();
 
   useEffect(() => {
     if (currentTopicId && !executor) {
@@ -79,6 +110,13 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
         setCurrentStepResult(result);
         setIsExecuting(false);
       });
+      
+      // Announce step change for screen readers
+      if (currentStepIndex !== previousStepIndexRef.current && currentStep) {
+        const announcementText = `Step ${currentStepIndex + 1} of ${currentTopic.steps.length}: ${currentStep.title}. ${currentStep.description}`;
+        setAnnouncement(announcementText);
+        previousStepIndexRef.current = currentStepIndex;
+      }
     }
   }, [executor, currentStepIndex, currentTopic]);
 
@@ -130,9 +168,13 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
 
   if (!currentTopic) {
     return (
-      <div className={cn('help-step-renderer', className)}>
+      <div 
+        className={cn('help-step-renderer', className, highContrast && 'high-contrast', reducedMotion && 'reduced-motion')}
+        role="region"
+        aria-label="Help step renderer - no topic selected"
+      >
         <div className="text-center py-8 text-[var(--app-muted)]">
-          <InfoIcon className="w-12 h-12 mx-auto mb-4 text-[var(--app-muted)]" />
+          <InfoIcon className="w-12 h-12 mx-auto mb-4 text-[var(--app-muted)]" aria-hidden="true" />
           <p className="text-lg">Select a topic to see step-by-step guidance</p>
         </div>
       </div>
@@ -141,14 +183,31 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
 
   if (isTopicComplete) {
     return (
-      <div className={cn('help-step-renderer', className)}>
+      <div 
+        className={cn('help-step-renderer', className, highContrast && 'high-contrast', reducedMotion && 'reduced-motion')}
+        role="region"
+        aria-label={`${currentTopic?.title} - Completed`}
+      >
         <div className="text-center py-12">
-          <CheckCircleIcon className="w-16 h-16 mx-auto mb-4 text-[var(--color-success)]" />
+          <CheckCircleIcon className="w-16 h-16 mx-auto mb-4 text-[var(--color-success)]" aria-hidden="true" />
           <h3 className="text-xl font-bold text-[var(--app-text)] mb-2">Topic Completed!</h3>
           <p className="text-[var(--app-text-secondary)] mb-6">Great job! You've completed all steps in this topic.</p>
           <div className="flex justify-center gap-3">
-            <Button variant="secondary" onClick={handleReset} data-testid="step-reset">Restart Topic</Button>
-            <Button onClick={() => recordEvent({ type: 'topic_start', topicId: currentTopicId ?? undefined })} data-testid="step-next-topic">Next Topic</Button>
+            <Button 
+              variant="secondary" 
+              onClick={handleReset} 
+              data-testid="step-reset"
+              aria-label="Restart this topic from the beginning"
+            >
+              Restart Topic
+            </Button>
+            <Button 
+              onClick={() => recordEvent({ type: 'topic_start', topicId: currentTopicId ?? undefined })} 
+              data-testid="step-next-topic"
+              aria-label="Start another topic"
+            >
+              Next Topic
+            </Button>
           </div>
         </div>
       </div>
@@ -190,28 +249,31 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
                 onClick={isExecuting ? undefined : handleNext}
                 disabled={isExecuting || !currentStepResult?.success}
                 data-testid="step-next"
+                aria-label={isExecuting ? 'Step executing, please wait' : currentStepResult?.success ? 'Continue to next step' : 'Skip this step'}
+                aria-disabled={isExecuting || !currentStepResult?.success}
               >
                 {isExecuting ? (
                   <>
-                    <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin mr-2" />
+                    <div className={cn('w-4 h-4 border-2 border-current border-t-transparent rounded-full mr-2', reducedMotion ? '' : 'animate-spin')} aria-hidden="true" />
+                    <span className="sr-only">Executing step</span>
                     Executing...
                   </>
                 ) : currentStepResult?.success ? (
                   <>
-                    <CheckCircleIcon className="w-4 h-4 mr-2" />
+                    <CheckCircleIcon className="w-4 h-4 mr-2" aria-hidden="true" />
                     Continue
                   </>
                 ) : (
                   <>
-                    <SkipForwardIcon className="w-4 h-4 mr-2" />
+                    <SkipForwardIcon className="w-4 h-4 mr-2" aria-hidden="true" />
                     Skip Step
                   </>
                 )}
               </Button>
               
               {!currentStepResult?.success && (
-                <Button variant="outline" onClick={handleRetry} data-testid="step-retry">
-                  <ChevronLeftIcon className="w-4 h-4 mr-1" />
+                <Button variant="outline" onClick={handleRetry} data-testid="step-retry" aria-label="Retry this step">
+                  <ChevronLeftIcon className="w-4 h-4 mr-1" aria-hidden="true" />
                   Retry
                 </Button>
               )}
@@ -242,12 +304,23 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
             )}
             
             <div className="flex gap-2">
-              <Button variant="secondary" onClick={handlePrevious} disabled={currentStepIndex === 0} data-testid="step-prev">
-                <ChevronLeftIcon className="w-4 h-4 mr-1" />
+              <Button 
+                variant="secondary" 
+                onClick={handlePrevious} 
+                disabled={currentStepIndex === 0} 
+                data-testid="step-prev"
+                aria-label="Go to previous step"
+                aria-disabled={currentStepIndex === 0}
+              >
+                <ChevronLeftIcon className="w-4 h-4 mr-1" aria-hidden="true" />
                 Back
               </Button>
-              <Button onClick={handleNext} data-testid="step-next">
-                Continue <ChevronRightIcon className="w-4 h-4 ml-1" />
+              <Button 
+                onClick={handleNext} 
+                data-testid="step-next"
+                aria-label="Continue to next step"
+              >
+                Continue <ChevronRightIcon className="w-4 h-4 ml-1" aria-hidden="true" />
               </Button>
             </div>
           </div>
@@ -281,17 +354,33 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
             )}
             
             <div className="flex gap-2">
-              <Button variant="secondary" onClick={handlePrevious} disabled={currentStepIndex === 0} data-testid="step-prev">
-                <ChevronLeftIcon className="w-4 h-4 mr-1" />
+              <Button 
+                variant="secondary" 
+                onClick={handlePrevious} 
+                disabled={currentStepIndex === 0} 
+                data-testid="step-prev"
+                aria-label="Go to previous step"
+                aria-disabled={currentStepIndex === 0}
+              >
+                <ChevronLeftIcon className="w-4 h-4 mr-1" aria-hidden="true" />
                 Back
               </Button>
               {currentStepResult?.success ? (
-                <Button onClick={handleNext} data-testid="step-next">
-                  Continue <ChevronRightIcon className="w-4 h-4 ml-1" />
+                <Button 
+                  onClick={handleNext} 
+                  data-testid="step-next"
+                  aria-label="Continue to next step"
+                >
+                  Continue <ChevronRightIcon className="w-4 h-4 ml-1" aria-hidden="true" />
                 </Button>
               ) : (
-                <Button onClick={handleRetry} variant="outline" data-testid="step-retry">
-                  <ChevronLeftIcon className="w-4 h-4 mr-1" />
+                <Button 
+                  onClick={handleRetry} 
+                  variant="outline" 
+                  data-testid="step-retry"
+                  aria-label="Try this step again"
+                >
+                  <ChevronLeftIcon className="w-4 h-4 mr-1" aria-hidden="true" />
                   Try Again
                 </Button>
               )}
@@ -309,15 +398,32 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
   };
 
   return (
-    <div className={cn('help-step-renderer space-y-4', className)}>
+    <div 
+      ref={containerRef}
+      className={cn('help-step-renderer space-y-4', className, highContrast && 'high-contrast', reducedMotion && 'reduced-motion')}
+      role="region"
+      aria-label={`${currentTopic?.title} - Step ${currentStepIndex + 1} of ${currentTopic?.steps.length}`}
+      aria-live="polite"
+    >
+      {/* Live region for screen reader announcements */}
+      <div 
+        ref={liveRegionRef}
+        role="status"
+        aria-live="polite"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {announcement}
+      </div>
+      
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className="text-sm text-[var(--app-muted)]">
             Step {currentStepIndex + 1} of {currentTopic.steps.length}
           </span>
-          <div className="w-32 h-1.5 bg-[var(--app-line)] rounded-full overflow-hidden">
+          <div className="w-32 h-1.5 bg-[var(--app-line)] rounded-full overflow-hidden" role="progressbar" aria-valuenow={Math.round(stepProgress)} aria-valuemin={0} aria-valuemax={100} aria-label="Step progress">
             <div 
-              className="h-full bg-[var(--app-accent)] transition-all duration-300"
+              className={cn('h-full bg-[var(--app-accent)]', reducedMotion ? 'transition-none' : 'transition-all duration-300')}
               style={{ width: `${stepProgress}%` }}
             />
           </div>
@@ -335,7 +441,7 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
       </div>
 
       {showSpotlight && (
-        <div className="fixed inset-0 z-50 pointer-events-none" data-testid="spotlight-overlay">
+        <div className="fixed inset-0 z-50 pointer-events-none" data-testid="spotlight-overlay" aria-hidden="true">
           {(() => {
             const element = showSpotlight.target.testId 
               ? document.querySelector(`[data-testid="${showSpotlight.target.testId}"]`)
@@ -358,7 +464,10 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
                   height: rect.height,
                 }}
               >
-                <div className="absolute inset-0 rounded-lg border-2 border-[var(--app-accent)] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] animate-pulse" />
+                <div className={cn(
+                  'absolute inset-0 rounded-lg border-2 border-[var(--app-accent)] shadow-[0_0_0_9999px_rgba(0,0,0,0.5)]',
+                  reducedMotion ? '' : 'animate-pulse'
+                )} />
                 <div className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 bg-[var(--app-accent)] text-[var(--app-accent-text)] text-xs rounded whitespace-nowrap">
                   {currentStep?.spotlight?.position || 'Focus here'}
                 </div>
@@ -373,10 +482,16 @@ export function HelpStepRenderer({ className }: HelpStepRendererProps) {
       </div>
 
       <div className="flex items-center justify-between pt-2">
-        <Button variant="ghost" size="sm" onClick={handleReset} data-testid="step-reset-topic">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          onClick={handleReset} 
+          data-testid="step-reset-topic"
+          aria-label="Restart this topic from the beginning"
+        >
           Restart Topic
         </Button>
-        <span className="text-xs text-[var(--app-muted)]">
+        <span className="text-xs text-[var(--app-muted)]" aria-hidden="true">
           {currentStep.type === 'action' ? 'Action' : 
            currentStep.type === 'explanation' ? 'Explanation' :
            currentStep.type === 'validation' ? 'Validation' : 'Other'}
