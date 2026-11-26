@@ -411,16 +411,25 @@ pnpm build                      # Production build
 
 Verified against `HEAD`; these fail before/after this work and are not caused by help/UISG changes:
 
-- `pnpm --filter @notention/ui typecheck` — legacy `src/dev/*`, `src/hooks/useFlowState.tsx` (missing `./reducers`), `src/components/panels/ContextRailMobile.tsx` slot typing.
-- `pnpm --filter @notention/optimize test` — 7 failing specs in `skeleton.test.ts` / `uisg.test.ts` (fixture graph vs `doc/uisg/graph.json` drift). Improved from 8 → 7 by this work (`selectFeature > loads selection from file` now passes).
+- `pnpm --filter @notention/ui typecheck` — legacy `src/dev/*`, `src/hooks/useFlowState.tsx` (missing `./reducers`), `src/components/panels/*` slot typing, `src/components/status/*` Button variant `destructive`.
+- `pnpm --filter @notention/optimize test` — 8 failing specs in `skeleton.test.ts` / `uisg.test.ts` (fixture graph vs `doc/uisg/graph.json` drift). Test isolation issue: `selectFeature > loads selection from file` depends on prior test writing `/tmp/opencode/uisg-selection.json`.
 - `ui/src/tests/generated/DescribeItComposer.test.tsx` mocks `OntologyNode` with unknown fields; template `optimize/src/uisg/templates/editor.ts` now emits the correct shape, so regenerating fixes it.
+
+### Completed in this pass
+
+- ✅ All 9 UISG surfaces regenerated via `pnpm optimize:generate`; `doc/uisg/graph.json` updated automatically.
+- ✅ Codegen `generatePropsSchema` now emits real props from slots (camelCase) with inferred types (`() => void`, `boolean`, `number`, `React.ReactNode`, tabs array).
+- ✅ Templates fixed: `header-compact` (touch ref), `bottom-sheet` (ref cast), `bottom-tabs` (tabs fallback + activeIndex default), `map-full` (mapRef cast), `settings-wizard` (event handler + extra props), `empty-state` (helpTopicId narrowing).
+- ✅ All 281 generated UISG/mobile tests pass (`ui/src/tests/generated/`).
 
 ### Remaining work (prioritized)
 
 1. ✅ WebVTT cue generation (`simulator/src/movie_maker.ts`) + wire to `HelpVideoPlayer`.
 2. ✅ i18n topic-content loading (`core/src/help/TopicLoader.ts` locale overlay already wired; added ES translations for search-basics, edit-note-properties with videoId).
-3. Regenerate UISG artifacts and fix legacy pre-existing type/test failures listed above.
+3. ✅ Regenerate UISG artifacts (done; generated component tests pass).
 4. Add WebVTT caption UI regression journey after cues land.
+5. Fix remaining legacy pre-existing type failures: `src/dev/*`, `useFlowState.tsx` (missing `./reducers`), `src/components/panels/*` slot typing, `src/components/status/*` Button variant.
+6. Fix optimize fixture drift (`skeleton.test.ts` / `uisg.test.ts`) and test isolation for `selectFeature`.
 
 ---
 

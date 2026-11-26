@@ -3,8 +3,9 @@
 // Template: modal-fullscreen
 // Source surface: surface.mobile-property-editor
 
-import type { ReactNode } from 'react';
-
 export interface PropertyEditorMobileProps {
-    children: { header: ReactNode; content: ReactNode; footer: ReactNode };
+    header?: React.ReactNode;
+    content?: React.ReactNode;
+    footer?: React.ReactNode;
+    keyboardSpacer?: unknown;
 }

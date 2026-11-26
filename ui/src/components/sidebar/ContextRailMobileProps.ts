@@ -3,9 +3,9 @@
 // Template: bottom-tabs
 // Source surface: surface.mobile-context-rail
 
-import type { ReactNode } from 'react';
-
 export interface ContextRailMobileProps {
-    tabs: Array<{ id: string; label: string; panel: ReactNode }>;
-    activeIndex: number;
+    tabs?: Array<{ id: string; label: string; panel: React.ReactNode }>;
+    activeIndex?: number;
+    tabList?: unknown;
+    tabPanel?: unknown;
 }

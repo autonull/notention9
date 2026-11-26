@@ -4,6 +4,9 @@
 // Source surface: surface.describe-it-promo
 
 export interface DescribeItPromoProps {
+    trigger?: React.ReactNode;
+    content?: React.ReactNode;
+    dismiss?: React.ReactNode;
     variant?: 'pulse' | 'tooltip' | 'contextual-hint';
     forceShow?: boolean;
 }

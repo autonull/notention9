@@ -4,5 +4,11 @@
 // Source surface: surface.empty-state-actionable
 
 export interface ActionableEmptyStateProps {
-    variant?: 'notes-all' | 'notes-search' | 'network' | 'map' | 'timeline' | 'matches' | 'chat' | 'ontology' | 'skills';
+    illustration?: React.ReactNode;
+    title?: unknown;
+    description?: unknown;
+    primaryAction?: () => void;
+    secondaryAction?: () => void;
+    helpLink?: unknown;
+    variant?: 'pulse' | 'tooltip' | 'contextual-hint';
 }

@@ -4,5 +4,9 @@
 // Source surface: surface.help-system
 
 export interface HelpSystemProps {
-    // Define props based on template slots: sidebar, content, video-player, progress-bar, feedback
+    sidebar?: unknown;
+    content?: React.ReactNode;
+    videoPlayer?: unknown;
+    progressBar?: unknown;
+    feedback?: unknown;
 }

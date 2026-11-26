@@ -4,5 +4,13 @@
 // Source surface: surface.settings-directory
 
 export interface SettingsDirectoryProps {
-    // Define props based on template slots: search, groups, wizard-steps, export-import, diff-view
+    search?: unknown;
+    groups?: unknown;
+    wizardSteps?: unknown;
+    exportImport?: unknown;
+    diffView?: unknown;
+    showWizard?: boolean;
+    onWizardComplete?: () => void;
+    onWizardSkip?: () => void;
+    className?: unknown;
 }

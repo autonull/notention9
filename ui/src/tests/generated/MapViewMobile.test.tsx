@@ -121,7 +121,7 @@ test('surface.mobile-map renders', () => {
       
       <SettingsProvider>
         <NotesProvider>
-        <MapViewMobile fabContent={<div>FAB</div>} mapRef={{ current: null }} />
+        <MapViewMobile fabContent={<div>FAB</div>} />
       
         </NotesProvider>
       </SettingsProvider>

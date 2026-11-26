@@ -92,6 +92,7 @@ export function ActionableEmptyState(props: ActionableEmptyStateProps) {
   const help = useHelp();
   const variant = props.variant ?? 'notes-all';
   const config = EMPTY_STATE_CONFIGS[variant] ?? EMPTY_STATE_CONFIGS['notes-all'];
+  const helpTopicId = config.helpTopicId;
   return (
     <div className="empty-state" data-testid="empty-state-actionable" data-variant={variant}>
       <div className="empty-illustration">{config.illustration}</div>
@@ -107,8 +108,8 @@ export function ActionableEmptyState(props: ActionableEmptyStateProps) {
           </button>
         )}
       </div>
-      {config.helpTopicId && (
-        <button onClick={() => help.openTopic(config.helpTopicId!)} className="help-link" data-testid="empty-help-link">
+      {helpTopicId && (
+        <button onClick={() => help.openTopic(helpTopicId)} className="help-link" data-testid="empty-help-link">
           Learn more
         </button>
       )}

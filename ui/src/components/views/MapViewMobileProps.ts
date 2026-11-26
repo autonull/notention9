@@ -3,9 +3,11 @@
 // Template: map-full
 // Source surface: surface.mobile-map
 
-import type { ReactNode, RefObject } from 'react';
-
 export interface MapViewMobileProps {
-    fabContent: ReactNode;
-    mapRef: RefObject<HTMLDivElement | null>;
+    map?: unknown;
+    fab?: unknown;
+    geolocation?: unknown;
+    safeAreaBottom?: unknown;
+    mapRef?: React.RefObject<HTMLElement> | null;
+    fabContent?: React.ReactNode;
 }

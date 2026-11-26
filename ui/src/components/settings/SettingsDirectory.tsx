@@ -4,6 +4,24 @@ import { useSettings } from '@/hooks/useSettingsContext';
 import { useHelp } from '@/hooks/useHelp';
 import { QuestionMarkCircleIcon } from '../ui/icons';
 
+interface SettingGroup {
+  id: string;
+  label: string;
+  defaultExpanded: boolean;
+  helpTopicId?: string;
+  settings: Array<{ id: string; label: string }>;
+}
+
+interface SettingsContextExtended {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+  groups: SettingGroup[];
+  showWizard: boolean;
+  export: () => void;
+  import: () => void;
+  showDiff: () => void;
+}
+
 const HelpIcon = ({ topicId }: { topicId?: string }) => (
   topicId ? <QuestionMarkCircleIcon className="w-4 h-4 ml-1 text-[var(--app-muted)]" /> : null
 );
@@ -15,7 +33,7 @@ const SettingRow = ({ setting }: { setting: { id: string; label: string } }) => 
 const SettingsWizard = () => <div data-testid="settings-wizard">Wizard</div>;
 
 export function SettingsDirectory(props: SettingsDirectoryProps) {
-  const settings = useSettings();
+  const settings = useSettings() as unknown as SettingsContextExtended;
   const help = useHelp();
   return (
     <div className="settings-directory" data-testid="settings-directory">
@@ -23,14 +41,14 @@ export function SettingsDirectory(props: SettingsDirectoryProps) {
         type="search" 
         placeholder="Search settings…" 
         value={settings.searchQuery}
-        onChange={settings.setSearchQuery}
+        onChange={(e: React.ChangeEvent<HTMLInputElement>) => settings.setSearchQuery(e.target.value)}
         data-testid="settings-search"
       />
       <div className="settings-groups">
-        {settings.groups.map(group => (
+        {settings.groups.map((group: SettingGroup) => (
           <details key={group.id} open={group.defaultExpanded} data-testid={`settings-group-${group.id}`}>
-            <summary>{group.label} <HelpIcon topic={group.helpTopicId} /></summary>
-            {group.settings.map(s => <SettingRow key={s.id} setting={s} />)}
+            <summary>{group.label} <HelpIcon topicId={group.helpTopicId} /></summary>
+            {group.settings.map((s: { id: string; label: string }) => <SettingRow key={s.id} setting={s} />)}
           </details>
         ))}
       </div>

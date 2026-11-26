@@ -3,10 +3,10 @@
 // Template: header-compact
 // Source surface: surface.mobile-header
 
-import type { ReactNode } from 'react';
-
 export interface HeaderMobileProps {
+    logo?: React.ReactNode;
+    hamburger?: unknown;
+    actions?: React.ReactNode;
+    swipeArea?: unknown;
     onOpenSidebar?: () => void;
-    logo: ReactNode;
-    actions: ReactNode;
 }

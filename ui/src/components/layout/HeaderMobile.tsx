@@ -6,7 +6,7 @@ import { MenuIcon } from '../ui/icons';
 export function HeaderMobile(props: HeaderMobileProps) {
   const { ref } = useTouchGestures({ onSwipeRight: props.onOpenSidebar });
   return (
-    <header ref={ref} className="header-compact" data-testid="mobile-header">
+    <header ref={ref as React.RefObject<HTMLElement>} className="header-compact" data-testid="mobile-header">
       <div className="header-logo">{props.logo}</div>
       <button className="hamburger" onClick={props.onOpenSidebar} data-testid="hamburger-menu" aria-label="Open menu">
         <MenuIcon />

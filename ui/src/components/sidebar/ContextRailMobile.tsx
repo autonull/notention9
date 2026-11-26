@@ -5,6 +5,8 @@ import { useMobile } from '@/hooks/useMobile';
 export function ContextRailMobile(props: ContextRailMobileProps) {
   const { isMobile } = useMobile();
   if (!isMobile) return null;
+  if (!props.tabs || props.tabs.length === 0) return null;
+  const activeIndex = props.activeIndex ?? 0;
   return (
     <div className="bottom-tabs" data-testid="mobile-context-rail" role="tablist">
       <div className="tab-list" role="presentation">
@@ -12,7 +14,7 @@ export function ContextRailMobile(props: ContextRailMobileProps) {
           <button
             key={tab.id}
             role="tab"
-            aria-selected={i === props.activeIndex}
+            aria-selected={i === activeIndex}
             className="tab-button"
             data-testid={`tab-${tab.id}`}
             style={{ minWidth: 48, minHeight: 48 }}
@@ -22,7 +24,7 @@ export function ContextRailMobile(props: ContextRailMobileProps) {
         ))}
       </div>
       <div className="tab-panels">
-        {props.tabs[props.activeIndex]?.panel}
+        {props.tabs[activeIndex]?.panel}
       </div>
     </div>
   );

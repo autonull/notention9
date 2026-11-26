@@ -3,17 +3,17 @@ import { PropertyEditorMobileProps } from './PropertyEditorMobileProps';
 import { useVirtualKeyboard } from '@/hooks/useVirtualKeyboard';
 
 export function PropertyEditorMobile(props: PropertyEditorMobileProps) {
-  const { isOpen, height } = useVirtualKeyboard();
+  const { isOpen: isKeyboardVisible, height: keyboardHeight } = useVirtualKeyboard();
   return (
-    <div
-      className="modal-fullscreen"
+    <div 
+      className="modal-fullscreen" 
       data-testid="mobile-property-editor"
-      style={{ paddingBottom: isOpen ? height : 0 }}
+      style={{ paddingBottom: isKeyboardVisible ? keyboardHeight : 0 }}
     >
-      <div className="modal-header">{props.children.header}</div>
-      <div className="modal-content">{props.children.content}</div>
-      <div className="modal-footer">{props.children.footer}</div>
-      {isOpen && <div className="keyboard-spacer" style={{ height }} />}
+      <div className="modal-header">{props.header}</div>
+      <div className="modal-content">{props.content}</div>
+      <div className="modal-footer">{props.footer}</div>
+      {isKeyboardVisible && <div className="keyboard-spacer" style={{ height: keyboardHeight }} />}
     </div>
   );
 }

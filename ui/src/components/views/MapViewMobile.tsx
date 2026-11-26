@@ -7,7 +7,7 @@ export function MapViewMobile(props: MapViewMobileProps) {
   const { safeAreaInsets } = useMobile();
   return (
     <div className="map-full" data-testid="mobile-map" style={{ paddingBottom: safeAreaInsets.bottom }}>
-      <div className="map-container" ref={props.mapRef} />
+      <div className="map-container" ref={props.mapRef as React.RefObject<HTMLDivElement> | undefined} />
       <button className="fab fab-primary" data-testid="map-fab" style={{ bottom: safeAreaInsets.bottom + 16 }}>
         {props.fabContent}
       </button>

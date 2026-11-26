@@ -121,7 +121,7 @@ test('surface.mobile-property-editor renders', () => {
       
       <SettingsProvider>
         <NotesProvider>
-        <PropertyEditorMobile children={{ header: <div>Header</div>, content: <div>Content</div>, footer: <div>Footer</div> }} />
+        <PropertyEditorMobile header={<div>Header</div>} content={<div>Content</div>} footer={<div>Footer</div>} />
       
         </NotesProvider>
       </SettingsProvider>
