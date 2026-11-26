@@ -38,7 +38,10 @@
     "lint": "eslint src --ext .ts",
     "optimizer": "tsx src/optimizer/cli.ts",
     "prompts:eval": "tsx src/prompts/cli.ts",
-    "ontology:audit": "tsx src/ontology/audit.ts"
+    "ontology:audit": "tsx src/ontology/audit.ts",
+    "uisg:generate": "tsx src/uisg/codegenFromYaml.ts generate",
+    "uisg:sync-docs": "tsx src/uisg/codegenFromYaml.ts sync-docs",
+    "uisg:validate": "tsx src/uisg/codegenFromYaml.ts validate"
   },
   "dependencies": {
     "@notention/core": "workspace:*",

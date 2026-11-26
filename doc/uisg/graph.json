@@ -2,2300 +2,1267 @@
   "version": 4,
   "nodes": [
     {
-      "id": "intent.structured-note",
-      "name": "Capture a note and edit its properties",
-      "status": "implemented",
-      "type": "intent",
-      "outcome": "The note carries structured, ontology-backed details."
-    },
-    {
-      "id": "cap.property.edit",
-      "name": "Edit note properties",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/PropertyEditor.tsx",
-        "ui/src/strategies/PropertyFormStrategy.tsx"
-      ],
-      "type": "capability",
-      "seam": "elicit",
-      "strategy": "property-form"
-    },
-    {
-      "id": "flow.capture-and-edit",
-      "name": "Capture and edit",
-      "status": "implemented",
-      "source": [
-        "optimize/src/journeys.ts"
-      ],
-      "type": "flow",
-      "entry": "step.detail.open",
-      "outcome": "Property indexed and shown as a chip.",
-      "journey": "capture-and-edit"
-    },
-    {
-      "id": "step.detail.open",
-      "name": "Open Add detail",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "testId": "page-add-detail"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.detail.fill",
-      "name": "Enter key, operator, value",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "testId": "property-key-input",
-        "modal": "Add detail"
-      },
-      "action": "fill",
-      "value": "framework"
-    },
-    {
-      "id": "step.detail.confirm",
-      "name": "Confirm the detail",
-      "status": "implemented",
-      "type": "step",
-      "kind": "confirm",
-      "target": {
-        "role": "button",
-        "name": "Add detail",
-        "modal": "Add detail"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.detail.done",
-      "name": "Property indexed",
-      "status": "implemented",
-      "summary": "assertState note.propertyIndex.framework",
-      "type": "step",
-      "kind": "result",
-      "statePath": "note.propertyIndex.framework",
-      "stateEquals": [
-        "Next.js"
-      ]
-    },
-    {
-      "id": "surface.editormanager",
-      "name": "Note editor",
-      "status": "implemented",
+      "id": "surface.help-system",
+      "name": "Help System",
+      "status": "planned",
       "type": "surface",
-      "component": "EditorManager",
-      "route": "#/notes/:noteId",
+      "component": "HelpSystem",
+      "route": "#/help",
+      "template": "help-system",
       "variants": {
-        "dense": {
-          "template": "item",
-          "description": "Dense list view for mobile",
-          "status": "promoted",
-          "promotedAt": "2026-11-25T19:48:55.313Z",
+        "default": {
+          "template": "help-system",
+          "description": "Standard help system",
+          "status": "experimental",
           "metrics": {}
         }
       },
-      "defaultVariant": "dense"
-    },
-    {
-      "id": "surface.propertyeditor",
-      "name": "Add detail popup",
-      "status": "implemented",
-      "type": "surface",
-      "component": "PropertyEditor",
-      "variants": {
-        "dense": {
-          "template": "item",
-          "description": "Dense list view for mobile",
-          "status": "experimental"
-        }
-      },
-      "defaultVariant": "dense"
-    },
-    {
-      "id": "flow.inline-detail",
-      "name": "Inline detail entry",
-      "status": "candidate",
-      "summary": "Alternative elicit surface: inline property entry instead of a popup.",
-      "confidence": "low",
-      "type": "flow",
-      "entry": "step.inline.write",
-      "outcome": "Detail added without leaving prose."
-    },
-    {
-      "id": "step.inline.write",
-      "name": "Type property syntax inline",
-      "status": "candidate",
-      "summary": "Extraction confirms the detail; no popup interrupt.",
-      "confidence": "low",
-      "type": "step",
-      "kind": "action"
-    },
-    {
-      "id": "intent.express-need",
-      "name": "Express a need and understand a match",
-      "status": "implemented",
+      "defaultVariant": "default",
       "source": [
-        "optimize/src/journeys.ts"
+        "ui/src/components/HelpSystem.tsx"
       ],
-      "type": "intent",
-      "outcome": "A relevant local match is visible after capturing request and offer."
+      "category": "help"
     },
     {
-      "id": "intent.publish-safely",
-      "name": "Publish without leaking private content",
-      "status": "implemented",
-      "source": [
-        "optimize/src/journeys.ts"
-      ],
-      "type": "intent",
-      "outcome": "Publish requires confirmation; cancel keeps the note private."
-    },
-    {
-      "id": "cap.note.capture",
-      "name": "Capture a note from prose",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/layout/Header.tsx",
-        "ui/src/components/editor/EditorManager.tsx",
-        "ui/src/components/dashboard/QuickCapture.tsx"
-      ],
-      "type": "capability",
-      "seam": "capture"
-    },
-    {
-      "id": "cap.match.display",
-      "name": "Show local matches",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/note/NoteContextRail.tsx",
-        "ui/src/components/match/MatchItem.tsx"
-      ],
-      "type": "capability",
-      "seam": "match"
-    },
-    {
-      "id": "cap.note.publish",
-      "name": "Publish note",
-      "status": "implemented",
-      "summary": "publish_note is CONSEQUENTIAL in optimize/src/policy.ts.",
-      "source": [
-        "optimize/src/policy.ts",
-        "ui/src/components/ui/ConfirmationModal.tsx"
-      ],
-      "type": "capability",
-      "risk": "destructive"
-    },
-    {
-      "id": "flow.golden-path",
-      "name": "First match golden path",
-      "status": "implemented",
-      "source": [
-        "optimize/src/journeys.ts"
-      ],
-      "type": "flow",
-      "entry": "step.gp.new-request",
-      "outcome": "Request and offer captured; a match appears in the note rail.",
-      "journey": "golden-path"
-    },
-    {
-      "id": "surface.quickcapture",
-      "name": "Quick capture",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/dashboard/QuickCapture.tsx"
-      ],
-      "type": "surface",
-      "component": "QuickCapture"
-    },
-    {
-      "id": "surface.notesview",
-      "name": "Notes list",
-      "status": "implemented",
-      "type": "surface",
-      "component": "NotesView",
-      "route": "#/notes",
-      "configKey": "NOTE_BROWSE_MODES",
-      "variants": {
-        "dense": {
-          "template": "item",
-          "description": "Dense list view for mobile",
-          "status": "experimental"
-        },
-        "compact": {
-          "template": "item",
-          "description": "Compact desktop view",
-          "status": "experimental"
-        },
-        "dense-ai": {
-          "template": "item",
-          "strategyOverrides": {
-            "layout": "stacked",
-            "display": "inline"
-          },
-          "description": "Dense list view for mobile",
-          "status": "experimental"
-        },
-        "ai-dense-v2": {
-          "template": "item",
-          "strategyOverrides": {
-            "layout": "stacked",
-            "display": "inline"
-          },
-          "description": "Dense list view for mobile",
-          "status": "experimental"
-        }
-      },
-      "defaultVariant": "dense"
-    },
-    {
-      "id": "surface.dashboardlocalmatch",
-      "name": "Local match card",
-      "status": "removed",
-      "summary": "Removed - consolidated into MatchItem",
-      "source": [
-        "ui/src/components/dashboard/DashboardLocalMatch.tsx"
-      ],
-      "type": "surface",
-      "component": "DashboardLocalMatch"
-    },
-    {
-      "id": "flow.publish-gate",
-      "name": "Publish gate",
-      "status": "implemented",
-      "source": [
-        "optimize/src/journeys.ts"
-      ],
-      "type": "flow",
-      "entry": "step.pub.open",
-      "outcome": "Cancelling publish keeps the note private.",
-      "journey": "publish-gate"
-    },
-    {
-      "id": "step.pub.open",
-      "name": "Attempt publish",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "button",
-        "name": "Publish",
-        "exact": true
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.pub.decide",
-      "name": "Confirmation decision",
-      "status": "implemented",
-      "summary": "Modal gates the consequential publish; journey exercises cancel.",
-      "type": "step",
-      "kind": "confirm",
-      "target": {
-        "role": "button",
-        "name": "cancel"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.pub.private",
-      "name": "Note stays private",
-      "status": "implemented",
-      "type": "step",
-      "kind": "result",
-      "statePath": "note.privacy",
-      "stateEquals": "private"
-    },
-    {
-      "id": "step.pub.published",
-      "name": "Note published",
-      "status": "partial",
-      "summary": "Confirmed branch not covered by the registered journey.",
-      "confidence": "low",
-      "type": "step",
-      "kind": "result",
-      "statePath": "note.privacy",
-      "stateEquals": "public"
-    },
-    {
-      "id": "surface.confirmationmodal",
-      "name": "Confirmation dialog",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/ui/ConfirmationModal.tsx"
-      ],
-      "type": "surface",
-      "component": "ConfirmationModal",
-      "variants": {
-        "dense": {
-          "template": "item",
-          "description": "Dense list view for mobile",
-          "status": "experimental"
-        }
-      },
-      "defaultVariant": "dense"
-    },
-    {
-      "id": "flow.capture-and-edit-keyboard",
-      "name": "Capture and edit (keyboard only)",
-      "status": "implemented",
-      "source": [
-        "optimize/src/journeys.ts"
-      ],
-      "type": "flow",
-      "entry": "step.detail.open",
-      "outcome": "Same outcome without pointer input.",
-      "journey": "capture-and-edit-keyboard"
-    },
-    {
-      "id": "step.gp.new-request",
-      "name": "Start request note",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "button",
-        "name": "New note"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.gp.request",
-      "name": "Write request",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "textbox",
-        "name": "Note title"
-      },
-      "action": "fill",
-      "value": "Looking for a React developer in Berlin"
-    },
-    {
-      "id": "step.gp.request-body",
-      "name": "Write request body",
-      "status": "implemented",
-      "summary": "Coarse model; journey also fills Note title.",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "textbox",
-        "name": "Note body"
-      },
-      "action": "fill",
-      "value": "need a React developer in Berlin with TypeScript #request"
-    },
-    {
-      "id": "step.gp.new-offer",
-      "name": "Start offer note",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "button",
-        "name": "New note"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.gp.offer",
-      "name": "Write offer",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "textbox",
-        "name": "Note title"
-      },
-      "action": "fill",
-      "value": "I am a React developer in Berlin"
-    },
-    {
-      "id": "step.gp.offer-body",
-      "name": "Write offer body",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "textbox",
-        "name": "Note body"
-      },
-      "action": "fill",
-      "value": "I am a React developer in Berlin with TypeScript #offer"
-    },
-    {
-      "id": "step.gp.match",
-      "name": "Match visible in rail",
-      "status": "implemented",
-      "type": "step",
-      "kind": "show",
-      "target": {
-        "testId": "match-item"
-      }
-    },
-    {
-      "id": "step.gp.done",
-      "name": "One local match",
-      "status": "implemented",
-      "type": "step",
-      "kind": "result",
-      "statePath": "matches.length",
-      "stateEquals": 1
-    },
-    {
-      "id": "surface.notecontextrail",
-      "name": "Note context rail, Matches tab",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/note/NoteContextRail.tsx"
-      ],
-      "type": "surface",
-      "component": "NoteContextRail",
-      "configKey": "NOTE_RAIL_TABS",
-      "variants": {
-        "dense": {
-          "template": "item",
-          "description": "Dense list view for mobile",
-          "status": "experimental"
-        }
-      },
-      "defaultVariant": "dense"
-    },
-    {
-      "id": "intent.manage-ontology",
-      "name": "Keep the ontology consistent",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/OntologyView.tsx"
-      ],
-      "type": "intent",
-      "outcome": "Conflicts are detected and resolvable."
-    },
-    {
-      "id": "cap.ontology.conflict",
-      "name": "Detect ontology conflicts",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/OntologyView.tsx",
-        "ui/src/components/ontology/OntologyConflicts.tsx"
-      ],
-      "confidence": "high",
-      "type": "capability",
-      "seam": "ontology"
-    },
-    {
-      "id": "cap.match.explain",
-      "name": "Explain a match",
-      "status": "implemented",
-      "summary": "Reason badges explain matches (PropertyMatch.reason); matched keys appear in SemanticState.",
-      "source": [
-        "ui/src/components/match/MatchItem.tsx"
-      ],
-      "confidence": "high",
-      "type": "capability",
-      "seam": "explain"
-    },
-    {
-      "id": "cap.notes.display",
-      "name": "Display notes in five modes",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/NotesView.tsx",
-        "ui/src/config/uiSurfaces.ts"
-      ],
-      "type": "capability",
-      "seam": "display"
-    },
-    {
-      "id": "cap.layout.rails",
-      "name": "Arrange rails and panes",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/AppShell.tsx",
-        "doc/UI_COMPOSITION.md"
-      ],
-      "type": "capability",
-      "seam": "layout"
-    },
-    {
-      "id": "cap.property.inline",
-      "name": "Edit details inline",
+      "id": "surface.describe-it-promo",
+      "name": "Describe It Promo",
       "status": "planned",
-      "summary": "Inline detail entry variant; candidate for synthesis.",
-      "source": [
-        "ui/src/strategies/InlineDetailStrategy.tsx"
-      ],
-      "confidence": "low",
-      "type": "capability",
-      "seam": "elicit"
-    },
-    {
-      "id": "flow.ontology-conflict",
-      "name": "Detect an ontology conflict",
-      "status": "implemented",
-      "source": [
-        "optimize/src/journeys.ts"
-      ],
-      "confidence": "high",
-      "type": "flow",
-      "entry": "step.oc.open",
-      "outcome": "The conflicting capacity property is listed in the ontology view.",
-      "journey": "ontology-conflict"
-    },
-    {
-      "id": "flow.gardener-merge",
-      "name": "Gardener: merge ontology classes",
-      "status": "planned",
-      "summary": "Service merge exists in Gardener.optimizeOntology and useGardener.mergeAttributesToNode; no dedicated UI merge dialog yet - planned, explicitly unsupported in today's UI.",
-      "source": [
-        "ui/src/services/gardener.ts",
-        "ui/src/hooks/useGardener.ts"
-      ],
-      "confidence": "medium",
-      "type": "flow",
-      "entry": "step.gm.open",
-      "outcome": "Selected ontology classes are merged with preserved data."
-    },
-    {
-      "id": "surface.ontologyview",
-      "name": "Ontology settings",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/OntologyView.tsx"
-      ],
       "type": "surface",
-      "component": "OntologyView",
-      "route": "#/settings/ontology",
-      "configKey": "SETTINGS_GROUPS",
+      "component": "DescribeItPromo",
+      "template": "inline-promo",
       "variants": {
-        "dense": {
-          "template": "item",
-          "description": "Dense list view for mobile",
-          "status": "promoted",
-          "promotedAt": "2026-11-25T19:48:55.301Z",
+        "pulse": {
+          "template": "inline-promo",
+          "description": "Pulsing animation variant",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "tooltip": {
+          "template": "inline-promo",
+          "description": "Tooltip on hover variant",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "contextual-hint": {
+          "template": "inline-promo",
+          "description": "Contextual hint based on user behavior",
+          "status": "experimental",
           "metrics": {}
         }
       },
-      "defaultVariant": "dense"
+      "defaultVariant": "pulse",
+      "source": [
+        "ui/src/components/DescribeItPromo.tsx"
+      ],
+      "category": "editor"
     },
     {
-      "id": "surface.matchitem",
-      "name": "Match explanation item",
-      "status": "implemented",
-      "summary": "Reason badges plus expandable details; single explanation surface.",
-      "source": [
-        "ui/src/components/match/MatchItem.tsx"
-      ],
-      "confidence": "high",
+      "id": "surface.empty-state-actionable",
+      "name": "Actionable Empty State",
+      "status": "planned",
       "type": "surface",
-      "component": "MatchItem",
+      "component": "ActionableEmptyState",
+      "template": "empty-state",
       "variants": {
-        "dense": {
-          "template": "item",
-          "description": "Dense list view for mobile",
-          "status": "promoted",
-          "promotedAt": "2026-11-25T19:48:55.290Z",
+        "notes-all": {
+          "template": "empty-state",
+          "description": "Notes view - all notes empty",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "notes-search": {
+          "template": "empty-state",
+          "description": "Notes view - search results empty",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "network": {
+          "template": "empty-state",
+          "description": "Network view - no connections",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "map": {
+          "template": "empty-state",
+          "description": "Map view - no locations",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "timeline": {
+          "template": "empty-state",
+          "description": "Timeline view - no dates",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "matches": {
+          "template": "empty-state",
+          "description": "Matches view - no matches",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "chat": {
+          "template": "empty-state",
+          "description": "Chat view - no conversations",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "ontology": {
+          "template": "empty-state",
+          "description": "Ontology view - no schemas",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "skills": {
+          "template": "empty-state",
+          "description": "Skills view - no skills",
+          "status": "experimental",
           "metrics": {}
         }
       },
-      "defaultVariant": "dense"
+      "defaultVariant": "notes-all",
+      "source": [
+        "ui/src/components/ActionableEmptyState.tsx"
+      ],
+      "category": "ui"
     },
     {
-      "id": "step.oc.open",
-      "name": "Open Conflicts tab",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "tab",
-        "name": "Conflicts"
+      "id": "surface.mobile-property-editor",
+      "name": "Mobile Property Editor",
+      "status": "planned",
+      "type": "surface",
+      "component": "PropertyEditorMobile",
+      "template": "modal-fullscreen",
+      "variants": {
+        "bottom-sheet": {
+          "template": "modal-fullscreen",
+          "description": "Bottom sheet variant",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "fullscreen-modal": {
+          "template": "modal-fullscreen",
+          "description": "Full-screen modal variant",
+          "status": "experimental",
+          "metrics": {}
+        }
       },
-      "action": "click"
+      "defaultVariant": "bottom-sheet",
+      "source": [
+        "ui/src/components/PropertyEditorMobile.tsx"
+      ],
+      "category": "properties"
     },
     {
-      "id": "step.oc.visible",
-      "name": "Conflict listed",
-      "status": "implemented",
-      "type": "step",
-      "kind": "result",
-      "statePath": "conflicts.0.propertyKey",
-      "stateEquals": "capacity"
+      "id": "surface.mobile-arrange-menu",
+      "name": "Mobile Arrange Menu",
+      "status": "planned",
+      "type": "surface",
+      "component": "ArrangeMenuMobile",
+      "template": "bottom-sheet",
+      "variants": {
+        "default": {
+          "template": "bottom-sheet",
+          "description": "Standard bottom sheet",
+          "status": "experimental",
+          "metrics": {}
+        }
+      },
+      "defaultVariant": "default",
+      "source": [
+        "ui/src/components/ArrangeMenuMobile.tsx"
+      ],
+      "category": "patterns"
     },
     {
-      "id": "step.gp.explain",
-      "name": "Match explanation asserted",
+      "id": "surface.mobile-context-rail",
+      "name": "Mobile Context Rail",
+      "status": "planned",
+      "type": "surface",
+      "component": "ContextRailMobile",
+      "template": "bottom-tabs",
+      "variants": {
+        "default": {
+          "template": "bottom-tabs",
+          "description": "Standard bottom tabs",
+          "status": "experimental",
+          "metrics": {}
+        }
+      },
+      "defaultVariant": "default",
+      "source": [
+        "ui/src/components/ContextRailMobile.tsx"
+      ],
+      "category": "sidebar"
+    },
+    {
+      "id": "surface.mobile-map",
+      "name": "Mobile Map View",
+      "status": "planned",
+      "type": "surface",
+      "component": "MapViewMobile",
+      "template": "map-full",
+      "variants": {
+        "default": {
+          "template": "map-full",
+          "description": "Standard mobile map",
+          "status": "experimental",
+          "metrics": {}
+        }
+      },
+      "defaultVariant": "default",
+      "source": [
+        "ui/src/components/MapViewMobile.tsx"
+      ],
+      "category": "views"
+    },
+    {
+      "id": "surface.mobile-header",
+      "name": "Mobile Header",
+      "status": "planned",
+      "type": "surface",
+      "component": "HeaderMobile",
+      "template": "header-compact",
+      "variants": {
+        "default": {
+          "template": "header-compact",
+          "description": "Standard compact header",
+          "status": "experimental",
+          "metrics": {}
+        }
+      },
+      "defaultVariant": "default",
+      "source": [
+        "ui/src/components/HeaderMobile.tsx"
+      ],
+      "category": "layout"
+    },
+    {
+      "id": "surface.settings-directory",
+      "name": "Settings Directory",
+      "status": "planned",
+      "type": "surface",
+      "component": "SettingsDirectory",
+      "template": "settings-wizard",
+      "variants": {
+        "grouped": {
+          "template": "settings-wizard",
+          "description": "Grouped collapsible sections",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "wizard": {
+          "template": "settings-wizard",
+          "description": "First-run wizard",
+          "status": "experimental",
+          "metrics": {}
+        }
+      },
+      "defaultVariant": "grouped",
+      "source": [
+        "ui/src/components/SettingsDirectory.tsx"
+      ],
+      "category": "settings"
+    },
+    {
+      "id": "template.help-system",
+      "name": "Help System Template",
       "status": "implemented",
-      "summary": "Matched keys explain the match.",
-      "type": "step",
-      "kind": "result",
-      "statePath": "matches.0.matched",
-      "stateEquals": [
-        "role",
-        "careRequirements"
+      "type": "capability",
+      "summary": "Multi-panel layout with sidebar, content area, and video player",
+      "seam": "render",
+      "strategy": "help-system",
+      "shape": "panel",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useHelp } from '@/hooks/useHelp';\nimport { HelpSidebar } from './HelpSidebar';\nimport { HelpTopicCard } from './HelpTopicCard';\nimport { HelpStepRenderer } from './HelpStepRenderer';\nimport { HelpVideoPlayer } from './HelpVideoPlayer';\nimport { HelpInteractiveDemo } from './HelpInteractiveDemo';\nimport { HelpSearch } from './HelpSearch';\nimport { HelpFeedback } from './HelpFeedback';\nimport { HelpProgressBar } from './HelpProgressBar';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const help = useHelp();\n  return (\n    <div className=\"help-system\" data-testid=\"help-system\">\n      <HelpSidebar />\n      <div className=\"help-content\">\n        <HelpSearch />\n        <HelpTopicCard topic={help.currentTopic} />\n        <HelpStepRenderer />\n        <HelpVideoPlayer />\n        <HelpInteractiveDemo />\n        <HelpProgressBar />\n        <HelpFeedback />\n      </div>\n    </div>\n  );\n}\n",
+      "slots": [
+        "sidebar",
+        "content",
+        "video-player",
+        "progress-bar",
+        "feedback"
       ]
     },
     {
-      "id": "step.gm.open",
-      "name": "Open Merge dialog",
+      "id": "template.inline-promo",
+      "name": "Inline Promo Template",
       "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "button",
-        "name": "Merge classes"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.gm.select",
-      "name": "Select classes to merge",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "checkbox",
-        "name": "Select classes"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.gm.confirm",
-      "name": "Confirm merge",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "role": "button",
-        "name": "Merge"
-      },
-      "action": "click"
-    },
-    {
-      "id": "step.gm.verified",
-      "name": "Merge verified",
-      "status": "implemented",
-      "type": "step",
-      "kind": "result",
-      "statePath": "conflicts.length",
-      "stateEquals": 0
-    },
-    {
-      "id": "pred.can-publish",
-      "name": "Can publish note",
-      "status": "implemented",
-      "source": [
-        "core/src/security/ActionApprovalManager.ts"
-      ],
-      "type": "predicate",
-      "expression": "note.privacy === \"private\" && user.hasPermission(\"publish_note\")",
-      "registryId": "can-publish"
-    },
-    {
-      "id": "pred.can-delete",
-      "name": "Can delete note",
-      "status": "implemented",
-      "source": [
-        "core/src/security/ActionApprovalManager.ts"
-      ],
-      "type": "predicate",
-      "expression": "note.privacy === \"private\" && user.hasPermission(\"delete_note\")",
-      "registryId": "can-delete"
-    },
-    {
-      "id": "pred.can-merge-ontology",
-      "name": "Can merge ontology",
-      "status": "implemented",
-      "source": [
-        "core/src/security/ActionApprovalManager.ts"
-      ],
-      "type": "predicate",
-      "expression": "user.hasPermission(\"merge_ontology\")",
-      "registryId": "can-merge-ontology"
-    },
-    {
-      "id": "pred.can-grant-permission",
-      "name": "Can grant permission",
-      "status": "implemented",
-      "source": [
-        "core/src/security/ActionApprovalManager.ts"
-      ],
-      "type": "predicate",
-      "expression": "user.hasPermission(\"grant_permission\")",
-      "registryId": "can-grant-permission"
-    },
-    {
-      "id": "eff.publish-note",
-      "name": "Publish note",
-      "status": "implemented",
-      "source": [
-        "optimize/src/policy.ts",
-        "core/src/security/ActionApprovalManager.ts"
-      ],
-      "type": "effect",
-      "reversibility": "irreversible",
-      "risk": "consequential",
-      "confirmationRequired": true,
-      "failureModes": [
-        "network-error",
-        "permission-denied",
-        "validation-failed"
-      ],
-      "registryId": "publish_note"
-    },
-    {
-      "id": "eff.delete-note",
-      "name": "Delete note",
-      "status": "implemented",
-      "source": [
-        "optimize/src/policy.ts"
-      ],
-      "type": "effect",
-      "reversibility": "irreversible",
-      "risk": "consequential",
-      "confirmationRequired": true,
-      "failureModes": [
-        "network-error",
-        "permission-denied",
-        "note-not-found"
-      ],
-      "registryId": "delete_note"
-    },
-    {
-      "id": "eff.merge-ontology",
-      "name": "Merge ontology",
-      "status": "implemented",
-      "source": [
-        "optimize/src/policy.ts"
-      ],
-      "type": "effect",
-      "reversibility": "compensatable",
-      "risk": "consequential",
-      "confirmationRequired": true,
-      "failureModes": [
-        "conflict-detected",
-        "validation-failed",
-        "permission-denied"
-      ],
-      "registryId": "merge_ontology"
-    },
-    {
-      "id": "eff.grant-permission",
-      "name": "Grant permission",
-      "status": "implemented",
-      "source": [
-        "optimize/src/policy.ts"
-      ],
-      "type": "effect",
-      "reversibility": "reversible",
-      "risk": "consequential",
-      "confirmationRequired": true,
-      "failureModes": [
-        "invalid-scope",
-        "permission-denied",
-        "user-not-found"
-      ],
-      "registryId": "grant_permission"
-    },
-    {
-      "id": "cap.note.delete",
-      "name": "Delete note",
-      "status": "implemented",
-      "summary": "delete_note is CONSEQUENTIAL in optimize/src/policy.ts.",
-      "source": [
-        "optimize/src/policy.ts"
-      ],
       "type": "capability",
-      "seam": "elicit",
-      "risk": "destructive",
-      "effect": "delete_note"
+      "summary": "Small promotional element embedded in content",
+      "seam": "render",
+      "strategy": "inline-promo",
+      "shape": "status",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useDescribeItPromo } from '@/hooks/useDescribeItPromo';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const promo = useDescribeItPromo({ variant: props.variant });\n  if (!promo.shouldShow) return null;\n  return (\n    <div className=\"inline-promo\" data-testid=\"inline-promo-{{variant}}\">\n      <button onClick={promo.onDismiss} className=\"promo-dismiss\" aria-label=\"Dismiss\">×</button>\n      <span className=\"promo-content\">{promo.message}</span>\n      <button onClick={promo.onActivate} className=\"promo-cta\">{promo.ctaText}</button>\n    </div>\n  );\n}\n",
+      "slots": [
+        "trigger",
+        "content",
+        "dismiss"
+      ]
     },
     {
-      "id": "cap.ontology.merge",
-      "name": "Merge ontology",
+      "id": "template.empty-state",
+      "name": "Empty State Template",
       "status": "implemented",
-      "summary": "merge_ontology is CONSEQUENTIAL in optimize/src/policy.ts.",
-      "source": [
-        "optimize/src/policy.ts"
-      ],
       "type": "capability",
-      "seam": "ontology",
-      "risk": "destructive",
-      "effect": "merge_ontology"
+      "summary": "Actionable empty state with primary/secondary CTAs and help link",
+      "seam": "render",
+      "strategy": "empty-state",
+      "shape": "status",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useHelp } from '@/hooks/useHelp';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const help = useHelp();\n  const config = EMPTY_STATE_CONFIGS[props.variant];\n  return (\n    <div className=\"empty-state\" data-testid=\"empty-state-{{variant}}\">\n      <div className=\"empty-illustration\">{config.illustration}</div>\n      <h2 className=\"empty-title\">{config.title}</h2>\n      <p className=\"empty-description\">{config.description}</p>\n      <div className=\"empty-actions\">\n        <button onClick={config.primaryAction} className=\"btn-primary\" data-testid=\"empty-primary-cta\">\n          {config.primaryLabel}\n        </button>\n        {config.secondaryLabel && (\n          <button onClick={config.secondaryAction} className=\"btn-secondary\" data-testid=\"empty-secondary-cta\">\n            {config.secondaryLabel}\n          </button>\n        )}\n      </div>\n      {config.helpTopicId && (\n        <button onClick={() => help.openTopic(config.helpTopicId)} className=\"help-link\" data-testid=\"empty-help-link\">\n          Learn more\n        </button>\n      )}\n    </div>\n  );\n}\n",
+      "slots": [
+        "illustration",
+        "title",
+        "description",
+        "primary-action",
+        "secondary-action",
+        "help-link"
+      ]
     },
     {
-      "id": "cap.permission.grant",
-      "name": "Grant permission",
+      "id": "template.modal-fullscreen",
+      "name": "Modal Fullscreen Template",
       "status": "implemented",
-      "summary": "grant_permission is CONSEQUENTIAL in optimize/src/policy.ts.",
-      "source": [
-        "optimize/src/policy.ts"
-      ],
       "type": "capability",
-      "seam": "ontology",
-      "risk": "destructive",
-      "effect": "grant_permission"
+      "summary": "Full-screen modal for mobile with safe area handling",
+      "seam": "render",
+      "strategy": "modal-fullscreen",
+      "shape": "panel",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useVirtualKeyboard } from '@/hooks/useVirtualKeyboard';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const { isKeyboardVisible, keyboardHeight } = useVirtualKeyboard();\n  return (\n    <div \n      className=\"modal-fullscreen\" \n      data-testid=\"modal-fullscreen\"\n      style={{ paddingBottom: isKeyboardVisible ? keyboardHeight : 0 }}\n    >\n      <div className=\"modal-header\">{props.children?.header}</div>\n      <div className=\"modal-content\">{props.children?.content}</div>\n      <div className=\"modal-footer\">{props.children?.footer}</div>\n      {isKeyboardVisible && <div className=\"keyboard-spacer\" style={{ height: keyboardHeight }} />}\n    </div>\n  );\n}\n",
+      "slots": [
+        "header",
+        "content",
+        "footer",
+        "keyboard-spacer"
+      ]
     },
     {
-      "id": "surface.loadingspinner",
-      "name": "Loading state",
+      "id": "template.bottom-sheet",
+      "name": "Bottom Sheet Template",
+      "status": "implemented",
+      "type": "capability",
+      "summary": "Swipeable bottom sheet with grabber and dismiss",
+      "seam": "render",
+      "strategy": "bottom-sheet",
+      "shape": "panel",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useTouchGestures } from '@/hooks/useTouchGestures';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const { onSwipeDown } = useTouchGestures({ onSwipeDown: props.onDismiss });\n  return (\n    <div className=\"bottom-sheet\" data-testid=\"bottom-sheet\" onTouchMove={onSwipeDown}>\n      <div className=\"sheet-grabber\" aria-hidden=\"true\" />\n      <div className=\"sheet-content\">{props.children}</div>\n      <div className=\"sheet-actions\">{props.actions}</div>\n    </div>\n  );\n}\n",
+      "slots": [
+        "grabber",
+        "content",
+        "actions"
+      ]
+    },
+    {
+      "id": "template.bottom-tabs",
+      "name": "Bottom Tabs Template",
+      "status": "implemented",
+      "type": "capability",
+      "summary": "Horizontal scrolling tabs with snap points and 48px targets",
+      "seam": "render",
+      "strategy": "bottom-tabs",
+      "shape": "item",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useMobile } from '@/hooks/useMobile';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const { isMobile } = useMobile();\n  if (!isMobile) return null;\n  return (\n    <div className=\"bottom-tabs\" data-testid=\"bottom-tabs\" role=\"tablist\">\n      <div className=\"tab-list\" role=\"presentation\">\n        {props.tabs.map((tab, i) => (\n          <button\n            key={tab.id}\n            role=\"tab\"\n            aria-selected={i === props.activeIndex}\n            className=\"tab-button\"\n            data-testid={`tab-${tab.id}`}\n            style={{ minWidth: 48, minHeight: 48 }}\n          >\n            {tab.label}\n          </button>\n        ))}\n      </div>\n      <div className=\"tab-panels\">\n        {props.tabs[props.activeIndex]?.panel}\n      </div>\n    </div>\n  );\n}\n",
+      "slots": [
+        "tab-list",
+        "tab-panel"
+      ]
+    },
+    {
+      "id": "template.settings-wizard",
+      "name": "Settings Wizard Template",
+      "status": "implemented",
+      "type": "capability",
+      "summary": "Progressive disclosure settings with groups, search, export/import, diff",
+      "seam": "render",
+      "strategy": "settings-wizard",
+      "shape": "panel",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useSettings } from '@/hooks/useSettings';\nimport { useHelp } from '@/hooks/useHelp';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const settings = useSettings();\n  const help = useHelp();\n  return (\n    <div className=\"settings-directory\" data-testid=\"settings-directory\">\n      <input \n        type=\"search\" \n        placeholder=\"Search settings…\" \n        value={settings.searchQuery}\n        onChange={settings.setSearchQuery}\n        data-testid=\"settings-search\"\n      />\n      <div className=\"settings-groups\">\n        {settings.groups.map(group => (\n          <details key={group.id} open={group.defaultExpanded} data-testid={`settings-group-${group.id}`}>\n            <summary>{group.label} <HelpIcon topic={group.helpTopicId} /></summary>\n            {group.settings.map(s => <SettingRow key={s.id} setting={s} />)}\n          </details>\n        ))}\n      </div>\n      {settings.showWizard && <SettingsWizard />}\n      <div className=\"settings-actions\">\n        <button onClick={settings.export} data-testid=\"settings-export\">Export</button>\n        <button onClick={settings.import} data-testid=\"settings-import\">Import</button>\n        <button onClick={settings.showDiff} data-testid=\"settings-diff\">Show Diff</button>\n      </div>\n    </div>\n  );\n}\n",
+      "slots": [
+        "search",
+        "groups",
+        "wizard-steps",
+        "export-import",
+        "diff-view"
+      ]
+    },
+    {
+      "id": "template.map-full",
+      "name": "Full Screen Map Template",
+      "status": "implemented",
+      "type": "capability",
+      "summary": "Full-screen map view with FAB in safe area",
+      "seam": "render",
+      "strategy": "map-full",
+      "shape": "panel",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useMobile } from '@/hooks/useMobile';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const { safeAreaInsets } = useMobile();\n  return (\n    <div className=\"map-full\" data-testid=\"map-full\" style={{ paddingBottom: safeAreaInsets.bottom }}>\n      <div className=\"map-container\" ref={props.mapRef} />\n      <button className=\"fab fab-primary\" data-testid=\"map-fab\" style={{ bottom: safeAreaInsets.bottom + 16 }}>\n        {props.fabContent}\n      </button>\n      <button className=\"fab fab-geolocation\" data-testid=\"map-geolocation\" style={{ bottom: safeAreaInsets.bottom + 80 }}>\n        <GeolocationIcon />\n      </button>\n    </div>\n  );\n}\n",
+      "slots": [
+        "map",
+        "fab",
+        "geolocation",
+        "safe-area-bottom"
+      ]
+    },
+    {
+      "id": "template.header-compact",
+      "name": "Compact Header Template",
+      "status": "implemented",
+      "type": "capability",
+      "summary": "Mobile header with hamburger menu and swipe sidebar",
+      "seam": "render",
+      "strategy": "header-compact",
+      "shape": "panel",
+      "componentTemplate": "// GENERATED by UISG codegen - DO NOT EDIT MANUALLY\nimport { useTouchGestures } from '@/hooks/useTouchGestures';\n\nexport function {{componentName}}(props: {{componentName}}Props) {\n  const { onSwipeRight } = useTouchGestures({ onSwipeRight: props.onOpenSidebar });\n  return (\n    <header className=\"header-compact\" data-testid=\"header-compact\" onTouchStart={onSwipeRight}>\n      <div className=\"header-logo\">{props.logo}</div>\n      <button className=\"hamburger\" onClick={props.onOpenSidebar} data-testid=\"hamburger-menu\" aria-label=\"Open menu\">\n        <MenuIcon />\n      </button>\n      <div className=\"header-actions\">{props.actions}</div>\n    </header>\n  );\n}\n",
+      "slots": [
+        "logo",
+        "hamburger",
+        "actions",
+        "swipe-area"
+      ]
+    },
+    {
+      "id": "flow.help-system-completion",
+      "name": "Help System Completion",
       "status": "planned",
-      "summary": "Generic loading indicator for async operations",
-      "type": "surface",
-      "component": "LoadingSpinner"
-    },
-    {
-      "id": "surface.emptystate",
-      "name": "Empty state",
-      "status": "implemented",
-      "summary": "Empty notes list with New note CTA",
-      "type": "surface",
-      "component": "EmptyState",
-      "route": "#/notes"
-    },
-    {
-      "id": "surface.errordisplay",
-      "name": "Error state",
-      "status": "planned",
-      "summary": "Generic error display with retry action",
-      "type": "surface",
-      "component": "ErrorDisplay"
-    },
-    {
-      "id": "surface.permissiondenied",
-      "name": "Denied/permission state",
-      "status": "planned",
-      "summary": "Shown when user lacks permission for an action",
-      "type": "surface",
-      "component": "PermissionDenied"
-    },
-    {
-      "id": "surface.offlinebanner",
-      "name": "Offline state",
-      "status": "planned",
-      "summary": "Banner indicating offline mode with queue status",
-      "type": "surface",
-      "component": "OfflineBanner"
-    },
-    {
-      "id": "surface.degradedbanner",
-      "name": "Degraded connectivity state",
-      "status": "planned",
-      "summary": "Banner indicating degraded connectivity with sync status",
-      "type": "surface",
-      "component": "DegradedBanner"
-    },
-    {
-      "id": "surface.publishready",
-      "name": "Publish ready state",
-      "status": "planned",
-      "summary": "Confirmation before publishing with preview",
-      "type": "surface",
-      "component": "PublishReady"
-    },
-    {
-      "id": "surface.extractionstatus",
-      "name": "Extracting state",
-      "status": "implemented",
-      "summary": "Shows property extraction progress in editor",
-      "type": "surface",
-      "component": "ExtractionStatus"
-    },
-    {
-      "id": "surface.nomatch",
-      "name": "No match state",
-      "status": "planned",
-      "summary": "Shown when no local matches found for a note",
-      "type": "surface",
-      "component": "NoMatch"
-    },
-    {
-      "id": "surface.rejecteddisplay",
-      "name": "Rejected state",
-      "status": "planned",
-      "summary": "Shown when a match or action is rejected",
-      "type": "surface",
-      "component": "RejectedDisplay"
-    },
-    {
-      "id": "cap.network.publish",
-      "name": "Publish note to relay",
-      "status": "implemented",
-      "source": [
-        "optimize/src/policy.ts"
-      ],
-      "type": "capability",
-      "seam": "display",
-      "risk": "destructive",
-      "effect": "publish_note"
-    },
-    {
-      "id": "cap.network.reply",
-      "name": "Reply to note via relay",
-      "status": "planned",
-      "summary": "Send a reply note through relay",
-      "type": "capability",
-      "seam": "display",
-      "risk": "normal"
-    },
-    {
-      "id": "cap.network.explore-feed",
-      "name": "Explore feed",
-      "status": "planned",
-      "summary": "Browse relay feed of public notes",
-      "type": "capability",
-      "seam": "display"
-    },
-    {
-      "id": "cap.network.chat",
-      "name": "Chat/DM",
-      "status": "planned",
-      "summary": "Direct message conversation",
-      "type": "capability",
-      "seam": "display"
-    },
-    {
-      "id": "cap.network.relay-status",
-      "name": "Relay status monitor",
-      "status": "planned",
-      "summary": "Show relay connection status and queue",
-      "type": "capability",
-      "seam": "layout"
-    },
-    {
-      "id": "cap.data.import",
-      "name": "Import notes",
-      "status": "planned",
-      "summary": "Import notes from file",
-      "type": "capability",
-      "seam": "capture",
-      "risk": "caution"
-    },
-    {
-      "id": "cap.data.export",
-      "name": "Export notes",
-      "status": "planned",
-      "summary": "Export notes to file",
-      "type": "capability",
-      "seam": "display",
-      "risk": "normal"
-    },
-    {
-      "id": "cap.data.trash",
-      "name": "Trash/delete note",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/notes/NoteActions.tsx"
-      ],
-      "type": "capability",
-      "seam": "display",
-      "risk": "destructive",
-      "effect": "delete_note"
-    },
-    {
-      "id": "cap.config.theme",
-      "name": "Theme configuration",
-      "status": "implemented",
-      "summary": "Switch between dark/light themes",
-      "type": "capability",
-      "seam": "layout"
-    },
-    {
-      "id": "cap.config.density",
-      "name": "Density configuration",
-      "status": "implemented",
-      "summary": "Adjust UI density (compact/comfortable/spacious)",
-      "type": "capability",
-      "seam": "layout"
-    },
-    {
-      "id": "cap.config.ai-toggle",
-      "name": "AI on/off toggle",
-      "status": "implemented",
-      "summary": "Enable/disable AI features",
-      "type": "capability",
-      "seam": "layout"
-    },
-    {
-      "id": "cap.config.profile",
-      "name": "Capability profile selection",
-      "status": "planned",
-      "summary": "Select minimal/default/full capability profile",
-      "type": "capability",
-      "seam": "layout"
-    },
-    {
-      "id": "surface.mobilecapture",
-      "name": "Mobile capture view",
-      "status": "planned",
-      "summary": "Capture interface optimized for mobile viewport",
-      "type": "surface",
-      "component": "MobileCapture"
-    },
-    {
-      "id": "surface.mobilematchrail",
-      "name": "Mobile match view",
-      "status": "planned",
-      "summary": "Match rail optimized for mobile viewport",
-      "type": "surface",
-      "component": "MobileMatchRail"
-    },
-    {
-      "id": "cap.automation.rule",
-      "name": "Automation rule",
-      "status": "planned",
-      "summary": "Create automation rules for note processing",
-      "type": "capability",
-      "seam": "intent"
-    },
-    {
-      "id": "cap.automation.scheduled",
-      "name": "Scheduled task",
-      "status": "planned",
-      "summary": "Run automation on schedule",
-      "type": "capability",
-      "seam": "intent"
-    },
-    {
-      "id": "cap.automation.monitor",
-      "name": "Monitoring agent",
-      "status": "planned",
-      "summary": "Background agent monitoring notes",
-      "type": "capability",
-      "seam": "intent"
-    },
-    {
-      "id": "cap.intent.recognize",
-      "name": "Recognize user intent",
-      "status": "rejected",
-      "summary": "No UI implementation; pattern recognition exists in core but no surface/strategy. Declared unsupported per C2 decision.",
-      "source": [
-        "core/src/patternRecognition",
-        "optimize/src/optimizer/evaluation/intentCaseRunner.ts"
-      ],
-      "type": "capability",
-      "seam": "intent",
-      "risk": "normal"
-    },
-    {
-      "id": "cap.capture.quick",
-      "name": "Quick capture from dashboard",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/dashboard/QuickCapture.tsx",
-        "ui/src/strategies/QuickCaptureStrategy.tsx"
-      ],
-      "type": "capability",
-      "seam": "capture",
-      "strategy": "quick-capture"
-    },
-    {
-      "id": "cap.capture.describe-it",
-      "name": "Describe-it capture",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/DescribeItComposer.tsx",
-        "ui/src/strategies/DescribeItComposerStrategy.tsx"
-      ],
-      "type": "capability",
-      "seam": "capture",
-      "strategy": "describe-it-composer"
-    },
-    {
-      "id": "cap.capture.template",
-      "name": "Template-based capture",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/TemplateSelector.tsx",
-        "ui/src/strategies/TemplateSelectorStrategy.tsx"
-      ],
-      "type": "capability",
-      "seam": "capture",
-      "strategy": "template-selector"
-    },
-    {
-      "id": "cap.elicit.tag-input",
-      "name": "Tag-based property entry",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/TagInput.tsx",
-        "ui/src/strategies/TagInputStrategy.tsx"
-      ],
-      "type": "capability",
-      "seam": "elicit",
-      "strategy": "tag-input"
-    },
-    {
-      "id": "cap.elicit.inline-detail",
-      "name": "Inline detail entry",
-      "status": "candidate",
-      "source": [
-        "ui/src/strategies/InlineDetailStrategy.tsx"
-      ],
-      "type": "capability",
-      "seam": "elicit",
-      "strategy": "inline-detail"
-    },
-    {
-      "id": "cap.layout.matches-panel",
-      "name": "Local matches panel",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/assistant/LocalMatchesPanel.tsx",
-        "ui/src/strategies/LocalMatchesPanelStrategy.tsx"
-      ],
-      "type": "capability",
-      "seam": "layout",
-      "strategy": "local-matches-panel"
-    },
-    {
-      "id": "surface.pagesurface",
-      "name": "PageSurface",
-      "status": "planned",
-      "summary": "Generic page surface",
-      "type": "surface",
-      "component": "PageSurface"
-    },
-    {
-      "id": "surface.describeitcomposer",
-      "name": "DescribeItComposer",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/DescribeItComposer.tsx"
-      ],
-      "type": "surface",
-      "component": "DescribeItComposer"
-    },
-    {
-      "id": "surface.taginput",
-      "name": "TagInput",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/TagInput.tsx"
-      ],
-      "type": "surface",
-      "component": "TagInput"
-    },
-    {
-      "id": "surface.templateselector",
-      "name": "TemplateSelector",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/TemplateSelector.tsx"
-      ],
-      "type": "surface",
-      "component": "TemplateSelector"
-    },
-    {
-      "id": "surface.localmatchespanel",
-      "name": "LocalMatchesPanel",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/assistant/LocalMatchesPanel.tsx"
-      ],
-      "type": "surface",
-      "component": "LocalMatchesPanel"
-    },
-    {
-      "id": "surface.insertpropertymodal",
-      "name": "InsertPropertyModal",
-      "status": "removed",
-      "source": [
-        "ui/src/components/editor/InsertPropertyModal.tsx"
-      ],
-      "type": "surface",
-      "component": "InsertPropertyModal"
-    },
-    {
-      "id": "surface.appshell",
-      "name": "AppShell",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/AppShell.tsx"
-      ],
-      "type": "surface",
-      "component": "AppShell"
-    },
-    {
-      "id": "surface.mainview",
-      "name": "MainView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/MainView.tsx"
-      ],
-      "type": "surface",
-      "component": "MainView"
-    },
-    {
-      "id": "surface.automationsview",
-      "name": "AutomationsView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/dashboard/AutomationsView.tsx"
-      ],
-      "type": "surface",
-      "component": "AutomationsView",
-      "route": "#/settings/automation"
-    },
-    {
-      "id": "surface.notehistoryrail",
-      "name": "NoteHistoryRail",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/note/NoteHistoryRail.tsx"
-      ],
-      "type": "surface",
-      "component": "NoteHistoryRail"
-    },
-    {
-      "id": "surface.skillmanagementview",
-      "name": "SkillManagementView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/settings/SkillManagementView.tsx"
-      ],
-      "type": "surface",
-      "component": "SkillManagementView",
-      "route": "#/settings/skills"
-    },
-    {
-      "id": "surface.mapview",
-      "name": "MapView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/MapView.tsx"
-      ],
-      "type": "surface",
-      "component": "MapView",
-      "route": "#/notes?mode=map"
-    },
-    {
-      "id": "surface.networkview",
-      "name": "NetworkView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/NetworkView.tsx"
-      ],
-      "type": "surface",
-      "component": "NetworkView",
-      "route": "#/notes?explore=1"
-    },
-    {
-      "id": "surface.timelineview",
-      "name": "TimelineView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/TimelineView.tsx"
-      ],
-      "type": "surface",
-      "component": "TimelineView",
-      "route": "#/notes?mode=timeline"
-    },
-    {
-      "id": "surface.conditionalautomationview",
-      "name": "ConditionalAutomationView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/dashboard/ConditionalAutomationView.tsx"
-      ],
-      "type": "surface",
-      "component": "ConditionalAutomationView"
-    },
-    {
-      "id": "surface.settingsview",
-      "name": "SettingsView",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings"
-    },
-    {
-      "id": "surface.settings-appearance",
-      "name": "SettingsAppearance",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/appearance"
-    },
-    {
-      "id": "surface.settings-language",
-      "name": "SettingsLanguage",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/language"
-    },
-    {
-      "id": "surface.settings-shortcuts",
-      "name": "SettingsShortcuts",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/shortcuts"
-    },
-    {
-      "id": "surface.settings-accessibility",
-      "name": "SettingsAccessibility",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/accessibility"
-    },
-    {
-      "id": "surface.settings-network",
-      "name": "SettingsNetwork",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/network"
-    },
-    {
-      "id": "surface.settings-nostr",
-      "name": "SettingsNostr",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/nostr"
-    },
-    {
-      "id": "surface.settings-sync",
-      "name": "SettingsSync",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/sync"
-    },
-    {
-      "id": "surface.settings-relaydiscovery",
-      "name": "SettingsRelayDiscovery",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/relayDiscovery"
-    },
-    {
-      "id": "surface.settings-ai",
-      "name": "SettingsAI",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/ai"
-    },
-    {
-      "id": "surface.settings-automation",
-      "name": "SettingsAutomation",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/automation"
-    },
-    {
-      "id": "surface.settings-matchdigest",
-      "name": "SettingsMatchDigest",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/matchDigest"
-    },
-    {
-      "id": "surface.settings-data",
-      "name": "SettingsData",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/data"
-    },
-    {
-      "id": "surface.settings-metrics",
-      "name": "SettingsMetrics",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/metrics"
-    },
-    {
-      "id": "surface.settings-revisions",
-      "name": "SettingsRevisions",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/revisions"
-    },
-    {
-      "id": "surface.settings-labels",
-      "name": "SettingsLabels",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/labels"
-    },
-    {
-      "id": "surface.settings-skills",
-      "name": "SettingsSkills",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/views/SettingsView.tsx"
-      ],
-      "type": "surface",
-      "component": "SettingsView",
-      "route": "#/settings/skills"
-    },
-    {
-      "id": "surface.navigationrail",
-      "name": "NavigationRail",
-      "status": "removed",
-      "source": [
-        "ui/src/components/layout/NavigationRail.tsx"
-      ],
-      "type": "surface",
-      "component": "NavigationRail"
-    },
-    {
-      "id": "surface.inlinedetailstrategy",
-      "name": "InlineDetailStrategy",
-      "status": "candidate",
-      "source": [
-        "ui/src/strategies/InlineDetailStrategy.tsx"
-      ],
-      "type": "surface",
-      "component": "InlineDetailStrategy"
-    },
-    {
-      "id": "surface.toast",
-      "name": "Toast",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/ui/Toast.tsx"
-      ],
-      "type": "surface",
-      "component": "Toast"
-    },
-    {
-      "id": "surface.savestate",
-      "name": "SaveState",
-      "status": "implemented",
-      "source": [
-        "ui/src/components/editor/SaveState.tsx"
-      ],
-      "type": "surface",
-      "component": "SaveState"
-    },
-    {
-      "id": "cap.capture.palette",
-      "name": "Capture from the command palette",
-      "status": "implemented",
-      "summary": "Palette actions dispatch events; AppShell creates and focuses the note. The palette subscribes to the action registry.",
-      "source": [
-        "ui/src/components/command/CommandPalette.tsx",
-        "core/src/ui/actionRegistry.ts",
-        "ui/src/hooks/useActionRegistry.ts",
-        "ui/src/components/AppShell.tsx"
-      ],
-      "type": "capability",
-      "seam": "capture"
-    },
-    {
-      "id": "cap.elicit.property-palette",
-      "name": "Property palette entry",
-      "status": "implemented",
-      "summary": "Searchable property list opens the detail modal prefilled with the key; typing a new key creates it.",
-      "source": [
-        "ui/src/components/properties/UnifiedSelector.tsx",
-        "ui/src/components/editor/HybridEditor.tsx"
-      ],
-      "type": "capability",
-      "seam": "elicit"
-    },
-    {
-      "id": "flow.capture-and-edit-palette",
-      "name": "Capture and edit (palette pathway)",
-      "status": "implemented",
-      "source": [
-        "optimize/src/journeys.ts"
-      ],
       "type": "flow",
-      "entry": "step.palette.capture",
-      "outcome": "Same outcome through command and property palettes; the detail modal opens prefilled with the chosen key.",
-      "journey": "capture-and-edit-palette"
+      "entry": "open-help-system",
+      "outcome": "User completes a help topic from start to finish",
+      "journey": "help-system-completion"
     },
     {
-      "id": "step.palette.capture",
-      "name": "New Task from the command palette",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "testId": "app-shell"
-      },
-      "action": "press",
-      "value": "Control+k"
+      "id": "flow.help-search",
+      "name": "Help Search",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-help-system",
+      "outcome": "User searches for help topic",
+      "journey": "help-search"
     },
     {
-      "id": "step.palette.elicit",
-      "name": "Pick the property key and open the detail modal",
-      "status": "implemented",
-      "type": "step",
-      "kind": "action",
-      "target": {
-        "testId": "property-palette-input"
-      },
-      "action": "press",
-      "value": "Control+Shift+P"
+      "id": "flow.help-video",
+      "name": "Help Video Playback",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-help-topic",
+      "outcome": "User watches help video",
+      "journey": "help-video"
     },
     {
-      "id": "step.palette.done",
-      "name": "Property saved from the palette path",
-      "status": "implemented",
-      "type": "step",
-      "kind": "result",
-      "statePath": "note.propertyIndex.framework",
-      "stateEquals": [
-        "Next.js"
-      ]
+      "id": "flow.help-interactive",
+      "name": "Help Interactive Demo",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-help-topic",
+      "outcome": "User completes interactive demo",
+      "journey": "help-interactive"
     },
     {
-      "id": "surface.commandpalette",
-      "name": "CommandPalette",
-      "status": "implemented",
-      "summary": "Search/command overlay; actions come from the action registry plus notes, and it re-renders on registry changes.",
-      "source": [
-        "ui/src/components/command/CommandPalette.tsx"
-      ],
-      "type": "surface",
-      "component": "CommandPalette"
+      "id": "flow.help-progress",
+      "name": "Help Progress Tracking",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-help-system",
+      "outcome": "User tracks progress across topics",
+      "journey": "help-progress"
     },
     {
-      "id": "surface.unifiedselector",
-      "name": "UnifiedSelector",
+      "id": "flow.help-contextual",
+      "name": "Contextual Help Trigger",
+      "status": "planned",
+      "type": "flow",
+      "entry": "trigger-condition-met",
+      "outcome": "Help appears contextually (idle, error, feature gate)",
+      "journey": "help-contextual"
+    },
+    {
+      "id": "flow.describe-it-discovery",
+      "name": "Describe It Discovery",
+      "status": "planned",
+      "type": "flow",
+      "entry": "promo-shown",
+      "outcome": "User discovers Describe It via promo",
+      "journey": "describe-it-discovery"
+    },
+    {
+      "id": "flow.describe-it-shortcut",
+      "name": "Describe It Shortcut",
+      "status": "planned",
+      "type": "flow",
+      "entry": "press-shortcut",
+      "outcome": "User opens Describe It via Ctrl+Shift+/",
+      "journey": "describe-it-shortcut"
+    },
+    {
+      "id": "flow.describe-it-command-palette",
+      "name": "Describe It Command Palette",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-command-palette",
+      "outcome": "User opens Describe It via Command Palette",
+      "journey": "describe-it-command-palette"
+    },
+    {
+      "id": "flow.empty-state-notes-all",
+      "name": "Empty State Notes All",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "New user sees empty notes view",
+      "journey": "empty-state-notes-all"
+    },
+    {
+      "id": "flow.empty-state-notes-search",
+      "name": "Empty State Notes Search",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User searches with no results",
+      "journey": "empty-state-notes-search"
+    },
+    {
+      "id": "flow.empty-state-network",
+      "name": "Empty State Network",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User has no network connections",
+      "journey": "empty-state-network"
+    },
+    {
+      "id": "flow.empty-state-map",
+      "name": "Empty State Map",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User has no locations on map",
+      "journey": "empty-state-map"
+    },
+    {
+      "id": "flow.empty-state-timeline",
+      "name": "Empty State Timeline",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User has no dated notes",
+      "journey": "empty-state-timeline"
+    },
+    {
+      "id": "flow.empty-state-matches",
+      "name": "Empty State Matches",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User has no matches",
+      "journey": "empty-state-matches"
+    },
+    {
+      "id": "flow.empty-state-chat",
+      "name": "Empty State Chat",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User has no chat conversations",
+      "journey": "empty-state-chat"
+    },
+    {
+      "id": "flow.empty-state-ontology",
+      "name": "Empty State Ontology",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User has no ontology schemas",
+      "journey": "empty-state-ontology"
+    },
+    {
+      "id": "flow.empty-state-skills",
+      "name": "Empty State Skills",
+      "status": "planned",
+      "type": "flow",
+      "entry": "view-empty-state",
+      "outcome": "User has no skills",
+      "journey": "empty-state-skills"
+    },
+    {
+      "id": "flow.mobile-property-editor",
+      "name": "Mobile Property Editor",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-property-editor",
+      "outcome": "User edits property on mobile",
+      "journey": "mobile-property-editor"
+    },
+    {
+      "id": "flow.mobile-arrange-menu",
+      "name": "Mobile Arrange Menu",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-arrange-menu",
+      "outcome": "User arranges items via bottom sheet",
+      "journey": "mobile-arrange-menu"
+    },
+    {
+      "id": "flow.mobile-context-rail",
+      "name": "Mobile Context Rail",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-context-rail",
+      "outcome": "User navigates context rail",
+      "journey": "mobile-context-rail"
+    },
+    {
+      "id": "flow.mobile-map",
+      "name": "Mobile Map",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-map",
+      "outcome": "User interacts with map on mobile",
+      "journey": "mobile-map"
+    },
+    {
+      "id": "flow.mobile-header",
+      "name": "Mobile Header",
+      "status": "planned",
+      "type": "flow",
+      "entry": "tap-hamburger",
+      "outcome": "User opens sidebar via hamburger",
+      "journey": "mobile-header"
+    },
+    {
+      "id": "flow.settings-task",
+      "name": "Settings Task Completion",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-settings",
+      "outcome": "User completes a settings task",
+      "journey": "settings-task"
+    },
+    {
+      "id": "flow.settings-wizard",
+      "name": "Settings Wizard Completion",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-settings-first-run",
+      "outcome": "New user completes first-run wizard",
+      "journey": "settings-wizard"
+    },
+    {
+      "id": "flow.settings-export-import",
+      "name": "Settings Export/Import",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-settings",
+      "outcome": "User exports and imports settings",
+      "journey": "settings-export-import"
+    },
+    {
+      "id": "flow.settings-diff",
+      "name": "Settings Diff",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-settings",
+      "outcome": "User views settings diff",
+      "journey": "settings-diff"
+    },
+    {
+      "id": "flow.token-consistency",
+      "name": "Token Consistency Audit",
+      "status": "planned",
+      "type": "flow",
+      "entry": "scan-components",
+      "outcome": "Verify no hardcoded colors in components",
+      "journey": "token-consistency"
+    },
+    {
+      "id": "flow.a11y-live-regions",
+      "name": "Live Regions",
+      "status": "planned",
+      "type": "flow",
+      "entry": "trigger-live-content",
+      "outcome": "Verify live regions for dynamic content",
+      "journey": "a11y-live-regions"
+    },
+    {
+      "id": "flow.a11y-focus-management",
+      "name": "Focus Management",
+      "status": "planned",
+      "type": "flow",
+      "entry": "open-modal",
+      "outcome": "Verify focus management in modals/sheets",
+      "journey": "a11y-focus-management"
+    },
+    {
+      "id": "flow.a11y-screen-reader",
+      "name": "Screen Reader Announcements",
+      "status": "planned",
+      "type": "flow",
+      "entry": "trigger-announcement",
+      "outcome": "Verify screen reader announcements",
+      "journey": "a11y-screen-reader"
+    },
+    {
+      "id": "flow.a11y-high-contrast",
+      "name": "High Contrast Mode",
+      "status": "planned",
+      "type": "flow",
+      "entry": "enable-high-contrast",
+      "outcome": "Verify high contrast mode",
+      "journey": "a11y-high-contrast"
+    },
+    {
+      "id": "flow.performance-budget",
+      "name": "Performance Budget",
+      "status": "planned",
+      "type": "flow",
+      "entry": "measure-bundle",
+      "outcome": "Verify bundle size and load times",
+      "journey": "performance-budget"
+    },
+    {
+      "id": "metric.topic-completion-rate",
+      "name": "Topic Completion Rate",
       "status": "implemented",
-      "summary": "Property palette overlay; search, suggestions, and recent keys. Duplicate ontology keys collapse to one option.",
-      "source": [
-        "ui/src/components/properties/UnifiedSelector.tsx"
-      ],
-      "type": "surface",
-      "component": "UnifiedSelector",
-      "seam": "elicit"
+      "type": "predicate",
+      "expression": ">= 0.7",
+      "registryId": "topic-completion-rate"
+    },
+    {
+      "id": "metric.return-rate",
+      "name": "Return Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.3",
+      "registryId": "return-rate"
+    },
+    {
+      "id": "metric.search-success-rate",
+      "name": "Search Success Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.6",
+      "registryId": "search-success-rate"
+    },
+    {
+      "id": "metric.video-completion-rate",
+      "name": "Video Completion Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.5",
+      "registryId": "video-completion-rate"
+    },
+    {
+      "id": "metric.interactive-demo-completion",
+      "name": "Interactive Demo Completion",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.6",
+      "registryId": "interactive-demo-completion"
+    },
+    {
+      "id": "metric.contextual-trigger-relevance",
+      "name": "Contextual Trigger Relevance",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.2",
+      "registryId": "contextual-trigger-relevance"
+    },
+    {
+      "id": "metric.feedback-positive-rate",
+      "name": "Feedback Positive Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.8",
+      "registryId": "feedback-positive-rate"
+    },
+    {
+      "id": "metric.describe-it-discovery-rate",
+      "name": "Describe It Discovery Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.5",
+      "registryId": "describe-it-discovery-rate"
+    },
+    {
+      "id": "metric.describe-it-acceptance-rate",
+      "name": "Describe It Acceptance Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.6",
+      "registryId": "describe-it-acceptance-rate"
+    },
+    {
+      "id": "metric.describe-it-time-to-first-use",
+      "name": "Time to First Use",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "<= 120",
+      "registryId": "describe-it-time-to-first-use"
+    },
+    {
+      "id": "metric.shortcut-usage-rate",
+      "name": "Shortcut Usage Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.1",
+      "registryId": "shortcut-usage-rate"
+    },
+    {
+      "id": "metric.command-palette-usage-rate",
+      "name": "Command Palette Usage Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.05",
+      "registryId": "command-palette-usage-rate"
+    },
+    {
+      "id": "metric.empty-state-cta-click-rate",
+      "name": "Empty State CTA Click Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.3",
+      "registryId": "empty-state-cta-click-rate"
+    },
+    {
+      "id": "metric.empty-state-help-click-rate",
+      "name": "Empty State Help Click Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.15",
+      "registryId": "empty-state-help-click-rate"
+    },
+    {
+      "id": "metric.mobile-touch-target-compliance",
+      "name": "Mobile Touch Target Compliance",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "= 1.0",
+      "registryId": "mobile-touch-target-compliance"
+    },
+    {
+      "id": "metric.mobile-task-completion-rate",
+      "name": "Mobile Task Completion Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.7",
+      "registryId": "mobile-task-completion-rate"
+    },
+    {
+      "id": "metric.settings-task-time",
+      "name": "Settings Task Time",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "<= 30",
+      "registryId": "settings-task-time"
+    },
+    {
+      "id": "metric.settings-search-usage-rate",
+      "name": "Settings Search Usage Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.3",
+      "registryId": "settings-search-usage-rate"
+    },
+    {
+      "id": "metric.settings-wizard-completion-rate",
+      "name": "Settings Wizard Completion Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.8",
+      "registryId": "settings-wizard-completion-rate"
+    },
+    {
+      "id": "metric.settings-export-import-success",
+      "name": "Settings Export/Import Success",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "= 1.0",
+      "registryId": "settings-export-import-success"
+    },
+    {
+      "id": "metric.settings-diff-view-rate",
+      "name": "Settings Diff View Rate",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": ">= 0.1",
+      "registryId": "settings-diff-view-rate"
+    },
+    {
+      "id": "metric.token-consistency-score",
+      "name": "Token Consistency Score",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "= 1.0",
+      "registryId": "token-consistency-score"
+    },
+    {
+      "id": "metric.a11y-critical-violations",
+      "name": "Critical Accessibility Violations",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "= 0",
+      "registryId": "a11y-critical-violations"
+    },
+    {
+      "id": "metric.a11y-serious-violations",
+      "name": "Serious Accessibility Violations",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "= 0",
+      "registryId": "a11y-serious-violations"
+    },
+    {
+      "id": "metric.bundle-size",
+      "name": "Bundle Size",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "<= 500",
+      "registryId": "bundle-size"
+    },
+    {
+      "id": "metric.load-time",
+      "name": "Load Time",
+      "status": "implemented",
+      "type": "predicate",
+      "expression": "<= 3000",
+      "registryId": "load-time"
     }
   ],
   "edges": [
     {
-      "from": "cap.property.edit",
-      "type": "supports",
-      "to": "intent.structured-note"
-    },
-    {
-      "from": "flow.capture-and-edit",
+      "from": "surface.help-system",
       "type": "uses",
-      "to": "cap.property.edit"
+      "to": "template.help-system"
     },
     {
-      "from": "flow.capture-and-edit",
-      "type": "contains",
-      "to": "step.detail.open"
-    },
-    {
-      "from": "flow.capture-and-edit",
-      "type": "contains",
-      "to": "step.detail.fill"
-    },
-    {
-      "from": "flow.capture-and-edit",
-      "type": "contains",
-      "to": "step.detail.confirm"
-    },
-    {
-      "from": "flow.capture-and-edit",
-      "type": "contains",
-      "to": "step.detail.done"
-    },
-    {
-      "from": "step.detail.open",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "step.detail.open",
-      "type": "next",
-      "to": "step.detail.fill",
-      "when": "opened"
-    },
-    {
-      "from": "step.detail.fill",
-      "type": "renders",
-      "to": "surface.propertyeditor"
-    },
-    {
-      "from": "step.detail.fill",
-      "type": "next",
-      "to": "step.detail.confirm",
-      "when": "filled"
-    },
-    {
-      "from": "step.detail.confirm",
-      "type": "invokes",
-      "to": "cap.property.edit"
-    },
-    {
-      "from": "step.detail.confirm",
-      "type": "renders",
-      "to": "surface.propertyeditor"
-    },
-    {
-      "from": "step.detail.confirm",
-      "type": "next",
-      "to": "step.detail.done",
-      "when": "saved"
-    },
-    {
-      "from": "step.detail.done",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "flow.inline-detail",
-      "type": "contains",
-      "to": "step.inline.write"
-    },
-    {
-      "from": "flow.capture-and-edit",
-      "type": "alternative",
-      "to": "flow.inline-detail",
-      "notes": "elicit seam variant: popup vs inline"
-    },
-    {
-      "from": "cap.note.capture",
-      "type": "supports",
-      "to": "intent.express-need"
-    },
-    {
-      "from": "cap.match.display",
-      "type": "supports",
-      "to": "intent.express-need"
-    },
-    {
-      "from": "cap.note.publish",
-      "type": "supports",
-      "to": "intent.publish-safely"
-    },
-    {
-      "from": "flow.golden-path",
+      "from": "surface.describe-it-promo",
       "type": "uses",
-      "to": "cap.note.capture"
+      "to": "template.inline-promo"
     },
     {
-      "from": "flow.golden-path",
+      "from": "surface.empty-state-actionable",
       "type": "uses",
-      "to": "cap.match.display"
+      "to": "template.empty-state"
     },
     {
-      "from": "flow.publish-gate",
+      "from": "surface.mobile-property-editor",
       "type": "uses",
-      "to": "cap.note.publish"
+      "to": "template.modal-fullscreen"
     },
     {
-      "from": "flow.publish-gate",
-      "type": "contains",
-      "to": "step.pub.open"
-    },
-    {
-      "from": "flow.publish-gate",
-      "type": "contains",
-      "to": "step.pub.decide"
-    },
-    {
-      "from": "flow.publish-gate",
-      "type": "contains",
-      "to": "step.pub.private"
-    },
-    {
-      "from": "flow.publish-gate",
-      "type": "contains",
-      "to": "step.pub.published"
-    },
-    {
-      "from": "step.pub.open",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "step.pub.open",
-      "type": "next",
-      "to": "step.pub.decide",
-      "when": "gated"
-    },
-    {
-      "from": "step.pub.decide",
-      "type": "invokes",
-      "to": "cap.note.publish"
-    },
-    {
-      "from": "step.pub.decide",
-      "type": "renders",
-      "to": "surface.confirmationmodal"
-    },
-    {
-      "from": "step.pub.decide",
-      "type": "next",
-      "to": "step.pub.private",
-      "when": "cancelled"
-    },
-    {
-      "from": "step.pub.decide",
-      "type": "next",
-      "to": "step.pub.published",
-      "when": "confirmed"
-    },
-    {
-      "from": "step.pub.private",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "step.pub.published",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "flow.capture-and-edit-keyboard",
-      "type": "contains",
-      "to": "step.detail.open"
-    },
-    {
-      "from": "flow.capture-and-edit-keyboard",
-      "type": "contains",
-      "to": "step.detail.fill"
-    },
-    {
-      "from": "flow.capture-and-edit-keyboard",
-      "type": "contains",
-      "to": "step.detail.confirm"
-    },
-    {
-      "from": "flow.capture-and-edit-keyboard",
-      "type": "contains",
-      "to": "step.detail.done"
-    },
-    {
-      "from": "flow.capture-and-edit",
-      "type": "alternative",
-      "to": "flow.capture-and-edit-keyboard",
-      "notes": "keyboard-only path, same steps"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.new-request"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.request"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.request-body"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.new-offer"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.offer"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.offer-body"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.match"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.done"
-    },
-    {
-      "from": "step.gp.new-request",
-      "type": "invokes",
-      "to": "cap.note.capture"
-    },
-    {
-      "from": "step.gp.new-request",
-      "type": "renders",
-      "to": "surface.notesview"
-    },
-    {
-      "from": "step.gp.new-request",
-      "type": "next",
-      "to": "step.gp.request",
-      "when": "opened"
-    },
-    {
-      "from": "step.gp.request",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "step.gp.request",
-      "type": "next",
-      "to": "step.gp.request-body",
-      "when": "saved"
-    },
-    {
-      "from": "step.gp.request-body",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "step.gp.request-body",
-      "type": "next",
-      "to": "step.gp.new-offer",
-      "when": "saved"
-    },
-    {
-      "from": "step.gp.new-offer",
-      "type": "invokes",
-      "to": "cap.note.capture"
-    },
-    {
-      "from": "step.gp.new-offer",
-      "type": "renders",
-      "to": "surface.notesview"
-    },
-    {
-      "from": "step.gp.new-offer",
-      "type": "next",
-      "to": "step.gp.offer",
-      "when": "opened"
-    },
-    {
-      "from": "step.gp.offer",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "step.gp.offer",
-      "type": "next",
-      "to": "step.gp.offer-body",
-      "when": "saved"
-    },
-    {
-      "from": "step.gp.offer-body",
-      "type": "renders",
-      "to": "surface.editormanager"
-    },
-    {
-      "from": "step.gp.offer-body",
-      "type": "next",
-      "to": "step.gp.match",
-      "when": "saved"
-    },
-    {
-      "from": "step.gp.match",
-      "type": "renders",
-      "to": "surface.notecontextrail"
-    },
-    {
-      "from": "step.gp.match",
-      "type": "next",
-      "to": "step.gp.done",
-      "when": "match-found"
-    },
-    {
-      "from": "step.gp.done",
-      "type": "renders",
-      "to": "surface.notecontextrail"
-    },
-    {
-      "from": "flow.golden-path",
-      "type": "contains",
-      "to": "step.gp.explain"
-    },
-    {
-      "from": "step.gp.done",
-      "type": "next",
-      "to": "step.gp.explain",
-      "when": "match-verified"
-    },
-    {
-      "from": "cap.ontology.conflict",
-      "type": "supports",
-      "to": "intent.manage-ontology"
-    },
-    {
-      "from": "cap.match.explain",
-      "type": "supports",
-      "to": "intent.express-need"
-    },
-    {
-      "from": "cap.notes.display",
-      "type": "supports",
-      "to": "intent.express-need"
-    },
-    {
-      "from": "flow.golden-path",
+      "from": "surface.mobile-arrange-menu",
       "type": "uses",
-      "to": "cap.notes.display"
+      "to": "template.bottom-sheet"
     },
     {
-      "from": "flow.golden-path",
+      "from": "surface.mobile-context-rail",
       "type": "uses",
-      "to": "cap.match.explain"
+      "to": "template.bottom-tabs"
     },
     {
-      "from": "flow.ontology-conflict",
+      "from": "surface.mobile-map",
       "type": "uses",
-      "to": "cap.ontology.conflict"
+      "to": "template.map-full"
     },
     {
-      "from": "flow.inline-detail",
+      "from": "surface.mobile-header",
       "type": "uses",
-      "to": "cap.property.inline"
+      "to": "template.header-compact"
     },
     {
-      "from": "step.inline.write",
-      "type": "invokes",
-      "to": "cap.property.inline"
+      "from": "surface.settings-directory",
+      "type": "uses",
+      "to": "template.settings-wizard"
     },
     {
-      "from": "flow.ontology-conflict",
-      "type": "contains",
-      "to": "step.oc.open"
-    },
-    {
-      "from": "flow.ontology-conflict",
-      "type": "contains",
-      "to": "step.oc.visible"
-    },
-    {
-      "from": "step.oc.open",
+      "from": "flow.help-system-completion",
       "type": "renders",
-      "to": "surface.ontologyview"
+      "to": "surface.help-system"
     },
     {
-      "from": "step.oc.open",
-      "type": "next",
-      "to": "step.oc.visible",
-      "when": "tab-opened"
-    },
-    {
-      "from": "step.oc.visible",
+      "from": "flow.help-search",
       "type": "renders",
-      "to": "surface.ontologyview"
+      "to": "surface.help-system"
     },
     {
-      "from": "flow.gardener-merge",
-      "type": "uses",
-      "to": "cap.ontology.merge"
-    },
-    {
-      "from": "flow.gardener-merge",
-      "type": "contains",
-      "to": "step.gm.open"
-    },
-    {
-      "from": "flow.gardener-merge",
-      "type": "contains",
-      "to": "step.gm.select"
-    },
-    {
-      "from": "flow.gardener-merge",
-      "type": "contains",
-      "to": "step.gm.confirm"
-    },
-    {
-      "from": "flow.gardener-merge",
-      "type": "contains",
-      "to": "step.gm.verified"
-    },
-    {
-      "from": "step.gm.open",
+      "from": "flow.help-video",
       "type": "renders",
-      "to": "surface.ontologyview"
+      "to": "surface.help-system"
     },
     {
-      "from": "step.gm.open",
-      "type": "next",
-      "to": "step.gm.select",
-      "when": "dialog-opened"
-    },
-    {
-      "from": "step.gm.select",
-      "type": "next",
-      "to": "step.gm.confirm",
-      "when": "classes-selected"
-    },
-    {
-      "from": "step.gm.confirm",
-      "type": "next",
-      "to": "step.gm.verified",
-      "when": "merge-confirmed"
-    },
-    {
-      "from": "step.gm.verified",
+      "from": "flow.help-interactive",
       "type": "renders",
-      "to": "surface.ontologyview"
+      "to": "surface.help-system"
     },
     {
-      "from": "step.gp.explain",
+      "from": "flow.help-progress",
       "type": "renders",
-      "to": "surface.matchitem"
+      "to": "surface.help-system"
     },
     {
-      "from": "cap.property.edit",
-      "type": "implementedBy",
-      "to": "cap.elicit.tag-input"
+      "from": "flow.help-contextual",
+      "type": "renders",
+      "to": "surface.help-system"
     },
     {
-      "from": "cap.property.edit",
-      "type": "implementedBy",
-      "to": "cap.elicit.inline-detail"
+      "from": "flow.describe-it-discovery",
+      "type": "renders",
+      "to": "surface.describe-it-promo"
     },
     {
-      "from": "cap.note.capture",
-      "type": "implementedBy",
-      "to": "cap.capture.quick"
+      "from": "flow.describe-it-shortcut",
+      "type": "renders",
+      "to": "surface.describe-it-promo"
     },
     {
-      "from": "cap.note.capture",
-      "type": "implementedBy",
-      "to": "cap.capture.describe-it"
+      "from": "flow.describe-it-command-palette",
+      "type": "renders",
+      "to": "surface.describe-it-promo"
     },
     {
-      "from": "cap.note.capture",
-      "type": "implementedBy",
-      "to": "cap.capture.template"
+      "from": "flow.empty-state-notes-all",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "cap.layout.rails",
-      "type": "implementedBy",
-      "to": "cap.layout.matches-panel"
+      "from": "flow.empty-state-notes-search",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "step.pub.decide",
-      "type": "guards",
-      "to": "pred.can-publish"
+      "from": "flow.empty-state-network",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "step.pub.decide",
-      "type": "guards",
-      "to": "pred.can-delete"
+      "from": "flow.empty-state-map",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "step.oc.open",
-      "type": "guards",
-      "to": "pred.can-merge-ontology"
+      "from": "flow.empty-state-timeline",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "cap.note.publish",
-      "type": "effects",
-      "to": "eff.publish-note"
+      "from": "flow.empty-state-matches",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "cap.note.delete",
-      "type": "effects",
-      "to": "eff.delete-note"
+      "from": "flow.empty-state-chat",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "cap.ontology.merge",
-      "type": "effects",
-      "to": "eff.merge-ontology"
+      "from": "flow.empty-state-ontology",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "cap.permission.grant",
-      "type": "effects",
-      "to": "eff.grant-permission"
+      "from": "flow.empty-state-skills",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
     },
     {
-      "from": "flow.capture-and-edit-palette",
-      "type": "contains",
-      "to": "step.palette.capture"
+      "from": "flow.mobile-property-editor",
+      "type": "renders",
+      "to": "surface.mobile-property-editor"
     },
     {
-      "from": "flow.capture-and-edit-palette",
-      "type": "contains",
-      "to": "step.palette.elicit"
+      "from": "flow.mobile-arrange-menu",
+      "type": "renders",
+      "to": "surface.mobile-arrange-menu"
     },
     {
-      "from": "flow.capture-and-edit-palette",
-      "type": "contains",
-      "to": "step.palette.done"
+      "from": "flow.mobile-context-rail",
+      "type": "renders",
+      "to": "surface.mobile-context-rail"
     },
     {
-      "from": "step.palette.capture",
-      "type": "next",
-      "to": "step.palette.elicit"
+      "from": "flow.mobile-map",
+      "type": "renders",
+      "to": "surface.mobile-map"
     },
     {
-      "from": "step.palette.elicit",
-      "type": "next",
-      "to": "step.palette.done"
+      "from": "flow.mobile-header",
+      "type": "renders",
+      "to": "surface.mobile-header"
     },
     {
-      "from": "step.palette.capture",
-      "type": "invokes",
-      "to": "cap.capture.palette"
+      "from": "flow.settings-task",
+      "type": "renders",
+      "to": "surface.settings-directory"
     },
     {
-      "from": "step.palette.elicit",
-      "type": "invokes",
-      "to": "cap.elicit.property-palette"
+      "from": "flow.settings-wizard",
+      "type": "renders",
+      "to": "surface.settings-directory"
     },
     {
-      "from": "flow.capture-and-edit-palette",
-      "type": "uses",
-      "to": "cap.capture.palette"
+      "from": "flow.settings-export-import",
+      "type": "renders",
+      "to": "surface.settings-directory"
     },
     {
-      "from": "flow.capture-and-edit-palette",
-      "type": "uses",
-      "to": "cap.elicit.property-palette"
+      "from": "flow.settings-diff",
+      "type": "renders",
+      "to": "surface.settings-directory"
     },
     {
-      "from": "flow.capture-and-edit",
-      "type": "alternative",
-      "to": "flow.capture-and-edit-palette",
-      "notes": "palette path, same outcome"
+      "from": "flow.token-consistency",
+      "type": "renders",
+      "to": "surface.help-system"
     },
     {
-      "from": "flow.capture-and-edit-keyboard",
-      "type": "alternative",
-      "to": "flow.capture-and-edit-palette",
-      "notes": "palette path, same outcome"
+      "from": "flow.a11y-live-regions",
+      "type": "renders",
+      "to": "surface.help-system"
+    },
+    {
+      "from": "flow.a11y-focus-management",
+      "type": "renders",
+      "to": "surface.help-system"
+    },
+    {
+      "from": "flow.a11y-screen-reader",
+      "type": "renders",
+      "to": "surface.help-system"
+    },
+    {
+      "from": "flow.a11y-high-contrast",
+      "type": "renders",
+      "to": "surface.help-system"
+    },
+    {
+      "from": "flow.performance-budget",
+      "type": "renders",
+      "to": "surface.help-system"
+    },
+    {
+      "from": "metric.topic-completion-rate",
+      "type": "evidencedBy",
+      "to": "flow.help-system-completion"
+    },
+    {
+      "from": "metric.return-rate",
+      "type": "evidencedBy",
+      "to": "flow.help-progress"
+    },
+    {
+      "from": "metric.search-success-rate",
+      "type": "evidencedBy",
+      "to": "flow.help-search"
+    },
+    {
+      "from": "metric.video-completion-rate",
+      "type": "evidencedBy",
+      "to": "flow.help-video"
+    },
+    {
+      "from": "metric.interactive-demo-completion",
+      "type": "evidencedBy",
+      "to": "flow.help-interactive"
+    },
+    {
+      "from": "metric.contextual-trigger-relevance",
+      "type": "evidencedBy",
+      "to": "flow.help-contextual"
+    },
+    {
+      "from": "metric.feedback-positive-rate",
+      "type": "evidencedBy",
+      "to": "flow.help-system-completion"
+    },
+    {
+      "from": "metric.describe-it-discovery-rate",
+      "type": "evidencedBy",
+      "to": "flow.describe-it-discovery"
+    },
+    {
+      "from": "metric.describe-it-acceptance-rate",
+      "type": "evidencedBy",
+      "to": "flow.describe-it-discovery"
+    },
+    {
+      "from": "metric.describe-it-time-to-first-use",
+      "type": "evidencedBy",
+      "to": "flow.describe-it-discovery"
+    },
+    {
+      "from": "metric.shortcut-usage-rate",
+      "type": "evidencedBy",
+      "to": "flow.describe-it-shortcut"
+    },
+    {
+      "from": "metric.command-palette-usage-rate",
+      "type": "evidencedBy",
+      "to": "flow.describe-it-command-palette"
+    },
+    {
+      "from": "metric.empty-state-cta-click-rate",
+      "type": "evidencedBy",
+      "to": "flow.empty-state-*"
+    },
+    {
+      "from": "metric.empty-state-help-click-rate",
+      "type": "evidencedBy",
+      "to": "flow.empty-state-*"
+    },
+    {
+      "from": "metric.mobile-touch-target-compliance",
+      "type": "evidencedBy",
+      "to": "flow.mobile-*"
+    },
+    {
+      "from": "metric.mobile-task-completion-rate",
+      "type": "evidencedBy",
+      "to": "flow.mobile-*"
+    },
+    {
+      "from": "metric.settings-task-time",
+      "type": "evidencedBy",
+      "to": "flow.settings-task"
+    },
+    {
+      "from": "metric.settings-search-usage-rate",
+      "type": "evidencedBy",
+      "to": "flow.settings-task"
+    },
+    {
+      "from": "metric.settings-wizard-completion-rate",
+      "type": "evidencedBy",
+      "to": "flow.settings-wizard"
+    },
+    {
+      "from": "metric.settings-export-import-success",
+      "type": "evidencedBy",
+      "to": "flow.settings-export-import"
+    },
+    {
+      "from": "metric.settings-diff-view-rate",
+      "type": "evidencedBy",
+      "to": "flow.settings-diff"
+    },
+    {
+      "from": "metric.token-consistency-score",
+      "type": "evidencedBy",
+      "to": "flow.token-consistency"
+    },
+    {
+      "from": "metric.a11y-critical-violations",
+      "type": "evidencedBy",
+      "to": "flow.a11y-*"
+    },
+    {
+      "from": "metric.a11y-serious-violations",
+      "type": "evidencedBy",
+      "to": "flow.a11y-*"
+    },
+    {
+      "from": "metric.bundle-size",
+      "type": "evidencedBy",
+      "to": "flow.performance-budget"
+    },
+    {
+      "from": "metric.load-time",
+      "type": "evidencedBy",
+      "to": "flow.performance-budget"
     }
   ],
-  "hyperedges": [
-    {
-      "id": "hyper.golden-path.requires",
-      "type": "requiresAll",
-      "nodes": [
-        "flow.golden-path",
-        "cap.note.capture",
-        "cap.match.display",
-        "cap.notes.display",
-        "cap.match.explain"
-      ],
-      "roles": {
-        "flow": "flow.golden-path",
-        "capture": "cap.note.capture",
-        "matchDisplay": "cap.match.display",
-        "notesDisplay": "cap.notes.display",
-        "explain": "cap.match.explain"
-      },
-      "notes": "Golden path needs capture, match display, notes display, and match explanation"
-    },
-    {
-      "id": "hyper.capture-palette.requires",
-      "type": "requiresAll",
-      "nodes": [
-        "flow.capture-and-edit-palette",
-        "cap.capture.palette",
-        "cap.elicit.property-palette"
-      ],
-      "roles": {
-        "flow": "flow.capture-and-edit-palette",
-        "palette": "cap.capture.palette",
-        "elicit": "cap.elicit.property-palette"
-      },
-      "notes": "Palette path needs palette capture and palette elicitation"
-    },
-    {
-      "id": "hyper.capture-alternatives",
-      "type": "alternativeSet",
-      "nodes": [
-        "flow.capture-and-edit",
-        "flow.inline-detail",
-        "flow.capture-and-edit-keyboard",
-        "flow.capture-and-edit-palette"
-      ],
-      "roles": {
-        "primary": "flow.capture-and-edit",
-        "inline": "flow.inline-detail",
-        "keyboard": "flow.capture-and-edit-keyboard",
-        "palette": "flow.capture-and-edit-palette"
-      },
-      "notes": "Mutually exclusive capture entry paths with the same outcome"
-    },
-    {
-      "id": "hyper.publish-branches",
-      "type": "alternativeSet",
-      "nodes": [
-        "step.pub.private",
-        "step.pub.published"
-      ],
-      "roles": {
-        "cancelled": "step.pub.private",
-        "confirmed": "step.pub.published"
-      },
-      "notes": "Mutually exclusive publish outcomes"
-    },
-    {
-      "id": "hyper.notesview.variants",
-      "type": "variantSet",
-      "nodes": [
-        "surface.notesview"
-      ],
-      "roles": {
-        "base": "surface.notesview"
-      },
-      "notes": "NotesView variant family"
-    }
-  ]
+  "hyperedges": []
 }

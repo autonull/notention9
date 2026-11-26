@@ -1,0 +1,1151 @@
+# UISG Canonical Definition
+# Single source of truth for all surfaces, templates, journeys, metrics, experiments
+# Edit this file, then run: pnpm optimize:generate
+# Version: 1.0
+
+version: 1
+
+surfaces:
+  # Help System (Week 1-3)
+  - id: help-system
+    name: Help System
+    component: HelpSystem
+    route: '#/help'
+    template: help-system
+    category: help
+    description: Main help container with routing, sidebar, search, and topic rendering
+    status: planned
+    variants:
+      default:
+        template: help-system
+        description: Standard help system
+        status: experimental
+
+  - id: describe-it-promo
+    name: Describe It Promo
+    component: DescribeItPromo
+    template: inline-promo
+    category: editor
+    description: Inline promotional component for Describe It feature discovery
+    status: planned
+    variants:
+      pulse:
+        template: inline-promo
+        description: Pulsing animation variant
+        status: experimental
+      tooltip:
+        template: inline-promo
+        description: Tooltip on hover variant
+        status: experimental
+      contextual-hint:
+        template: inline-promo
+        description: Contextual hint based on user behavior
+        status: experimental
+
+  - id: empty-state-actionable
+    name: Actionable Empty State
+    component: ActionableEmptyState
+    template: empty-state
+    category: ui
+    description: Empty states with primary CTA, secondary CTA, and help topic link
+    status: planned
+    variants:
+      notes-all:
+        template: empty-state
+        description: Notes view - all notes empty
+        status: experimental
+      notes-search:
+        template: empty-state
+        description: Notes view - search results empty
+        status: experimental
+      network:
+        template: empty-state
+        description: Network view - no connections
+        status: experimental
+      map:
+        template: empty-state
+        description: Map view - no locations
+        status: experimental
+      timeline:
+        template: empty-state
+        description: Timeline view - no dates
+        status: experimental
+      matches:
+        template: empty-state
+        description: Matches view - no matches
+        status: experimental
+      chat:
+        template: empty-state
+        description: Chat view - no conversations
+        status: experimental
+      ontology:
+        template: empty-state
+        description: Ontology view - no schemas
+        status: experimental
+      skills:
+        template: empty-state
+        description: Skills view - no skills
+        status: experimental
+
+  # Mobile Surfaces (Week 4)
+  - id: mobile-property-editor
+    name: Mobile Property Editor
+    component: PropertyEditorMobile
+    template: modal-fullscreen
+    category: properties
+    description: Full-screen property editor for mobile with virtual keyboard handling
+    status: planned
+    variants:
+      bottom-sheet:
+        template: modal-fullscreen
+        description: Bottom sheet variant
+        status: experimental
+      fullscreen-modal:
+        template: modal-fullscreen
+        description: Full-screen modal variant
+        status: experimental
+
+  - id: mobile-arrange-menu
+    name: Mobile Arrange Menu
+    component: ArrangeMenuMobile
+    template: bottom-sheet
+    category: patterns
+    description: Bottom sheet arrange menu with swipe dismiss
+    status: planned
+    variants:
+      default:
+        template: bottom-sheet
+        description: Standard bottom sheet
+        status: experimental
+
+  - id: mobile-context-rail
+    name: Mobile Context Rail
+    component: ContextRailMobile
+    template: bottom-tabs
+    category: sidebar
+    description: Horizontal scrolling context rail with 48px touch targets
+    status: planned
+    variants:
+      default:
+        template: bottom-tabs
+        description: Standard bottom tabs
+        status: experimental
+
+  - id: mobile-map
+    name: Mobile Map View
+    component: MapViewMobile
+    template: map-full
+    category: views
+    description: Full-screen map with FAB in safe area and geolocation button
+    status: planned
+    variants:
+      default:
+        template: map-full
+        description: Standard mobile map
+        status: experimental
+
+  - id: mobile-header
+    name: Mobile Header
+    component: HeaderMobile
+    template: header-compact
+    category: layout
+    description: Compact header with hamburger menu and swipe sidebar
+    status: planned
+    variants:
+      default:
+        template: header-compact
+        description: Standard compact header
+        status: experimental
+
+  # Settings (Week 5)
+  - id: settings-directory
+    name: Settings Directory
+    component: SettingsDirectory
+    template: settings-wizard
+    category: settings
+    description: Progressive disclosure settings with collapsible groups, wizard, export/import, diff
+    status: planned
+    variants:
+      grouped:
+        template: settings-wizard
+        description: Grouped collapsible sections
+        status: experimental
+      wizard:
+        template: settings-wizard
+        description: First-run wizard
+        status: experimental
+
+templates:
+  - id: help-system
+    name: Help System Template
+    shape: panel
+    description: Multi-panel layout with sidebar, content area, and video player
+    slots:
+      - sidebar
+      - content
+      - video-player
+      - progress-bar
+      - feedback
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useHelp } from '@/hooks/useHelp';
+      import { HelpSidebar } from './HelpSidebar';
+      import { HelpTopicCard } from './HelpTopicCard';
+      import { HelpStepRenderer } from './HelpStepRenderer';
+      import { HelpVideoPlayer } from './HelpVideoPlayer';
+      import { HelpInteractiveDemo } from './HelpInteractiveDemo';
+      import { HelpSearch } from './HelpSearch';
+      import { HelpFeedback } from './HelpFeedback';
+      import { HelpProgressBar } from './HelpProgressBar';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const help = useHelp();
+        return (
+          <div className="help-system" data-testid="help-system">
+            <HelpSidebar />
+            <div className="help-content">
+              <HelpSearch />
+              <HelpTopicCard topic={help.currentTopic} />
+              <HelpStepRenderer />
+              <HelpVideoPlayer />
+              <HelpInteractiveDemo />
+              <HelpProgressBar />
+              <HelpFeedback />
+            </div>
+          </div>
+        );
+      }
+
+  - id: inline-promo
+    name: Inline Promo Template
+    shape: status
+    description: Small promotional element embedded in content
+    slots:
+      - trigger
+      - content
+      - dismiss
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useDescribeItPromo } from '@/hooks/useDescribeItPromo';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const promo = useDescribeItPromo({ variant: props.variant });
+        if (!promo.shouldShow) return null;
+        return (
+          <div className="inline-promo" data-testid="inline-promo-{{variant}}">
+            <button onClick={promo.onDismiss} className="promo-dismiss" aria-label="Dismiss">×</button>
+            <span className="promo-content">{promo.message}</span>
+            <button onClick={promo.onActivate} className="promo-cta">{promo.ctaText}</button>
+          </div>
+        );
+      }
+
+  - id: empty-state
+    name: Empty State Template
+    shape: status
+    description: Actionable empty state with primary/secondary CTAs and help link
+    slots:
+      - illustration
+      - title
+      - description
+      - primary-action
+      - secondary-action
+      - help-link
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useHelp } from '@/hooks/useHelp';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const help = useHelp();
+        const config = EMPTY_STATE_CONFIGS[props.variant];
+        return (
+          <div className="empty-state" data-testid="empty-state-{{variant}}">
+            <div className="empty-illustration">{config.illustration}</div>
+            <h2 className="empty-title">{config.title}</h2>
+            <p className="empty-description">{config.description}</p>
+            <div className="empty-actions">
+              <button onClick={config.primaryAction} className="btn-primary" data-testid="empty-primary-cta">
+                {config.primaryLabel}
+              </button>
+              {config.secondaryLabel && (
+                <button onClick={config.secondaryAction} className="btn-secondary" data-testid="empty-secondary-cta">
+                  {config.secondaryLabel}
+                </button>
+              )}
+            </div>
+            {config.helpTopicId && (
+              <button onClick={() => help.openTopic(config.helpTopicId)} className="help-link" data-testid="empty-help-link">
+                Learn more
+              </button>
+            )}
+          </div>
+        );
+      }
+
+  - id: modal-fullscreen
+    name: Modal Fullscreen Template
+    shape: panel
+    description: Full-screen modal for mobile with safe area handling
+    slots:
+      - header
+      - content
+      - footer
+      - keyboard-spacer
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useVirtualKeyboard } from '@/hooks/useVirtualKeyboard';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const { isKeyboardVisible, keyboardHeight } = useVirtualKeyboard();
+        return (
+          <div 
+            className="modal-fullscreen" 
+            data-testid="modal-fullscreen"
+            style={{ paddingBottom: isKeyboardVisible ? keyboardHeight : 0 }}
+          >
+            <div className="modal-header">{props.children?.header}</div>
+            <div className="modal-content">{props.children?.content}</div>
+            <div className="modal-footer">{props.children?.footer}</div>
+            {isKeyboardVisible && <div className="keyboard-spacer" style={{ height: keyboardHeight }} />}
+          </div>
+        );
+      }
+
+  - id: bottom-sheet
+    name: Bottom Sheet Template
+    shape: panel
+    description: Swipeable bottom sheet with grabber and dismiss
+    slots:
+      - grabber
+      - content
+      - actions
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useTouchGestures } from '@/hooks/useTouchGestures';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const { onSwipeDown } = useTouchGestures({ onSwipeDown: props.onDismiss });
+        return (
+          <div className="bottom-sheet" data-testid="bottom-sheet" onTouchMove={onSwipeDown}>
+            <div className="sheet-grabber" aria-hidden="true" />
+            <div className="sheet-content">{props.children}</div>
+            <div className="sheet-actions">{props.actions}</div>
+          </div>
+        );
+      }
+
+  - id: bottom-tabs
+    name: Bottom Tabs Template
+    shape: item
+    description: Horizontal scrolling tabs with snap points and 48px targets
+    slots:
+      - tab-list
+      - tab-panel
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useMobile } from '@/hooks/useMobile';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const { isMobile } = useMobile();
+        if (!isMobile) return null;
+        return (
+          <div className="bottom-tabs" data-testid="bottom-tabs" role="tablist">
+            <div className="tab-list" role="presentation">
+              {props.tabs.map((tab, i) => (
+                <button
+                  key={tab.id}
+                  role="tab"
+                  aria-selected={i === props.activeIndex}
+                  className="tab-button"
+                  data-testid={`tab-${tab.id}`}
+                  style={{ minWidth: 48, minHeight: 48 }}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+            <div className="tab-panels">
+              {props.tabs[props.activeIndex]?.panel}
+            </div>
+          </div>
+        );
+      }
+
+  - id: settings-wizard
+    name: Settings Wizard Template
+    shape: panel
+    description: Progressive disclosure settings with groups, search, export/import, diff
+    slots:
+      - search
+      - groups
+      - wizard-steps
+      - export-import
+      - diff-view
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useSettings } from '@/hooks/useSettings';
+      import { useHelp } from '@/hooks/useHelp';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const settings = useSettings();
+        const help = useHelp();
+        return (
+          <div className="settings-directory" data-testid="settings-directory">
+            <input 
+              type="search" 
+              placeholder="Search settings…" 
+              value={settings.searchQuery}
+              onChange={settings.setSearchQuery}
+              data-testid="settings-search"
+            />
+            <div className="settings-groups">
+              {settings.groups.map(group => (
+                <details key={group.id} open={group.defaultExpanded} data-testid={`settings-group-${group.id}`}>
+                  <summary>{group.label} <HelpIcon topic={group.helpTopicId} /></summary>
+                  {group.settings.map(s => <SettingRow key={s.id} setting={s} />)}
+                </details>
+              ))}
+            </div>
+            {settings.showWizard && <SettingsWizard />}
+            <div className="settings-actions">
+              <button onClick={settings.export} data-testid="settings-export">Export</button>
+              <button onClick={settings.import} data-testid="settings-import">Import</button>
+              <button onClick={settings.showDiff} data-testid="settings-diff">Show Diff</button>
+            </div>
+          </div>
+        );
+      }
+
+  - id: map-full
+    name: Full Screen Map Template
+    shape: panel
+    description: Full-screen map view with FAB in safe area
+    slots:
+      - map
+      - fab
+      - geolocation
+      - safe-area-bottom
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useMobile } from '@/hooks/useMobile';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const { safeAreaInsets } = useMobile();
+        return (
+          <div className="map-full" data-testid="map-full" style={{ paddingBottom: safeAreaInsets.bottom }}>
+            <div className="map-container" ref={props.mapRef} />
+            <button className="fab fab-primary" data-testid="map-fab" style={{ bottom: safeAreaInsets.bottom + 16 }}>
+              {props.fabContent}
+            </button>
+            <button className="fab fab-geolocation" data-testid="map-geolocation" style={{ bottom: safeAreaInsets.bottom + 80 }}>
+              <GeolocationIcon />
+            </button>
+          </div>
+        );
+      }
+
+  - id: header-compact
+    name: Compact Header Template
+    shape: panel
+    description: Mobile header with hamburger menu and swipe sidebar
+    slots:
+      - logo
+      - hamburger
+      - actions
+      - swipe-area
+    componentTemplate: |
+      // GENERATED by UISG codegen - DO NOT EDIT MANUALLY
+      import { useTouchGestures } from '@/hooks/useTouchGestures';
+      
+      export function {{componentName}}(props: {{componentName}}Props) {
+        const { onSwipeRight } = useTouchGestures({ onSwipeRight: props.onOpenSidebar });
+        return (
+          <header className="header-compact" data-testid="header-compact" onTouchStart={onSwipeRight}>
+            <div className="header-logo">{props.logo}</div>
+            <button className="hamburger" onClick={props.onOpenSidebar} data-testid="hamburger-menu" aria-label="Open menu">
+              <MenuIcon />
+            </button>
+            <div className="header-actions">{props.actions}</div>
+          </header>
+        );
+      }
+
+journeys:
+  # Help System Journeys (6)
+  - id: help-system-completion
+    name: Help System Completion
+    surface: help-system
+    description: User completes a help topic from start to finish
+    steps:
+      - open-help-system
+      - browse-topics
+      - select-topic
+      - complete-steps
+      - rate-topic
+    metrics:
+      - topic-completion-rate
+      - return-rate
+      - video-completion-rate
+      - interactive-demo-completion
+
+  - id: help-search
+    name: Help Search
+    surface: help-system
+    description: User searches for help topic
+    steps:
+      - open-help-system
+      - enter-search-query
+      - select-result
+      - view-topic
+    metrics:
+      - search-success-rate
+      - search-time-to-result
+
+  - id: help-video
+    name: Help Video Playback
+    surface: help-system
+    description: User watches help video
+    steps:
+      - open-help-topic
+      - play-video
+      - complete-video
+    metrics:
+      - video-completion-rate
+      - video-engagement
+
+  - id: help-interactive
+    name: Help Interactive Demo
+    surface: help-system
+    description: User completes interactive demo
+    steps:
+      - open-help-topic
+      - start-demo
+      - complete-demo-steps
+      - finish-demo
+    metrics:
+      - interactive-demo-completion
+      - demo-time-to-complete
+
+  - id: help-progress
+    name: Help Progress Tracking
+    surface: help-system
+    description: User tracks progress across topics
+    steps:
+      - open-help-system
+      - view-progress
+      - resume-topic
+    metrics:
+      - progress-sync-accuracy
+      - return-rate
+
+  - id: help-contextual
+    name: Contextual Help Trigger
+    surface: help-system
+    description: Help appears contextually (idle, error, feature gate)
+    steps:
+      - trigger-condition-met
+      - help-prompt-shown
+      - user-accepts-help
+      - help-topic-opened
+    metrics:
+      - contextual-trigger-relevance
+      - contextual-acceptance-rate
+
+  # Describe It Journeys (3)
+  - id: describe-it-discovery
+    name: Describe It Discovery
+    surface: describe-it-promo
+    description: User discovers Describe It via promo
+    steps:
+      - promo-shown
+      - user-clicks-promo
+      - describe-it-opens
+      - first-use-complete
+    metrics:
+      - describe-it-discovery-rate
+      - describe-it-time-to-first-use
+      - describe-it-acceptance-rate
+
+  - id: describe-it-shortcut
+    name: Describe It Shortcut
+    surface: describe-it-promo
+    description: User opens Describe It via Ctrl+Shift+/
+    steps:
+      - press-shortcut
+      - describe-it-opens
+      - first-use-complete
+    metrics:
+      - shortcut-usage-rate
+      - describe-it-time-to-first-use
+
+  - id: describe-it-command-palette
+    name: Describe It Command Palette
+    surface: describe-it-promo
+    description: User opens Describe It via Command Palette
+    steps:
+      - open-command-palette
+      - search-describe-it
+      - select-entry
+      - describe-it-opens
+    metrics:
+      - command-palette-usage-rate
+
+  # Empty State Journeys (9 views × 2 = 18)
+  - id: empty-state-notes-all
+    name: Empty State Notes All
+    surface: empty-state-actionable
+    variant: notes-all
+    description: New user sees empty notes view
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - create-first-note
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-notes-search
+    name: Empty State Notes Search
+    surface: empty-state-actionable
+    variant: notes-search
+    description: User searches with no results
+    steps:
+      - view-empty-state
+      - click-secondary-cta
+      - clear-search
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-network
+    name: Empty State Network
+    surface: empty-state-actionable
+    variant: network
+    description: User has no network connections
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - connect-identity
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-map
+    name: Empty State Map
+    surface: empty-state-actionable
+    variant: map
+    description: User has no locations on map
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - add-location
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-timeline
+    name: Empty State Timeline
+    surface: empty-state-actionable
+    variant: timeline
+    description: User has no dated notes
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - add-date-property
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-matches
+    name: Empty State Matches
+    surface: empty-state-actionable
+    variant: matches
+    description: User has no matches
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - describe-need
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-chat
+    name: Empty State Chat
+    surface: empty-state-actionable
+    variant: chat
+    description: User has no chat conversations
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - start-chat
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-ontology
+    name: Empty State Ontology
+    surface: empty-state-actionable
+    variant: ontology
+    description: User has no ontology schemas
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - import-schema
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: empty-state-skills
+    name: Empty State Skills
+    surface: empty-state-actionable
+    variant: skills
+    description: User has no skills
+    steps:
+      - view-empty-state
+      - click-primary-cta
+      - browse-registry
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  # Mobile Journeys (5)
+  - id: mobile-property-editor
+    name: Mobile Property Editor
+    surface: mobile-property-editor
+    description: User edits property on mobile
+    steps:
+      - open-property-editor
+      - fill-fields
+      - handle-virtual-keyboard
+      - confirm-changes
+    metrics:
+      - mobile-touch-target-compliance
+      - mobile-task-completion-rate
+
+  - id: mobile-arrange-menu
+    name: Mobile Arrange Menu
+    surface: mobile-arrange-menu
+    description: User arranges items via bottom sheet
+    steps:
+      - open-arrange-menu
+      - swipe-to-reorder
+      - dismiss-sheet
+    metrics:
+      - mobile-touch-target-compliance
+      - mobile-task-completion-rate
+
+  - id: mobile-context-rail
+    name: Mobile Context Rail
+    surface: mobile-context-rail
+    description: User navigates context rail
+    steps:
+      - open-context-rail
+      - swipe-tabs
+      - select-tab
+    metrics:
+      - mobile-touch-target-compliance
+      - mobile-task-completion-rate
+
+  - id: mobile-map
+    name: Mobile Map
+    surface: mobile-map
+    description: User interacts with map on mobile
+    steps:
+      - open-map
+      - tap-fab
+      - use-geolocation
+    metrics:
+      - mobile-touch-target-compliance
+      - mobile-task-completion-rate
+
+  - id: mobile-header
+    name: Mobile Header
+    surface: mobile-header
+    description: User opens sidebar via hamburger
+    steps:
+      - tap-hamburger
+      - sidebar-opens
+      - navigate
+    metrics:
+      - mobile-touch-target-compliance
+      - mobile-task-completion-rate
+
+  # Settings Journeys (4)
+  - id: settings-task
+    name: Settings Task Completion
+    surface: settings-directory
+    description: User completes a settings task
+    steps:
+      - open-settings
+      - search-or-browse
+      - modify-setting
+      - verify-change
+    metrics:
+      - settings-task-time
+      - settings-search-usage-rate
+
+  - id: settings-wizard
+    name: Settings Wizard Completion
+    surface: settings-directory
+    variant: wizard
+    description: New user completes first-run wizard
+    steps:
+      - open-settings-first-run
+      - complete-wizard-steps
+      - finish-wizard
+    metrics:
+      - settings-wizard-completion-rate
+      - settings-task-time
+
+  - id: settings-export-import
+    name: Settings Export/Import
+    surface: settings-directory
+    description: User exports and imports settings
+    steps:
+      - open-settings
+      - export-settings
+      - import-settings
+      - verify-roundtrip
+    metrics:
+      - settings-export-import-success
+
+  - id: settings-diff
+    name: Settings Diff
+    surface: settings-directory
+    description: User views settings diff
+    steps:
+      - open-settings
+      - click-show-diff
+      - review-changes
+    metrics:
+      - settings-diff-view-rate
+
+  # Visual Consistency (1)
+  - id: token-consistency
+    name: Token Consistency Audit
+    surface: help-system
+    description: Verify no hardcoded colors in components
+    steps:
+      - scan-components
+      - verify-tokens
+    metrics:
+      - token-consistency-score
+
+  # Accessibility (4)
+  - id: a11y-live-regions
+    name: Live Regions
+    surface: help-system
+    description: Verify live regions for dynamic content
+    steps:
+      - trigger-live-content
+      - verify-announcement
+    metrics:
+      - a11y-critical-violations
+      - a11y-serious-violations
+
+  - id: a11y-focus-management
+    name: Focus Management
+    surface: help-system
+    description: Verify focus management in modals/sheets
+    steps:
+      - open-modal
+      - verify-focus-trap
+      - close-modal
+      - verify-focus-return
+    metrics:
+      - a11y-critical-violations
+      - a11y-serious-violations
+
+  - id: a11y-screen-reader
+    name: Screen Reader Announcements
+    surface: help-system
+    description: Verify screen reader announcements
+    steps:
+      - trigger-announcement
+      - verify-content
+    metrics:
+      - a11y-critical-violations
+      - a11y-serious-violations
+
+  - id: a11y-high-contrast
+    name: High Contrast Mode
+    surface: help-system
+    description: Verify high contrast mode
+    steps:
+      - enable-high-contrast
+      - verify-visibility
+    metrics:
+      - a11y-critical-violations
+      - a11y-serious-violations
+
+  # Performance (1)
+  - id: performance-budget
+    name: Performance Budget
+    surface: help-system
+    description: Verify bundle size and load times
+    steps:
+      - measure-bundle
+      - measure-load-time
+    metrics:
+      - bundle-size
+      - load-time
+
+metrics:
+  # Help System Metrics
+  - id: topic-completion-rate
+    name: Topic Completion Rate
+    description: Percentage of users who complete a help topic
+    target: ">= 0.7"
+    type: ratio
+    source: journey:help-system-completion
+
+  - id: return-rate
+    name: Return Rate
+    description: Percentage of users who return to help within 7 days
+    target: ">= 0.3"
+    type: ratio
+    source: journey:help-progress
+
+  - id: search-success-rate
+    name: Search Success Rate
+    description: Percentage of searches that result in topic view
+    target: ">= 0.6"
+    type: ratio
+    source: journey:help-search
+
+  - id: video-completion-rate
+    name: Video Completion Rate
+    description: Percentage of video plays that reach 90% completion
+    target: ">= 0.5"
+    type: ratio
+    source: journey:help-video
+
+  - id: interactive-demo-completion
+    name: Interactive Demo Completion
+    description: Percentage of demo starts that complete
+    target: ">= 0.6"
+    type: ratio
+    source: journey:help-interactive
+
+  - id: contextual-trigger-relevance
+    name: Contextual Trigger Relevance
+    description: Percentage of contextual triggers that user accepts
+    target: ">= 0.2"
+    type: ratio
+    source: journey:help-contextual
+
+  - id: feedback-positive-rate
+    name: Feedback Positive Rate
+    description: Percentage of help feedback that is positive
+    target: ">= 0.8"
+    type: ratio
+    source: journey:help-system-completion
+
+  # Describe It Metrics
+  - id: describe-it-discovery-rate
+    name: Describe It Discovery Rate
+    description: Percentage of eligible users who discover Describe It
+    target: ">= 0.5"
+    type: ratio
+    source: journey:describe-it-discovery
+
+  - id: describe-it-acceptance-rate
+    name: Describe It Acceptance Rate
+    description: Percentage of discoveries that lead to first use
+    target: ">= 0.6"
+    type: ratio
+    source: journey:describe-it-discovery
+
+  - id: describe-it-time-to-first-use
+    name: Time to First Use
+    description: Seconds from first session to first Describe It use
+    target: "<= 120"
+    type: duration
+    source: journey:describe-it-discovery
+
+  - id: shortcut-usage-rate
+    name: Shortcut Usage Rate
+    description: Percentage of users who use Ctrl+Shift+/ shortcut
+    target: ">= 0.1"
+    type: ratio
+    source: journey:describe-it-shortcut
+
+  - id: command-palette-usage-rate
+    name: Command Palette Usage Rate
+    description: Percentage of Describe It opens via Command Palette
+    target: ">= 0.05"
+    type: ratio
+    source: journey:describe-it-command-palette
+
+  # Empty State Metrics
+  - id: empty-state-cta-click-rate
+    name: Empty State CTA Click Rate
+    description: Percentage of empty state views that click primary CTA
+    target: ">= 0.3"
+    type: ratio
+    source: journey:empty-state-*
+
+  - id: empty-state-help-click-rate
+    name: Empty State Help Click Rate
+    description: Percentage of empty state views that click help link
+    target: ">= 0.15"
+    type: ratio
+    source: journey:empty-state-*
+
+  # Mobile Metrics
+  - id: mobile-touch-target-compliance
+    name: Mobile Touch Target Compliance
+    description: Percentage of interactive elements meeting 48x48px
+    target: "= 1.0"
+    type: ratio
+    source: journey:mobile-*
+
+  - id: mobile-task-completion-rate
+    name: Mobile Task Completion Rate
+    description: Percentage of mobile tasks completed successfully
+    target: ">= 0.7"
+    type: ratio
+    source: journey:mobile-*
+
+  # Settings Metrics
+  - id: settings-task-time
+    name: Settings Task Time
+    description: Median time to complete a settings task (seconds)
+    target: "<= 30"
+    type: duration
+    source: journey:settings-task
+
+  - id: settings-search-usage-rate
+    name: Settings Search Usage Rate
+    description: Percentage of settings sessions using search
+    target: ">= 0.3"
+    type: ratio
+    source: journey:settings-task
+
+  - id: settings-wizard-completion-rate
+    name: Settings Wizard Completion Rate
+    description: Percentage of first-run users completing wizard
+    target: ">= 0.8"
+    type: ratio
+    source: journey:settings-wizard
+
+  - id: settings-export-import-success
+    name: Settings Export/Import Success
+    description: Percentage of successful round-trip export/import
+    target: "= 1.0"
+    type: ratio
+    source: journey:settings-export-import
+
+  - id: settings-diff-view-rate
+    name: Settings Diff View Rate
+    description: Percentage of settings sessions viewing diff
+    target: ">= 0.1"
+    type: ratio
+    source: journey:settings-diff
+
+  # Visual Consistency
+  - id: token-consistency-score
+    name: Token Consistency Score
+    description: Percentage of components using semantic tokens
+    target: "= 1.0"
+    type: ratio
+    source: journey:token-consistency
+
+  # Accessibility
+  - id: a11y-critical-violations
+    name: Critical Accessibility Violations
+    description: Number of critical axe violations
+    target: "= 0"
+    type: count
+    source: journey:a11y-*
+
+  - id: a11y-serious-violations
+    name: Serious Accessibility Violations
+    description: Number of serious axe violations
+    target: "= 0"
+    type: count
+    source: journey:a11y-*
+
+  # Performance
+  - id: bundle-size
+    name: Bundle Size
+    description: Total JS bundle size (KB)
+    target: "<= 500"
+    type: size
+    source: journey:performance-budget
+
+  - id: load-time
+    name: Load Time
+    description: Time to interactive (ms)
+    target: "<= 3000"
+    type: duration
+    source: journey:performance-budget
+
+experiments:
+  - id: help-system-variants
+    name: Help System Variants
+    surface: help-system
+    description: Test interactive, video, searchable, contextual variants
+    variants:
+      - interactive
+      - video
+      - searchable
+      - contextual
+    runs: 100
+    metrics:
+      - topic-completion-rate
+      - return-rate
+      - search-success-rate
+      - video-completion-rate
+
+  - id: describe-it-promo-variants
+    name: Describe It Promo Variants
+    surface: describe-it-promo
+    description: Test pulse, tooltip, contextual-hint variants
+    variants:
+      - pulse
+      - tooltip
+      - contextual-hint
+    runs: 100
+    metrics:
+      - describe-it-discovery-rate
+      - describe-it-acceptance-rate
+      - describe-it-time-to-first-use
+
+  - id: empty-state-variants
+    name: Empty State Variants
+    surface: empty-state-actionable
+    description: Test notes-all, network, matches variants
+    variants:
+      - notes-all
+      - network
+      - matches
+    runs: 100
+    metrics:
+      - empty-state-cta-click-rate
+      - empty-state-help-click-rate
+
+  - id: mobile-property-editor-variants
+    name: Mobile Property Editor Variants
+    surface: mobile-property-editor
+    description: Test bottom-sheet vs fullscreen-modal
+    variants:
+      - bottom-sheet
+      - fullscreen-modal
+    runs: 100
+    metrics:
+      - mobile-touch-target-compliance
+      - mobile-task-completion-rate
+
+  - id: settings-directory-variants
+    name: Settings Directory Variants
+    surface: settings-directory
+    description: Test grouped vs wizard variants
+    variants:
+      - grouped
+      - wizard
+    runs: 100
+    metrics:
+      - settings-task-time
+      - settings-wizard-completion-rate
+      - settings-search-usage-rate
