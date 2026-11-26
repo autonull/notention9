@@ -178,14 +178,14 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
             aria-live="polite"
             aria-label="Caption"
           >
-            <div className="mx-auto max-w-3xl px-4 py-2 bg-black/80 text-white text-center rounded-lg text-base font-medium shadow-lg backdrop-blur-sm">
+            <div className="mx-auto max-w-3xl px-4 py-2 bg-[var(--app-overlay-strong)] text-[var(--app-overlay-text)] text-center rounded-lg text-base font-medium shadow-lg backdrop-blur-sm">
               {currentCaption}
             </div>
           </div>
         )}
 
         {showControls && (
-          <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent transition-opacity duration-200">
+          <div className="absolute bottom-0 left-0 right-0 p-4 bg-[var(--app-overlay-gradient)] transition-opacity duration-200">
             <div className="space-y-3">
               <div className="flex items-center gap-3">
                 <input

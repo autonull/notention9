@@ -317,10 +317,10 @@ test('${s.id} renders', () => {
                     return 'unknown';
                 }
                 
-                const slotProps = slots
-                    .map(slot => {
+                const slotProps = (slots as string[])
+                    .map((slot: string) => {
                         // Convert kebab-case to camelCase for valid TS property names
-                        const propName = slot.replace(/-([a-z])/g, (_, letter) => letter.toUpperCase());
+                        const propName = slot.replace(/-([a-z])/g, (_, letter: string) => letter.toUpperCase());
                         const type = inferPropType(propName);
                         return `    ${propName}?: ${type};`;
                     })
