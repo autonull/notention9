@@ -4,7 +4,7 @@
 // Source surface: surface.mobile-map
 
 import { render, screen } from '@testing-library/react';
-import { MapViewMobile } from '@/components/views/MapViewMobile';
+import { MapViewMobile } from '../../components/views/MapViewMobile';
 
 test('surface.mobile-map renders', () => {
     render(<MapViewMobile />);

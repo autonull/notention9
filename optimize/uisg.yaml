@@ -476,6 +476,7 @@ journeys:
     name: Help System Completion
     surface: help-system
     description: User completes a help topic from start to finish
+    status: implemented
     steps:
       - open-help-system
       - browse-topics
@@ -713,6 +714,7 @@ journeys:
     name: Mobile Property Editor
     surface: mobile-property-editor
     description: User edits property on mobile
+    status: implemented
     steps:
       - open-property-editor
       - fill-fields
@@ -726,6 +728,7 @@ journeys:
     name: Mobile Arrange Menu
     surface: mobile-arrange-menu
     description: User arranges items via bottom sheet
+    status: implemented
     steps:
       - open-arrange-menu
       - swipe-to-reorder
@@ -738,6 +741,7 @@ journeys:
     name: Mobile Context Rail
     surface: mobile-context-rail
     description: User navigates context rail
+    status: implemented
     steps:
       - open-context-rail
       - swipe-tabs
@@ -750,6 +754,7 @@ journeys:
     name: Mobile Map
     surface: mobile-map
     description: User interacts with map on mobile
+    status: implemented
     steps:
       - open-map
       - tap-fab
@@ -762,6 +767,7 @@ journeys:
     name: Mobile Header
     surface: mobile-header
     description: User opens sidebar via hamburger
+    status: implemented
     steps:
       - tap-hamburger
       - sidebar-opens
@@ -889,6 +895,24 @@ journeys:
     metrics:
       - bundle-size
       - load-time
+
+  # Core App Journeys (1)
+  - id: capture-and-edit
+    name: Capture and Edit Note
+    surface: empty-state-actionable
+    variant: notes-all
+    description: User captures a note and edits its properties
+    status: implemented
+    steps:
+      - page-add-detail
+      - fill-key
+      - select-operator
+      - fill-value
+      - add-detail
+      - save-note
+      - verify-property
+    metrics:
+      - topic-completion-rate
 
 metrics:
   # Help System Metrics

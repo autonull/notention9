@@ -4,7 +4,7 @@ import type { UisgEdgeType, UisgGraph, UisgNode, UisgNodeType, UisgReversibility
 
 const StatusSchema = z.enum(['implemented', 'partial', 'planned', 'candidate', 'experimental', 'removed', 'rejected']);
 const ConfidenceSchema = z.enum(['high', 'medium', 'low']);
-const SeamRoleSchema = z.enum(['capture', 'elicit', 'match', 'display', 'layout', 'explain', 'ontology', 'intent']);
+const SeamRoleSchema = z.enum(['capture', 'elicit', 'match', 'display', 'layout', 'explain', 'ontology', 'intent', 'render']);
 const ReversibilitySchema = z.enum(['reversible', 'compensatable', 'irreversible', 'unknown']);
 const EffectRiskSchema = z.enum(['normal', 'caution', 'destructive', 'consequential']);
 

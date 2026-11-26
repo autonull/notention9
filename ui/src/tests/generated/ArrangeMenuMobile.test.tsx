@@ -4,7 +4,7 @@
 // Source surface: surface.mobile-arrange-menu
 
 import { render, screen } from '@testing-library/react';
-import { ArrangeMenuMobile } from './ArrangeMenuMobile';
+import { ArrangeMenuMobile } from '../../components/patterns/ArrangeMenuMobile';
 
 test('surface.mobile-arrange-menu renders', () => {
     render(<ArrangeMenuMobile />);

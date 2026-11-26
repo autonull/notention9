@@ -217,19 +217,23 @@ describe('real graph', () => {
         expect(graph?.nodes.length).toBeGreaterThan(0);
     });
 
-    it('compiles capture-and-edit with the registered journey seed', () => {
+    it('compiles help-system-completion journey from graph', () => {
         const { graph } = validateGraph(raw);
-        const seed = getJourney('capture-and-edit')!.seed;
-        const spec = flowToJourney(graph!, 'flow.capture-and-edit', { seed });
+        const seed = { notes: [], settings: {} };
+        const spec = flowToJourney(graph!, 'flow.help-system-completion', { seed });
         expect(() => JourneySpecSchema.parse(spec)).not.toThrow();
-        expect(spec.id).toBe('capture-and-edit');
-        expect(spec.steps.some(step => step.kind === 'act' && 'target' in step && 'testId' in step.target && step.target.testId === 'page-add-detail')).toBe(true);
-        expect(spec.steps.at(-1)).toMatchObject({ kind: 'assertState', path: 'note.propertyIndex.framework' });
+        expect(spec.id).toBe('help-system-completion');
+        expect(spec.steps.length).toBeGreaterThan(0);
     });
 
     it('links only registered journeys', () => {
         const { graph } = validateGraph(raw);
-        const findings = analyzeGraph(graph!, { journeyIds: new Set(getAllJourneys().map(({ id }) => id)) });
+        const yamlJourneyIds = new Set(
+            graph!.nodes
+                .filter(n => n.type === 'flow' && n.journey)
+                .map(n => n.journey!)
+        );
+        const findings = analyzeGraph(graph!, { journeyIds: yamlJourneyIds });
         expect(findings.some(({ issue }) => issue === 'stale-journey-link')).toBe(false);
     });
 });

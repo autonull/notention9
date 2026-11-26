@@ -4,7 +4,7 @@
 // Source surface: surface.mobile-context-rail
 
 import { render, screen } from '@testing-library/react';
-import { ContextRailMobile } from './ContextRailMobile';
+import { ContextRailMobile } from '../../components/sidebar/ContextRailMobile';
 
 test('surface.mobile-context-rail renders', () => {
     render(<ContextRailMobile />);

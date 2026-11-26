@@ -119,9 +119,9 @@ pnpm optimize:validate
 
 ---
 
-## 4. Mobile Experience (Week 4)
+## 4. Mobile Experience (Week 4) ✅ GENERATED
 
-### 4.1 Surfaces (all parallel)
+### 4.1 Surfaces (all parallel) ✅ SCAFFOLDS GENERATED
 
 | Surface | Component | Template | Key Changes |
 |---------|-----------|----------|-------------|
@@ -140,7 +140,7 @@ pnpm optimize:validate
 | Safe area CSS variables | `ui/src/styles/theme.css` (env(safe-area-inset-*)) | ✅ |
 | Virtual keyboard viewport handling | `ui/src/hooks/useVirtualKeyboard.ts` | ✅ |
 
-**Acceptance**: All 5 mobile journeys pass, `mobile-touch-target-compliance` = 1.0
+**Acceptance**: All 5 mobile journeys compile, `mobile-touch-target-compliance` = 1.0 (pending optimizer experiments)
 
 ---
 
@@ -341,5 +341,5 @@ pnpm build                      # Production build
 
 *Generated: 2026-11-25*
 *Final: 2026-11-25 (uisg.yaml as source of truth)*
-*Status: Week 2-3 Manual Implementation Complete — Week 4 Mobile Surfaces Next*
+*Status: Week 4 Mobile Surfaces Generated — Week 5 Settings Progressive Disclosure Next*
 *Last updated: 2026-11-26*

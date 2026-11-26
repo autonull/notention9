@@ -26,6 +26,7 @@ export interface UisgYamlSurface {
   template: string;
   description: string;
   status: 'implemented' | 'partial' | 'planned' | 'candidate' | 'experimental' | 'removed' | 'rejected';
+  category: string;
   variants?: Record<string, UisgYamlVariant>;
 }
 
@@ -50,6 +51,7 @@ export interface UisgYamlJourney {
   surface: string;
   variant?: string;
   description: string;
+  status?: 'implemented' | 'partial' | 'planned' | 'candidate' | 'experimental' | 'removed' | 'rejected';
   steps: string[];
   metrics: string[];
 }
@@ -126,23 +128,72 @@ function generateGraphFromYaml(yaml: UisgYaml): UisgGraph {
       summary: template.description,
       seam: 'render',
       strategy: template.id,
-      shape: template.shape, // Custom property for template shape
-      componentTemplate: template.componentTemplate, // Custom template content
-      slots: template.slots, // Template slots
+      shape: template.shape,
+      componentTemplate: template.componentTemplate,
+      slots: template.slots,
     } as any);
   }
 
-  // Add journeys as flow nodes
+  // Add journeys as flow nodes with step nodes
   for (const journey of yaml.journeys) {
+    const flowId = `flow.${journey.id}`;
+    const stepIds = journey.steps.map((step, i) => `step.${journey.id}.${i}`);
+
+    // Create flow node
     nodes.push({
-      id: `flow.${journey.id}`,
+      id: flowId,
       name: journey.name,
-      status: 'planned',
+      status: journey.status || 'planned',
       type: 'flow',
-      entry: journey.steps[0] || '',
+      entry: stepIds[0] || '',
       outcome: journey.description,
       journey: journey.id,
     });
+
+    // Create step nodes
+    for (let i = 0; i < journey.steps.length; i++) {
+      const stepId = stepIds[i];
+      const stepName = journey.steps[i];
+      const isLast = i === journey.steps.length - 1;
+
+      nodes.push({
+        id: stepId,
+        name: stepName,
+        status: 'planned',
+        type: 'step',
+        kind: isLast ? 'result' : 'action',
+        target: { testId: stepName },
+        action: 'click',
+        ...(isLast && { statePath: `note.${stepName}`, stateEquals: true }),
+      });
+    }
+
+    // Add contains edges: flow -> steps
+    for (const stepId of stepIds) {
+      edges.push({
+        from: flowId,
+        type: 'contains',
+        to: stepId,
+      });
+    }
+
+    // Add next edges between steps
+    for (let i = 0; i < stepIds.length - 1; i++) {
+      edges.push({
+        from: stepIds[i],
+        type: 'next',
+        to: stepIds[i + 1],
+      });
+    }
+
+    // Add renders edge: last step -> surface
+    if (stepIds.length > 0) {
+      edges.push({
+        from: stepIds[stepIds.length - 1],
+        type: 'renders',
+        to: `surface.${journey.surface}`,
+      });
+    }
   }
 
   // Add metrics as predicate nodes
@@ -157,32 +208,25 @@ function generateGraphFromYaml(yaml: UisgYaml): UisgGraph {
     });
   }
 
-  // Add edges: surface -> template
+  // Add edges: surface -> template (using requires instead of uses, since uses is flow->capability)
   for (const surface of yaml.surfaces) {
     edges.push({
       from: `surface.${surface.id}`,
-      type: 'uses',
+      type: 'requires',
       to: `template.${surface.template}`,
-    });
-  }
-
-  // Add edges: journey -> surface
-  for (const journey of yaml.journeys) {
-    edges.push({
-      from: `flow.${journey.id}`,
-      type: 'renders',
-      to: `surface.${journey.surface}`,
     });
   }
 
   // Add edges: metric -> journey
   for (const metric of yaml.metrics) {
-    const sourceJourney = metric.source.replace('journey:', '');
-    edges.push({
-      from: `metric.${metric.id}`,
-      type: 'evidencedBy',
-      to: `flow.${sourceJourney}`,
-    });
+    const sourceJourney = metric.source.replace('journey:', '').replace('*', '');
+    if (sourceJourney) {
+      edges.push({
+        from: `metric.${metric.id}`,
+        type: 'evidencedBy',
+        to: `flow.${sourceJourney}`,
+      });
+    }
   }
 
   return {

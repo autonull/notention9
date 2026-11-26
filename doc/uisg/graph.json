@@ -419,299 +419,1608 @@
     {
       "id": "flow.help-system-completion",
       "name": "Help System Completion",
-      "status": "planned",
+      "status": "implemented",
       "type": "flow",
-      "entry": "open-help-system",
+      "entry": "step.help-system-completion.0",
       "outcome": "User completes a help topic from start to finish",
       "journey": "help-system-completion"
+    },
+    {
+      "id": "step.help-system-completion.0",
+      "name": "open-help-system",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-help-system"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-system-completion.1",
+      "name": "browse-topics",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "browse-topics"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-system-completion.2",
+      "name": "select-topic",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "select-topic"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-system-completion.3",
+      "name": "complete-steps",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "complete-steps"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-system-completion.4",
+      "name": "rate-topic",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "rate-topic"
+      },
+      "action": "click",
+      "statePath": "note.rate-topic",
+      "stateEquals": true
     },
     {
       "id": "flow.help-search",
       "name": "Help Search",
       "status": "planned",
       "type": "flow",
-      "entry": "open-help-system",
+      "entry": "step.help-search.0",
       "outcome": "User searches for help topic",
       "journey": "help-search"
+    },
+    {
+      "id": "step.help-search.0",
+      "name": "open-help-system",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-help-system"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-search.1",
+      "name": "enter-search-query",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "enter-search-query"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-search.2",
+      "name": "select-result",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "select-result"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-search.3",
+      "name": "view-topic",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "view-topic"
+      },
+      "action": "click",
+      "statePath": "note.view-topic",
+      "stateEquals": true
     },
     {
       "id": "flow.help-video",
       "name": "Help Video Playback",
       "status": "planned",
       "type": "flow",
-      "entry": "open-help-topic",
+      "entry": "step.help-video.0",
       "outcome": "User watches help video",
       "journey": "help-video"
+    },
+    {
+      "id": "step.help-video.0",
+      "name": "open-help-topic",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-help-topic"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-video.1",
+      "name": "play-video",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "play-video"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-video.2",
+      "name": "complete-video",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "complete-video"
+      },
+      "action": "click",
+      "statePath": "note.complete-video",
+      "stateEquals": true
     },
     {
       "id": "flow.help-interactive",
       "name": "Help Interactive Demo",
       "status": "planned",
       "type": "flow",
-      "entry": "open-help-topic",
+      "entry": "step.help-interactive.0",
       "outcome": "User completes interactive demo",
       "journey": "help-interactive"
+    },
+    {
+      "id": "step.help-interactive.0",
+      "name": "open-help-topic",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-help-topic"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-interactive.1",
+      "name": "start-demo",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "start-demo"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-interactive.2",
+      "name": "complete-demo-steps",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "complete-demo-steps"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-interactive.3",
+      "name": "finish-demo",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "finish-demo"
+      },
+      "action": "click",
+      "statePath": "note.finish-demo",
+      "stateEquals": true
     },
     {
       "id": "flow.help-progress",
       "name": "Help Progress Tracking",
       "status": "planned",
       "type": "flow",
-      "entry": "open-help-system",
+      "entry": "step.help-progress.0",
       "outcome": "User tracks progress across topics",
       "journey": "help-progress"
+    },
+    {
+      "id": "step.help-progress.0",
+      "name": "open-help-system",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-help-system"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-progress.1",
+      "name": "view-progress",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-progress"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-progress.2",
+      "name": "resume-topic",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "resume-topic"
+      },
+      "action": "click",
+      "statePath": "note.resume-topic",
+      "stateEquals": true
     },
     {
       "id": "flow.help-contextual",
       "name": "Contextual Help Trigger",
       "status": "planned",
       "type": "flow",
-      "entry": "trigger-condition-met",
+      "entry": "step.help-contextual.0",
       "outcome": "Help appears contextually (idle, error, feature gate)",
       "journey": "help-contextual"
+    },
+    {
+      "id": "step.help-contextual.0",
+      "name": "trigger-condition-met",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "trigger-condition-met"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-contextual.1",
+      "name": "help-prompt-shown",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "help-prompt-shown"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-contextual.2",
+      "name": "user-accepts-help",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "user-accepts-help"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-contextual.3",
+      "name": "help-topic-opened",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "help-topic-opened"
+      },
+      "action": "click",
+      "statePath": "note.help-topic-opened",
+      "stateEquals": true
     },
     {
       "id": "flow.describe-it-discovery",
       "name": "Describe It Discovery",
       "status": "planned",
       "type": "flow",
-      "entry": "promo-shown",
+      "entry": "step.describe-it-discovery.0",
       "outcome": "User discovers Describe It via promo",
       "journey": "describe-it-discovery"
+    },
+    {
+      "id": "step.describe-it-discovery.0",
+      "name": "promo-shown",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "promo-shown"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-discovery.1",
+      "name": "user-clicks-promo",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "user-clicks-promo"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-discovery.2",
+      "name": "describe-it-opens",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "describe-it-opens"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-discovery.3",
+      "name": "first-use-complete",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "first-use-complete"
+      },
+      "action": "click",
+      "statePath": "note.first-use-complete",
+      "stateEquals": true
     },
     {
       "id": "flow.describe-it-shortcut",
       "name": "Describe It Shortcut",
       "status": "planned",
       "type": "flow",
-      "entry": "press-shortcut",
+      "entry": "step.describe-it-shortcut.0",
       "outcome": "User opens Describe It via Ctrl+Shift+/",
       "journey": "describe-it-shortcut"
+    },
+    {
+      "id": "step.describe-it-shortcut.0",
+      "name": "press-shortcut",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "press-shortcut"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-shortcut.1",
+      "name": "describe-it-opens",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "describe-it-opens"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-shortcut.2",
+      "name": "first-use-complete",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "first-use-complete"
+      },
+      "action": "click",
+      "statePath": "note.first-use-complete",
+      "stateEquals": true
     },
     {
       "id": "flow.describe-it-command-palette",
       "name": "Describe It Command Palette",
       "status": "planned",
       "type": "flow",
-      "entry": "open-command-palette",
+      "entry": "step.describe-it-command-palette.0",
       "outcome": "User opens Describe It via Command Palette",
       "journey": "describe-it-command-palette"
+    },
+    {
+      "id": "step.describe-it-command-palette.0",
+      "name": "open-command-palette",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-command-palette"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-command-palette.1",
+      "name": "search-describe-it",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "search-describe-it"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-command-palette.2",
+      "name": "select-entry",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "select-entry"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.describe-it-command-palette.3",
+      "name": "describe-it-opens",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "describe-it-opens"
+      },
+      "action": "click",
+      "statePath": "note.describe-it-opens",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-notes-all",
       "name": "Empty State Notes All",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-notes-all.0",
       "outcome": "New user sees empty notes view",
       "journey": "empty-state-notes-all"
+    },
+    {
+      "id": "step.empty-state-notes-all.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-notes-all.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-notes-all.2",
+      "name": "create-first-note",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "create-first-note"
+      },
+      "action": "click",
+      "statePath": "note.create-first-note",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-notes-search",
       "name": "Empty State Notes Search",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-notes-search.0",
       "outcome": "User searches with no results",
       "journey": "empty-state-notes-search"
+    },
+    {
+      "id": "step.empty-state-notes-search.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-notes-search.1",
+      "name": "click-secondary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-secondary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-notes-search.2",
+      "name": "clear-search",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "clear-search"
+      },
+      "action": "click",
+      "statePath": "note.clear-search",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-network",
       "name": "Empty State Network",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-network.0",
       "outcome": "User has no network connections",
       "journey": "empty-state-network"
+    },
+    {
+      "id": "step.empty-state-network.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-network.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-network.2",
+      "name": "connect-identity",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "connect-identity"
+      },
+      "action": "click",
+      "statePath": "note.connect-identity",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-map",
       "name": "Empty State Map",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-map.0",
       "outcome": "User has no locations on map",
       "journey": "empty-state-map"
+    },
+    {
+      "id": "step.empty-state-map.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-map.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-map.2",
+      "name": "add-location",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "add-location"
+      },
+      "action": "click",
+      "statePath": "note.add-location",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-timeline",
       "name": "Empty State Timeline",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-timeline.0",
       "outcome": "User has no dated notes",
       "journey": "empty-state-timeline"
+    },
+    {
+      "id": "step.empty-state-timeline.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-timeline.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-timeline.2",
+      "name": "add-date-property",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "add-date-property"
+      },
+      "action": "click",
+      "statePath": "note.add-date-property",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-matches",
       "name": "Empty State Matches",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-matches.0",
       "outcome": "User has no matches",
       "journey": "empty-state-matches"
+    },
+    {
+      "id": "step.empty-state-matches.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-matches.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-matches.2",
+      "name": "describe-need",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "describe-need"
+      },
+      "action": "click",
+      "statePath": "note.describe-need",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-chat",
       "name": "Empty State Chat",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-chat.0",
       "outcome": "User has no chat conversations",
       "journey": "empty-state-chat"
+    },
+    {
+      "id": "step.empty-state-chat.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-chat.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-chat.2",
+      "name": "start-chat",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "start-chat"
+      },
+      "action": "click",
+      "statePath": "note.start-chat",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-ontology",
       "name": "Empty State Ontology",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-ontology.0",
       "outcome": "User has no ontology schemas",
       "journey": "empty-state-ontology"
+    },
+    {
+      "id": "step.empty-state-ontology.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-ontology.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-ontology.2",
+      "name": "import-schema",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "import-schema"
+      },
+      "action": "click",
+      "statePath": "note.import-schema",
+      "stateEquals": true
     },
     {
       "id": "flow.empty-state-skills",
       "name": "Empty State Skills",
       "status": "planned",
       "type": "flow",
-      "entry": "view-empty-state",
+      "entry": "step.empty-state-skills.0",
       "outcome": "User has no skills",
       "journey": "empty-state-skills"
     },
     {
+      "id": "step.empty-state-skills.0",
+      "name": "view-empty-state",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "view-empty-state"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-skills.1",
+      "name": "click-primary-cta",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-primary-cta"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.empty-state-skills.2",
+      "name": "browse-registry",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "browse-registry"
+      },
+      "action": "click",
+      "statePath": "note.browse-registry",
+      "stateEquals": true
+    },
+    {
       "id": "flow.mobile-property-editor",
       "name": "Mobile Property Editor",
-      "status": "planned",
+      "status": "implemented",
       "type": "flow",
-      "entry": "open-property-editor",
+      "entry": "step.mobile-property-editor.0",
       "outcome": "User edits property on mobile",
       "journey": "mobile-property-editor"
     },
     {
+      "id": "step.mobile-property-editor.0",
+      "name": "open-property-editor",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-property-editor"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-property-editor.1",
+      "name": "fill-fields",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "fill-fields"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-property-editor.2",
+      "name": "handle-virtual-keyboard",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "handle-virtual-keyboard"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-property-editor.3",
+      "name": "confirm-changes",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "confirm-changes"
+      },
+      "action": "click",
+      "statePath": "note.confirm-changes",
+      "stateEquals": true
+    },
+    {
       "id": "flow.mobile-arrange-menu",
       "name": "Mobile Arrange Menu",
-      "status": "planned",
+      "status": "implemented",
       "type": "flow",
-      "entry": "open-arrange-menu",
+      "entry": "step.mobile-arrange-menu.0",
       "outcome": "User arranges items via bottom sheet",
       "journey": "mobile-arrange-menu"
     },
     {
+      "id": "step.mobile-arrange-menu.0",
+      "name": "open-arrange-menu",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-arrange-menu"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-arrange-menu.1",
+      "name": "swipe-to-reorder",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "swipe-to-reorder"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-arrange-menu.2",
+      "name": "dismiss-sheet",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "dismiss-sheet"
+      },
+      "action": "click",
+      "statePath": "note.dismiss-sheet",
+      "stateEquals": true
+    },
+    {
       "id": "flow.mobile-context-rail",
       "name": "Mobile Context Rail",
-      "status": "planned",
+      "status": "implemented",
       "type": "flow",
-      "entry": "open-context-rail",
+      "entry": "step.mobile-context-rail.0",
       "outcome": "User navigates context rail",
       "journey": "mobile-context-rail"
     },
     {
+      "id": "step.mobile-context-rail.0",
+      "name": "open-context-rail",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-context-rail"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-context-rail.1",
+      "name": "swipe-tabs",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "swipe-tabs"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-context-rail.2",
+      "name": "select-tab",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "select-tab"
+      },
+      "action": "click",
+      "statePath": "note.select-tab",
+      "stateEquals": true
+    },
+    {
       "id": "flow.mobile-map",
       "name": "Mobile Map",
-      "status": "planned",
+      "status": "implemented",
       "type": "flow",
-      "entry": "open-map",
+      "entry": "step.mobile-map.0",
       "outcome": "User interacts with map on mobile",
       "journey": "mobile-map"
     },
     {
+      "id": "step.mobile-map.0",
+      "name": "open-map",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-map"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-map.1",
+      "name": "tap-fab",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "tap-fab"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-map.2",
+      "name": "use-geolocation",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "use-geolocation"
+      },
+      "action": "click",
+      "statePath": "note.use-geolocation",
+      "stateEquals": true
+    },
+    {
       "id": "flow.mobile-header",
       "name": "Mobile Header",
-      "status": "planned",
+      "status": "implemented",
       "type": "flow",
-      "entry": "tap-hamburger",
+      "entry": "step.mobile-header.0",
       "outcome": "User opens sidebar via hamburger",
       "journey": "mobile-header"
+    },
+    {
+      "id": "step.mobile-header.0",
+      "name": "tap-hamburger",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "tap-hamburger"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-header.1",
+      "name": "sidebar-opens",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "sidebar-opens"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.mobile-header.2",
+      "name": "navigate",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "navigate"
+      },
+      "action": "click",
+      "statePath": "note.navigate",
+      "stateEquals": true
     },
     {
       "id": "flow.settings-task",
       "name": "Settings Task Completion",
       "status": "planned",
       "type": "flow",
-      "entry": "open-settings",
+      "entry": "step.settings-task.0",
       "outcome": "User completes a settings task",
       "journey": "settings-task"
+    },
+    {
+      "id": "step.settings-task.0",
+      "name": "open-settings",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-settings"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-task.1",
+      "name": "search-or-browse",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "search-or-browse"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-task.2",
+      "name": "modify-setting",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "modify-setting"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-task.3",
+      "name": "verify-change",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-change"
+      },
+      "action": "click",
+      "statePath": "note.verify-change",
+      "stateEquals": true
     },
     {
       "id": "flow.settings-wizard",
       "name": "Settings Wizard Completion",
       "status": "planned",
       "type": "flow",
-      "entry": "open-settings-first-run",
+      "entry": "step.settings-wizard.0",
       "outcome": "New user completes first-run wizard",
       "journey": "settings-wizard"
+    },
+    {
+      "id": "step.settings-wizard.0",
+      "name": "open-settings-first-run",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-settings-first-run"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-wizard.1",
+      "name": "complete-wizard-steps",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "complete-wizard-steps"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-wizard.2",
+      "name": "finish-wizard",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "finish-wizard"
+      },
+      "action": "click",
+      "statePath": "note.finish-wizard",
+      "stateEquals": true
     },
     {
       "id": "flow.settings-export-import",
       "name": "Settings Export/Import",
       "status": "planned",
       "type": "flow",
-      "entry": "open-settings",
+      "entry": "step.settings-export-import.0",
       "outcome": "User exports and imports settings",
       "journey": "settings-export-import"
+    },
+    {
+      "id": "step.settings-export-import.0",
+      "name": "open-settings",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-settings"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-export-import.1",
+      "name": "export-settings",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "export-settings"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-export-import.2",
+      "name": "import-settings",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "import-settings"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-export-import.3",
+      "name": "verify-roundtrip",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-roundtrip"
+      },
+      "action": "click",
+      "statePath": "note.verify-roundtrip",
+      "stateEquals": true
     },
     {
       "id": "flow.settings-diff",
       "name": "Settings Diff",
       "status": "planned",
       "type": "flow",
-      "entry": "open-settings",
+      "entry": "step.settings-diff.0",
       "outcome": "User views settings diff",
       "journey": "settings-diff"
+    },
+    {
+      "id": "step.settings-diff.0",
+      "name": "open-settings",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-settings"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-diff.1",
+      "name": "click-show-diff",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "click-show-diff"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.settings-diff.2",
+      "name": "review-changes",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "review-changes"
+      },
+      "action": "click",
+      "statePath": "note.review-changes",
+      "stateEquals": true
     },
     {
       "id": "flow.token-consistency",
       "name": "Token Consistency Audit",
       "status": "planned",
       "type": "flow",
-      "entry": "scan-components",
+      "entry": "step.token-consistency.0",
       "outcome": "Verify no hardcoded colors in components",
       "journey": "token-consistency"
+    },
+    {
+      "id": "step.token-consistency.0",
+      "name": "scan-components",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "scan-components"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.token-consistency.1",
+      "name": "verify-tokens",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-tokens"
+      },
+      "action": "click",
+      "statePath": "note.verify-tokens",
+      "stateEquals": true
     },
     {
       "id": "flow.a11y-live-regions",
       "name": "Live Regions",
       "status": "planned",
       "type": "flow",
-      "entry": "trigger-live-content",
+      "entry": "step.a11y-live-regions.0",
       "outcome": "Verify live regions for dynamic content",
       "journey": "a11y-live-regions"
+    },
+    {
+      "id": "step.a11y-live-regions.0",
+      "name": "trigger-live-content",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "trigger-live-content"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.a11y-live-regions.1",
+      "name": "verify-announcement",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-announcement"
+      },
+      "action": "click",
+      "statePath": "note.verify-announcement",
+      "stateEquals": true
     },
     {
       "id": "flow.a11y-focus-management",
       "name": "Focus Management",
       "status": "planned",
       "type": "flow",
-      "entry": "open-modal",
+      "entry": "step.a11y-focus-management.0",
       "outcome": "Verify focus management in modals/sheets",
       "journey": "a11y-focus-management"
+    },
+    {
+      "id": "step.a11y-focus-management.0",
+      "name": "open-modal",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-modal"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.a11y-focus-management.1",
+      "name": "verify-focus-trap",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "verify-focus-trap"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.a11y-focus-management.2",
+      "name": "close-modal",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "close-modal"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.a11y-focus-management.3",
+      "name": "verify-focus-return",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-focus-return"
+      },
+      "action": "click",
+      "statePath": "note.verify-focus-return",
+      "stateEquals": true
     },
     {
       "id": "flow.a11y-screen-reader",
       "name": "Screen Reader Announcements",
       "status": "planned",
       "type": "flow",
-      "entry": "trigger-announcement",
+      "entry": "step.a11y-screen-reader.0",
       "outcome": "Verify screen reader announcements",
       "journey": "a11y-screen-reader"
+    },
+    {
+      "id": "step.a11y-screen-reader.0",
+      "name": "trigger-announcement",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "trigger-announcement"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.a11y-screen-reader.1",
+      "name": "verify-content",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-content"
+      },
+      "action": "click",
+      "statePath": "note.verify-content",
+      "stateEquals": true
     },
     {
       "id": "flow.a11y-high-contrast",
       "name": "High Contrast Mode",
       "status": "planned",
       "type": "flow",
-      "entry": "enable-high-contrast",
+      "entry": "step.a11y-high-contrast.0",
       "outcome": "Verify high contrast mode",
       "journey": "a11y-high-contrast"
+    },
+    {
+      "id": "step.a11y-high-contrast.0",
+      "name": "enable-high-contrast",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "enable-high-contrast"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.a11y-high-contrast.1",
+      "name": "verify-visibility",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-visibility"
+      },
+      "action": "click",
+      "statePath": "note.verify-visibility",
+      "stateEquals": true
     },
     {
       "id": "flow.performance-budget",
       "name": "Performance Budget",
       "status": "planned",
       "type": "flow",
-      "entry": "measure-bundle",
+      "entry": "step.performance-budget.0",
       "outcome": "Verify bundle size and load times",
       "journey": "performance-budget"
+    },
+    {
+      "id": "step.performance-budget.0",
+      "name": "measure-bundle",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "measure-bundle"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.performance-budget.1",
+      "name": "measure-load-time",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "measure-load-time"
+      },
+      "action": "click",
+      "statePath": "note.measure-load-time",
+      "stateEquals": true
+    },
+    {
+      "id": "flow.capture-and-edit",
+      "name": "Capture and Edit Note",
+      "status": "implemented",
+      "type": "flow",
+      "entry": "step.capture-and-edit.0",
+      "outcome": "User captures a note and edits its properties",
+      "journey": "capture-and-edit"
+    },
+    {
+      "id": "step.capture-and-edit.0",
+      "name": "page-add-detail",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "page-add-detail"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.capture-and-edit.1",
+      "name": "fill-key",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "fill-key"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.capture-and-edit.2",
+      "name": "select-operator",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "select-operator"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.capture-and-edit.3",
+      "name": "fill-value",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "fill-value"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.capture-and-edit.4",
+      "name": "add-detail",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "add-detail"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.capture-and-edit.5",
+      "name": "save-note",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "save-note"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.capture-and-edit.6",
+      "name": "verify-property",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-property"
+      },
+      "action": "click",
+      "statePath": "note.verify-property",
+      "stateEquals": true
     },
     {
       "id": "metric.topic-completion-rate",
@@ -924,214 +2233,1169 @@
   ],
   "edges": [
     {
-      "from": "surface.help-system",
-      "type": "uses",
-      "to": "template.help-system"
-    },
-    {
-      "from": "surface.describe-it-promo",
-      "type": "uses",
-      "to": "template.inline-promo"
-    },
-    {
-      "from": "surface.empty-state-actionable",
-      "type": "uses",
-      "to": "template.empty-state"
-    },
-    {
-      "from": "surface.mobile-property-editor",
-      "type": "uses",
-      "to": "template.modal-fullscreen"
-    },
-    {
-      "from": "surface.mobile-arrange-menu",
-      "type": "uses",
-      "to": "template.bottom-sheet"
-    },
-    {
-      "from": "surface.mobile-context-rail",
-      "type": "uses",
-      "to": "template.bottom-tabs"
-    },
-    {
-      "from": "surface.mobile-map",
-      "type": "uses",
-      "to": "template.map-full"
-    },
-    {
-      "from": "surface.mobile-header",
-      "type": "uses",
-      "to": "template.header-compact"
-    },
-    {
-      "from": "surface.settings-directory",
-      "type": "uses",
-      "to": "template.settings-wizard"
+      "from": "flow.help-system-completion",
+      "type": "contains",
+      "to": "step.help-system-completion.0"
     },
     {
       "from": "flow.help-system-completion",
+      "type": "contains",
+      "to": "step.help-system-completion.1"
+    },
+    {
+      "from": "flow.help-system-completion",
+      "type": "contains",
+      "to": "step.help-system-completion.2"
+    },
+    {
+      "from": "flow.help-system-completion",
+      "type": "contains",
+      "to": "step.help-system-completion.3"
+    },
+    {
+      "from": "flow.help-system-completion",
+      "type": "contains",
+      "to": "step.help-system-completion.4"
+    },
+    {
+      "from": "step.help-system-completion.0",
+      "type": "next",
+      "to": "step.help-system-completion.1"
+    },
+    {
+      "from": "step.help-system-completion.1",
+      "type": "next",
+      "to": "step.help-system-completion.2"
+    },
+    {
+      "from": "step.help-system-completion.2",
+      "type": "next",
+      "to": "step.help-system-completion.3"
+    },
+    {
+      "from": "step.help-system-completion.3",
+      "type": "next",
+      "to": "step.help-system-completion.4"
+    },
+    {
+      "from": "step.help-system-completion.4",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.help-search",
+      "type": "contains",
+      "to": "step.help-search.0"
+    },
+    {
+      "from": "flow.help-search",
+      "type": "contains",
+      "to": "step.help-search.1"
+    },
+    {
+      "from": "flow.help-search",
+      "type": "contains",
+      "to": "step.help-search.2"
+    },
+    {
+      "from": "flow.help-search",
+      "type": "contains",
+      "to": "step.help-search.3"
+    },
+    {
+      "from": "step.help-search.0",
+      "type": "next",
+      "to": "step.help-search.1"
+    },
+    {
+      "from": "step.help-search.1",
+      "type": "next",
+      "to": "step.help-search.2"
+    },
+    {
+      "from": "step.help-search.2",
+      "type": "next",
+      "to": "step.help-search.3"
+    },
+    {
+      "from": "step.help-search.3",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.help-video",
+      "type": "contains",
+      "to": "step.help-video.0"
+    },
+    {
+      "from": "flow.help-video",
+      "type": "contains",
+      "to": "step.help-video.1"
+    },
+    {
+      "from": "flow.help-video",
+      "type": "contains",
+      "to": "step.help-video.2"
+    },
+    {
+      "from": "step.help-video.0",
+      "type": "next",
+      "to": "step.help-video.1"
+    },
+    {
+      "from": "step.help-video.1",
+      "type": "next",
+      "to": "step.help-video.2"
+    },
+    {
+      "from": "step.help-video.2",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.help-interactive",
+      "type": "contains",
+      "to": "step.help-interactive.0"
+    },
+    {
+      "from": "flow.help-interactive",
+      "type": "contains",
+      "to": "step.help-interactive.1"
+    },
+    {
+      "from": "flow.help-interactive",
+      "type": "contains",
+      "to": "step.help-interactive.2"
+    },
+    {
+      "from": "flow.help-interactive",
+      "type": "contains",
+      "to": "step.help-interactive.3"
+    },
+    {
+      "from": "step.help-interactive.0",
+      "type": "next",
+      "to": "step.help-interactive.1"
+    },
+    {
+      "from": "step.help-interactive.1",
+      "type": "next",
+      "to": "step.help-interactive.2"
+    },
+    {
+      "from": "step.help-interactive.2",
+      "type": "next",
+      "to": "step.help-interactive.3"
+    },
+    {
+      "from": "step.help-interactive.3",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.help-progress",
+      "type": "contains",
+      "to": "step.help-progress.0"
+    },
+    {
+      "from": "flow.help-progress",
+      "type": "contains",
+      "to": "step.help-progress.1"
+    },
+    {
+      "from": "flow.help-progress",
+      "type": "contains",
+      "to": "step.help-progress.2"
+    },
+    {
+      "from": "step.help-progress.0",
+      "type": "next",
+      "to": "step.help-progress.1"
+    },
+    {
+      "from": "step.help-progress.1",
+      "type": "next",
+      "to": "step.help-progress.2"
+    },
+    {
+      "from": "step.help-progress.2",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.help-contextual",
+      "type": "contains",
+      "to": "step.help-contextual.0"
+    },
+    {
+      "from": "flow.help-contextual",
+      "type": "contains",
+      "to": "step.help-contextual.1"
+    },
+    {
+      "from": "flow.help-contextual",
+      "type": "contains",
+      "to": "step.help-contextual.2"
+    },
+    {
+      "from": "flow.help-contextual",
+      "type": "contains",
+      "to": "step.help-contextual.3"
+    },
+    {
+      "from": "step.help-contextual.0",
+      "type": "next",
+      "to": "step.help-contextual.1"
+    },
+    {
+      "from": "step.help-contextual.1",
+      "type": "next",
+      "to": "step.help-contextual.2"
+    },
+    {
+      "from": "step.help-contextual.2",
+      "type": "next",
+      "to": "step.help-contextual.3"
+    },
+    {
+      "from": "step.help-contextual.3",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.describe-it-discovery",
+      "type": "contains",
+      "to": "step.describe-it-discovery.0"
+    },
+    {
+      "from": "flow.describe-it-discovery",
+      "type": "contains",
+      "to": "step.describe-it-discovery.1"
+    },
+    {
+      "from": "flow.describe-it-discovery",
+      "type": "contains",
+      "to": "step.describe-it-discovery.2"
+    },
+    {
+      "from": "flow.describe-it-discovery",
+      "type": "contains",
+      "to": "step.describe-it-discovery.3"
+    },
+    {
+      "from": "step.describe-it-discovery.0",
+      "type": "next",
+      "to": "step.describe-it-discovery.1"
+    },
+    {
+      "from": "step.describe-it-discovery.1",
+      "type": "next",
+      "to": "step.describe-it-discovery.2"
+    },
+    {
+      "from": "step.describe-it-discovery.2",
+      "type": "next",
+      "to": "step.describe-it-discovery.3"
+    },
+    {
+      "from": "step.describe-it-discovery.3",
       "type": "renders",
       "to": "surface.describe-it-promo"
     },
     {
       "from": "flow.describe-it-shortcut",
+      "type": "contains",
+      "to": "step.describe-it-shortcut.0"
+    },
+    {
+      "from": "flow.describe-it-shortcut",
+      "type": "contains",
+      "to": "step.describe-it-shortcut.1"
+    },
+    {
+      "from": "flow.describe-it-shortcut",
+      "type": "contains",
+      "to": "step.describe-it-shortcut.2"
+    },
+    {
+      "from": "step.describe-it-shortcut.0",
+      "type": "next",
+      "to": "step.describe-it-shortcut.1"
+    },
+    {
+      "from": "step.describe-it-shortcut.1",
+      "type": "next",
+      "to": "step.describe-it-shortcut.2"
+    },
+    {
+      "from": "step.describe-it-shortcut.2",
       "type": "renders",
       "to": "surface.describe-it-promo"
     },
     {
       "from": "flow.describe-it-command-palette",
+      "type": "contains",
+      "to": "step.describe-it-command-palette.0"
+    },
+    {
+      "from": "flow.describe-it-command-palette",
+      "type": "contains",
+      "to": "step.describe-it-command-palette.1"
+    },
+    {
+      "from": "flow.describe-it-command-palette",
+      "type": "contains",
+      "to": "step.describe-it-command-palette.2"
+    },
+    {
+      "from": "flow.describe-it-command-palette",
+      "type": "contains",
+      "to": "step.describe-it-command-palette.3"
+    },
+    {
+      "from": "step.describe-it-command-palette.0",
+      "type": "next",
+      "to": "step.describe-it-command-palette.1"
+    },
+    {
+      "from": "step.describe-it-command-palette.1",
+      "type": "next",
+      "to": "step.describe-it-command-palette.2"
+    },
+    {
+      "from": "step.describe-it-command-palette.2",
+      "type": "next",
+      "to": "step.describe-it-command-palette.3"
+    },
+    {
+      "from": "step.describe-it-command-palette.3",
       "type": "renders",
       "to": "surface.describe-it-promo"
     },
     {
       "from": "flow.empty-state-notes-all",
+      "type": "contains",
+      "to": "step.empty-state-notes-all.0"
+    },
+    {
+      "from": "flow.empty-state-notes-all",
+      "type": "contains",
+      "to": "step.empty-state-notes-all.1"
+    },
+    {
+      "from": "flow.empty-state-notes-all",
+      "type": "contains",
+      "to": "step.empty-state-notes-all.2"
+    },
+    {
+      "from": "step.empty-state-notes-all.0",
+      "type": "next",
+      "to": "step.empty-state-notes-all.1"
+    },
+    {
+      "from": "step.empty-state-notes-all.1",
+      "type": "next",
+      "to": "step.empty-state-notes-all.2"
+    },
+    {
+      "from": "step.empty-state-notes-all.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-notes-search",
+      "type": "contains",
+      "to": "step.empty-state-notes-search.0"
+    },
+    {
+      "from": "flow.empty-state-notes-search",
+      "type": "contains",
+      "to": "step.empty-state-notes-search.1"
+    },
+    {
+      "from": "flow.empty-state-notes-search",
+      "type": "contains",
+      "to": "step.empty-state-notes-search.2"
+    },
+    {
+      "from": "step.empty-state-notes-search.0",
+      "type": "next",
+      "to": "step.empty-state-notes-search.1"
+    },
+    {
+      "from": "step.empty-state-notes-search.1",
+      "type": "next",
+      "to": "step.empty-state-notes-search.2"
+    },
+    {
+      "from": "step.empty-state-notes-search.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-network",
+      "type": "contains",
+      "to": "step.empty-state-network.0"
+    },
+    {
+      "from": "flow.empty-state-network",
+      "type": "contains",
+      "to": "step.empty-state-network.1"
+    },
+    {
+      "from": "flow.empty-state-network",
+      "type": "contains",
+      "to": "step.empty-state-network.2"
+    },
+    {
+      "from": "step.empty-state-network.0",
+      "type": "next",
+      "to": "step.empty-state-network.1"
+    },
+    {
+      "from": "step.empty-state-network.1",
+      "type": "next",
+      "to": "step.empty-state-network.2"
+    },
+    {
+      "from": "step.empty-state-network.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-map",
+      "type": "contains",
+      "to": "step.empty-state-map.0"
+    },
+    {
+      "from": "flow.empty-state-map",
+      "type": "contains",
+      "to": "step.empty-state-map.1"
+    },
+    {
+      "from": "flow.empty-state-map",
+      "type": "contains",
+      "to": "step.empty-state-map.2"
+    },
+    {
+      "from": "step.empty-state-map.0",
+      "type": "next",
+      "to": "step.empty-state-map.1"
+    },
+    {
+      "from": "step.empty-state-map.1",
+      "type": "next",
+      "to": "step.empty-state-map.2"
+    },
+    {
+      "from": "step.empty-state-map.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-timeline",
+      "type": "contains",
+      "to": "step.empty-state-timeline.0"
+    },
+    {
+      "from": "flow.empty-state-timeline",
+      "type": "contains",
+      "to": "step.empty-state-timeline.1"
+    },
+    {
+      "from": "flow.empty-state-timeline",
+      "type": "contains",
+      "to": "step.empty-state-timeline.2"
+    },
+    {
+      "from": "step.empty-state-timeline.0",
+      "type": "next",
+      "to": "step.empty-state-timeline.1"
+    },
+    {
+      "from": "step.empty-state-timeline.1",
+      "type": "next",
+      "to": "step.empty-state-timeline.2"
+    },
+    {
+      "from": "step.empty-state-timeline.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-matches",
+      "type": "contains",
+      "to": "step.empty-state-matches.0"
+    },
+    {
+      "from": "flow.empty-state-matches",
+      "type": "contains",
+      "to": "step.empty-state-matches.1"
+    },
+    {
+      "from": "flow.empty-state-matches",
+      "type": "contains",
+      "to": "step.empty-state-matches.2"
+    },
+    {
+      "from": "step.empty-state-matches.0",
+      "type": "next",
+      "to": "step.empty-state-matches.1"
+    },
+    {
+      "from": "step.empty-state-matches.1",
+      "type": "next",
+      "to": "step.empty-state-matches.2"
+    },
+    {
+      "from": "step.empty-state-matches.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-chat",
+      "type": "contains",
+      "to": "step.empty-state-chat.0"
+    },
+    {
+      "from": "flow.empty-state-chat",
+      "type": "contains",
+      "to": "step.empty-state-chat.1"
+    },
+    {
+      "from": "flow.empty-state-chat",
+      "type": "contains",
+      "to": "step.empty-state-chat.2"
+    },
+    {
+      "from": "step.empty-state-chat.0",
+      "type": "next",
+      "to": "step.empty-state-chat.1"
+    },
+    {
+      "from": "step.empty-state-chat.1",
+      "type": "next",
+      "to": "step.empty-state-chat.2"
+    },
+    {
+      "from": "step.empty-state-chat.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-ontology",
+      "type": "contains",
+      "to": "step.empty-state-ontology.0"
+    },
+    {
+      "from": "flow.empty-state-ontology",
+      "type": "contains",
+      "to": "step.empty-state-ontology.1"
+    },
+    {
+      "from": "flow.empty-state-ontology",
+      "type": "contains",
+      "to": "step.empty-state-ontology.2"
+    },
+    {
+      "from": "step.empty-state-ontology.0",
+      "type": "next",
+      "to": "step.empty-state-ontology.1"
+    },
+    {
+      "from": "step.empty-state-ontology.1",
+      "type": "next",
+      "to": "step.empty-state-ontology.2"
+    },
+    {
+      "from": "step.empty-state-ontology.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.empty-state-skills",
+      "type": "contains",
+      "to": "step.empty-state-skills.0"
+    },
+    {
+      "from": "flow.empty-state-skills",
+      "type": "contains",
+      "to": "step.empty-state-skills.1"
+    },
+    {
+      "from": "flow.empty-state-skills",
+      "type": "contains",
+      "to": "step.empty-state-skills.2"
+    },
+    {
+      "from": "step.empty-state-skills.0",
+      "type": "next",
+      "to": "step.empty-state-skills.1"
+    },
+    {
+      "from": "step.empty-state-skills.1",
+      "type": "next",
+      "to": "step.empty-state-skills.2"
+    },
+    {
+      "from": "step.empty-state-skills.2",
       "type": "renders",
       "to": "surface.empty-state-actionable"
     },
     {
       "from": "flow.mobile-property-editor",
+      "type": "contains",
+      "to": "step.mobile-property-editor.0"
+    },
+    {
+      "from": "flow.mobile-property-editor",
+      "type": "contains",
+      "to": "step.mobile-property-editor.1"
+    },
+    {
+      "from": "flow.mobile-property-editor",
+      "type": "contains",
+      "to": "step.mobile-property-editor.2"
+    },
+    {
+      "from": "flow.mobile-property-editor",
+      "type": "contains",
+      "to": "step.mobile-property-editor.3"
+    },
+    {
+      "from": "step.mobile-property-editor.0",
+      "type": "next",
+      "to": "step.mobile-property-editor.1"
+    },
+    {
+      "from": "step.mobile-property-editor.1",
+      "type": "next",
+      "to": "step.mobile-property-editor.2"
+    },
+    {
+      "from": "step.mobile-property-editor.2",
+      "type": "next",
+      "to": "step.mobile-property-editor.3"
+    },
+    {
+      "from": "step.mobile-property-editor.3",
       "type": "renders",
       "to": "surface.mobile-property-editor"
     },
     {
       "from": "flow.mobile-arrange-menu",
+      "type": "contains",
+      "to": "step.mobile-arrange-menu.0"
+    },
+    {
+      "from": "flow.mobile-arrange-menu",
+      "type": "contains",
+      "to": "step.mobile-arrange-menu.1"
+    },
+    {
+      "from": "flow.mobile-arrange-menu",
+      "type": "contains",
+      "to": "step.mobile-arrange-menu.2"
+    },
+    {
+      "from": "step.mobile-arrange-menu.0",
+      "type": "next",
+      "to": "step.mobile-arrange-menu.1"
+    },
+    {
+      "from": "step.mobile-arrange-menu.1",
+      "type": "next",
+      "to": "step.mobile-arrange-menu.2"
+    },
+    {
+      "from": "step.mobile-arrange-menu.2",
       "type": "renders",
       "to": "surface.mobile-arrange-menu"
     },
     {
       "from": "flow.mobile-context-rail",
+      "type": "contains",
+      "to": "step.mobile-context-rail.0"
+    },
+    {
+      "from": "flow.mobile-context-rail",
+      "type": "contains",
+      "to": "step.mobile-context-rail.1"
+    },
+    {
+      "from": "flow.mobile-context-rail",
+      "type": "contains",
+      "to": "step.mobile-context-rail.2"
+    },
+    {
+      "from": "step.mobile-context-rail.0",
+      "type": "next",
+      "to": "step.mobile-context-rail.1"
+    },
+    {
+      "from": "step.mobile-context-rail.1",
+      "type": "next",
+      "to": "step.mobile-context-rail.2"
+    },
+    {
+      "from": "step.mobile-context-rail.2",
       "type": "renders",
       "to": "surface.mobile-context-rail"
     },
     {
       "from": "flow.mobile-map",
+      "type": "contains",
+      "to": "step.mobile-map.0"
+    },
+    {
+      "from": "flow.mobile-map",
+      "type": "contains",
+      "to": "step.mobile-map.1"
+    },
+    {
+      "from": "flow.mobile-map",
+      "type": "contains",
+      "to": "step.mobile-map.2"
+    },
+    {
+      "from": "step.mobile-map.0",
+      "type": "next",
+      "to": "step.mobile-map.1"
+    },
+    {
+      "from": "step.mobile-map.1",
+      "type": "next",
+      "to": "step.mobile-map.2"
+    },
+    {
+      "from": "step.mobile-map.2",
       "type": "renders",
       "to": "surface.mobile-map"
     },
     {
       "from": "flow.mobile-header",
+      "type": "contains",
+      "to": "step.mobile-header.0"
+    },
+    {
+      "from": "flow.mobile-header",
+      "type": "contains",
+      "to": "step.mobile-header.1"
+    },
+    {
+      "from": "flow.mobile-header",
+      "type": "contains",
+      "to": "step.mobile-header.2"
+    },
+    {
+      "from": "step.mobile-header.0",
+      "type": "next",
+      "to": "step.mobile-header.1"
+    },
+    {
+      "from": "step.mobile-header.1",
+      "type": "next",
+      "to": "step.mobile-header.2"
+    },
+    {
+      "from": "step.mobile-header.2",
       "type": "renders",
       "to": "surface.mobile-header"
     },
     {
       "from": "flow.settings-task",
+      "type": "contains",
+      "to": "step.settings-task.0"
+    },
+    {
+      "from": "flow.settings-task",
+      "type": "contains",
+      "to": "step.settings-task.1"
+    },
+    {
+      "from": "flow.settings-task",
+      "type": "contains",
+      "to": "step.settings-task.2"
+    },
+    {
+      "from": "flow.settings-task",
+      "type": "contains",
+      "to": "step.settings-task.3"
+    },
+    {
+      "from": "step.settings-task.0",
+      "type": "next",
+      "to": "step.settings-task.1"
+    },
+    {
+      "from": "step.settings-task.1",
+      "type": "next",
+      "to": "step.settings-task.2"
+    },
+    {
+      "from": "step.settings-task.2",
+      "type": "next",
+      "to": "step.settings-task.3"
+    },
+    {
+      "from": "step.settings-task.3",
       "type": "renders",
       "to": "surface.settings-directory"
     },
     {
       "from": "flow.settings-wizard",
+      "type": "contains",
+      "to": "step.settings-wizard.0"
+    },
+    {
+      "from": "flow.settings-wizard",
+      "type": "contains",
+      "to": "step.settings-wizard.1"
+    },
+    {
+      "from": "flow.settings-wizard",
+      "type": "contains",
+      "to": "step.settings-wizard.2"
+    },
+    {
+      "from": "step.settings-wizard.0",
+      "type": "next",
+      "to": "step.settings-wizard.1"
+    },
+    {
+      "from": "step.settings-wizard.1",
+      "type": "next",
+      "to": "step.settings-wizard.2"
+    },
+    {
+      "from": "step.settings-wizard.2",
       "type": "renders",
       "to": "surface.settings-directory"
     },
     {
       "from": "flow.settings-export-import",
+      "type": "contains",
+      "to": "step.settings-export-import.0"
+    },
+    {
+      "from": "flow.settings-export-import",
+      "type": "contains",
+      "to": "step.settings-export-import.1"
+    },
+    {
+      "from": "flow.settings-export-import",
+      "type": "contains",
+      "to": "step.settings-export-import.2"
+    },
+    {
+      "from": "flow.settings-export-import",
+      "type": "contains",
+      "to": "step.settings-export-import.3"
+    },
+    {
+      "from": "step.settings-export-import.0",
+      "type": "next",
+      "to": "step.settings-export-import.1"
+    },
+    {
+      "from": "step.settings-export-import.1",
+      "type": "next",
+      "to": "step.settings-export-import.2"
+    },
+    {
+      "from": "step.settings-export-import.2",
+      "type": "next",
+      "to": "step.settings-export-import.3"
+    },
+    {
+      "from": "step.settings-export-import.3",
       "type": "renders",
       "to": "surface.settings-directory"
     },
     {
       "from": "flow.settings-diff",
+      "type": "contains",
+      "to": "step.settings-diff.0"
+    },
+    {
+      "from": "flow.settings-diff",
+      "type": "contains",
+      "to": "step.settings-diff.1"
+    },
+    {
+      "from": "flow.settings-diff",
+      "type": "contains",
+      "to": "step.settings-diff.2"
+    },
+    {
+      "from": "step.settings-diff.0",
+      "type": "next",
+      "to": "step.settings-diff.1"
+    },
+    {
+      "from": "step.settings-diff.1",
+      "type": "next",
+      "to": "step.settings-diff.2"
+    },
+    {
+      "from": "step.settings-diff.2",
       "type": "renders",
       "to": "surface.settings-directory"
     },
     {
       "from": "flow.token-consistency",
+      "type": "contains",
+      "to": "step.token-consistency.0"
+    },
+    {
+      "from": "flow.token-consistency",
+      "type": "contains",
+      "to": "step.token-consistency.1"
+    },
+    {
+      "from": "step.token-consistency.0",
+      "type": "next",
+      "to": "step.token-consistency.1"
+    },
+    {
+      "from": "step.token-consistency.1",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.a11y-live-regions",
+      "type": "contains",
+      "to": "step.a11y-live-regions.0"
+    },
+    {
+      "from": "flow.a11y-live-regions",
+      "type": "contains",
+      "to": "step.a11y-live-regions.1"
+    },
+    {
+      "from": "step.a11y-live-regions.0",
+      "type": "next",
+      "to": "step.a11y-live-regions.1"
+    },
+    {
+      "from": "step.a11y-live-regions.1",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.a11y-focus-management",
+      "type": "contains",
+      "to": "step.a11y-focus-management.0"
+    },
+    {
+      "from": "flow.a11y-focus-management",
+      "type": "contains",
+      "to": "step.a11y-focus-management.1"
+    },
+    {
+      "from": "flow.a11y-focus-management",
+      "type": "contains",
+      "to": "step.a11y-focus-management.2"
+    },
+    {
+      "from": "flow.a11y-focus-management",
+      "type": "contains",
+      "to": "step.a11y-focus-management.3"
+    },
+    {
+      "from": "step.a11y-focus-management.0",
+      "type": "next",
+      "to": "step.a11y-focus-management.1"
+    },
+    {
+      "from": "step.a11y-focus-management.1",
+      "type": "next",
+      "to": "step.a11y-focus-management.2"
+    },
+    {
+      "from": "step.a11y-focus-management.2",
+      "type": "next",
+      "to": "step.a11y-focus-management.3"
+    },
+    {
+      "from": "step.a11y-focus-management.3",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.a11y-screen-reader",
+      "type": "contains",
+      "to": "step.a11y-screen-reader.0"
+    },
+    {
+      "from": "flow.a11y-screen-reader",
+      "type": "contains",
+      "to": "step.a11y-screen-reader.1"
+    },
+    {
+      "from": "step.a11y-screen-reader.0",
+      "type": "next",
+      "to": "step.a11y-screen-reader.1"
+    },
+    {
+      "from": "step.a11y-screen-reader.1",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.a11y-high-contrast",
+      "type": "contains",
+      "to": "step.a11y-high-contrast.0"
+    },
+    {
+      "from": "flow.a11y-high-contrast",
+      "type": "contains",
+      "to": "step.a11y-high-contrast.1"
+    },
+    {
+      "from": "step.a11y-high-contrast.0",
+      "type": "next",
+      "to": "step.a11y-high-contrast.1"
+    },
+    {
+      "from": "step.a11y-high-contrast.1",
       "type": "renders",
       "to": "surface.help-system"
     },
     {
       "from": "flow.performance-budget",
+      "type": "contains",
+      "to": "step.performance-budget.0"
+    },
+    {
+      "from": "flow.performance-budget",
+      "type": "contains",
+      "to": "step.performance-budget.1"
+    },
+    {
+      "from": "step.performance-budget.0",
+      "type": "next",
+      "to": "step.performance-budget.1"
+    },
+    {
+      "from": "step.performance-budget.1",
       "type": "renders",
       "to": "surface.help-system"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.capture-and-edit.0"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.capture-and-edit.1"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.capture-and-edit.2"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.capture-and-edit.3"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.capture-and-edit.4"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.capture-and-edit.5"
+    },
+    {
+      "from": "flow.capture-and-edit",
+      "type": "contains",
+      "to": "step.capture-and-edit.6"
+    },
+    {
+      "from": "step.capture-and-edit.0",
+      "type": "next",
+      "to": "step.capture-and-edit.1"
+    },
+    {
+      "from": "step.capture-and-edit.1",
+      "type": "next",
+      "to": "step.capture-and-edit.2"
+    },
+    {
+      "from": "step.capture-and-edit.2",
+      "type": "next",
+      "to": "step.capture-and-edit.3"
+    },
+    {
+      "from": "step.capture-and-edit.3",
+      "type": "next",
+      "to": "step.capture-and-edit.4"
+    },
+    {
+      "from": "step.capture-and-edit.4",
+      "type": "next",
+      "to": "step.capture-and-edit.5"
+    },
+    {
+      "from": "step.capture-and-edit.5",
+      "type": "next",
+      "to": "step.capture-and-edit.6"
+    },
+    {
+      "from": "step.capture-and-edit.6",
+      "type": "renders",
+      "to": "surface.empty-state-actionable"
+    },
+    {
+      "from": "surface.help-system",
+      "type": "requires",
+      "to": "template.help-system"
+    },
+    {
+      "from": "surface.describe-it-promo",
+      "type": "requires",
+      "to": "template.inline-promo"
+    },
+    {
+      "from": "surface.empty-state-actionable",
+      "type": "requires",
+      "to": "template.empty-state"
+    },
+    {
+      "from": "surface.mobile-property-editor",
+      "type": "requires",
+      "to": "template.modal-fullscreen"
+    },
+    {
+      "from": "surface.mobile-arrange-menu",
+      "type": "requires",
+      "to": "template.bottom-sheet"
+    },
+    {
+      "from": "surface.mobile-context-rail",
+      "type": "requires",
+      "to": "template.bottom-tabs"
+    },
+    {
+      "from": "surface.mobile-map",
+      "type": "requires",
+      "to": "template.map-full"
+    },
+    {
+      "from": "surface.mobile-header",
+      "type": "requires",
+      "to": "template.header-compact"
+    },
+    {
+      "from": "surface.settings-directory",
+      "type": "requires",
+      "to": "template.settings-wizard"
     },
     {
       "from": "metric.topic-completion-rate",
@@ -1196,22 +3460,22 @@
     {
       "from": "metric.empty-state-cta-click-rate",
       "type": "evidencedBy",
-      "to": "flow.empty-state-*"
+      "to": "flow.empty-state-"
     },
     {
       "from": "metric.empty-state-help-click-rate",
       "type": "evidencedBy",
-      "to": "flow.empty-state-*"
+      "to": "flow.empty-state-"
     },
     {
       "from": "metric.mobile-touch-target-compliance",
       "type": "evidencedBy",
-      "to": "flow.mobile-*"
+      "to": "flow.mobile-"
     },
     {
       "from": "metric.mobile-task-completion-rate",
       "type": "evidencedBy",
-      "to": "flow.mobile-*"
+      "to": "flow.mobile-"
     },
     {
       "from": "metric.settings-task-time",
@@ -1246,12 +3510,12 @@
     {
       "from": "metric.a11y-critical-violations",
       "type": "evidencedBy",
-      "to": "flow.a11y-*"
+      "to": "flow.a11y-"
     },
     {
       "from": "metric.a11y-serious-violations",
       "type": "evidencedBy",
-      "to": "flow.a11y-*"
+      "to": "flow.a11y-"
     },
     {
       "from": "metric.bundle-size",
