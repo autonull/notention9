@@ -5,7 +5,7 @@ import { useTouchGestures } from '@/hooks/useTouchGestures';
 export function ArrangeMenuMobile(props: ArrangeMenuMobileProps) {
   const { onSwipeDown } = useTouchGestures({ onSwipeDown: props.onDismiss });
   return (
-    <div className="bottom-sheet" data-testid="bottom-sheet" onTouchMove={onSwipeDown}>
+    <div className="bottom-sheet" data-testid="mobile-arrange-menu" onTouchMove={onSwipeDown}>
       <div className="sheet-grabber" aria-hidden="true" />
       <div className="sheet-content">{props.children}</div>
       <div className="sheet-actions">{props.actions}</div>

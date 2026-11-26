@@ -7,7 +7,7 @@ export function PropertyEditorMobile(props: PropertyEditorMobileProps) {
   return (
     <div 
       className="modal-fullscreen" 
-      data-testid="modal-fullscreen"
+      data-testid="mobile-property-editor"
       style={{ paddingBottom: isKeyboardVisible ? keyboardHeight : 0 }}
     >
       <div className="modal-header">{props.children?.header}</div>

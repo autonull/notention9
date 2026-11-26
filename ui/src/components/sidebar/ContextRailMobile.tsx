@@ -6,7 +6,7 @@ export function ContextRailMobile(props: ContextRailMobileProps) {
   const { isMobile } = useMobile();
   if (!isMobile) return null;
   return (
-    <div className="bottom-tabs" data-testid="bottom-tabs" role="tablist">
+    <div className="bottom-tabs" data-testid="mobile-context-rail" role="tablist">
       <div className="tab-list" role="presentation">
         {props.tabs.map((tab, i) => (
           <button

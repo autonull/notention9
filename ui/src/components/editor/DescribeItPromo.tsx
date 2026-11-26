@@ -3,10 +3,12 @@ import { DescribeItPromoProps } from './DescribeItPromoProps';
 import { useDescribeItPromo } from '@/hooks/useDescribeItPromo';
 
 export function DescribeItPromo(props: DescribeItPromoProps) {
-  const promo = useDescribeItPromo({ variant: props.variant });
-  if (!promo.shouldShow) return null;
+  const { variant = 'pulse', forceShow = false } = props;
+  const promo = useDescribeItPromo({ variant });
+  // In tests or when forceShow is true, render anyway for testing
+  if (!promo.shouldShow && !forceShow) return null;
   return (
-    <div className="inline-promo" data-testid="inline-promo-{{variant}}">
+    <div className="inline-promo" data-testid="describe-it-promo" data-variant={variant}>
       <button onClick={promo.onDismiss} className="promo-dismiss" aria-label="Dismiss">×</button>
       <span className="promo-content">{promo.message}</span>
       <button onClick={promo.onActivate} className="promo-cta">{promo.ctaText}</button>

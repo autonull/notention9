@@ -6,7 +6,118 @@
 import { render, screen } from '@testing-library/react';
 import { HelpSystem } from '../../components/help/HelpSystem';
 
+import { NotesProvider } from '@/components/contexts/NotesContext';
+import { SettingsProvider } from '@/components/contexts/SettingsContext';
+import { ToastProvider } from '@/components/contexts/ToastProvider';
+import { ViewProvider } from '@/components/contexts/ViewContext';
+import { StrategyProvider } from '@/hooks/useStrategyResolver';
+import { I18nProvider } from '@/components/i18n';
+import { vi } from 'vitest';
+
+// Mock hooks that require providers
+vi.mock('@/hooks/data/useNotesData', () => ({
+  useNotesData: () => ({
+    notes: [],
+    addNote: vi.fn(),
+    deleteNote: vi.fn(),
+    upsertNote: vi.fn(),
+    updateNote: vi.fn(),
+    restoreNote: vi.fn(),
+    permanentlyDeleteNote: vi.fn(),
+    notesLoading: false,
+    getSortedFilteredNotes: vi.fn(() => []),
+    isSyncing: false,
+    lastSyncTime: null,
+  }),
+}));
+
+vi.mock('@/hooks/useNotes', () => ({
+  useNotes: () => ({
+    notes: [],
+    addNote: vi.fn(),
+    deleteNote: vi.fn(),
+    upsertNote: vi.fn(),
+    updateNote: vi.fn(),
+    restoreNote: vi.fn(),
+    permanentlyDeleteNote: vi.fn(),
+    notesLoading: false,
+    getSortedFilteredNotes: vi.fn(() => []),
+  }),
+}));
+
+vi.mock('@/hooks/useViewContext', () => ({
+  useView: () => ({
+    activeView: 'notes',
+    setActiveView: vi.fn(),
+    selectedNoteId: null,
+    setSelectedNoteId: vi.fn(),
+    searchTerm: '',
+    sortOrder: 'updatedAt_desc',
+    isSidebarOpen: true,
+    setIsSidebarOpen: vi.fn(),
+    userLocation: null,
+    isPaletteOpen: false,
+    setIsPaletteOpen: vi.fn(),
+    isHelpOpen: false,
+    setIsHelpOpen: vi.fn(),
+    sidebarViewMode: 'list',
+    setSidebarViewMode: vi.fn(),
+    refreshUserLocation: vi.fn(),
+    matchingNoteId: null,
+    setMatchingNoteId: vi.fn(),
+    selectedChatPubkey: null,
+    setSelectedChatPubkey: vi.fn(),
+    notificationCount: 0,
+    matches: [],
+    addMatch: vi.fn(),
+    clearNotifications: vi.fn(),
+    chatNotificationCount: 0,
+    incrementChatNotification: vi.fn(),
+    resetChatNotification: vi.fn(),
+  }),
+  useViewNavigation: () => ({
+    navigate: vi.fn(),
+    goBack: vi.fn(),
+  }),
+}));
+
+vi.mock('@/hooks/useNetworkManagement', () => ({
+  useNetworkManagement: vi.fn(),
+}));
+
+vi.mock('@/hooks/useSettingsContext', () => ({
+  useSettings: () => ({
+    groups: [
+      { id: 'general', label: 'General', defaultExpanded: true, helpTopicId: 'settings-general', settings: [] },
+      { id: 'editor', label: 'Editor', defaultExpanded: false, helpTopicId: 'settings-editor', settings: [] },
+    ],
+    searchQuery: '',
+    setSearchQuery: vi.fn(),
+    export: vi.fn(),
+    import: vi.fn(),
+    showDiff: vi.fn(),
+    showWizard: false,
+  }),
+}));
+
+
 test('surface.help-system renders', () => {
-    render(<HelpSystem />);
-    expect(screen.getByTestId('helpsystem')).toBeInTheDocument();
+    render(
+      
+      <I18nProvider>
+        <SettingsProvider>
+          <ToastProvider>
+            <ViewProvider>
+              <StrategyProvider>
+                <NotesProvider>
+        <HelpSystem />
+      
+                </NotesProvider>
+              </StrategyProvider>
+            </ViewProvider>
+          </ToastProvider>
+        </SettingsProvider>
+      </I18nProvider>
+    );
+    expect(screen.getByTestId('help-system')).toBeInTheDocument();
 });

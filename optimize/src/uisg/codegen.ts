@@ -104,11 +104,13 @@ function createDynamicTemplate(surface: UisgSurface, graph: UisgGraph, shape: Te
                     return `// Custom template not supported for target: ${t}`;
                 }
                 const componentName = s.component ?? s.id.replace('surface.', '').replace(/-./g, m => m[1].toUpperCase());
+                const testId = s.id.replace('surface.', '');
                 // Replace template placeholders
                 let content = componentTemplate
                     .replace(/\{\{componentName\}\}/g, componentName)
                     .replace(/\{\{surface\.id\}\}/g, s.id)
-                    .replace(/\{\{surface\.name\}\}/g, s.name);
+                    .replace(/\{\{surface\.name\}\}/g, s.name)
+                    .replace(/\{\{testId\}\}/g, testId);
                 // Add import for Props interface if not present
                 if (!content.includes(`import { ${componentName}Props }`)) {
                     content = `import { ${componentName}Props } from './${componentName}Props';\n` + content;
@@ -120,6 +122,157 @@ function createDynamicTemplate(surface: UisgSurface, graph: UisgGraph, shape: Te
                 const componentName = s.component ?? s.id.replace('surface.', '').replace(/-./g, m => m[1].toUpperCase());
                 const category = (s as any).category;
                 const importPath = category ? `../../components/${category}/${componentName}` : `../../components/${componentName}`;
+                
+                // Components that need full provider stack (useNotes, useHelp, useSettings, etc.)
+                const needsFullProviderStack = s.template === 'inline-promo' || s.template === 'empty-state' || s.template === 'help-system' || s.template === 'settings-wizard';
+                // Mobile components need NotesProvider + SettingsProvider for useMobile hooks
+                const needsMobileProviders = s.template === 'modal-fullscreen' || s.template === 'bottom-sheet' || s.template === 'bottom-tabs' || s.template === 'map-full' || s.template === 'header-compact';
+                const forceShow = s.template === 'inline-promo' ? ' forceShow={true}' : '';
+                
+                const allTemplatesNeedingMocks = needsFullProviderStack || needsMobileProviders;
+                
+                // Default props for components that need them
+                const defaultProps: Record<string, string> = {
+                  'ContextRailMobile': ' tabs={[{ id: \"tab1\", label: \"Tab 1\", panel: <div>Tab 1</div> }, { id: \"tab2\", label: \"Tab 2\", panel: <div>Tab 2</div> }]} activeIndex={0}',
+                  'MapViewMobile': ' fabContent={<div>FAB</div>} mapRef={{ current: null }}',
+                  'PropertyEditorMobile': ' children={{ header: <div>Header</div>, content: <div>Content</div>, footer: <div>Footer</div> }}',
+                  'ArrangeMenuMobile': ' onDismiss={() => {}} actions={<div>Actions</div>} children={<div>Content</div>}',
+                  'HeaderMobile': ' onOpenSidebar={() => {}} logo={<div>Logo</div>} actions={<div>Actions</div>}',
+                };
+                
+                const defaultProp = defaultProps[componentName] ?? '';
+                
+                const testImports = allTemplatesNeedingMocks ? `
+import { NotesProvider } from '@/components/contexts/NotesContext';
+import { SettingsProvider } from '@/components/contexts/SettingsContext';
+import { ToastProvider } from '@/components/contexts/ToastProvider';
+import { ViewProvider } from '@/components/contexts/ViewContext';
+import { StrategyProvider } from '@/hooks/useStrategyResolver';
+import { I18nProvider } from '@/components/i18n';
+import { vi } from 'vitest';
+
+// Mock hooks that require providers
+vi.mock('@/hooks/data/useNotesData', () => ({
+  useNotesData: () => ({
+    notes: [],
+    addNote: vi.fn(),
+    deleteNote: vi.fn(),
+    upsertNote: vi.fn(),
+    updateNote: vi.fn(),
+    restoreNote: vi.fn(),
+    permanentlyDeleteNote: vi.fn(),
+    notesLoading: false,
+    getSortedFilteredNotes: vi.fn(() => []),
+    isSyncing: false,
+    lastSyncTime: null,
+  }),
+}));
+
+vi.mock('@/hooks/useNotes', () => ({
+  useNotes: () => ({
+    notes: [],
+    addNote: vi.fn(),
+    deleteNote: vi.fn(),
+    upsertNote: vi.fn(),
+    updateNote: vi.fn(),
+    restoreNote: vi.fn(),
+    permanentlyDeleteNote: vi.fn(),
+    notesLoading: false,
+    getSortedFilteredNotes: vi.fn(() => []),
+  }),
+}));
+
+vi.mock('@/hooks/useViewContext', () => ({
+  useView: () => ({
+    activeView: 'notes',
+    setActiveView: vi.fn(),
+    selectedNoteId: null,
+    setSelectedNoteId: vi.fn(),
+    searchTerm: '',
+    sortOrder: 'updatedAt_desc',
+    isSidebarOpen: true,
+    setIsSidebarOpen: vi.fn(),
+    userLocation: null,
+    isPaletteOpen: false,
+    setIsPaletteOpen: vi.fn(),
+    isHelpOpen: false,
+    setIsHelpOpen: vi.fn(),
+    sidebarViewMode: 'list',
+    setSidebarViewMode: vi.fn(),
+    refreshUserLocation: vi.fn(),
+    matchingNoteId: null,
+    setMatchingNoteId: vi.fn(),
+    selectedChatPubkey: null,
+    setSelectedChatPubkey: vi.fn(),
+    notificationCount: 0,
+    matches: [],
+    addMatch: vi.fn(),
+    clearNotifications: vi.fn(),
+    chatNotificationCount: 0,
+    incrementChatNotification: vi.fn(),
+    resetChatNotification: vi.fn(),
+  }),
+  useViewNavigation: () => ({
+    navigate: vi.fn(),
+    goBack: vi.fn(),
+  }),
+}));
+
+vi.mock('@/hooks/useNetworkManagement', () => ({
+  useNetworkManagement: vi.fn(),
+}));
+
+vi.mock('@/hooks/useSettingsContext', () => ({
+  useSettings: () => ({
+    groups: [
+      { id: 'general', label: 'General', defaultExpanded: true, helpTopicId: 'settings-general', settings: [] },
+      { id: 'editor', label: 'Editor', defaultExpanded: false, helpTopicId: 'settings-editor', settings: [] },
+    ],
+    searchQuery: '',
+    setSearchQuery: vi.fn(),
+    export: vi.fn(),
+    import: vi.fn(),
+    showDiff: vi.fn(),
+    showWizard: false,
+  }),
+}));` : '';
+
+const mobileMockImports = needsMobileProviders ? `
+// Mock useMobile to return mobile state for testing
+vi.mock('@/hooks/useMobile', () => ({
+  useMobile: () => ({
+    isMobile: true,
+    isTablet: false,
+    isDesktop: false,
+    hasTouch: true,
+    orientation: 'portrait' as const,
+    safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 },
+  }),
+  useIsMobile: () => true,
+  useIsTablet: () => false,
+  useHasTouch: () => true,
+  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
+}));` : '';
+                
+                const wrapperStart = needsFullProviderStack ? `
+      <I18nProvider>
+        <SettingsProvider>
+          <ToastProvider>
+            <ViewProvider>
+              <StrategyProvider>
+                <NotesProvider>` : needsMobileProviders ? `
+      <SettingsProvider>
+        <NotesProvider>` : '';
+                const wrapperEnd = needsFullProviderStack ? `
+                </NotesProvider>
+              </StrategyProvider>
+            </ViewProvider>
+          </ToastProvider>
+        </SettingsProvider>
+      </I18nProvider>` : needsMobileProviders ? `
+        </NotesProvider>
+      </SettingsProvider>` : '';
+                
                 return `// GENERATED by optimize/src/uisg/codegen.ts
 // DO NOT EDIT MANUALLY
 // Template: ${s.template}
@@ -127,10 +280,16 @@ function createDynamicTemplate(surface: UisgSurface, graph: UisgGraph, shape: Te
 
 import { render, screen } from '@testing-library/react';
 import { ${componentName} } from '${importPath}';
+${testImports}
+${mobileMockImports}
 
 test('${s.id} renders', () => {
-    render(<${componentName} />);
-    expect(screen.getByTestId('${s.id.replace('surface.', '').replace(/-./g, m => m[1].toLowerCase())}')).toBeInTheDocument();
+    render(
+      ${wrapperStart}
+        <${componentName}${forceShow}${defaultProp} />
+      ${wrapperEnd}
+    );
+    expect(screen.getByTestId('${s.id.replace('surface.', '')}')).toBeInTheDocument();
 });`;
             },
             generatePropsSchema: (s: UisgSurface, g: UisgGraph) => {
