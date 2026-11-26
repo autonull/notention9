@@ -620,6 +620,61 @@
       "stateEquals": true
     },
     {
+      "id": "flow.help-video-captions",
+      "name": "Help Video Captions",
+      "status": "planned",
+      "type": "flow",
+      "entry": "step.help-video-captions.0",
+      "outcome": "User enables captions while watching a help video",
+      "journey": "help-video-captions"
+    },
+    {
+      "id": "step.help-video-captions.0",
+      "name": "open-help-topic",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "open-help-topic"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-video-captions.1",
+      "name": "play-video",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "play-video"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-video-captions.2",
+      "name": "toggle-captions",
+      "status": "planned",
+      "type": "step",
+      "kind": "action",
+      "target": {
+        "testId": "toggle-captions"
+      },
+      "action": "click"
+    },
+    {
+      "id": "step.help-video-captions.3",
+      "name": "verify-caption-visible",
+      "status": "planned",
+      "type": "step",
+      "kind": "result",
+      "target": {
+        "testId": "verify-caption-visible"
+      },
+      "action": "click",
+      "statePath": "note.verify-caption-visible",
+      "stateEquals": true
+    },
+    {
       "id": "flow.help-interactive",
       "name": "Help Interactive Demo",
       "status": "planned",
@@ -2387,6 +2442,46 @@
     },
     {
       "from": "step.help-video.2",
+      "type": "renders",
+      "to": "surface.help-system"
+    },
+    {
+      "from": "flow.help-video-captions",
+      "type": "contains",
+      "to": "step.help-video-captions.0"
+    },
+    {
+      "from": "flow.help-video-captions",
+      "type": "contains",
+      "to": "step.help-video-captions.1"
+    },
+    {
+      "from": "flow.help-video-captions",
+      "type": "contains",
+      "to": "step.help-video-captions.2"
+    },
+    {
+      "from": "flow.help-video-captions",
+      "type": "contains",
+      "to": "step.help-video-captions.3"
+    },
+    {
+      "from": "step.help-video-captions.0",
+      "type": "next",
+      "to": "step.help-video-captions.1"
+    },
+    {
+      "from": "step.help-video-captions.1",
+      "type": "next",
+      "to": "step.help-video-captions.2"
+    },
+    {
+      "from": "step.help-video-captions.2",
+      "type": "next",
+      "to": "step.help-video-captions.3"
+    },
+    {
+      "from": "step.help-video-captions.3",
       "type": "renders",
       "to": "surface.help-system"
     },

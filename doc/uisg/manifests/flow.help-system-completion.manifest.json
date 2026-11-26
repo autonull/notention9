@@ -1,0 +1,90 @@
+{
+  "flowId": "flow.help-system-completion",
+  "spec": {
+    "id": "help-system-completion",
+    "version": 1,
+    "intent": "Help System Completion",
+    "journeysTouched": [
+      "flow.help-system-completion"
+    ],
+    "seed": {
+      "notes": [],
+      "settings": {
+        "theme": "dark",
+        "density": "comfortable",
+        "accentColor": "#2563eb",
+        "developerMode": false,
+        "aiEnabled": false,
+        "aiProvider": "local",
+        "aiModel": "",
+        "googleGeminiApiKey": "",
+        "nostr": {
+          "privkey": null,
+          "relays": []
+        },
+        "ontology": []
+      }
+    },
+    "steps": [
+      {
+        "kind": "seed",
+        "notes": [],
+        "settings": {
+          "theme": "dark",
+          "density": "comfortable",
+          "accentColor": "#2563eb",
+          "developerMode": false,
+          "aiEnabled": false,
+          "aiProvider": "local",
+          "aiModel": "",
+          "googleGeminiApiKey": "",
+          "nostr": {
+            "privkey": null,
+            "relays": []
+          },
+          "ontology": []
+        }
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "open-help-system"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "browse-topics"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "select-topic"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "act",
+        "target": {
+          "testId": "complete-steps"
+        },
+        "action": "click"
+      },
+      {
+        "kind": "assertState",
+        "path": "note.rate-topic",
+        "equals": true
+      }
+    ],
+    "status": "draft"
+  },
+  "journeyFile": "ui/test/optimize/help-system-completion.journey.ts",
+  "compilerVersion": "1.0.0",
+  "warnings": [],
+  "sourceMap": "",
+  "generatedAt": "2026-11-26T18:40:24.105Z",
+  "contentHash": "2e9165b6"
+}

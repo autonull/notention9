@@ -674,6 +674,19 @@ journeys:
       - video-completion-rate
       - video-engagement
 
+  - id: help-video-captions
+    name: Help Video Captions
+    surface: help-system
+    description: User enables captions while watching a help video
+    steps:
+      - open-help-topic
+      - play-video
+      - toggle-captions
+      - verify-caption-visible
+    metrics:
+      - video-completion-rate
+      - video-engagement
+
   - id: help-interactive
     name: Help Interactive Demo
     surface: help-system

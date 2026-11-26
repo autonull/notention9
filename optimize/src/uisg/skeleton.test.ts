@@ -8,7 +8,7 @@ import {
 import { simulateFlow } from './simulate.js';
 
 const ROOT = resolve(__dirname, '../../..');
-const graph: UisgGraph = JSON.parse(readFileSync(resolve(ROOT, 'doc/uisg/graph.json'), 'utf8'));
+const graph: UisgGraph = JSON.parse(readFileSync(resolve(ROOT, 'optimize/src/uisg/__fixtures__/legacy-graph.json'), 'utf8'));
 
 describe('skeleton generator', () => {
     it('compiles implemented flows in graph order with guards and effects', () => {

@@ -145,8 +145,8 @@ function checkContext(node: UisgNode, context: ContextProfile): SelectionConflic
     return conflicts;
 }
 
-export function selectFeature(request: SelectionRequest, file: string = SELECTION_FILE): SelectionResult {
-    const graph = loadGraph(new Map());
+export function selectFeature(request: SelectionRequest, file: string = SELECTION_FILE, graphOverride?: UisgGraph): SelectionResult {
+    const graph = graphOverride ?? loadGraph(new Map());
     const validation = validateGraph(graph);
     if (!validation.ok || !validation.graph) {
         throw new Error('Graph validation failed; cannot select');
@@ -165,13 +165,15 @@ export function selectFeature(request: SelectionRequest, file: string = SELECTIO
     // Find candidate nodes matching the feature request
     const candidates = queryGraph(index, { text: request.feature });
     if (candidates.length === 0) {
-        return {
+        const result: SelectionResult = {
             request,
             selected: [],
             explanation: `No nodes found matching feature "${request.feature}"`,
             conflicts: [{ type: 'requires', message: 'Feature not found in graph', nodes: [] }],
             satisfied: false,
         };
+        writeFileSync(file, JSON.stringify(result, null, 2) + '\n');
+        return result;
     }
 
     // Sort candidates by priority score

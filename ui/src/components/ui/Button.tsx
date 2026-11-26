@@ -2,8 +2,10 @@ import React, { forwardRef } from 'react';
 import { cn } from '../../utils/ui';
 import { componentTokens, iconSizes } from '../../styles/tokens';
 
+type ButtonVariant = 'primary' | 'secondary' | 'danger' | 'destructive' | 'success' | 'ghost' | 'outline';
+
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'secondary' | 'danger' | 'success' | 'ghost' | 'outline';
+    variant?: ButtonVariant;
     size?: 'xs' | 'sm' | 'md' | 'lg';
     loading?: boolean;
     leftIcon?: React.ReactNode;
@@ -40,10 +42,11 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         ref
     ) => {
         const tokens = componentTokens.button;
+        const resolvedVariant = variant === 'destructive' ? 'danger' : variant;
         const baseClasses = cn(
             tokens.base,
             tokens.sizes[size],
-            tokens.variants[variant],
+            tokens.variants[resolvedVariant],
             fullWidth && 'w-full',
             touchTarget && 'touch-target-48',
             focusRing && 'focus-ring-high-contrast',

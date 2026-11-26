@@ -35,10 +35,10 @@ interface LocalMatchesPanelProps {
     testId?: string;
 }
 
-const DEFAULT_TABS = [
+const DEFAULT_TABS: Array<{ id: string; label: string; count?: number; icon?: React.ReactNode }> = [
     { id: 'content', label: 'Content' },
     { id: 'list', label: 'List' },
-] as const;
+];
 
 export function LocalMatchesPanel({
     content,
@@ -157,8 +157,8 @@ export function LocalMatchesPanel({
                         </h3>
                     )}
                     {tabs.length > 1 && (
-                        <Tabs
-                            options={tabs.map(t => ({ ...t, count: t.count }))}
+                        <Tabs<string>
+                            options={tabs.map(t => ({ id: t.id, label: t.label, count: t.count }))}
                             value={currentTab}
                             onChange={handleTabChange}
                             label={title ?? 'Panel tabs'}
@@ -178,7 +178,6 @@ export function LocalMatchesPanel({
                             value={filterText}
                             onChange={e => setFilterText(e.target.value)}
                             placeholder="Filter…"
-                            size="sm"
                             className="max-w-xs"
                         />
                     </div>

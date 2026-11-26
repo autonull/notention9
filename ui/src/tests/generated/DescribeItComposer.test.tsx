@@ -9,15 +9,13 @@ import { DescribeItComposer } from '@/components/editors/DescribeItComposer';
 import type { Property, OntologyNode } from '@notention/core';
 
 const mockOntology: OntologyNode[] = [
-    { id: 'framework', label: 'Framework', type: 'categorical', values: ['React', 'Vue', 'Svelte'] },
-    { id: 'budget', label: 'Budget', type: 'numeric', unit: 'USD' },
+    { id: 'framework', label: 'Framework', description: 'Frontend framework', attributes: { type: { type: 'enum', options: ['React', 'Vue', 'Svelte'] } } },
+    { id: 'budget', label: 'Budget', description: 'Project budget', attributes: { amount: { type: 'number' } } },
 ];
 
-import type { PropertyRole, PropertyProvenance } from '@notention/core';
-
 const mockProposals = [
-    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint' as PropertyRole, confidence: 1, provenance: 'deterministic' as PropertyProvenance }, confidence: 0.9, status: 'pending' as const },
-    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'preference' as PropertyRole, confidence: 0.8, provenance: 'heuristic' as PropertyProvenance }, confidence: 0.75, status: 'pending' as const },
+    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint' as const, confidence: 1, provenance: 'deterministic' as const }, confidence: 0.9, status: 'pending' as const },
+    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'fact' as const, confidence: 0.8, provenance: 'fuzzy' as const }, confidence: 0.75, status: 'pending' as const },
 ];
 
 describe('DescribeItComposer (generated)', () => {

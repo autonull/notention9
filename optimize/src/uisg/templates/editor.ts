@@ -318,8 +318,8 @@ const mockOntology: OntologyNode[] = [
 ];
 
 const mockProposals = [
-    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint', confidence: 1, provenance: 'deterministic' as const }, confidence: 0.9, status: 'pending' as const },
-    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'preference', confidence: 0.8, provenance: 'heuristic' as const }, confidence: 0.75, status: 'pending' as const },
+    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint' as const, confidence: 1, provenance: 'deterministic' as const }, confidence: 0.9, status: 'pending' as const },
+    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'fact' as const, confidence: 0.8, provenance: 'fuzzy' as const }, confidence: 0.75, status: 'pending' as const },
 ];
 
 describe('${componentName} (generated)', () => {

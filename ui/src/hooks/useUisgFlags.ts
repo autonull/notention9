@@ -209,7 +209,7 @@ export function setUisgFlags(flags: Partial<UisgFlags>): void {
 }
 
 export function resolveFlagsFromContext(
-    contextFlags: string[],
+    contextFlags: readonly string[],
     urlFlagsParam?: string
 ): { enabled: string[]; disabled: string[]; unknown: string[] } {
     const knownFlags = new Set([

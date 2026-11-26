@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type { JSX } from 'react';
 import { useUisgFlags, useUisgFlagActions, resolveFlagsFromContext } from '../hooks/useUisgFlags';
 
 const KNOWN_FLAGS = [
@@ -202,7 +203,7 @@ export function FlagsPanel(): JSX.Element {
                             <p style={styles.flagDesc}>{flag.description}</p>
                             <p style={styles.flagSource}>
                                 Source:{' '}
-                                {CONTEXT_PRESETS[contextPreset].includes(flag.id) ? 'context' : '—'}
+                                {(CONTEXT_PRESETS[contextPreset] as readonly string[]).includes(flag.id) ? 'context' : '—'}
                                 {urlFlagsParam.split(',').includes(flag.id) && ' + url'}
                                 {urlFlagsParam.split(',').includes(`-${flag.id}`) && ' (disabled by url)'}
                             </p>

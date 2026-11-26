@@ -1,6 +1,6 @@
 # UI/UX Specification
 
-Generated from `optimize/uisg.yaml` on 2026-11-26T17:08:05.306Z
+Generated from `optimize/uisg.yaml` on 2026-11-26T19:13:32.406Z
 
 ## Surfaces
 
@@ -122,13 +122,13 @@ Generated from `optimize/uisg.yaml` on 2026-11-26T17:08:05.306Z
 
 - **Shape**: status
 - **Description**: Small promotional element embedded in content
-- **Slots**: trigger, content, dismiss
+- **Slots**: trigger, content, dismiss, variant, forceShow
 
 ### Empty State Template (`empty-state`)
 
 - **Shape**: status
 - **Description**: Actionable empty state with primary/secondary CTAs and help link
-- **Slots**: illustration, title, description, primary-action, secondary-action, help-link
+- **Slots**: illustration, title, description, primary-action, secondary-action, help-link, variant
 
 ### Modal Fullscreen Template (`modal-fullscreen`)
 
@@ -140,31 +140,31 @@ Generated from `optimize/uisg.yaml` on 2026-11-26T17:08:05.306Z
 
 - **Shape**: panel
 - **Description**: Swipeable bottom sheet with grabber and dismiss
-- **Slots**: grabber, content, actions
+- **Slots**: grabber, content, actions, onDismiss, children
 
 ### Bottom Tabs Template (`bottom-tabs`)
 
 - **Shape**: item
 - **Description**: Horizontal scrolling tabs with snap points and 48px targets
-- **Slots**: tab-list, tab-panel
+- **Slots**: tabs, activeIndex, tab-list, tab-panel
 
 ### Settings Wizard Template (`settings-wizard`)
 
 - **Shape**: panel
 - **Description**: Progressive disclosure settings with groups, search, export/import, diff
-- **Slots**: search, groups, wizard-steps, export-import, diff-view
+- **Slots**: search, groups, wizard-steps, export-import, diff-view, showWizard, onWizardComplete, onWizardSkip, className
 
 ### Full Screen Map Template (`map-full`)
 
 - **Shape**: panel
 - **Description**: Full-screen map view with FAB in safe area
-- **Slots**: map, fab, geolocation, safe-area-bottom
+- **Slots**: map, fab, geolocation, safe-area-bottom, mapRef, fabContent
 
 ### Compact Header Template (`header-compact`)
 
 - **Shape**: panel
 - **Description**: Mobile header with hamburger menu and swipe sidebar
-- **Slots**: logo, hamburger, actions, swipe-area
+- **Slots**: logo, hamburger, actions, swipe-area, onOpenSidebar
 
 ## Journeys
 
@@ -187,6 +187,13 @@ Generated from `optimize/uisg.yaml` on 2026-11-26T17:08:05.306Z
 - **Surface**: help-system
 - **Description**: User watches help video
 - **Steps**: open-help-topic → play-video → complete-video
+- **Metrics**: video-completion-rate, video-engagement
+
+### Help Video Captions (`help-video-captions`)
+
+- **Surface**: help-system
+- **Description**: User enables captions while watching a help video
+- **Steps**: open-help-topic → play-video → toggle-captions → verify-caption-visible
 - **Metrics**: video-completion-rate, video-engagement
 
 ### Help Interactive Demo (`help-interactive`)

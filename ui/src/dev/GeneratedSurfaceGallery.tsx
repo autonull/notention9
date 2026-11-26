@@ -4,49 +4,49 @@ import { Button } from '../components/ui/Button';
 import { SectionHeader } from '../components/ui/kit';
 
 // Generated item components
-const MatchItem = React.lazy(() => import('../components/items/MatchItem'));
-const SaveState = React.lazy(() => import('../components/items/SaveState'));
-const Toast = React.lazy(() => import('../components/items/Toast'));
-const CommandPalette = React.lazy(() => import('../components/items/CommandPalette'));
-const EmptyState = React.lazy(() => import('../components/items/EmptyState'));
-const LoadingSpinner = React.lazy(() => import('../components/items/LoadingSpinner'));
-const ConfirmationModal = React.lazy(() => import('../components/items/ConfirmationModal'));
-const QuickCapture = React.lazy(() => import('../components/items/QuickCapture'));
-const TagInput = React.lazy(() => import('../components/items/TagInput'));
-const TemplateSelector = React.lazy(() => import('../components/items/TemplateSelector'));
-const SettingsView = React.lazy(() => import('../components/items/SettingsView'));
-const MainView = React.lazy(() => import('../components/items/MainView'));
-const AutomationsView = React.lazy(() => import('../components/items/AutomationsView'));
-const OntologyView = React.lazy(() => import('../components/items/OntologyView'));
-const NotesView = React.lazy(() => import('../components/items/NotesView'));
-const PageSurface = React.lazy(() => import('../components/items/PageSurface'));
-const MobileCapture = React.lazy(() => import('../components/items/MobileCapture'));
-const RejectedDisplay = React.lazy(() => import('../components/items/RejectedDisplay'));
-const NoMatch = React.lazy(() => import('../components/items/NoMatch'));
-const PublishReady = React.lazy(() => import('../components/items/PublishReady'));
-const PermissionDenied = React.lazy(() => import('../components/items/PermissionDenied'));
-const ErrorDisplay = React.lazy(() => import('../components/items/ErrorDisplay'));
-const AppShell = React.lazy(() => import('../components/items/AppShell'));
-const SkillManagementView = React.lazy(() => import('../components/items/SkillManagementView'));
-const MapView = React.lazy(() => import('../components/items/MapView'));
-const NetworkView = React.lazy(() => import('../components/items/NetworkView'));
-const TimelineView = React.lazy(() => import('../components/items/TimelineView'));
-const ConditionalAutomationView = React.lazy(() => import('../components/items/ConditionalAutomationView'));
+const MatchItem = React.lazy(() => import('../components/items/MatchItem').then(m => ({ default: m.MatchItem })));
+const SaveState = React.lazy(() => import('../components/items/SaveState').then(m => ({ default: m.SaveState })));
+const Toast = React.lazy(() => import('../components/items/Toast').then(m => ({ default: m.Toast })));
+const CommandPalette = React.lazy(() => import('../components/items/CommandPalette').then(m => ({ default: m.CommandPalette })));
+const EmptyState = React.lazy(() => import('../components/items/EmptyState').then(m => ({ default: m.EmptyState })));
+const LoadingSpinner = React.lazy(() => import('../components/items/LoadingSpinner').then(m => ({ default: m.LoadingSpinner })));
+const ConfirmationModal = React.lazy(() => import('../components/items/ConfirmationModal').then(m => ({ default: m.ConfirmationModal })));
+const QuickCapture = React.lazy(() => import('../components/items/QuickCapture').then(m => ({ default: m.QuickCapture })));
+const TagInput = React.lazy(() => import('../components/items/TagInput').then(m => ({ default: m.TagInput })));
+const TemplateSelector = React.lazy(() => import('../components/items/TemplateSelector').then(m => ({ default: m.TemplateSelector })));
+const SettingsView = React.lazy(() => import('../components/items/SettingsView').then(m => ({ default: m.SettingsView })));
+const MainView = React.lazy(() => import('../components/items/MainView').then(m => ({ default: m.MainView })));
+const AutomationsView = React.lazy(() => import('../components/items/AutomationsView').then(m => ({ default: m.AutomationsView })));
+const OntologyView = React.lazy(() => import('../components/items/OntologyView').then(m => ({ default: m.OntologyView })));
+const NotesView = React.lazy(() => import('../components/items/NotesView').then(m => ({ default: m.NotesView })));
+const PageSurface = React.lazy(() => import('../components/items/PageSurface').then(m => ({ default: m.PageSurface })));
+const MobileCapture = React.lazy(() => import('../components/items/MobileCapture').then(m => ({ default: m.MobileCapture })));
+const RejectedDisplay = React.lazy(() => import('../components/items/RejectedDisplay').then(m => ({ default: m.RejectedDisplay })));
+const NoMatch = React.lazy(() => import('../components/items/NoMatch').then(m => ({ default: m.NoMatch })));
+const PublishReady = React.lazy(() => import('../components/items/PublishReady').then(m => ({ default: m.PublishReady })));
+const PermissionDenied = React.lazy(() => import('../components/items/PermissionDenied').then(m => ({ default: m.PermissionDenied })));
+const ErrorDisplay = React.lazy(() => import('../components/items/ErrorDisplay').then(m => ({ default: m.ErrorDisplay })));
+const AppShell = React.lazy(() => import('../components/items/AppShell').then(m => ({ default: m.AppShell })));
+const SkillManagementView = React.lazy(() => import('../components/items/SkillManagementView').then(m => ({ default: m.SkillManagementView })));
+const MapView = React.lazy(() => import('../components/items/MapView').then(m => ({ default: m.MapView })));
+const NetworkView = React.lazy(() => import('../components/items/NetworkView').then(m => ({ default: m.NetworkView })));
+const TimelineView = React.lazy(() => import('../components/items/TimelineView').then(m => ({ default: m.TimelineView })));
+const ConditionalAutomationView = React.lazy(() => import('../components/items/ConditionalAutomationView').then(m => ({ default: m.ConditionalAutomationView })));
 
 // Generated panel components
-const LocalMatchesPanel = React.lazy(() => import('../components/panels/LocalMatchesPanel'));
-const NoteContextRail = React.lazy(() => import('../components/panels/NoteContextRail'));
-const NoteHistoryRail = React.lazy(() => import('../components/panels/NoteHistoryRail'));
+const LocalMatchesPanel = React.lazy(() => import('../components/panels/LocalMatchesPanel').then(m => ({ default: m.LocalMatchesPanel })));
+const NoteContextRail = React.lazy(() => import('../components/panels/NoteContextRail').then(m => ({ default: m.NoteContextRail })));
+const NoteHistoryRail = React.lazy(() => import('../components/panels/NoteHistoryRail').then(m => ({ default: m.NoteHistoryRail })));
 
 // Generated editor components
-const EditorManager = React.lazy(() => import('../components/editors/EditorManager'));
-const PropertyEditor = React.lazy(() => import('../components/editors/PropertyEditor'));
-const DescribeItComposer = React.lazy(() => import('../components/editors/DescribeItComposer'));
+const EditorManager = React.lazy(() => import('../components/editors/EditorManager').then(m => ({ default: m.EditorManager })));
+const PropertyEditor = React.lazy(() => import('../components/editors/PropertyEditor').then(m => ({ default: m.PropertyEditor })));
+const DescribeItComposer = React.lazy(() => import('../components/editors/DescribeItComposer').then(m => ({ default: m.DescribeItComposer })));
 
 // Generated status components
-const DegradedBanner = React.lazy(() => import('../components/status/DegradedBanner'));
-const OfflineBanner = React.lazy(() => import('../components/status/OfflineBanner'));
-const ExtractionStatus = React.lazy(() => import('../components/status/ExtractionStatus'));
+const DegradedBanner = React.lazy(() => import('../components/status/DegradedBanner').then(m => ({ default: m.DegradedBanner })));
+const OfflineBanner = React.lazy(() => import('../components/status/OfflineBanner').then(m => ({ default: m.OfflineBanner })));
+const ExtractionStatus = React.lazy(() => import('../components/status/ExtractionStatus').then(m => ({ default: m.ExtractionStatus })));
 
 interface GalleryItem {
     name: string;
@@ -118,10 +118,14 @@ const itemGallery: GalleryItem[] = [
         name: 'LoadingSpinner',
         component: LoadingSpinner,
         defaultProps: {
-            size: 'md',
-            label: 'Loading…',
+            match: {
+                note: { id: 'n3', title: 'Match', content: 'Content', author: 'user3', createdAt: '2026-01-01T00:00:00.000Z', updatedAt: '2026-01-01T00:00:00.000Z', tags: [], properties: [] },
+                result: { score: 0.7, matches: [], conflicts: [], missing: [] },
+                direction: 'incoming',
+            },
+            isLocal: false,
         },
-        description: 'Loading spinner with size variants',
+        description: 'Match result card',
     },
     {
         name: 'ConfirmationModal',
@@ -442,7 +446,7 @@ function GallerySection({ title, description, items }: { title: string; descript
                                 <p className="text-xs text-[var(--app-faint)] mt-0.5">{description}</p>
                             </header>
                             <div className="flex-1 min-h-[120px] flex items-center justify-center">
-                                <Suspense fallback={<LoadingSpinner size="sm" label={`Loading ${name}…`} />}>
+                                <Suspense fallback={<div className="text-xs text-[var(--app-muted)]">Loading {name}…</div>}>
                                     <Component {...defaultProps} />
                                 </Suspense>
                             </div>

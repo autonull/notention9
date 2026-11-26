@@ -1,5 +1,6 @@
 // ui/src/dev/TimeTravelDebugger.tsx - Time-Travel Debugger for UISG Flows
 import { useEffect, useRef, useState } from 'react';
+import type { JSX } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 interface FlowStep {

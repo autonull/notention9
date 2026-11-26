@@ -1,11 +1,15 @@
 {
   "request": {
-    "feature": "intent.recognize"
+    "feature": "non-existent-feature-xyz"
   },
-  "selected": [
-    "cap.intent.recognize"
+  "selected": [],
+  "explanation": "No nodes found matching feature \"non-existent-feature-xyz\"",
+  "conflicts": [
+    {
+      "type": "requires",
+      "message": "Feature not found in graph",
+      "nodes": []
+    }
   ],
-  "explanation": "Selected 1 node(s) for \"intent.recognize\" under context \"default\"",
-  "conflicts": [],
-  "satisfied": true
+  "satisfied": false
 }

@@ -256,6 +256,26 @@ const helpVideo: JourneySpec = {
     status: 'ready',
 };
 
+const helpVideoCaptions: JourneySpec = {
+    id: 'help-video-captions',
+    version: 1,
+    intent: 'User enables captions while watching a help video',
+    journeysTouched: ['help', 'video', 'captions', 'a11y'],
+    seed: { notes: [], settings: baseSettings },
+    steps: [
+        { kind: 'seed', notes: [], settings: baseSettings },
+        { kind: 'navigate', hash: '#/help' },
+        { kind: 'act', target: { testId: 'help-topic-card' }, action: 'click' },
+        { kind: 'act', target: { testId: 'help-video-play' }, action: 'click' },
+        { kind: 'act', target: { testId: 'video-captions-on' }, action: 'click' },
+        { kind: 'waitForState', path: 'help.captionsEnabled', equals: true, timeoutMs: 5000 },
+        { kind: 'assertState', path: 'help.captionsEnabled', equals: true },
+        { kind: 'assertVisible', target: { testId: 'video-caption' } },
+        { kind: 'capture', label: 'help-video-captions-enabled' },
+    ],
+    status: 'ready',
+};
+
 const helpInteractive: JourneySpec = {
     id: 'help-interactive',
     version: 1,
@@ -493,6 +513,7 @@ const settingsWizard: JourneySpec = {
 registerJourney(helpSystemCompletion);
 registerJourney(helpSearch);
 registerJourney(helpVideo);
+registerJourney(helpVideoCaptions);
 registerJourney(helpInteractive);
 registerJourney(helpProgress);
 registerJourney(helpContextual);

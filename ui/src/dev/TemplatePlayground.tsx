@@ -1,5 +1,6 @@
 // ui/src/dev/TemplatePlayground.tsx - Template AST Builder Playground
 import { useEffect, useRef, useState } from 'react';
+import type { JSX } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 interface TemplateAST {
@@ -120,8 +121,9 @@ export function TemplatePlayground(): JSX.Element {
                 if (!res.ok) throw new Error('Failed to load graph');
                 const data = await res.json();
                 setGraph(data);
-                const surfaceNodes = data.nodes.filter(n => n.type === 'surface');
-                setSurfaces(surfaceNodes.map(n => ({
+                const nodes = (data as { nodes: Array<Record<string, any>> }).nodes;
+                const surfaceNodes = nodes.filter((n: Record<string, any>) => n.type === 'surface');
+                setSurfaces(surfaceNodes.map((n: Record<string, any>) => ({
                     id: n.id,
                     name: n.name,
                     component: n.component ?? n.id.replace('surface.', ''),
@@ -131,7 +133,7 @@ export function TemplatePlayground(): JSX.Element {
                     defaultVariant: n.defaultVariant,
                 })));
                 if (surfaceNodes[0]) {
-                    setSelectedSurface(surfaceNodes[0]);
+                    setSelectedSurface(surfaceNodes[0] as unknown as SurfaceData);
                 }
             } catch (err) {
                 setError(err instanceof Error ? err.message : 'Unknown error');
@@ -209,8 +211,8 @@ function PropsPanel({ props }: { props: any }) {
         <table className="props-table">
             <thead><tr><th>Prop</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
-                ${Object.entries(props).map(([key, def]: [string, any]) => 
-                    `<tr><td>${key}</td><td>${def?.type ?? 'any'}</td><td>${def?.description ?? ''}</td></tr>`
+                \${Object.entries(props).map(([key, def]: [string, any]) => 
+                    \`<tr><td>\${key}</td><td>\${def?.type ?? 'any'}</td><td>\${def?.description ?? ''}</td></tr>\`
                 ).join('')}
             </tbody>
         </table>

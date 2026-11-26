@@ -1,5 +1,6 @@
 // ui/src/dev/GraphEditor.tsx - Visual UISG Graph Editor (lazy-loaded)
 import { useEffect, useRef, useState } from 'react';
+import type { JSX } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 interface GraphNode {
@@ -238,7 +239,7 @@ export function GraphEditor(): JSX.Element {
                     <div style={styles.sidebar}>
                         <div style={styles.sidebarSection}>
                             <h3 style={styles.sidebarTitle}>Properties</h3>
-                            {renderNodeInfo(editorState.nodes.find(n => n.id === editorState.selectedNode))}
+                            {renderNodeInfo(editorState.nodes.find(n => n.id === editorState.selectedNode) as EditorState['nodes'][0])}
                         </div>
 
                         {editorState.previewSurface && (
@@ -302,7 +303,7 @@ function CytoscapeGraph({
                                 'color': '#1b1d21',
                                 'width': '120px',
                                 'height': '60px',
-                                'shape': (ele: any) => nodeShape(ele.data('type')),
+                                'shape': ((ele: any) => nodeShape(ele.data('type'))) as any,
                             },
                         },
                         {
@@ -331,7 +332,7 @@ function CytoscapeGraph({
                         nodeSep: 80,
                         rankSep: 100,
                         edgeSep: 20,
-                    },
+                    } as any,
                     minZoom: 0.3,
                     maxZoom: 2,
                 });

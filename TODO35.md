@@ -407,29 +407,37 @@ pnpm build                      # Production build
 - **Privacy**: Analytics local-only, opt-in. No PII in help progress.
 - **Parallel tracks**: Weeks 2-3 run Help UI + Describe It + Empty States in parallel.
 
-### Known pre-existing issues (out of scope for this plan)
+### Fixed pre-existing issues (all green)
 
-Verified against `HEAD`; these fail before/after this work and are not caused by help/UISG changes:
+Validated against `HEAD` and re-run after this work:
 
-- `pnpm --filter @notention/ui typecheck` — legacy `src/dev/*`, `src/hooks/useFlowState.tsx` (missing `./reducers`), `src/components/panels/*` slot typing, `src/components/status/*` Button variant `destructive`.
-- `pnpm --filter @notention/optimize test` — 8 failing specs in `skeleton.test.ts` / `uisg.test.ts` (fixture graph vs `doc/uisg/graph.json` drift). Test isolation issue: `selectFeature > loads selection from file` depends on prior test writing `/tmp/opencode/uisg-selection.json`.
-- `ui/src/tests/generated/DescribeItComposer.test.tsx` mocks `OntologyNode` with unknown fields; template `optimize/src/uisg/templates/editor.ts` now emits the correct shape, so regenerating fixes it.
+- ✅ `pnpm --filter @notention/ui typecheck` — **passes (exit 0)**. Fixed:
+  - `src/dev/*` — JSX namespace import (`import type { JSX } from 'react'`), readonly-array coercion, lazy imports `.then(m => ({ default: m.X }))`, cytoscape typing casts, template-literal escaping.
+  - `src/hooks/useFlowState.tsx` — added `src/hooks/reducers/index.ts` barrel.
+  - `src/components/panels/*` — typed `DEFAULT_TABS`, dropped unsupported `Input size="sm"`, fixed `Tabs<string>` options.
+  - `src/components/status/*` — `Button` now accepts `variant="destructive"` (normalized to `danger`).
+  - `src/tests/generated/DescribeItComposer.test.tsx` — updated mock to the current `OntologyNode`/`Property` shape.
+- ✅ `pnpm --filter @notention/optimize test` — **240 passed | 4 skipped, 0 failed**. Fixed:
+  - Added stable legacy fixture `optimize/src/uisg/__fixtures__/legacy-graph.json` (normalized to schema v4 with `hyperedges`).
+  - `skeleton.test.ts` and `uisg.test.ts` (`seeded regressions`, `manifest determinism`) now load the fixture instead of the regenerated `graph.json`.
+  - `selectFeature` accepts an optional `graphOverride` and writes the selection file in all return paths; test isolation fixed.
+- ✅ All 281 generated UISG/mobile tests pass (`ui/src/tests/generated/`).
 
 ### Completed in this pass
 
 - ✅ All 9 UISG surfaces regenerated via `pnpm optimize:generate`; `doc/uisg/graph.json` updated automatically.
 - ✅ Codegen `generatePropsSchema` now emits real props from slots (camelCase) with inferred types (`() => void`, `boolean`, `number`, `React.ReactNode`, tabs array).
 - ✅ Templates fixed: `header-compact` (touch ref), `bottom-sheet` (ref cast), `bottom-tabs` (tabs fallback + activeIndex default), `map-full` (mapRef cast), `settings-wizard` (event handler + extra props), `empty-state` (helpTopicId narrowing).
-- ✅ All 281 generated UISG/mobile tests pass (`ui/src/tests/generated/`).
 
 ### Remaining work (prioritized)
 
 1. ✅ WebVTT cue generation (`simulator/src/movie_maker.ts`) + wire to `HelpVideoPlayer`.
 2. ✅ i18n topic-content loading (`core/src/help/TopicLoader.ts` locale overlay already wired; added ES translations for search-basics, edit-note-properties with videoId).
 3. ✅ Regenerate UISG artifacts (done; generated component tests pass).
-4. Add WebVTT caption UI regression journey after cues land.
-5. Fix remaining legacy pre-existing type failures: `src/dev/*`, `useFlowState.tsx` (missing `./reducers`), `src/components/panels/*` slot typing, `src/components/status/*` Button variant.
-6. Fix optimize fixture drift (`skeleton.test.ts` / `uisg.test.ts`) and test isolation for `selectFeature`.
+4. ✅ Add WebVTT caption UI regression journey (`help-video-captions` in `uisg.yaml` + `journeys.ts`; regenerates `flow.help-video-captions`).
+5. ✅ Fix remaining legacy pre-existing type failures (see above).
+6. ✅ Fix optimize fixture drift and test isolation for `selectFeature`.
+7. Next: run `pnpm optimize:ci` end-to-end and `pnpm check:ui` (axe dual-theme) for final acceptance.
 
 ---
 

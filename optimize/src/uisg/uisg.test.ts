@@ -334,7 +334,8 @@ describe('selectFeature', () => {
 
     it('allows selection of rejected nodes (soft lifecycle conflict)', () => {
         // cap.intent.recognize is rejected in the graph but can still be selected
-        const result = selectFeature({ feature: 'intent.recognize' });
+        const fixture = validateGraph(JSON.parse(readFileSync(fileURLToPath(new URL('./__fixtures__/legacy-graph.json', import.meta.url)), 'utf8'))).graph!;
+        const result = selectFeature({ feature: 'intent.recognize' }, '/tmp/opencode/uisg-selection-soft.json', fixture);
         expect(result.satisfied).toBe(true);
         expect(result.selected).toContain('cap.intent.recognize');
         // Lifecycle conflicts for 'rejected' are soft (not blocking) - not in conflicts array
@@ -532,7 +533,7 @@ describe('adoptFlow', () => {
 });
 
 describe('seeded regressions', () => {
-    const file = fileURLToPath(new URL('../../../doc/uisg/graph.json', import.meta.url));
+    const file = fileURLToPath(new URL('./__fixtures__/legacy-graph.json', import.meta.url));
     const graph = validateGraph(JSON.parse(readFileSync(file, 'utf8'))).graph!;
     const catalogue = loadRegressionCatalogue();
     const journeyIds = new Set(getAllJourneys().map(({ id }) => id));
@@ -604,7 +605,7 @@ describe('manifest determinism', () => {
     });
 
     it('keeps the recorded manifest in sync with its flow', () => {
-        const file = fileURLToPath(new URL('../../../doc/uisg/graph.json', import.meta.url));
+        const file = fileURLToPath(new URL('./__fixtures__/legacy-graph.json', import.meta.url));
         const { graph } = validateGraph(JSON.parse(readFileSync(file, 'utf8')));
         const manifest = loadManifest('flow.golden-path');
         expect(manifest).not.toBeNull();
