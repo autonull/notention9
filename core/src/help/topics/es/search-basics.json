@@ -1,0 +1,60 @@
+{
+  "id": "search-basics",
+  "title": "Conceptos básicos de búsqueda",
+  "category": "core-skills",
+  "description": "Encuentra cualquier cosa al instante con búsqueda y filtros potentes",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["búsqueda", "encontrar", "filtro", "consulta", "descubrimiento"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Abrir búsqueda",
+      "description": "Presiona Ctrl+F o haz clic en el icono de búsqueda en la barra de herramientas",
+      "target": { "testId": "search-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Búsqueda básica",
+      "description": "Escribe palabras clave para buscar en el contenido, títulos y etiquetas de las notas",
+      "target": { "testId": "search-input" },
+      "action": { "type": "fill", "value": "proyecto alpha" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Operadores de búsqueda",
+      "description": "Usa tag:#etiqueta, propiedad:clave=valor, fecha:>2026-01-01, autor:pubkey para consultas precisas"
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Búsqueda avanzada",
+      "description": "Prueba: tag:#proyecto-alpha propiedad:estado=activo fecha:>2026-11-01",
+      "target": { "testId": "search-input" },
+      "action": { "type": "fill", "value": "tag:#proyecto-alpha propiedad:estado=activo" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Guardar búsquedas",
+      "description": "Haz clic en el icono de estrella junto a una búsqueda para guardarla como filtro rápido en la barra lateral"
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Historial de búsqueda",
+      "description": "Las búsquedas recientes aparecen debajo del campo de entrada para reutilización rápida"
+    }
+  ],
+  "relatedTopics": ["tags-and-filters", "smart-views", "command-palette", "keyboard-shortcuts-reference"],
+  "videoId": "semantic-capture",
+  "version": 1,
+  "locale": "es"
+}

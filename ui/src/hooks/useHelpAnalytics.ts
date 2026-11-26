@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { progressStore, helpEngine, type HelpAnalyticsEvent, type HelpTopic, type HelpProgress } from '@notention/core/help';
+import { progressStore, helpEngine, type HelpAnalyticsEvent, type HelpTopic, type HelpProgress } from '@/lib/helpConfig';
 import { useHelp } from './useHelp';
 
 interface FrictionPoint {

@@ -12,12 +12,16 @@ import {UIProvider} from './components/UIProvider';
 import {pluginManager} from './plugins';
 import {storageRecovery} from '@notention/core';
 import {initializeAI, getInferenceRouter} from './services/ai/init';
+import {initializeHelp} from '@/lib/helpConfig';
 
 // Initialize plugins
 pluginManager.loadPlugins();
 
 // Start storage recovery auto-snapshots (24h interval)
 storageRecovery.startAutoSnapshot();
+
+// Initialize help system with video support
+initializeHelp().catch(console.error);
 
 // Service worker is registered via vite-plugin-pwa injection
 

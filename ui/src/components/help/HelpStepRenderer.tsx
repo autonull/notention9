@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useHelp, useHelpAnalytics } from '@/hooks';
-import { StepExecutor, createStepExecutor, helpEngine, type StepExecutionContext, type StepResult } from '@notention/core/help';
+import { StepExecutor, createStepExecutor, helpEngine, type StepExecutionContext, type StepResult } from '@/lib/helpConfig';
 import { Button } from '../ui/Button';
 import { cn } from '../../utils/ui';
 import { 

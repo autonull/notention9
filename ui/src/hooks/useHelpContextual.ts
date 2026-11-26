@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
-import { helpEngine, type HelpAnalyticsEvent } from '@notention/core/help';
+import { helpEngine, type HelpAnalyticsEvent } from '@/lib/helpConfig';
 import { useHelp } from './useHelp';
 
 interface ContextualTrigger {

@@ -1259,3 +1259,11 @@ export function ExternalLinkIcon(props: IconProps) { return (
         <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
     </OutlineIcon>
 ); }
+
+export function CCIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <rect x="3" y="3" width="18" height="18" rx="2" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M7 9h6M7 15h4" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 9v6M13 9v6" />
+    </OutlineIcon>
+); }

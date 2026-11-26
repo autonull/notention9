@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { helpEngine, progressStore, getProgressStore, ProgressStore, type HelpTopic, type HelpCategory, type HelpSearchResult, type HelpProgress, type HelpAnalyticsEvent, type HelpSettings } from '@notention/core/help';
+import { helpEngine, progressStore, getProgressStore, ProgressStore, type HelpTopic, type HelpCategory, type HelpSearchResult, type HelpProgress, type HelpAnalyticsEvent, type HelpSettings } from '@/lib/helpConfig';
 
 export interface UseHelpReturn {
   // Topics

@@ -177,6 +177,61 @@ export class MovieServer {
             }
         });
 
+        // Video metadata endpoint for HelpVideoPlayer
+        this.app.get('/videos/:videoId.json', (req, res) => {
+            const videoId = req.params.videoId;
+            const moviesDir = path.resolve(process.cwd(), 'movies');
+            
+            if (!fs.existsSync(moviesDir)) {
+                return res.status(404).json({ error: "No movies found" });
+            }
+
+            // Find movie directory containing this videoId
+            const movieDirs = fs.readdirSync(moviesDir)
+                .filter(f => fs.statSync(path.join(moviesDir, f)).isDirectory());
+
+            let videoMetaPath: string | null = null;
+            for (const dir of movieDirs) {
+                const metaPath = path.join(moviesDir, dir, 'video.json');
+                if (fs.existsSync(metaPath)) {
+                    try {
+                        const meta = JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+                        if (meta.id === videoId) {
+                            videoMetaPath = metaPath;
+                            break;
+                        }
+                    } catch {}
+                }
+            }
+
+            if (videoMetaPath) {
+                res.sendFile(videoMetaPath);
+            } else {
+                res.status(404).json({ error: `Video not found: ${videoId}` });
+            }
+        });
+
+        // List all available videos
+        this.app.get('/videos', (_, res) => {
+            const moviesDir = path.resolve(process.cwd(), 'movies');
+            if (!fs.existsSync(moviesDir)) return res.json([]);
+
+            const videos = fs.readdirSync(moviesDir)
+                .filter(f => fs.statSync(path.join(moviesDir, f)).isDirectory())
+                .map(d => {
+                    const metaPath = path.join(moviesDir, d, 'video.json');
+                    if (!fs.existsSync(metaPath)) return null;
+                    try {
+                        return JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+                    } catch {
+                        return null;
+                    }
+                })
+                .filter((v): v is NonNullable<typeof v> => v !== null);
+
+            res.json(videos);
+        });
+
         this.app.use('/movies', express.static(path.resolve(process.cwd(), 'movies')));
 
         const uiBuildDir = path.resolve(__dirname, '../dist/ui');

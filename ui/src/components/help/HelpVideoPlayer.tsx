@@ -6,7 +6,7 @@ import { cn } from '../../utils/ui';
 import { 
   PlayIcon, PauseIcon, VolumeIcon, VolumeXIcon, 
   MaximizeIcon, MinimizeIcon, SkipBackIcon, SkipForwardIcon,
-  MenuIcon, XIcon
+  MenuIcon, XIcon, CCIcon
 } from '../ui/icons';
 
 export interface HelpVideoPlayerProps {
@@ -31,6 +31,8 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
   const [showControls, setShowControls] = useState(true);
   const [showChapters, setShowChapters] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [captionsEnabled, setCaptionsEnabled] = useState(true);
+  const [currentCaption, setCurrentCaption] = useState<string | null>(null);
   const controlsTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const topic = topicId ? currentTopic : undefined;
@@ -88,10 +90,17 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
             recordEvent({ type: 'video_play', topicId: topic?.id, metadata: { videoId: meta.id } });
           }
           break;
+        case 'captionchange':
+          setCurrentCaption(event.caption);
+          break;
       }
     });
     return unsubscribe;
   }, [player, topic?.id, videoId, duration, trackVideoPlay, trackVideoProgress, trackVideoComplete, recordEvent]);
+
+  useEffect(() => {
+    player.setCaptionsEnabled(captionsEnabled);
+  }, [player, captionsEnabled]);
 
   const handleMouseMove = useCallback(() => {
     setShowControls(true);
@@ -158,6 +167,20 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
         {!metadata && (
           <div className="absolute inset-0 flex items-center justify-center bg-[var(--app-surface)]">
             <div className="animate-spin rounded-full h-8 w-8 border-2 border-[var(--app-accent)] border-t-transparent" />
+          </div>
+        )}
+
+        {captionsEnabled && currentCaption && (
+          <div 
+            className="absolute bottom-20 left-4 right-4 z-10 pointer-events-none animate-fade-in"
+            data-testid="video-caption"
+            role="region"
+            aria-live="polite"
+            aria-label="Caption"
+          >
+            <div className="mx-auto max-w-3xl px-4 py-2 bg-black/80 text-white text-center rounded-lg text-base font-medium shadow-lg backdrop-blur-sm">
+              {currentCaption}
+            </div>
           </div>
         )}
 
@@ -246,6 +269,20 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
                     </Button>
                   )}
 
+                  {metadata?.captionsUrl && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCaptionsEnabled(!captionsEnabled)}
+                      aria-label={captionsEnabled ? 'Hide captions' : 'Show captions'}
+                      aria-pressed={captionsEnabled}
+                      data-testid={captionsEnabled ? 'video-captions-on' : 'video-captions-off'}
+                      className={cn(captionsEnabled && 'text-[var(--app-accent)]')}
+                    >
+                      <CCIcon className="w-5 h-5" />
+                    </Button>
+                  )}
+
                   <Button
                     variant="ghost"
                     size="sm"
@@ -319,8 +356,19 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
       </div>
 
       {metadata?.captionsUrl && (
-        <div className="mt-2 p-3 bg-[var(--app-surface)] border border-[var(--app-line)] rounded-lg text-sm text-[var(--app-text-secondary)]">
-          <strong>Captions:</strong> Available (auto-generated)
+        <div className="mt-2 p-3 bg-[var(--app-surface)] border border-[var(--app-line)] rounded-lg text-sm text-[var(--app-text-secondary)] flex items-center justify-between">
+          <span>
+            <strong>Captions:</strong> {captionsEnabled ? 'On' : 'Off'} (auto-generated)
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setCaptionsEnabled(!captionsEnabled)}
+            aria-label={captionsEnabled ? 'Hide captions' : 'Show captions'}
+          >
+            <CCIcon className="w-4 h-4" />
+            {captionsEnabled ? 'Hide' : 'Show'} Captions
+          </Button>
         </div>
       )}
     </div>

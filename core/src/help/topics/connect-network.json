@@ -58,6 +58,7 @@
     }
   ],
   "relatedTopics": ["relay-management", "encrypted-chat", "semantic-matching", "nostr-keys"],
+  "videoId": "resilient-networking",
   "version": 1,
   "locale": "en"
 }

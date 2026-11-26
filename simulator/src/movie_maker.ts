@@ -495,5 +495,90 @@ Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
 
         writeFileSync(metaPath, JSON.stringify(metadata, null, 2));
         this.log(`📝 Metadata saved to ${metaPath}`);
+
+        // Also write video metadata for HelpVideoPlayer
+        await this.writeVideoMetadata(scenario, duration);
+    }
+
+    private async writeVideoMetadata(scenario: Scenario, duration?: number): Promise<void> {
+        const videoId = this.sanitizeVideoId(scenario.name);
+        const videoUrl = `/movies/${this.getOutputDirName()}/simulation.mp4`;
+        const captionsUrl = this.options.enableCaptions ? `/movies/${this.getOutputDirName()}/captions.vtt` : undefined;
+        const thumbnailUrl = `/movies/${this.getOutputDirName()}/thumbnail.jpg`; // Will be generated if possible
+
+        const videoMetadata = {
+            id: videoId,
+            title: scenario.name,
+            duration: duration ?? scenario.duration,
+            thumbnailUrl,
+            videoUrl,
+            captionsUrl,
+            chapters: this.generateChapters(scenario),
+        };
+
+        const videoMetaPath = join(this.options.outputDir, 'video.json');
+        writeFileSync(videoMetaPath, JSON.stringify(videoMetadata, null, 2));
+        this.log(`📹 Video metadata saved to ${videoMetaPath}`);
+    }
+
+    private sanitizeVideoId(name: string): string {
+        return name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    }
+
+    private getOutputDirName(): string {
+        return this.options.outputDir.split('/').pop() ?? '';
+    }
+
+    private generateChapters(scenario: Scenario): Array<{ id: string; title: string; startTime: number; endTime: number }> {
+        const chapters: Array<{ id: string; title: string; startTime: number; endTime: number }> = [];
+        let currentTime = 0;
+
+        chapters.push({
+            id: 'intro',
+            title: 'Introduction',
+            startTime: 0,
+            endTime: 7,
+        });
+        currentTime = 7;
+
+        for (let i = 0; i < scenario.events.length; i++) {
+            const event = scenario.events[i];
+            const chapterId = `event-${i + 1}`;
+            const chapterTitle = this.eventToChapterTitle(event);
+            const chapterDuration = 3;
+
+            chapters.push({
+                id: chapterId,
+                title: chapterTitle,
+                startTime: currentTime,
+                endTime: currentTime + chapterDuration,
+            });
+            currentTime += chapterDuration;
+        }
+
+        chapters.push({
+            id: 'conclusion',
+            title: 'Conclusion',
+            startTime: currentTime,
+            endTime: currentTime + 3,
+        });
+
+        return chapters;
+    }
+
+    private eventToChapterTitle(event: EventConfig): string {
+        switch (event.action) {
+            case 'publish_job':
+                return `${event.actorRole} publishes job`;
+            case 'publish_offer':
+                return `${event.actorRole} publishes offer`;
+            case 'camera':
+                if (event.cameraFocus === 'grid') {
+                    return 'View all matches';
+                }
+                return `Focus on ${event.cameraFocus}`;
+            default:
+                return `${event.actorRole} ${event.action}`;
+        }
     }
 }

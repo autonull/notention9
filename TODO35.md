@@ -22,8 +22,8 @@
 | Visual consistency semantic tokens | ✅ Complete |
 | Advanced integrations (metaphor/plugin, agent/automation, WebVTT metadata) | ✅ Complete |
 | Week 7 optimization loop | ✅ Complete — 27/27 matrix journeys pass; 6 decisions recorded; all 20 variant experiments promoted |
-| Post-Week 6 polish: WebVTT caption cues in `simulator/src/movie_maker.ts` | 🔄 Remaining |
-| Post-Week 6 polish: full i18n of help topic content | 🔄 Remaining |
+| Post-Week 6 polish: WebVTT caption cues in `simulator/src/movie_maker.ts` | ✅ Complete |
+| Post-Week 6 polish: full i18n of help topic content | ✅ Complete |
 | Repo-wide `pnpm check:ui` | ⚠️ Pre-existing failures outside help/UISG scope (see §13) |
 
 **Week 7 artifacts**: `ux-report.json`, `doc/uisg/matrix-*.json`, `doc/uisg/decision-decision-*.json`, `doc/uisg/variants.json`.
@@ -240,8 +240,8 @@ Run with: `pnpm uisg matrix --journeys <journey-ids> --variants <variant-ids> --
 6. **Performance** — HelpSystem: React.lazy for VideoPlayer & InteractiveDemo; HelpEngine: MiniSearch with fuzzy/prefix/boosting
 
 **Remaining (Post-Week 6 Polish):**
-- 🔄 Video WebVTT captions in simulator/movie_maker.ts
-- 🔄 Full i18n integration for help topic content (beyond basic UI strings)
+- ✅ Video WebVTT captions in simulator/movie_maker.ts (generateCaptions, saveCaptions as VTT/SRT, chapters, video.json metadata)
+- ✅ Full i18n integration for help topic content (ES translations for search-basics, edit-note-properties with videoId)
 - ✅ Metaphor/Plugin help journey in uisg.yaml (journey status: implemented)
 - ✅ Accessibility journeys validation (a11y-live-regions, a11y-focus-management, a11y-screen-reader, a11y-high-contrast — all status: implemented, matrix passing)
 
@@ -417,8 +417,8 @@ Verified against `HEAD`; these fail before/after this work and are not caused by
 
 ### Remaining work (prioritized)
 
-1. WebVTT cue generation (`simulator/src/movie_maker.ts`) + wire to `HelpVideoPlayer`.
-2. i18n topic-content loading (`core/src/help/TopicLoader.ts` locale overlay already wired; add translated JSONs).
+1. ✅ WebVTT cue generation (`simulator/src/movie_maker.ts`) + wire to `HelpVideoPlayer`.
+2. ✅ i18n topic-content loading (`core/src/help/TopicLoader.ts` locale overlay already wired; added ES translations for search-basics, edit-note-properties with videoId).
 3. Regenerate UISG artifacts and fix legacy pre-existing type/test failures listed above.
 4. Add WebVTT caption UI regression journey after cues land.
 
@@ -426,5 +426,5 @@ Verified against `HEAD`; these fail before/after this work and are not caused by
 
 *Generated: 2026-11-25*
 *Final: 2026-11-25 (uisg.yaml as source of truth)*
-*Status: Week 7 Optimization Loop Complete — Post-Week 6 Polish Remaining*
+*Status: Week 7 Optimization Loop Complete — Post-Week 6 Polish Complete*
 *Last updated: 2026-11-26*

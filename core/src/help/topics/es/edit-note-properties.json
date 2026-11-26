@@ -1,0 +1,67 @@
+{
+  "id": "edit-note-properties",
+  "title": "Editar propiedades de nota",
+  "category": "core-skills",
+  "description": "Añade propiedades estructuradas a tus notas para una organización potente",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["propiedades", "metadatos", "organización", "detalles"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Abrir editor de propiedades",
+      "description": "Haz clic en el botón 'Añadir detalle' o presiona Ctrl+D en cualquier nota",
+      "target": { "testId": "note-add-detail-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Seleccionar clave de propiedad",
+      "description": "Elige una clave de propiedad del menú desplegable (ej. 'estado', 'prioridad', 'fechaVencimiento')",
+      "target": { "testId": "property-key-input", "modal": "Add detail" },
+      "action": { "type": "fill", "value": "estado" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Seleccionar operador",
+      "description": "Elige un operador (=, !=, >, <, contiene, etc.)",
+      "target": { "testId": "property-operator-select", "modal": "Add detail" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Introducir valor",
+      "description": "Escribe el valor de la propiedad (ej. 'activo', 'alto', '2026-12-31')",
+      "target": { "testId": "property-value-input", "modal": "Add detail" },
+      "action": { "type": "fill", "value": "activo" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Confirmar propiedad",
+      "description": "Haz clic en 'Añadir detalle' para guardar la propiedad",
+      "target": { "role": "button", "name": "Añadir detalle", "modal": "Add detail" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "validation",
+      "title": "Propiedad añadida",
+      "description": "Verifica que el chip de propiedad aparece en la nota",
+      "validation": { "type": "stateEquals", "statePath": "note.propertyIndex.estado", "expectedValue": ["activo"] }
+    }
+  ],
+  "relatedTopics": ["create-first-note", "tags-and-filters", "property-types-reference", "smart-views"],
+  "videoId": "semantic-capture",
+  "version": 1,
+  "locale": "es"
+}
