@@ -3,9 +3,9 @@ import { ArrangeMenuMobileProps } from './ArrangeMenuMobileProps';
 import { useTouchGestures } from '@/hooks/useTouchGestures';
 
 export function ArrangeMenuMobile(props: ArrangeMenuMobileProps) {
-  const { onSwipeDown } = useTouchGestures({ onSwipeDown: props.onDismiss });
+  const { ref } = useTouchGestures({ onSwipeDown: props.onDismiss });
   return (
-    <div className="bottom-sheet" data-testid="mobile-arrange-menu" onTouchMove={onSwipeDown}>
+    <div ref={ref as React.RefObject<HTMLDivElement>} className="bottom-sheet" data-testid="mobile-arrange-menu">
       <div className="sheet-grabber" aria-hidden="true" />
       <div className="sheet-content">{props.children}</div>
       <div className="sheet-actions">{props.actions}</div>

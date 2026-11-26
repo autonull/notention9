@@ -1,6 +1,6 @@
 # UI/UX Specification
 
-Generated from `optimize/uisg.yaml` on 2026-11-26T00:37:20.932Z
+Generated from `optimize/uisg.yaml` on 2026-11-26T17:08:05.306Z
 
 ## Surfaces
 
@@ -13,6 +13,10 @@ Generated from `optimize/uisg.yaml` on 2026-11-26T00:37:20.932Z
 - **Description**: Main help container with routing, sidebar, search, and topic rendering
 - **Variants**:
   - `default`: Standard help system (experimental)
+  - `interactive`: Interactive help variant with step-by-step guidance (experimental)
+  - `video`: Video-first help variant (experimental)
+  - `searchable`: Search-optimized help variant (experimental)
+  - `contextual`: Contextual help variant with proactive triggers (experimental)
 
 ### Describe It Promo (`describe-it-promo`)
 
@@ -394,6 +398,13 @@ Generated from `optimize/uisg.yaml` on 2026-11-26T00:37:20.932Z
 - **Description**: Verify bundle size and load times
 - **Steps**: measure-bundle → measure-load-time
 - **Metrics**: bundle-size, load-time
+
+### Capture and Edit Note (`capture-and-edit`)
+
+- **Surface**: empty-state-actionable (notes-all)
+- **Description**: User captures a note and edits its properties
+- **Steps**: page-add-detail → fill-key → select-operator → fill-value → add-detail → save-note → verify-property
+- **Metrics**: topic-completion-rate
 
 ## Metrics
 

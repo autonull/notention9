@@ -4,9 +4,9 @@ import { useTouchGestures } from '@/hooks/useTouchGestures';
 import { MenuIcon } from '../ui/icons';
 
 export function HeaderMobile(props: HeaderMobileProps) {
-  const { onSwipeRight } = useTouchGestures({ onSwipeRight: props.onOpenSidebar });
+  const { ref } = useTouchGestures({ onSwipeRight: props.onOpenSidebar });
   return (
-    <header className="header-compact" data-testid="mobile-header" onTouchStart={onSwipeRight}>
+    <header ref={ref} className="header-compact" data-testid="mobile-header">
       <div className="header-logo">{props.logo}</div>
       <button className="hamburger" onClick={props.onOpenSidebar} data-testid="hamburger-menu" aria-label="Open menu">
         <MenuIcon />

@@ -1,6 +1,18 @@
-import { useEffect, useRef, useCallback, useState } from 'react';
-import { helpEngine, type ContextualTrigger, type HelpAnalyticsEvent } from '@notention/core/help';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { helpEngine, type HelpAnalyticsEvent } from '@notention/core/help';
 import { useHelp } from './useHelp';
+
+interface ContextualTrigger {
+  id: string;
+  name: string;
+  condition: 'idle' | 'error' | 'feature_gate' | 'first_visit' | 'custom';
+  config: Record<string, unknown>;
+  targetTopicId: string;
+  priority: number;
+  cooldownMs: number;
+  maxShowsPerSession: number;
+  enabled: boolean;
+}
 
 interface ContextualTriggerState {
   trigger: ContextualTrigger;
@@ -14,6 +26,7 @@ export interface UseHelpContextualReturn {
   dismissTrigger: (triggerId: string) => void;
   resetTrigger: (triggerId: string) => void;
   checkTriggers: () => void;
+  recordError: () => void;
 }
 
 const IDLE_THRESHOLD_MS = 60000; // 1 minute
@@ -21,12 +34,12 @@ const ERROR_COOLDOWN_MS = 30000; // 30 seconds
 
 export function useHelpContextual(): UseHelpContextualReturn {
   const { recordEvent, getProgress, settings } = useHelp();
-  const [activeTriggers, setActiveTriggers] = useState<ContextualTrigger[]>([]);
-  const triggerStatesRef = useRef<Map<string, ContextualTriggerState>>(new Map());
-  const idleTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const [activeTriggers, setActiveTriggers] = React.useState<ContextualTrigger[]>([]);
+  const triggerStatesRef = useRef(new Map());
+  const idleTimerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
   const lastActivityRef = useRef(Date.now());
-  const errorCountRef = useRef(0);
-  const lastErrorTimeRef = useRef(0);
+  const errorCountRef = useRef<number>(0);
+  const lastErrorTimeRef = useRef<number>(0);
 
   useEffect(() => {
     const handleActivity = () => {
@@ -78,7 +91,7 @@ export function useHelpContextual(): UseHelpContextualReturn {
       switch (trigger.condition) {
         case 'idle': {
           const idleTime = now - lastActivityRef.current;
-          shouldShow = idleTime >= (trigger.config.thresholdMs ?? IDLE_THRESHOLD_MS);
+          shouldShow = idleTime >= ((trigger.config.thresholdMs as number | undefined) ?? IDLE_THRESHOLD_MS);
           break;
         }
         case 'error': {

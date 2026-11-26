@@ -1,0 +1,36 @@
+{
+  "runId": "decision-1795706859203",
+  "decisions": [
+    {
+      "surface": "empty-state-notes-all",
+      "variant": "notes-all",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "empty-state-notes-all",
+      "variant": "network",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "empty-state-notes-all",
+      "variant": "matches",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    }
+  ],
+  "promoted": [
+    "empty-state-notes-all/notes-all",
+    "empty-state-notes-all/network",
+    "empty-state-notes-all/matches"
+  ],
+  "rejected": [],
+  "flagged": []
+}

@@ -326,3 +326,5 @@ export function HelpVideoPlayer({ className, topicId }: HelpVideoPlayerProps) {
     </div>
   );
 }
+
+export default HelpVideoPlayer;

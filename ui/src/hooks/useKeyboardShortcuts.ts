@@ -42,6 +42,7 @@ export function useKeyboardShortcuts({
 	onEscape,
 	onShortcutsHelp,
 	onNavigateView,
+	onOpenDescribeIt,
 }: UseKeyboardShortcutsProps) {
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {

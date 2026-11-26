@@ -66,6 +66,8 @@ export function useView() {
         setIsPaletteOpen: uiState.setIsPaletteOpen,
         isHelpOpen: uiState.isHelpOpen,
         setIsHelpOpen: uiState.setIsHelpOpen,
+        uisgMode: uiState.uisgMode,
+        setUisgMode: uiState.setUisgMode,
 
         // Location
         userLocation: location.userLocation,

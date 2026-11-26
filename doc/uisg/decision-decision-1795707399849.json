@@ -1,0 +1,27 @@
+{
+  "runId": "decision-1795707399849",
+  "decisions": [
+    {
+      "surface": "settings-wizard",
+      "variant": "grouped",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "settings-wizard",
+      "variant": "wizard",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    }
+  ],
+  "promoted": [
+    "settings-wizard/grouped",
+    "settings-wizard/wizard"
+  ],
+  "rejected": [],
+  "flagged": []
+}

@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect, useMemo } from 'react';
-import { helpEngine, progressStore, type HelpTopic, type HelpCategory, type HelpSearchResult, type HelpProgress, type HelpAnalyticsEvent } from '@notention/core/help';
+import { helpEngine, progressStore, getProgressStore, ProgressStore, type HelpTopic, type HelpCategory, type HelpSearchResult, type HelpProgress, type HelpAnalyticsEvent, type HelpSettings } from '@notention/core/help';
 
-interface UseHelpReturn {
+export interface UseHelpReturn {
   // Topics
   topics: HelpTopic[];
   categories: HelpCategory[];
@@ -13,6 +13,7 @@ interface UseHelpReturn {
   currentTopicId: string | null;
   currentTopic: HelpTopic | undefined;
   setCurrentTopic: (topicId: string | null) => void;
+  openTopic: (topicId: string) => void;
   
   // Progress
   progress: Map<string, HelpProgress>;
@@ -30,8 +31,8 @@ interface UseHelpReturn {
   getAnalytics: (type?: HelpAnalyticsEvent['type']) => HelpAnalyticsEvent[];
   
   // Settings
-  settings: ReturnType<typeof progressStore.getSettings>;
-  updateSettings: (settings: Partial<ReturnType<typeof progressStore.getSettings>>) => void;
+  settings: HelpSettings;
+  updateSettings: (settings: Partial<HelpSettings>) => void;
   
   // Import/Export
   exportProgress: () => string;
@@ -43,11 +44,16 @@ interface UseHelpReturn {
   popularTopics: Array<{ topicId: string; count: number }>;
 }
 
+function getStore(): ProgressStore {
+  return progressStore ?? getProgressStore();
+}
+
 export function useHelp(): UseHelpReturn {
   const [topics] = useState(() => helpEngine.getAllTopics());
   const [categories] = useState(() => helpEngine.getCategories());
   const [currentTopicId, setCurrentTopicId] = useState<string | null>(null);
   const [progressMap, setProgressMap] = useState<Map<string, HelpProgress>>(new Map());
+  const store = getStore();
   
   const currentTopic = useMemo(() => 
     currentTopicId ? helpEngine.getTopic(currentTopicId) : undefined, 
@@ -55,19 +61,24 @@ export function useHelp(): UseHelpReturn {
   );
 
   useEffect(() => {
-    const unsubscribe = progressStore.subscribe((newProgress) => {
+    const unsubscribe = store.subscribe((newProgress: Map<string, HelpProgress>) => {
       setProgressMap(new Map(newProgress));
     });
-    setProgressMap(new Map(progressStore.getAllProgress().reduce((acc, p) => { acc.set(p.topicId, p); return acc; }, new Map<string, HelpProgress>())));
+    setProgressMap(new Map(store.getAllProgress().reduce((acc: Map<string, HelpProgress>, p: HelpProgress) => { acc.set(p.topicId, p); return acc; }, new Map<string, HelpProgress>())));
     return unsubscribe;
-  }, []);
+  }, [store]);
 
   const setCurrentTopic = useCallback((topicId: string | null) => {
     setCurrentTopicId(topicId);
     if (topicId) {
-      progressStore.startTopic(topicId);
+      store.startTopic(topicId);
     }
-  }, []);
+  }, [store]);
+
+  const openTopic = useCallback((topicId: string) => {
+    setCurrentTopicId(topicId);
+    store.startTopic(topicId);
+  }, [store]);
 
   const search = useCallback((query: string, options?: { category?: string; limit?: number }) => {
     return helpEngine.search(query, options);
@@ -78,58 +89,58 @@ export function useHelp(): UseHelpReturn {
   }, []);
 
   const getProgress = useCallback((topicId: string) => {
-    return progressStore.getProgress(topicId);
-  }, []);
+    return store.getProgress(topicId);
+  }, [store]);
 
   const startTopic = useCallback((topicId: string) => {
-    return progressStore.startTopic(topicId);
-  }, []);
+    return store.startTopic(topicId);
+  }, [store]);
 
   const updateStep = useCallback((topicId: string, stepIndex: number, stepId: string) => {
-    return progressStore.updateStep(topicId, stepIndex, stepId);
-  }, []);
+    return store.updateStep(topicId, stepIndex, stepId);
+  }, [store]);
 
   const completeTopic = useCallback((topicId: string) => {
-    return progressStore.completeTopic(topicId);
-  }, []);
+    return store.completeTopic(topicId);
+  }, [store]);
 
   const resetTopic = useCallback((topicId: string) => {
-    progressStore.resetTopic(topicId);
-  }, []);
+    store.resetTopic(topicId);
+  }, [store]);
 
   const setRating = useCallback((topicId: string, rating: number) => {
-    progressStore.setRating(topicId, rating);
-  }, []);
+    store.setRating(topicId, rating);
+  }, [store]);
 
   const setFeedback = useCallback((topicId: string, feedback: string) => {
-    progressStore.setFeedback(topicId, feedback);
-  }, []);
+    store.setFeedback(topicId, feedback);
+  }, [store]);
 
   const recordEvent = useCallback((event: Omit<HelpAnalyticsEvent, 'timestamp' | 'sessionId'>) => {
-    progressStore.recordEvent(event);
-  }, []);
+    store.recordEvent(event);
+  }, [store]);
 
   const getAnalytics = useCallback((type?: HelpAnalyticsEvent['type']) => {
-    return progressStore.getAnalytics(type);
-  }, []);
+    return store.getAnalytics(type);
+  }, [store]);
 
-  const settings = progressStore.getSettings();
-  const updateSettings = useCallback((newSettings: Partial<typeof settings>) => {
-    progressStore.updateSettings(newSettings);
-  }, []);
+  const settings = store.getSettings();
+  const updateSettings = useCallback((newSettings: Partial<HelpSettings>) => {
+    store.updateSettings(newSettings);
+  }, [store]);
 
   const exportProgress = useCallback(() => {
-    return progressStore.export();
-  }, []);
+    return store.export();
+  }, [store]);
 
   const importProgress = useCallback((json: string) => {
-    return progressStore.import(json);
-  }, []);
+    return store.import(json);
+  }, [store]);
 
-  const completionRate = progressStore.getCompletionRate();
-  const averageTimeSpent = progressStore.getAverageTimeSpent();
-  const popularTopics = progressStore.getMostPopularTopics(10);
-  const getAllProgress = progressStore.getAllProgress.bind(progressStore);
+  const completionRate = store.getCompletionRate();
+  const averageTimeSpent = store.getAverageTimeSpent();
+  const popularTopics = store.getMostPopularTopics(10);
+  const getAllProgress = store.getAllProgress.bind(store);
 
   return {
     topics,
@@ -140,6 +151,7 @@ export function useHelp(): UseHelpReturn {
     currentTopicId,
     currentTopic,
     setCurrentTopic,
+    openTopic,
     progress: progressMap,
     getProgress,
     getAllProgress,

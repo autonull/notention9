@@ -4,5 +4,6 @@
 // Source surface: surface.describe-it-promo
 
 export interface DescribeItPromoProps {
-    // Define props based on template slots: trigger, content, dismiss
+    variant?: 'pulse' | 'tooltip' | 'contextual-hint';
+    forceShow?: boolean;
 }

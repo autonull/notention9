@@ -265,3 +265,5 @@ export function HelpInteractiveDemo({ className, topicId }: HelpInteractiveDemoP
     </div>
   );
 }
+
+export default HelpInteractiveDemo;

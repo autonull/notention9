@@ -85,7 +85,7 @@ export class HelpEngine {
       },
       extractField: (document, fieldName) => {
         if (fieldName === 'tags') return document.tags.join(' ');
-        return (document as Record<string, unknown>)[fieldName] as string;
+        return (document as unknown as Record<string, unknown>)[fieldName] as string;
       },
     });
   }
@@ -142,16 +142,7 @@ export class HelpEngine {
   }
 
   private buildSearchIndex(): void {
-    const documents = Array.from(this.topics.values()).map(topic => ({
-      id: topic.id,
-      title: topic.title,
-      description: topic.description,
-      tags: topic.tags,
-      category: topic.category,
-      locale: topic.locale,
-      difficulty: topic.difficulty,
-      estimatedTimeMinutes: topic.estimatedTimeMinutes,
-    }));
+    const documents = Array.from(this.topics.values());
     this.miniSearch.addAll(documents);
   }
 
@@ -222,8 +213,7 @@ export class HelpEngine {
 
   search(query: string, options: { category?: string; limit?: number; locale?: string } = {}): HelpSearchResult[] {
     const searchOptions = {
-      ...this.miniSearch.options.searchOptions,
-      filter: (result: { id: string; title: string; description: string; category: string; tags: string[]; locale: string }) => {
+      filter: (result: { id: string; score: number }) => {
         const topic = this.topics.get(result.id);
         if (!topic) return false;
         if (options.category && topic.category !== options.category) return false;

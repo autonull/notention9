@@ -15,6 +15,30 @@
           "description": "Standard help system",
           "status": "experimental",
           "metrics": {}
+        },
+        "interactive": {
+          "template": "help-system",
+          "description": "Interactive help variant with step-by-step guidance",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "video": {
+          "template": "help-system",
+          "description": "Video-first help variant",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "searchable": {
+          "template": "help-system",
+          "description": "Search-optimized help variant",
+          "status": "experimental",
+          "metrics": {}
+        },
+        "contextual": {
+          "template": "help-system",
+          "description": "Contextual help variant with proactive triggers",
+          "status": "experimental",
+          "metrics": {}
         }
       },
       "defaultVariant": "default",

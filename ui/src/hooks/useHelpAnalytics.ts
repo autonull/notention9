@@ -155,7 +155,7 @@ export function useHelpAnalytics(): {
     const contextualTriggers = analytics.filter(e => e.type === 'contextual_trigger');
     const contextualAccepts = analytics.filter(e => e.type === 'contextual_accept');
     const feedback = analytics.filter(e => e.type === 'feedback_submit');
-    const positiveFeedback = feedback.filter(e => (e.metadata?.rating ?? 0) >= 4);
+    const positiveFeedback = feedback.filter(e => ((e.metadata?.rating as number) ?? 0) >= 4);
     const stepFails = analytics.filter(e => e.type === 'step_fail');
 
     const topicCompletionRate = topicStarts.length > 0 ? topicCompletes.length / topicStarts.length : 0;

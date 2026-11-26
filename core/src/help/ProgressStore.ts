@@ -25,12 +25,16 @@ export class ProgressStore {
   private listeners: Set<(progress: Map<string, HelpProgress>) => void> = new Set();
   private saveTimer: ReturnType<typeof setTimeout> | null = null;
   private readonly maxAnalyticsEvents = 1000;
+  private loaded = false;
 
   constructor() {
-    this.load();
+    if (isBrowser()) {
+      this.load();
+    }
   }
 
   private load(): void {
+    if (!isBrowser()) return;
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
       if (stored) {
@@ -49,12 +53,14 @@ export class ProgressStore {
       if (settingsStored) {
         this.settings = { ...DEFAULT_SETTINGS, ...JSON.parse(settingsStored) };
       }
+      this.loaded = true;
     } catch (error) {
       console.error('Failed to load help progress:', error);
     }
   }
 
   private save(): void {
+    if (!isBrowser()) return;
     if (this.saveTimer) {
       clearTimeout(this.saveTimer);
     }
@@ -256,6 +262,7 @@ export class ProgressStore {
   }
 
   private getSessionId(): string {
+    if (!isBrowser()) return 'server-session';
     let sessionId = sessionStorage.getItem('notention:help:session');
     if (!sessionId) {
       sessionId = crypto.randomUUID();
@@ -292,4 +299,17 @@ export class ProgressStore {
   }
 }
 
-export const progressStore = new ProgressStore();
+export function isBrowser(): boolean {
+  return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+}
+
+let progressStoreInstance: ProgressStore | null = null;
+
+export function getProgressStore(): ProgressStore {
+  if (!progressStoreInstance) {
+    progressStoreInstance = new ProgressStore();
+  }
+  return progressStoreInstance;
+}
+
+export const progressStore = isBrowser() ? getProgressStore() : null;

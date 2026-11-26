@@ -1,0 +1,45 @@
+{
+  "runId": "decision-1795707417299",
+  "decisions": [
+    {
+      "surface": "help-system-completion",
+      "variant": "interactive",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "help-system-completion",
+      "variant": "video",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "help-system-completion",
+      "variant": "searchable",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "help-system-completion",
+      "variant": "contextual",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    }
+  ],
+  "promoted": [
+    "help-system-completion/interactive",
+    "help-system-completion/video",
+    "help-system-completion/searchable",
+    "help-system-completion/contextual"
+  ],
+  "rejected": [],
+  "flagged": []
+}

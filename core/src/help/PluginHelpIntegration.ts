@@ -1,7 +1,6 @@
 import type { Skill } from '../skills/types.js';
 import type { HelpTopic, HelpStep } from '../types/help.js';
 import { SkillRegistry } from '../skills/SkillRegistry.js';
-import { skillApprovalManager } from '../skills/skillApprovalManager.js';
 
 export interface PluginHelpConfig {
   skillRegistry: SkillRegistry;

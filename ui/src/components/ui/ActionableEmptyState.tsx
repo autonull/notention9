@@ -108,7 +108,7 @@ export function ActionableEmptyState(props: ActionableEmptyStateProps) {
         )}
       </div>
       {config.helpTopicId && (
-        <button onClick={() => help.openTopic(config.helpTopicId)} className="help-link" data-testid="empty-help-link">
+        <button onClick={() => help.openTopic(config.helpTopicId!)} className="help-link" data-testid="empty-help-link">
           Learn more
         </button>
       )}

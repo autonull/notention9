@@ -20,6 +20,22 @@ surfaces:
         template: help-system
         description: Standard help system
         status: experimental
+      interactive:
+        template: help-system
+        description: Interactive help variant with step-by-step guidance
+        status: experimental
+      video:
+        template: help-system
+        description: Video-first help variant
+        status: experimental
+      searchable:
+        template: help-system
+        description: Search-optimized help variant
+        status: experimental
+      contextual:
+        template: help-system
+        description: Contextual help variant with proactive triggers
+        status: experimental
 
   - id: describe-it-promo
     name: Describe It Promo

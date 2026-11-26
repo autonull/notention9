@@ -3,6 +3,10 @@
 // Template: header-compact
 // Source surface: surface.mobile-header
 
+import type { ReactNode } from 'react';
+
 export interface HeaderMobileProps {
-    // Define props based on template slots: logo, hamburger, actions, swipe-area
+    onOpenSidebar?: () => void;
+    logo: ReactNode;
+    actions: ReactNode;
 }

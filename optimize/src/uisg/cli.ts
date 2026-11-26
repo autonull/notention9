@@ -249,7 +249,8 @@ function writeSkeletonOutputs(flags: Map<string, string>): { files: string[]; sk
 }
 
 function ensureSkeletonJourney(flowId: string, graph: UisgGraph): JourneySpec | undefined {
-    const flow = buildSkeleton(graph, { flowIds: [flowId] }).flows.find(node => node.id === flowId);
+    const flow = buildSkeleton(graph, { flowIds: [flowId], statuses: ['implemented', 'partial', 'planned'] })
+        .flows.find(node => node.id === flowId);
     if (!flow) return undefined;
     const journey = skeletonToJourney(flow);
     const file = resolve(ROOT, 'ui/test/optimize', `${journey.id}.journey.ts`);
@@ -552,7 +553,18 @@ async function main(): Promise<number> {
             const implemented = graph.nodes
                 .filter(node => node.type === 'flow' && ['implemented', 'partial'].includes(node.status))
                 .map(node => node.id);
-            let flows = flags.get('flows')?.split(',') ?? flags.get('journeys')?.split(',') ?? [...new Set([...implemented, ...previewFlows])];
+            const allFlows = [...new Set([...implemented, ...previewFlows])];
+            let flows: string[];
+            const journeysFlag = flags.get('journeys');
+            if (journeysFlag === 'all' || journeysFlag === undefined) {
+                flows = allFlows;
+            } else {
+                flows = journeysFlag.split(',');
+            }
+            const flowsFlag = flags.get('flows');
+            if (flowsFlag !== undefined) {
+                flows = flowsFlag.split(',');
+            }
             // Convert journey IDs to flow IDs if needed
             flows = flows.map(f => f.startsWith('flow.') ? f : `flow.${f}`);
             const profiles = flags.get('profiles')?.split(',');
@@ -619,7 +631,8 @@ async function main(): Promise<number> {
                     : undefined;
                 const journeyVariants: Array<{ id: string; profile: string }> = [];
                 if (handId) journeyVariants.push({ id: handId, profile: 'hand-built' });
-                if (previewFlows.includes(flowId)) {
+                // Generate skeleton journey for any flow without a hand-built journey
+                if (!handId) {
                     const preview = ensureSkeletonJourney(flowId, graph);
                     if (preview) journeyVariants.push({ id: preview.id, profile: 'generated' });
                 }
@@ -798,8 +811,12 @@ const { hasVariant } = await import('./resolve.js');
                     console.warn(`Skipping invalid promotion: ${promo}`);
                     continue;
                 }
-                // Resolve journey/flow to surface
-                const surface = journeyToSurface.get(journeyOrFlow);
+                // Resolve journey/flow to surface (handle skeleton journey IDs)
+                let surface = journeyToSurface.get(journeyOrFlow);
+                if (!surface && journeyOrFlow.startsWith('uisg.skeleton.flow.')) {
+                    const flowId = journeyOrFlow.slice('uisg.skeleton.flow.'.length);
+                    surface = journeyToSurface.get(flowId) ?? journeyToSurface.get(`flow.${flowId}`);
+                }
                 if (!surface) {
                     console.warn(`  ⚠️ No surface found for ${journeyOrFlow}, skipping`);
                     continue;

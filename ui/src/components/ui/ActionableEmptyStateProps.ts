@@ -4,5 +4,5 @@
 // Source surface: surface.empty-state-actionable
 
 export interface ActionableEmptyStateProps {
-    // Define props based on template slots: illustration, title, description, primary-action, secondary-action, help-link
+    variant?: 'notes-all' | 'notes-search' | 'network' | 'map' | 'timeline' | 'matches' | 'chat' | 'ontology' | 'skills';
 }

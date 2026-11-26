@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-11-25T19:48:55.313Z",
+  "updatedAt": "2026-11-26T15:37:26.342Z",
   "variants": [
     {
       "template": "item",
@@ -104,6 +104,160 @@
       "createdAt": "2026-11-25T18:35:24.106400Z",
       "updatedAt": "2026-11-25T19:48:55.290Z",
       "promotedAt": "2026-11-25T19:48:55.290Z",
+      "metrics": {}
+    },
+    {
+      "template": "empty-state",
+      "description": "Notes view - all notes empty",
+      "status": "promoted",
+      "surface": "surface.empty-state-actionable",
+      "id": "notes-all",
+      "createdAt": "2026-11-26T15:28:29.810Z",
+      "updatedAt": "2026-11-26T15:37:26.336Z",
+      "promotedAt": "2026-11-26T15:37:26.336Z",
+      "metrics": {}
+    },
+    {
+      "template": "empty-state",
+      "description": "Network view - no connections",
+      "status": "promoted",
+      "surface": "surface.empty-state-actionable",
+      "id": "network",
+      "createdAt": "2026-11-26T15:28:36.023Z",
+      "updatedAt": "2026-11-26T15:37:26.337Z",
+      "promotedAt": "2026-11-26T15:37:26.337Z",
+      "metrics": {}
+    },
+    {
+      "template": "empty-state",
+      "description": "Matches view - no matches",
+      "status": "promoted",
+      "surface": "surface.empty-state-actionable",
+      "id": "matches",
+      "createdAt": "2026-11-26T15:28:38.311Z",
+      "updatedAt": "2026-11-26T15:37:26.342Z",
+      "promotedAt": "2026-11-26T15:37:26.342Z",
+      "metrics": {}
+    },
+    {
+      "template": "help-system",
+      "description": "Interactive help variant",
+      "status": "promoted",
+      "surface": "surface.help-system",
+      "id": "interactive",
+      "createdAt": "2026-11-26T15:28:47.880Z",
+      "updatedAt": "2026-11-26T15:37:05.458Z",
+      "promotedAt": "2026-11-26T15:37:05.458Z",
+      "metrics": {}
+    },
+    {
+      "template": "help-system",
+      "description": "Video help variant",
+      "status": "promoted",
+      "surface": "surface.help-system",
+      "id": "video",
+      "createdAt": "2026-11-26T15:28:50.216Z",
+      "updatedAt": "2026-11-26T15:37:05.459Z",
+      "promotedAt": "2026-11-26T15:37:05.459Z",
+      "metrics": {}
+    },
+    {
+      "template": "help-system",
+      "description": "Searchable help variant",
+      "status": "promoted",
+      "surface": "surface.help-system",
+      "id": "searchable",
+      "createdAt": "2026-11-26T15:28:52.710Z",
+      "updatedAt": "2026-11-26T15:37:05.464Z",
+      "promotedAt": "2026-11-26T15:37:05.464Z",
+      "metrics": {}
+    },
+    {
+      "template": "help-system",
+      "description": "Contextual help variant",
+      "status": "promoted",
+      "surface": "surface.help-system",
+      "id": "contextual",
+      "createdAt": "2026-11-26T15:28:55.210Z",
+      "updatedAt": "2026-11-26T15:37:05.469Z",
+      "promotedAt": "2026-11-26T15:37:05.469Z",
+      "metrics": {}
+    },
+    {
+      "template": "inline-promo",
+      "description": "Pulsing animation variant",
+      "status": "promoted",
+      "surface": "surface.describe-it-promo",
+      "id": "pulse",
+      "createdAt": "2026-11-26T15:29:06.775Z",
+      "updatedAt": "2026-11-26T15:36:00.538Z",
+      "promotedAt": "2026-11-26T15:36:00.538Z",
+      "metrics": {}
+    },
+    {
+      "template": "inline-promo",
+      "description": "Tooltip on hover variant",
+      "status": "promoted",
+      "surface": "surface.describe-it-promo",
+      "id": "tooltip",
+      "createdAt": "2026-11-26T15:29:09.207Z",
+      "updatedAt": "2026-11-26T15:36:00.539Z",
+      "promotedAt": "2026-11-26T15:36:00.539Z",
+      "metrics": {}
+    },
+    {
+      "template": "inline-promo",
+      "description": "Contextual hint variant",
+      "status": "promoted",
+      "surface": "surface.describe-it-promo",
+      "id": "contextual-hint",
+      "createdAt": "2026-11-26T15:29:11.696Z",
+      "updatedAt": "2026-11-26T15:36:00.551Z",
+      "promotedAt": "2026-11-26T15:36:00.551Z",
+      "metrics": {}
+    },
+    {
+      "template": "modal-fullscreen",
+      "description": "Bottom sheet variant",
+      "status": "promoted",
+      "surface": "surface.mobile-property-editor",
+      "id": "bottom-sheet",
+      "createdAt": "2026-11-26T15:29:29.513Z",
+      "updatedAt": "2026-11-26T15:36:28.343Z",
+      "promotedAt": "2026-11-26T15:36:28.343Z",
+      "metrics": {}
+    },
+    {
+      "template": "modal-fullscreen",
+      "description": "Full-screen modal variant",
+      "status": "promoted",
+      "surface": "surface.mobile-property-editor",
+      "id": "fullscreen-modal",
+      "createdAt": "2026-11-26T15:29:32.042Z",
+      "updatedAt": "2026-11-26T15:36:28.343Z",
+      "promotedAt": "2026-11-26T15:36:28.343Z",
+      "metrics": {}
+    },
+    {
+      "template": "settings-wizard",
+      "description": "Grouped collapsible sections",
+      "status": "promoted",
+      "surface": "surface.settings-directory",
+      "id": "grouped",
+      "createdAt": "2026-11-26T15:29:39.384Z",
+      "updatedAt": "2026-11-26T15:36:44.701Z",
+      "promotedAt": "2026-11-26T15:36:44.701Z",
+      "metrics": {}
+    },
+    {
+      "template": "settings-wizard",
+      "description": "First-run wizard",
+      "status": "promoted",
+      "surface": "surface.settings-directory",
+      "id": "wizard",
+      "createdAt": "2026-11-26T15:29:42.104Z",
+      "updatedAt": "2026-11-26T15:36:44.702Z",
+      "promotedAt": "2026-11-26T15:36:44.702Z",
       "metrics": {}
     }
   ]

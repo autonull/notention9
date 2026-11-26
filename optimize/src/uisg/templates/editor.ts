@@ -313,13 +313,13 @@ import { ${componentName} } from '@/components/editors/${componentName}';
 import type { Property, OntologyNode } from '@notention/core';
 
 const mockOntology: OntologyNode[] = [
-    { id: 'framework', label: 'Framework', type: 'categorical', values: ['React', 'Vue', 'Svelte'] },
-    { id: 'budget', label: 'Budget', type: 'numeric', unit: 'USD' },
+    { id: 'framework', label: 'Framework', description: 'Frontend framework', attributes: { type: { type: 'enum', options: ['React', 'Vue', 'Svelte'] } } },
+    { id: 'budget', label: 'Budget', description: 'Project budget', attributes: { amount: { type: 'number' } } },
 ];
 
 const mockProposals = [
-    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint', confidence: 1, provenance: 'deterministic' }, confidence: 0.9, status: 'pending' as const },
-    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'preference', confidence: 0.8, provenance: 'heuristic' }, confidence: 0.75, status: 'pending' as const },
+    { property: { key: 'framework', operator: 'is', values: ['React'], role: 'constraint', confidence: 1, provenance: 'deterministic' as const }, confidence: 0.9, status: 'pending' as const },
+    { property: { key: 'budget', operator: 'gte', values: ['500'], role: 'preference', confidence: 0.8, provenance: 'heuristic' as const }, confidence: 0.75, status: 'pending' as const },
 ];
 
 describe('${componentName} (generated)', () => {

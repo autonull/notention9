@@ -1,0 +1,27 @@
+{
+  "runId": "decision-1795707381405",
+  "decisions": [
+    {
+      "surface": "mobile-property-editor",
+      "variant": "bottom-sheet",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "mobile-property-editor",
+      "variant": "fullscreen-modal",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    }
+  ],
+  "promoted": [
+    "mobile-property-editor/bottom-sheet",
+    "mobile-property-editor/fullscreen-modal"
+  ],
+  "rejected": [],
+  "flagged": []
+}

@@ -1,0 +1,36 @@
+{
+  "runId": "decision-1795707325588",
+  "decisions": [
+    {
+      "surface": "uisg.skeleton.flow.describe-it-discovery",
+      "variant": "pulse",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "uisg.skeleton.flow.describe-it-discovery",
+      "variant": "tooltip",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    },
+    {
+      "surface": "uisg.skeleton.flow.describe-it-discovery",
+      "variant": "contextual-hint",
+      "status": "PASS",
+      "hardGateFailures": [],
+      "softScore": null,
+      "metrics": {}
+    }
+  ],
+  "promoted": [
+    "uisg.skeleton.flow.describe-it-discovery/pulse",
+    "uisg.skeleton.flow.describe-it-discovery/tooltip",
+    "uisg.skeleton.flow.describe-it-discovery/contextual-hint"
+  ],
+  "rejected": [],
+  "flagged": []
+}

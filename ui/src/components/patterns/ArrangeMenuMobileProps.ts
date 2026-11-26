@@ -3,6 +3,10 @@
 // Template: bottom-sheet
 // Source surface: surface.mobile-arrange-menu
 
+import type { ReactNode } from 'react';
+
 export interface ArrangeMenuMobileProps {
-    // Define props based on template slots: grabber, content, actions
+    onDismiss?: () => void;
+    actions: ReactNode;
+    children: ReactNode;
 }

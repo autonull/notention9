@@ -3,25 +3,25 @@
     "cellKey": "journey.a|hand-built|desktop|default|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-26T15:01:40.351Z"
+    "timestamp": "2026-11-26T16:50:07.310Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|default|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-26T15:01:40.352Z"
+    "timestamp": "2026-11-26T16:50:07.312Z"
   },
   {
     "cellKey": "journey.a|hand-built|desktop|brand-acme|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-26T15:01:40.351Z"
+    "timestamp": "2026-11-26T16:50:07.311Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|brand-acme|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-26T15:01:40.352Z"
+    "timestamp": "2026-11-26T16:50:07.312Z"
   },
   {
     "cellKey": "uisg.skeleton.flow.ontology-conflict|generated|desktop|default|desktop-1440|&#39;",
@@ -205,9 +205,9 @@
   },
   {
     "cellKey": "capture-and-edit|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795698532288_mpyurm0",
+    "runId": "run_1795707368126_ts28gjb",
     "status": "passed",
-    "timestamp": "2026-11-26T13:08:52.288Z"
+    "timestamp": "2026-11-26T15:36:08.126Z"
   },
   {
     "cellKey": "capture-and-edit|hand-built|desktop-expert-light|default|mobile-390|&#39;",
@@ -517,39 +517,39 @@
   },
   {
     "cellKey": "help-system-completion|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699404956_zatk6xw",
+    "runId": "run_1795707368119_5cng1iw",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:24.956Z"
+    "timestamp": "2026-11-26T15:36:08.119Z"
   },
   {
     "cellKey": "mobile-property-editor|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699396149_h9e5zg9",
+    "runId": "run_1795707368123_jwcjvbs",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:16.149Z"
+    "timestamp": "2026-11-26T15:36:08.123Z"
   },
   {
     "cellKey": "mobile-arrange-menu|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699396149_lp4v7ef",
+    "runId": "run_1795707368123_bd7nnbg",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:16.149Z"
+    "timestamp": "2026-11-26T15:36:08.123Z"
   },
   {
     "cellKey": "mobile-context-rail|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699396149_78xfy4i",
+    "runId": "run_1795707368123_cs179wc",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:16.150Z"
+    "timestamp": "2026-11-26T15:36:08.123Z"
   },
   {
     "cellKey": "mobile-map|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699396149_y62m2gb",
+    "runId": "run_1795707368124_a3lgtqm",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:16.150Z"
+    "timestamp": "2026-11-26T15:36:08.124Z"
   },
   {
     "cellKey": "mobile-header|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699396150_fkbzhqh",
+    "runId": "run_1795707368124_nzeee8i",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:16.150Z"
+    "timestamp": "2026-11-26T15:36:08.124Z"
   },
   {
     "cellKey": "help-search|hand-built|desktop|default|desktop-1440|&#39;",
@@ -583,21 +583,21 @@
   },
   {
     "cellKey": "empty-state-notes-all|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699412785_hyz865k",
+    "runId": "run_1795707368120_f0ix6no",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:32.786Z"
+    "timestamp": "2026-11-26T15:36:08.120Z"
   },
   {
     "cellKey": "empty-state-network|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699412785_88t4fxr",
+    "runId": "run_1795707368120_seqde99",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:32.786Z"
+    "timestamp": "2026-11-26T15:36:08.121Z"
   },
   {
     "cellKey": "empty-state-matches|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699412785_l1l4tlb",
+    "runId": "run_1795707368121_g3oxp81",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:32.786Z"
+    "timestamp": "2026-11-26T15:36:08.122Z"
   },
   {
     "cellKey": "settings-task|hand-built|desktop|default|desktop-1440|&#39;",
@@ -607,8 +607,188 @@
   },
   {
     "cellKey": "settings-wizard|hand-built|desktop|default|desktop-1440|&#39;",
-    "runId": "run_1795699412787_jbawpeg",
+    "runId": "run_1795707368124_9v01vxo",
     "status": "passed",
-    "timestamp": "2026-11-26T13:23:32.787Z"
+    "timestamp": "2026-11-26T15:36:08.124Z"
+  },
+  {
+    "cellKey": "empty-state-notes-all|hand-built|desktop|default|desktop-1440|notes-all",
+    "runId": "run_1795707435804_el1fuo1",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:37:15.804Z"
+  },
+  {
+    "cellKey": "empty-state-notes-all|hand-built|desktop|default|desktop-1440|network",
+    "runId": "run_1795707435804_oinapnh",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:37:15.804Z"
+  },
+  {
+    "cellKey": "empty-state-notes-all|hand-built|desktop|default|desktop-1440|matches",
+    "runId": "run_1795707435804_feq91at",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:37:15.805Z"
+  },
+  {
+    "cellKey": "help-system-completion|hand-built|desktop|default|desktop-1440|interactive",
+    "runId": "run_1795707411133_23z7n5x",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:51.133Z"
+  },
+  {
+    "cellKey": "help-system-completion|hand-built|desktop|default|desktop-1440|video",
+    "runId": "run_1795707411133_xuccxdg",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:51.134Z"
+  },
+  {
+    "cellKey": "help-system-completion|hand-built|desktop|default|desktop-1440|searchable",
+    "runId": "run_1795707411133_719qbnf",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:51.134Z"
+  },
+  {
+    "cellKey": "help-system-completion|hand-built|desktop|default|desktop-1440|contextual",
+    "runId": "run_1795707411133_8gbq1j2",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:51.134Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.describe-it-discovery|generated|desktop|default|desktop-1440|pulse",
+    "runId": "run_1795707320307_nziac6z",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:35:20.308Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.describe-it-discovery|generated|desktop|default|desktop-1440|tooltip",
+    "runId": "run_1795707320308_11gkua2",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:35:20.308Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.describe-it-discovery|generated|desktop|default|desktop-1440|contextual-hint",
+    "runId": "run_1795707320308_ynw7k5u",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:35:20.309Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.describe-it-discovery|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368119_01gp67u",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.120Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.describe-it-shortcut|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368119_dy6vykl",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.120Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.describe-it-command-palette|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368119_a15romt",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.120Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.empty-state-notes-search|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368120_ihj2ck4",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.121Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.empty-state-map|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368120_91syudt",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.121Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.empty-state-timeline|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368121_frxnrrm",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.122Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.empty-state-chat|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368121_dc5ailr",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.122Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.empty-state-ontology|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368121_ozum6ko",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.122Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.empty-state-skills|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368123_oovdeuw",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.123Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.settings-export-import|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368124_e4cvfd1",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.124Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.settings-diff|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368125_ch8sfiq",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.125Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.token-consistency|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368125_66n17i1",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.125Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.a11y-live-regions|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368125_qk5ohh5",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.125Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.a11y-focus-management|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368125_s6w7yf3",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.126Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.a11y-screen-reader|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368126_myjgn9d",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.126Z"
+  },
+  {
+    "cellKey": "uisg.skeleton.flow.a11y-high-contrast|generated|desktop|default|desktop-1440|&#39;",
+    "runId": "run_1795707368126_hiqtsup",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:08.126Z"
+  },
+  {
+    "cellKey": "mobile-property-editor|hand-built|desktop|default|desktop-1440|bottom-sheet",
+    "runId": "run_1795707376396_im3hcs5",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:16.396Z"
+  },
+  {
+    "cellKey": "mobile-property-editor|hand-built|desktop|default|desktop-1440|fullscreen-modal",
+    "runId": "run_1795707376396_ejho3wv",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:16.397Z"
+  },
+  {
+    "cellKey": "settings-wizard|hand-built|desktop|default|desktop-1440|grouped",
+    "runId": "run_1795707394253_l1qhfbw",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:34.253Z"
+  },
+  {
+    "cellKey": "settings-wizard|hand-built|desktop|default|desktop-1440|wizard",
+    "runId": "run_1795707394253_ppgk14l",
+    "status": "passed",
+    "timestamp": "2026-11-26T15:36:34.254Z"
   }
 ]
