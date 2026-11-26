@@ -1126,3 +1126,164 @@ export function ServerIcon(props: IconProps) { return (
         />
     </OutlineIcon>
 ); }
+
+export function MenuIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+    </OutlineIcon>
+); }
+
+export function ChevronLeftIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+    </OutlineIcon>
+); }
+
+export function ChevronRightIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+    </OutlineIcon>
+); }
+
+export function SkipBackIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.03 5.5a1.75 1.75 0 013.5-.5v13a1.75 1.75 0 01-3.5.5v-13zM4.25 11.562a.75.75 0 011.06-.98l5.162-3a.75.75 0 011.248.98v6a.75.75 0 01-1.248.98l-5.162 3a.75.75 0 01-1.06-.98v-6z" />
+    </OutlineIcon>
+); }
+
+export function SkipForwardIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.97 5.5a1.75 1.75 0 013.5.5v13a1.75 1.75 0 01-3.5.5v-13zM19.75 11.562a.75.75 0 00-1.06-.98l-5.162-3a.75.75 0 00-1.248.98v6a.75.75 0 001.248.98l5.162 3a.75.75 0 001.06-.98v-6z" />
+    </OutlineIcon>
+); }
+
+export function MousePointerClickIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.336.75-.75.75S8.25 10.164 8.25 9.75 8.586 9 9 9s.75.336.75.75z" />
+    </OutlineIcon>
+); }
+
+export function KeyboardIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.008v10.5H3.75V6.75z" />
+    </OutlineIcon>
+); }
+
+export function EyeIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 12c0-1.595.386-3.105 1.043-4.441a3.062 3.062 0 012.977-1.043 48.602 48.602 0 017.96 0 3.063 3.063 0 012.978 1.043c.657 1.336 1.043 2.846 1.043 4.441 0 1.595-.386 3.105-1.043 4.441a3.063 3.063 0 01-2.978 1.043 48.603 48.603 0 01-7.96 0 3.062 3.062 0 01-2.977-1.043c-.657-1.336-1.043-2.846-1.043-4.441z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    </OutlineIcon>
+); }
+
+export function PlayCircleIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v18m0-18a9 9 0 100 18 9 9 0 000-18z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l6-4v8l-6-4z" />
+    </OutlineIcon>
+); }
+
+export function VolumeIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.54 15.54a9 9 0 00-12.728 0M6.75 6.75a4.5 4.5 0 00-6.364 0M12.75 12.75a4.5 4.5 0 01-6.364 0" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M18.894 6.166a9 9 0 010 12.732m0 0l-2.829-2.829m0 0l2.829-2.829m-5.658 0l-2.829-2.829m0 0l2.829-2.829" />
+    </OutlineIcon>
+); }
+
+export function VolumeXIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M17 17l-10-10m0 10l10-10M9 9a4.5 4.5 0 00-6.364 0M19.5 10.5a9 9 0 010 12.732m0 0l-2.829-2.829m0 0l2.829-2.829m-5.658 0l-2.829-2.829m0 0l2.829-2.829" />
+    </OutlineIcon>
+); }
+
+export function CodeIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12.375 3.75v16.5m-7.031-8.031l5.208 5.208 5.208-5.208m-10.416 10.416l5.208-5.208 5.208 5.208" />
+    </OutlineIcon>
+); }
+
+export function RefreshIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12.15c0-4.393 3.177-8.167 7.5-8.876a8.598 8.598 0 014.492 1.25" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 12.15c0 4.393-3.177 8.167-7.5 8.876a8.598 8.598 0 01-4.492-1.25" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 6.75l2.25-2.25-2.25-2.25" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 17.25l-2.25 2.25 2.25 2.25" />
+    </OutlineIcon>
+); }
+
+export function StopIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L15 12.75m-6 3.75l6-3.75m-6.75-6.75h.008v.008H9.75V12.75z" />
+    </OutlineIcon>
+); }
+
+export function SendIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+    </OutlineIcon>
+); }
+
+export function ArrowDownIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+    </OutlineIcon>
+); }
+
+export function EnterIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 12h18m-12 0l-3 3m3-3l3 3" />
+    </OutlineIcon>
+); }
+
+export function EscapeIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+    </OutlineIcon>
+); }
+
+export function TrendingUpIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l-4.5-4.5a4.5 4.5 0 00-6.364 6.364l1.757 1.757m13.35-.622l4.5 4.5a4.5 4.5 0 01-6.364 6.364l-1.757 1.757" />
+    </OutlineIcon>
+); }
+
+export function MaximizeIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v16.5h16.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12h.008v.008H12V12z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 3.75V21" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12H21" />
+    </OutlineIcon>
+); }
+
+export function MinimizeIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v16.5h16.5" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 12h.008v.008H12V12z" />
+    </OutlineIcon>
+); }
+
+export function MessageSquareIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+    </OutlineIcon>
+); }
+
+export function StarIcon(props: IconProps) { return (
+    <SolidIcon {...props}>
+        <path fillRule="evenodd" d="M10.23 1.417a.75.75 0 011.54 0l2.337 4.86a.75.75 0 001.208.413l5.327.776c.597.087 1.01.708.708 1.23l-3.862 3.765a.75.75 0 00-.237.97l.918 5.322a.75.75 0 01-1.076.853l-4.803-2.525a.75.75 0 00-.974 0l-4.804 2.525a.75.75 0 01-1.076-.853l.918-5.322a.75.75 0 00-.237-.97L1.51 7.047a.75.75 0 00.708-1.23l5.327-.776a.75.75 0 001.208-.413l2.337-4.86z" clipRule="evenodd" />
+    </SolidIcon>
+); }
+
+export function AlertCircleIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15h.008v.008H12V15z" />
+    </OutlineIcon>
+); }
+
+export function ExternalLinkIcon(props: IconProps) { return (
+    <OutlineIcon {...props}>
+        <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 3h5.25a2.25 2.25 0 012.25 2.25v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75a2.25 2.25 0 012.25-2.25" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+    </OutlineIcon>
+); }

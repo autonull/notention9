@@ -4,5 +4,7 @@
 // Source surface: surface.mobile-header
 
 export interface HeaderMobileProps {
-    // Define props based on template slots: logo, hamburger, actions, swipe-area
+    logo?: React.ReactNode;
+    onOpenSidebar: () => void;
+    actions?: React.ReactNode;
 }

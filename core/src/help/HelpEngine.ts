@@ -1,4 +1,4 @@
-import type { HelpTopic, HelpCategory, HelpSearchResult, HelpEngineConfig } from '../types/help.js';
+import type { HelpTopic, HelpCategory, HelpSearchResult, HelpEngineConfig, ContextualTrigger } from '../types/help.js';
 import { validateHelpTopic } from './validation.js';
 
 export class HelpEngine {
@@ -6,6 +6,64 @@ export class HelpEngine {
   private categories: Map<string, HelpCategory> = new Map();
   private searchIndex: Map<string, Set<string>> = new Map();
   readonly config: HelpEngineConfig;
+  
+  private contextualTriggers: ContextualTrigger[] = [
+    {
+      id: 'idle-create-first-note',
+      name: 'Idle: Create First Note',
+      condition: 'idle',
+      config: { thresholdMs: 60000 },
+      targetTopicId: 'create-first-note',
+      priority: 10,
+      cooldownMs: 300000,
+      maxShowsPerSession: 1,
+      enabled: true,
+    },
+    {
+      id: 'idle-describe-it',
+      name: 'Idle: Discover Describe It',
+      condition: 'idle',
+      config: { thresholdMs: 120000 },
+      targetTopicId: 'describe-it-basics',
+      priority: 8,
+      cooldownMs: 600000,
+      maxShowsPerSession: 1,
+      enabled: true,
+    },
+    {
+      id: 'error-network-connect',
+      name: 'Error: Network Connection Failed',
+      condition: 'error',
+      config: {},
+      targetTopicId: 'connect-network',
+      priority: 15,
+      cooldownMs: 60000,
+      maxShowsPerSession: 2,
+      enabled: true,
+    },
+    {
+      id: 'feature-gate-describe-it',
+      name: 'Feature Gate: Describe It',
+      condition: 'feature_gate',
+      config: { feature: 'describe-it' },
+      targetTopicId: 'describe-it-basics',
+      priority: 12,
+      cooldownMs: 300000,
+      maxShowsPerSession: 1,
+      enabled: true,
+    },
+    {
+      id: 'first-visit-search',
+      name: 'First Visit: Search',
+      condition: 'first_visit',
+      config: { topicId: 'search-basics' },
+      targetTopicId: 'search-basics',
+      priority: 5,
+      cooldownMs: 0,
+      maxShowsPerSession: 1,
+      enabled: true,
+    },
+  ];
 
   constructor(config: Partial<HelpEngineConfig> = {}) {
     this.config = {
@@ -195,6 +253,19 @@ export class HelpEngine {
 
   validateTopic(topic: HelpTopic): { valid: boolean; errors: string[] } {
     return validateHelpTopic(topic);
+  }
+
+  getAllTriggers(): ContextualTrigger[] {
+    return this.contextualTriggers;
+  }
+
+  getTrigger(id: string): ContextualTrigger | undefined {
+    return this.contextualTriggers.find(t => t.id === id);
+  }
+
+  setTriggerEnabled(id: string, enabled: boolean): void {
+    const trigger = this.contextualTriggers.find(t => t.id === id);
+    if (trigger) trigger.enabled = enabled;
   }
 }
 
