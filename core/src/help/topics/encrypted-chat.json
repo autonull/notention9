@@ -1,0 +1,56 @@
+{
+  "id": "encrypted-chat",
+  "title": "Encrypted Chat",
+  "category": "network",
+  "description": "Deep dive into end-to-end encrypted messaging with Nostr NIP-44",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 6,
+  "tags": ["chat", "encryption", "nip-44", "privacy", "messaging", "security"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "NIP-44 Encryption",
+      "description": "Notention uses Nostr NIP-44 for end-to-end encryption. Messages are encrypted with a shared secret derived from both parties' keys."
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Forward Secrecy",
+      "description": "Each conversation uses ephemeral keys. Compromising long-term keys doesn't decrypt past messages."
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Start Encrypted Chat",
+      "description": "Open Chat view, click New Chat, enter recipient's npub",
+      "target": { "testId": "chat-new-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Verification",
+      "description": "Compare safety numbers (emoji fingerprints) with your contact to verify no MITM attack"
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Verify Safety Number",
+      "description": "Click the shield icon in chat header, compare emojis with contact",
+      "target": { "testId": "chat-safety-number" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Group Chats",
+      "description": "NIP-44 supports group encryption. Create a group, invite members via npub, all messages encrypted to all members."
+    }
+  ],
+  "relatedTopics": ["chat-basics", "connect-network", "nostr-keys", "relay-management"],
+  "version": 1,
+  "locale": "en"
+}

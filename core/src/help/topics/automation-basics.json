@@ -1,0 +1,65 @@
+{
+  "id": "automation-basics",
+  "title": "Automation Basics",
+  "category": "advanced",
+  "description": "Create automated workflows with triggers, conditions, and actions",
+  "difficulty": "advanced",
+  "estimatedTimeMinutes": 8,
+  "tags": ["automation", "workflows", "triggers", "actions", "no-code", "productivity"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Automation Overview",
+      "description": "Automations are if-this-then-that workflows. Trigger → Conditions → Actions. Run locally or on schedule."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Open Automations",
+      "description": "Go to Settings → Automations to manage workflows",
+      "target": { "testId": "settings-automations-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Create Automation",
+      "description": "Click 'New Automation', name it 'Daily Summary'",
+      "target": { "testId": "automation-new-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Set Trigger",
+      "description": "Choose 'Schedule' → 'Daily at 9:00 AM'",
+      "target": { "testId": "automation-trigger-schedule" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Add Action",
+      "description": "Choose 'Create Note' → Use template 'Daily Summary' → Set properties",
+      "target": { "testId": "automation-action-create-note" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "action",
+      "title": "Enable & Test",
+      "description": "Toggle 'Enabled' and click 'Run Now' to test",
+      "target": { "testId": "automation-enabled-toggle" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    }
+  ],
+  "relatedTopics": ["agent-capabilities", "skill-management", "templates", "metaphor-plugins"],
+  "version": 1,
+  "locale": "en"
+}

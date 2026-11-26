@@ -1,0 +1,66 @@
+{
+  "id": "edit-note-properties",
+  "title": "Edit Note Properties",
+  "category": "core-skills",
+  "description": "Add structured properties to your notes for powerful organization",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["properties", "metadata", "organization", "details"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Open Property Editor",
+      "description": "Click the 'Add detail' button or press Ctrl+D on any note",
+      "target": { "testId": "note-add-detail-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Select Property Key",
+      "description": "Choose a property key from the dropdown (e.g., 'status', 'priority', 'dueDate')",
+      "target": { "testId": "property-key-input", "modal": "Add detail" },
+      "action": { "type": "fill", "value": "status" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Select Operator",
+      "description": "Choose an operator (=, !=, >, <, contains, etc.)",
+      "target": { "testId": "property-operator-select", "modal": "Add detail" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Enter Value",
+      "description": "Type the property value (e.g., 'active', 'high', '2026-12-31')",
+      "target": { "testId": "property-value-input", "modal": "Add detail" },
+      "action": { "type": "fill", "value": "active" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Confirm Property",
+      "description": "Click 'Add detail' to save the property",
+      "target": { "role": "button", "name": "Add detail", "modal": "Add detail" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "validation",
+      "title": "Property Added",
+      "description": "Verify the property chip appears on the note",
+      "validation": { "type": "stateEquals", "statePath": "note.propertyIndex.status", "expectedValue": ["active"] }
+    }
+  ],
+  "relatedTopics": ["create-first-note", "tags-and-filters", "property-types-reference", "smart-views"],
+  "version": 1,
+  "locale": "en"
+}

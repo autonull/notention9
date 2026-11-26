@@ -1,0 +1,59 @@
+{
+  "id": "skill-management",
+  "title": "Skill Management",
+  "category": "advanced",
+  "description": "Install, configure, and create skills to extend agent and automation capabilities",
+  "difficulty": "advanced",
+  "estimatedTimeMinutes": 8,
+  "tags": ["skills", "extensions", "registry", "marketplace", "development", "ai"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "What are Skills?",
+      "description": "Skills are reusable packages of prompts, tools, and workflows that agents and automations can use. Like npm packages for AI."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Browse Registry",
+      "description": "Go to Settings → Skills → Registry to see available skills",
+      "target": { "testId": "settings-skills-registry-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Install Skill",
+      "description": "Click 'Install' on 'GitHub Issue Tracker' skill",
+      "target": { "testId": "skill-install-github" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Configure Skill",
+      "description": "After install, click 'Configure' to set API keys, default params, and permissions"
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Use Skill",
+      "description": "In Agent chat: 'Create a GitHub issue for the bug I described in note #abc123'",
+      "target": { "testId": "agent-chat-input" },
+      "action": { "type": "fill", "value": "Create a GitHub issue for the bug I described in note #abc123" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Create Custom Skill",
+      "description": "Click 'New Skill' to build your own. Define schema, prompts, and TypeScript tool handlers. Publish to registry."
+    }
+  ],
+  "relatedTopics": ["skills-and-ontology", "agent-capabilities", "automation-basics", "metaphor-plugins"],
+  "version": 1,
+  "locale": "en"
+}

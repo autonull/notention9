@@ -1,0 +1,56 @@
+{
+  "id": "nostr-keys",
+  "title": "Nostr Keys",
+  "category": "network",
+  "description": "Understand and manage your Nostr identity keys (nsec/npub)",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["nostr", "keys", "identity", "security", "nsec", "npub"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Key Pair Basics",
+      "description": "Nostr uses a private key (nsec) for signing and a public key (npub) for identification. Never share your nsec!"
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "View Your Keys",
+      "description": "Go to Settings → Network → Identity to see your npub and manage keys",
+      "target": { "testId": "settings-network-identity-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Key Formats",
+      "description": "nsec = bech32 encoded private key (starts with nsec1...) | npub = bech32 encoded public key (starts with npub1...) | hex = raw 64-char hex string"
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Backup Your Keys",
+      "description": "Export your nsec to a secure location. Use a password manager. Losing keys = losing your identity."
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Export Keys",
+      "description": "Click 'Export Keys' and save the JSON file securely",
+      "target": { "testId": "identity-export-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Key Rotation",
+      "description": "If compromised, generate new keys and update your profile. Old events remain verifiable but new ones use new keys."
+    }
+  ],
+  "relatedTopics": ["connect-network", "relay-management", "encrypted-chat", "nostr-basics"],
+  "version": 1,
+  "locale": "en"
+}

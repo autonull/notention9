@@ -1,0 +1,59 @@
+{
+  "id": "skills-and-ontology",
+  "title": "Skills and Ontology",
+  "category": "advanced",
+  "description": "Extend Notention with custom schemas and AI skills for specialized workflows",
+  "difficulty": "advanced",
+  "estimatedTimeMinutes": 10,
+  "tags": ["skills", "ontology", "schemas", "ai", "extensibility", "metaphor"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Ontology Overview",
+      "description": "Ontology defines the types of entities and relationships in your knowledge graph. Skills are AI-powered workflows that operate on these types."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Open Ontology Settings",
+      "description": "Go to Settings → Ontology to manage schemas",
+      "target": { "testId": "settings-ontology-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Import Schema",
+      "description": "Import a JSON Schema or TypeScript definitions to define your entity types"
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Import Example Schema",
+      "description": "Click 'Import Schema' and select the project-management.json example",
+      "target": { "testId": "ontology-import-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Skills Registry",
+      "description": "Browse and install skills from the registry. Skills automate tasks like extraction, summarization, and transformation."
+    },
+    {
+      "id": "step-6",
+      "type": "action",
+      "title": "Browse Skills",
+      "description": "Go to Settings → Skills to see available skills",
+      "target": { "testId": "settings-skills-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    }
+  ],
+  "relatedTopics": ["metaphor-plugins", "automation-basics", "agent-capabilities", "skill-management"],
+  "version": 1,
+  "locale": "en"
+}

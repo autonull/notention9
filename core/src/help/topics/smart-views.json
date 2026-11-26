@@ -1,0 +1,59 @@
+{
+  "id": "smart-views",
+  "title": "Smart Views",
+  "category": "core-skills",
+  "description": "Create dynamic, saved views that automatically update based on filters",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 5,
+  "tags": ["views", "saved-views", "dynamic", "filters", "organization"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "What are Smart Views?",
+      "description": "Smart Views are saved filter combinations that automatically show matching notes. They update in real-time as notes change."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Create a View",
+      "description": "Apply filters (tags, properties, dates) then click 'Save View'",
+      "target": { "testId": "filter-tag-select" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Name the View",
+      "description": "Enter 'Active Project Alpha Tasks' and click Save",
+      "target": { "testId": "save-view-name-input" },
+      "action": { "type": "fill", "value": "Active Project Alpha Tasks" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Access from Sidebar",
+      "description": "The view appears in the sidebar under 'Smart Views' for one-click access",
+      "target": { "testId": "sidebar-smart-views-section" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "View Options",
+      "description": "Right-click a view to edit filters, rename, duplicate, or delete. Set as default view for a workspace."
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Share Views",
+      "description": "Export view definitions as JSON to share with team members or import on another device"
+    }
+  ],
+  "relatedTopics": ["tags-and-filters", "search-basics", "workspaces", "keyboard-shortcuts-reference"],
+  "version": 1,
+  "locale": "en"
+}

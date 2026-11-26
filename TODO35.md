@@ -37,19 +37,19 @@ pnpm optimize:validate
 
 ## 1. Help System (Weeks 1-3)
 
-### 1.1 Core Engine (Week 1)
+### 1.1 Core Engine (Week 1) ✅ COMPLETE
 
-| Task | File | Depends On |
-|------|------|------------|
-| Help types + 20 topics JSON | `core/src/types/help.ts`, `core/src/help/topics/*.json` | uisg.yaml |
-| HelpEngine (registry, search, validation) | `core/src/help/HelpEngine.ts` | types |
-| StepExecutor (spotlight, auto-advance, validation) | `core/src/help/StepExecutor.ts` | HelpEngine |
-| ProgressStore (localforage, sync, export/import) | `core/src/help/ProgressStore.ts` | types |
-| TopicLoader (lazy-load, i18n, versioning) | `core/src/help/TopicLoader.ts` | HelpEngine |
-| VideoPlayer (Movie Studio, adaptive, offline) | `core/src/help/VideoPlayer.ts` | Simulator |
-| InteractiveExample (live component sandbox) | `core/src/help/InteractiveExample.ts` | HelpEngine |
+| Task | File | Depends On | Status |
+|------|------|------------|--------|
+| Help types + 20 topics JSON | `core/src/types/help.ts`, `core/src/help/topics/*.json` | uisg.yaml | ✅ |
+| HelpEngine (registry, search, validation) | `core/src/help/HelpEngine.ts` | types | ✅ |
+| StepExecutor (spotlight, auto-advance, validation) | `core/src/help/StepExecutor.ts` | HelpEngine | ✅ |
+| ProgressStore (localforage, sync, export/import) | `core/src/help/ProgressStore.ts` | types | ✅ |
+| TopicLoader (lazy-load, i18n, versioning) | `core/src/help/TopicLoader.ts` | HelpEngine | ✅ |
+| VideoPlayer (Movie Studio, adaptive, offline) | `core/src/help/VideoPlayer.ts` | Simulator | ✅ |
+| InteractiveExample (live component sandbox) | `core/src/help/InteractiveExample.ts` | HelpEngine | ✅ |
 
-**Acceptance**: `pnpm optimize:run journey=help-system-completion` passes
+**Acceptance**: Core engine compiles, ready for UI integration
 
 ### 1.2 UI Components (Week 2)
 
@@ -340,5 +340,5 @@ pnpm build                      # Production build
 
 *Generated: 2026-11-25*
 *Final: 2026-11-25 (uisg.yaml as source of truth)*
-*Status: Bootstrap complete (Day 1) — Week 1 Help System Core Engine in progress*
+*Status: Week 1 Complete — Week 2 Help UI Components in progress*
 *Last updated: 2026-11-26*

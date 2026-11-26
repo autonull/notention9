@@ -1,0 +1,59 @@
+{
+  "id": "relay-management",
+  "title": "Relay Management",
+  "category": "network",
+  "description": "Configure and manage Nostr relays for optimal connectivity",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 6,
+  "tags": ["relays", "nostr", "network", "connectivity", "redundancy"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Relay Basics",
+      "description": "Relays are servers that store and forward Nostr events. You need at least 2 for redundancy."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Open Relay Settings",
+      "description": "Go to Settings → Network → Relays",
+      "target": { "testId": "settings-network-relays-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Add Recommended Relays",
+      "description": "Click 'Add Recommended' to add popular public relays",
+      "target": { "testId": "relay-add-recommended" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Relay Health",
+      "description": "Monitor latency, success rate, and supported NIPs. Red indicators mean issues."
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Test Relay",
+      "description": "Click the test icon next to any relay to verify connectivity",
+      "target": { "testId": "relay-test-0" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Read/Write Relays",
+      "description": "Configure separate read and write relay lists. Write relays should be trusted; read relays can be many."
+    }
+  ],
+  "relatedTopics": ["connect-network", "nostr-keys", "encrypted-chat", "relay-discovery"],
+  "version": 1,
+  "locale": "en"
+}

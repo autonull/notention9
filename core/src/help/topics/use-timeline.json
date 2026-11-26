@@ -1,0 +1,63 @@
+{
+  "id": "use-timeline",
+  "title": "Use the Timeline View",
+  "category": "views",
+  "description": "View and manage notes chronologically with the timeline",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["timeline", "dates", "chronological", "scheduling", "calendar"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Open Timeline View",
+      "description": "Click the timeline icon in the sidebar or press Ctrl+T",
+      "target": { "testId": "sidebar-timeline-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Timeline Interface",
+      "description": "The timeline shows notes with date properties on a chronological axis. Future dates appear to the right, past to the left."
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Add Date Property",
+      "description": "Open a note and add a 'dueDate' or 'scheduledDate' property",
+      "target": { "testId": "note-add-detail-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Set Due Date",
+      "description": "Enter 'dueDate' as key, '=' as operator, and a future date (YYYY-MM-DD)",
+      "target": { "testId": "property-key-input", "modal": "Add detail" },
+      "action": { "type": "fill", "value": "dueDate" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Enter Date Value",
+      "description": "Type tomorrow's date in YYYY-MM-DD format",
+      "target": { "testId": "property-value-input", "modal": "Add detail" },
+      "action": { "type": "fill", "value": "2026-11-27" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "validation",
+      "title": "Event Appears on Timeline",
+      "description": "Return to timeline view and verify the note appears at the correct date",
+      "validation": { "type": "elementExists", "target": { "testId": "timeline-event-0" } }
+    }
+  ],
+  "relatedTopics": ["add-date-property", "map-view", "recurring-dates", "calendar-integration"],
+  "version": 1,
+  "locale": "en"
+}

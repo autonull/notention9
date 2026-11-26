@@ -1,0 +1,59 @@
+{
+  "id": "semantic-matching",
+  "title": "Semantic Matching",
+  "category": "ai-features",
+  "description": "Discover relevant connections between your notes using AI-powered semantic matching",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 6,
+  "tags": ["matching", "ai", "semantic", "discovery", "connections", "network"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "What is Semantic Matching?",
+      "description": "Notention analyzes your notes' content and properties to find semantically similar or complementary notes across the network."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Open Matches View",
+      "description": "Click the matches icon in the sidebar or press Ctrl+Shift+M",
+      "target": { "testId": "sidebar-matches-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Match Cards",
+      "description": "Each match shows the connected note, match score, explanation, and suggested actions (link, reply, follow)."
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Describe What You Need",
+      "description": "Use 'Describe It' to express what you're looking for in natural language",
+      "target": { "testId": "describe-it-input" },
+      "action": { "type": "fill", "value": "Notes about project planning and task management" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Submit Description",
+      "description": "Press Enter or click the search icon to find matches",
+      "target": { "testId": "describe-it-submit" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Review Results",
+      "description": "Review AI-generated matches with explanations. Click any match to open the note or start a chat."
+    }
+  ],
+  "relatedTopics": ["describe-it-basics", "chat-basics", "connect-network", "skills-and-ontology"],
+  "version": 1,
+  "locale": "en"
+}

@@ -1,0 +1,56 @@
+{
+  "id": "agent-capabilities",
+  "title": "Agent Capabilities",
+  "category": "advanced",
+  "description": "Understand what AI agents can do and how to configure them",
+  "difficulty": "advanced",
+  "estimatedTimeMinutes": 7,
+  "tags": ["agents", "ai", "llm", "capabilities", "configuration", "skills"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Agent Architecture",
+      "description": "Agents are LLM-powered workers that can use tools, access your notes, and execute multi-step tasks autonomously."
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Built-in Capabilities",
+      "description": "Note CRUD, search, property extraction, summarization, translation, code generation, web search, API calls"
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Configure Agent",
+      "description": "Go to Settings → AI → Agent to set model, temperature, and enabled tools",
+      "target": { "testId": "settings-ai-agent-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Skill System",
+      "description": "Agents gain capabilities through skills. Install skills from the registry or create custom ones."
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Test Agent",
+      "description": "Open Command Palette → 'Agent: Chat' and ask: 'Summarize my notes from last week'",
+      "target": { "testId": "command-palette" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Privacy & Limits",
+      "description": "Agents run locally by default. Cloud models require opt-in. Set token budgets and rate limits in settings."
+    }
+  ],
+  "relatedTopics": ["automation-basics", "skill-management", "metaphor-plugins", "ai-settings"],
+  "version": 1,
+  "locale": "en"
+}

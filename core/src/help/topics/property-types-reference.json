@@ -1,0 +1,53 @@
+{
+  "id": "property-types-reference",
+  "title": "Property Types Reference",
+  "category": "reference",
+  "description": "Complete reference of property types, operators, and validation rules",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 5,
+  "tags": ["properties", "types", "operators", "reference", "validation"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Primitive Types",
+      "description": "String, Number, Boolean, Date, URL, Email, Color - each with type-specific validation"
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Operators by Type",
+      "description": "String: =, !=, contains, startsWith, endsWith, regex | Number: =, !=, >, <, >=, <= | Date: =, !=, before, after, between | Boolean: =, !="
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Special Properties",
+      "description": "status (enum), priority (enum), dueDate (date), location (geo), tags (array), assignee (pubkey)"
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Computed Properties",
+      "description": "Define properties that auto-calculate from other properties (e.g., overdue = dueDate < now && status != done)"
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Property Constraints",
+      "description": "Set required, unique, min/max length, min/max value, pattern, and custom validators per property"
+    },
+    {
+      "id": "step-6",
+      "type": "action",
+      "title": "View Property Schema",
+      "description": "Open Command Palette → 'Help: Property Types Reference' for the full interactive table",
+      "target": { "testId": "command-palette" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    }
+  ],
+  "relatedTopics": ["edit-note-properties", "tags-and-filters", "smart-views", "ontology-basics"],
+  "version": 1,
+  "locale": "en"
+}

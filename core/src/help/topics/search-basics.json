@@ -1,0 +1,59 @@
+{
+  "id": "search-basics",
+  "title": "Search Basics",
+  "category": "core-skills",
+  "description": "Find anything instantly with powerful search and filters",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["search", "find", "filter", "query", "discovery"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Open Search",
+      "description": "Press Ctrl+F or click the search icon in the toolbar",
+      "target": { "testId": "search-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Basic Search",
+      "description": "Type keywords to search note content, titles, and tags",
+      "target": { "testId": "search-input" },
+      "action": { "type": "fill", "value": "project alpha" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Search Operators",
+      "description": "Use tag:#tag, property:key=value, date:>2026-01-01, author:pubkey for precise queries"
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Advanced Search",
+      "description": "Try: tag:#project-alpha property:status=active date:>2026-11-01",
+      "target": { "testId": "search-input" },
+      "action": { "type": "fill", "value": "tag:#project-alpha property:status=active" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Save Searches",
+      "description": "Click the star icon next to a search to save it as a quick filter in the sidebar"
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Search History",
+      "description": "Recent searches appear below the input for quick re-use"
+    }
+  ],
+  "relatedTopics": ["tags-and-filters", "smart-views", "command-palette", "keyboard-shortcuts-reference"],
+  "version": 1,
+  "locale": "en"
+}

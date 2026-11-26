@@ -1,0 +1,59 @@
+{
+  "id": "templates",
+  "title": "Note Templates",
+  "category": "core-skills",
+  "description": "Use and create templates for consistent note structures",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["templates", "structure", "consistency", "quick-capture", "describe-it"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Built-in Templates",
+      "description": "Notention includes templates for meetings, daily notes, project plans, decisions, and more."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Use a Template",
+      "description": "Type /meeting in quick capture or the editor to insert the meeting template",
+      "target": { "testId": "quick-capture-editor" },
+      "action": { "type": "fill", "value": "/meeting" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Browse Templates",
+      "description": "Open Command Palette (Ctrl+K) and search 'Template:' to see all available",
+      "target": { "testId": "command-palette" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Create Custom Template",
+      "description": "Go to Settings → Templates to create your own with placeholders and default properties"
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Create Template",
+      "description": "Click 'New Template', name it 'Weekly Review', and define the structure",
+      "target": { "testId": "template-new-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Template Variables",
+      "description": "Use {{date}}, {{time}}, {{title}}, {{cursor}} as placeholders that auto-fill on use"
+    }
+  ],
+  "relatedTopics": ["quick-capture-shortcuts", "describe-it-basics", "create-first-note", "command-palette"],
+  "version": 1,
+  "locale": "en"
+}

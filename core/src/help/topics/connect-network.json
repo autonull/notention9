@@ -1,0 +1,63 @@
+{
+  "id": "connect-network",
+  "title": "Connect to the Network",
+  "category": "network",
+  "description": "Set up your Nostr identity and connect to relays for decentralized sync",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 8,
+  "tags": ["network", "nostr", "identity", "relays", "sync", "decentralized"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Network Overview",
+      "description": "Notention uses Nostr for decentralized identity and sync. You control your keys and data."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Open Network Settings",
+      "description": "Go to Settings → Network to configure your identity",
+      "target": { "testId": "settings-network-tab" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Generate or Import Keys",
+      "description": "Generate new Nostr keys or import existing nsec/npub",
+      "target": { "testId": "nostr-key-generate" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Add Relays",
+      "description": "Add at least 2 relays for redundancy (e.g., wss://relay.damus.io, wss://nos.lol)",
+      "target": { "testId": "relay-input" },
+      "action": { "type": "fill", "value": "wss://relay.damus.io" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Connect",
+      "description": "Click Connect to establish relay connections",
+      "target": { "testId": "network-connect-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "validation",
+      "title": "Connected",
+      "description": "Verify connection status shows 'Connected' with green indicator",
+      "validation": { "type": "stateEquals", "statePath": "network.status", "expectedValue": "connected" }
+    }
+  ],
+  "relatedTopics": ["relay-management", "encrypted-chat", "semantic-matching", "nostr-keys"],
+  "version": 1,
+  "locale": "en"
+}

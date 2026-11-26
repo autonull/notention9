@@ -1,0 +1,48 @@
+{
+  "id": "create-first-note",
+  "title": "Create Your First Note",
+  "category": "getting-started",
+  "description": "Learn how to create and save your first note in Notention",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 3,
+  "tags": ["notes", "basics", "quick-capture"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Open Quick Capture",
+      "description": "Press Ctrl+N or click the + button to open the quick capture dialog",
+      "target": { "testId": "quick-capture-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Enter Note Content",
+      "description": "Type your note content in the editor",
+      "target": { "testId": "quick-capture-editor" },
+      "action": { "type": "fill", "value": "My first note in Notention!" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Save the Note",
+      "description": "Press Ctrl+Enter or click Save to create the note",
+      "target": { "testId": "quick-capture-save", "role": "button", "name": "Save" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "validation",
+      "title": "Note Created",
+      "description": "Verify the note appears in the notes list",
+      "validation": { "type": "elementExists", "target": { "testId": "note-item-0" } }
+    }
+  ],
+  "relatedTopics": ["quick-capture-shortcuts", "edit-note-properties", "tags-and-filters"],
+  "version": 1,
+  "locale": "en"
+}

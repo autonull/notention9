@@ -1,0 +1,40 @@
+{
+  "id": "quick-capture-shortcuts",
+  "title": "Quick Capture Shortcuts",
+  "category": "getting-started",
+  "description": "Master keyboard shortcuts for rapid note capture",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 2,
+  "tags": ["shortcuts", "keyboard", "productivity", "quick-capture"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Global Shortcut",
+      "description": "Press Ctrl+Shift+N anywhere to instantly open quick capture"
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Try Global Shortcut",
+      "description": "Press Ctrl+Shift+N to open quick capture",
+      "action": { "type": "wait", "options": { "duration": 500 } },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Editor Shortcuts",
+      "description": "In the editor: Ctrl+Enter to save, Escape to cancel, Tab to indent"
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "Template Shortcuts",
+      "description": "Type /template-name to quickly insert a template (e.g., /meeting, /todo, /daily)"
+    }
+  ],
+  "relatedTopics": ["create-first-note", "keyboard-shortcuts-reference", "templates"],
+  "version": 1,
+  "locale": "en"
+}

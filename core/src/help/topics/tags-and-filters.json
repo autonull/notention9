@@ -1,0 +1,59 @@
+{
+  "id": "tags-and-filters",
+  "title": "Tags and Filters",
+  "category": "core-skills",
+  "description": "Organize and find notes using tags and advanced filters",
+  "difficulty": "intermediate",
+  "estimatedTimeMinutes": 5,
+  "tags": ["tags", "filters", "search", "organization", "views"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Adding Tags",
+      "description": "Type #tagname in any note to create a tag. Tags are autocomplete-enabled."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Add a Tag",
+      "description": "Open a note and type #project-alpha in the content",
+      "target": { "testId": "note-editor" },
+      "action": { "type": "fill", "value": "Working on #project-alpha today" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Filter Bar",
+      "description": "Use the filter bar at the top of notes view to filter by tags, properties, date ranges, and more."
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Filter by Tag",
+      "description": "Click the tag filter and select 'project-alpha'",
+      "target": { "testId": "filter-tag-select" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Saved Views",
+      "description": "Save complex filter combinations as named views for quick access from the sidebar."
+    },
+    {
+      "id": "step-6",
+      "type": "action",
+      "title": "Save Current View",
+      "description": "Click 'Save View' and name it 'Project Alpha Notes'",
+      "target": { "testId": "save-view-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    }
+  ],
+  "relatedTopics": ["edit-note-properties", "smart-views", "search-basics", "create-first-note"],
+  "version": 1,
+  "locale": "en"
+}

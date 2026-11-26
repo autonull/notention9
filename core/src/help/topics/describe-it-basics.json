@@ -1,0 +1,62 @@
+{
+  "id": "describe-it-basics",
+  "title": "Describe It Basics",
+  "category": "ai-features",
+  "description": "Use natural language to describe what you need and let AI find or create it",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["describe-it", "ai", "natural-language", "discovery", "creation"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "What is Describe It?",
+      "description": "Describe It lets you express intent in plain English. Notention finds matching notes, creates new ones, or suggests actions."
+    },
+    {
+      "id": "step-2",
+      "type": "action",
+      "title": "Open Describe It",
+      "description": "Press Ctrl+Shift+/ or click the Describe It button in the toolbar",
+      "target": { "testId": "describe-it-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Describe Your Need",
+      "description": "Type: 'A meeting note template with attendees, agenda, and action items'",
+      "target": { "testId": "describe-it-input" },
+      "action": { "type": "fill", "value": "A meeting note template with attendees, agenda, and action items" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Submit",
+      "description": "Press Enter to process your description",
+      "target": { "testId": "describe-it-submit" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "explanation",
+      "title": "Review Suggestions",
+      "description": "Describe It will show matching templates, create a new note with the structure, or suggest relevant existing notes."
+    },
+    {
+      "id": "step-6",
+      "type": "action",
+      "title": "Accept Result",
+      "description": "Click 'Use This' on the generated meeting note template",
+      "target": { "testId": "describe-it-accept" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    }
+  ],
+  "relatedTopics": ["semantic-matching", "templates", "quick-capture-shortcuts", "automation-basics"],
+  "version": 1,
+  "locale": "en"
+}

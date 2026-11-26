@@ -1,0 +1,63 @@
+{
+  "id": "use-map",
+  "title": "Use the Map View",
+  "category": "views",
+  "description": "Visualize your notes on a map with location-based organization",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 4,
+  "tags": ["map", "location", "geospatial", "visualization"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Open Map View",
+      "description": "Click the map icon in the sidebar or press Ctrl+M",
+      "target": { "testId": "sidebar-map-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Map Interface",
+      "description": "The map shows notes with location properties as markers. Clustered markers indicate multiple notes in one area."
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Add Location to Note",
+      "description": "Open a note, add a 'location' property with coordinates or place name",
+      "target": { "testId": "note-add-detail-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Set Location",
+      "description": "Enter 'location' as key, '=' as operator, and 'San Francisco, CA' as value",
+      "target": { "testId": "property-key-input", "modal": "Add detail" },
+      "action": { "type": "fill", "value": "location" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Confirm Location",
+      "description": "Click Add detail to save the location",
+      "target": { "role": "button", "name": "Add detail", "modal": "Add detail" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "validation",
+      "title": "Marker Appears",
+      "description": "Return to map view and verify a marker appears for your note",
+      "validation": { "type": "elementExists", "target": { "testId": "map-marker-0" } }
+    }
+  ],
+  "relatedTopics": ["add-location-to-note", "timeline-view", "geolocation-basics", "map-layers"],
+  "version": 1,
+  "locale": "en"
+}

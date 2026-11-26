@@ -1,0 +1,65 @@
+{
+  "id": "chat-basics",
+  "title": "Chat Basics",
+  "category": "network",
+  "description": "Start encrypted conversations with contacts using Nostr",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 5,
+  "tags": ["chat", "encrypted", "nostr", "messaging", "contacts"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "action",
+      "title": "Open Chat View",
+      "description": "Click the chat icon in the sidebar or press Ctrl+Shift+C",
+      "target": { "testId": "sidebar-chat-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "End-to-End Encryption",
+      "description": "All chats are encrypted using Nostr's NIP-44. Only you and the recipient can read messages."
+    },
+    {
+      "id": "step-3",
+      "type": "action",
+      "title": "Add Contact",
+      "description": "Click 'New Chat' and enter the recipient's npub or hex public key",
+      "target": { "testId": "chat-new-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-4",
+      "type": "action",
+      "title": "Enter Public Key",
+      "description": "Paste the recipient's npub (starts with npub1...)",
+      "target": { "testId": "chat-recipient-input" },
+      "action": { "type": "fill", "value": "npub1example..." },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Start Conversation",
+      "description": "Click 'Start Chat' to create the encrypted conversation",
+      "target": { "testId": "chat-start-button" },
+      "action": { "type": "click" },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "action",
+      "title": "Send Message",
+      "description": "Type a message and press Enter to send",
+      "target": { "testId": "chat-message-input" },
+      "action": { "type": "fill", "value": "Hello! This is my first encrypted message." },
+      "autoAdvance": true
+    }
+  ],
+  "relatedTopics": ["connect-network", "encrypted-chat", "nostr-keys", "relay-management"],
+  "version": 1,
+  "locale": "en"
+}

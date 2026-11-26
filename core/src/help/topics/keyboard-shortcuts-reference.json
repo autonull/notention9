@@ -1,0 +1,52 @@
+{
+  "id": "keyboard-shortcuts-reference",
+  "title": "Keyboard Shortcuts Reference",
+  "category": "reference",
+  "description": "Complete list of keyboard shortcuts for power users",
+  "difficulty": "beginner",
+  "estimatedTimeMinutes": 3,
+  "tags": ["shortcuts", "keyboard", "reference", "productivity"],
+  "steps": [
+    {
+      "id": "step-1",
+      "type": "explanation",
+      "title": "Global Shortcuts",
+      "description": "Ctrl+N: New note | Ctrl+Shift+N: Quick capture | Ctrl+Shift+/: Describe It | Ctrl+K: Command palette | ?: Help"
+    },
+    {
+      "id": "step-2",
+      "type": "explanation",
+      "title": "Navigation Shortcuts",
+      "description": "Ctrl+1: Notes | Ctrl+2: Network | Ctrl+3: Map | Ctrl+4: Timeline | Ctrl+5: Matches | Ctrl+6: Chat | Ctrl+7: Skills"
+    },
+    {
+      "id": "step-3",
+      "type": "explanation",
+      "title": "Editor Shortcuts",
+      "description": "Ctrl+Enter: Save | Escape: Cancel | Ctrl+D: Add detail | Tab: Indent | Shift+Tab: Outdent | Ctrl+B: Bold | Ctrl+I: Italic"
+    },
+    {
+      "id": "step-4",
+      "type": "explanation",
+      "title": "View Shortcuts",
+      "description": "Ctrl+F: Search | Ctrl+Shift+F: Advanced filter | V: Toggle view mode | G: Group by | S: Sort"
+    },
+    {
+      "id": "step-5",
+      "type": "action",
+      "title": "Open Shortcuts Help",
+      "description": "Press ? anywhere to open the shortcuts reference",
+      "action": { "type": "wait", "options": { "duration": 500 } },
+      "autoAdvance": true
+    },
+    {
+      "id": "step-6",
+      "type": "explanation",
+      "title": "Customize Shortcuts",
+      "description": "Go to Settings → Shortcuts to customize or disable any shortcut"
+    }
+  ],
+  "relatedTopics": ["quick-capture-shortcuts", "command-palette", "help-system-overview"],
+  "version": 1,
+  "locale": "en"
+}
