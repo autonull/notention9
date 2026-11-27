@@ -1,10 +1,7 @@
 import { readFileSync, writeFileSync, statSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 
 // Cache for generated definitions file
 let _cachedGeneratedDefinitions: { seams: SeamDefinition[]; strategies: StrategyConfig[] } | null = null;

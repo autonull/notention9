@@ -6,8 +6,8 @@ import {
     buildSkeleton, emitSkeleton, skeletonJourneyFlows, skeletonJourneyId, skeletonOutputs, skeletonToJourney,
 } from './skeleton.js';
 import { simulateFlow } from './simulate.js';
+import { ROOT } from './paths.js';
 
-const ROOT = resolve(__dirname, '../../..');
 const graph: UisgGraph = JSON.parse(readFileSync(resolve(ROOT, 'optimize/src/uisg/__fixtures__/legacy-graph.json'), 'utf8'));
 
 describe('skeleton generator', () => {

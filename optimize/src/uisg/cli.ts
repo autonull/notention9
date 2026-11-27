@@ -43,8 +43,7 @@ import { generateSurface, generateAllSurfaces, checkParity, checkAllParity } fro
 import { buildMatrixCells, runMatrix, writeMatrixReport, type MatrixConfig, type MatrixJourney } from './matrix.js';
 import type { SurfaceVariantStatus, UisgGraph, UisgSurface } from './types.js';
 import type { TemplateTarget } from './templates/render.js';
-
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
+import { ROOT } from './paths.js';
 const USAGE = `Usage: pnpm uisg <command> [args]
 
 Commands:
@@ -1116,7 +1115,7 @@ const { hasVariant } = await import('./resolve.js');
                 console.error('adopt requires --baseline, --variant, --hypothesis, --metric, --actor');
                 return 1;
             }
-            const result = adoptFlow({
+            const result = await adoptFlow({
                 flowId,
                 baselineRunId,
                 variantRunId,

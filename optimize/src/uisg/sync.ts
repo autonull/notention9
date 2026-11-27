@@ -1,14 +1,10 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { resolve, dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { indexGraph, queryGraph } from './query.js';
 import { validateGraph } from './validate.js';
 import { scanAll } from './scan.js';
 import type { UisgGraph, UisgNode, UisgNodeType, UisgBaseNode } from './types.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 
 export interface SyncProposal {
     type: 'add-surface' | 'add-navigation' | 'add-seam' | 'add-journey' | 'add-strategy' | 'update-surface' | 'update-navigation' | 'remove-stale' | 'fix-binding';

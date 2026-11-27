@@ -1,11 +1,8 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import type { JourneySpec } from '../journey.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 const MANIFEST_DIR = resolve(ROOT, 'doc/uisg/manifests');
 
 export interface FlowManifest {

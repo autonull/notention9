@@ -1,10 +1,7 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { resolve, dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve, join } from 'node:path';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 
 // Cache for scanAll with mtime-based invalidation
 let _cachedScanResult: ScanResult | null = null;

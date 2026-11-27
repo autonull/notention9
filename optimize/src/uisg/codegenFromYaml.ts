@@ -4,10 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { load } from 'js-yaml';
 import type { UisgGraph, UisgSurface, UisgNode, UisgEdge } from './types.js';
 import { generateSurface, generateAllSurfaces } from './codegen.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
+import { ROOT } from './paths.js';
 
 export interface UisgYaml {
   version: number;

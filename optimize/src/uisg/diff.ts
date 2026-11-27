@@ -1,14 +1,11 @@
 import { readFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { loadGraph } from './cli.js';
 import { validateGraph } from './validate.js';
 import { canonicalize, diffGraphs, graphHash } from './canonicalize.js';
 import type { UisgGraph } from './types.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 
 export interface DiffOptions {
     baseline: string; // file path or 'current' or 'hash:<hash>'

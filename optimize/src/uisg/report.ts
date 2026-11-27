@@ -1,11 +1,8 @@
 import { readFileSync, writeFileSync, readdirSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import type { DecisionResult, VariantDecision, CellMetrics } from './decide.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 
 export interface ABReportOptions {
     experiment: string;

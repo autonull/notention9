@@ -1,10 +1,9 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { SurfaceVariant, SurfaceVariantStatus, VariantMetrics, UisgSurface } from './types.js';
 import { loadGraph, saveGraph } from './cli.js';
+import { ROOT } from './paths.js';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const DEFAULT_FILE = resolve(ROOT, 'doc/uisg/variants.json');
 
 export interface VariantRecord extends SurfaceVariant {

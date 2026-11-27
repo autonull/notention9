@@ -1,6 +1,5 @@
 import { readFileSync, readdirSync, statSync, writeFileSync } from 'node:fs';
-import { resolve, dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve, join } from 'node:path';
 import { analyzeGraph, journeyTargetDrift } from './analyze.js';
 import { validateGraph } from './validate.js';
 import { loadGraph } from './cli.js';
@@ -8,10 +7,8 @@ import type { UisgGraph } from './types.js';
 import type { JourneySpec } from '../journey.js';
 import { getAllJourneys } from '../registry.js';
 import { uiTestIds } from './cli.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 const METRICS_FILE = resolve(ROOT, 'doc/uisg/metrics.json');
 const QUALITY_CACHE_FILE = resolve(ROOT, 'doc/uisg/quality-cache.json');
 

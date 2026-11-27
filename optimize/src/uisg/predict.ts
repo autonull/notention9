@@ -1,11 +1,8 @@
 import { readFileSync, writeFileSync, existsSync, readdirSync, mkdirSync, statSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { loadGraph } from './cli.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 const RUNS_FILE = resolve(ROOT, 'doc/uisg/runs.jsonl');
 const MATRIX_DIR = resolve(ROOT, 'doc/uisg');
 const MODEL_DIR = resolve(ROOT, 'doc/uisg/models');

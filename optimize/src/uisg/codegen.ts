@@ -1,14 +1,10 @@
 import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { UisgGraph, UisgSurface } from './types.js';
 import { getTemplate, type TemplateShape } from './templates/index.js';
 import { TARGET_EXTENSION, type TemplateTarget } from './templates/render.js';
 import { resolveSurface, type ResolvedSurface } from './resolve.js';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
+import { ROOT } from './paths.js';
 
 const DEFAULT_PROPS: Record<string, string> = {
   ContextRailMobile: ' tabs={[{ id: "tab1", label: "Tab 1", panel: <div>Tab 1</div> }, { id: "tab2", label: "Tab 2", panel: <div>Tab 2</div> }]} activeIndex={0}',

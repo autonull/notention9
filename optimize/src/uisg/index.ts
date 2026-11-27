@@ -21,7 +21,7 @@ export { ensureContextsFile, listProfiles, loadContexts, getProfile, CONTEXTS_SC
 
 export * from './themes.js';
 
-export * from './adopt.js';
+export { adoptFlow, type AdoptOptions, type AdoptResult } from './adopt.js';
 export * from './canonicalize.js';
 export * from './variants.js';
 export * from './matrix.js';

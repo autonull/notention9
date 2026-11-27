@@ -1,9 +1,8 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import type { SeamRole } from '@notention/core/ui/strategy';
+import { ROOT } from './paths.js';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const CONTEXTS_FILE = resolve(ROOT, 'doc/uisg/contexts.json');
 
 const contextsFile = (): string => process.env.NOTENTION_UISG_CONTEXTS ?? CONTEXTS_FILE;

@@ -1,16 +1,13 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
 import { loadGraph } from './cli.js';
 import { indexGraph, queryGraph } from './query.js';
 import { validateGraph } from './validate.js';
 import { loadPriority } from './rank.js';
 import { getProfile, type ContextProfile } from './contexts.js';
 import type { UisgGraph, UisgNode, UisgNodeType } from './types.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 const SELECTION_FILE = resolve(ROOT, 'doc/uisg/selection.json');
 
 export interface SelectionRequest {

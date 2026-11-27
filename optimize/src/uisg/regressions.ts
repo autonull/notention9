@@ -1,10 +1,9 @@
 import { readFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { analyzeGraph } from './analyze.js';
 import type { UisgEdge, UisgGraph } from './types.js';
+import { ROOT } from './paths.js';
 
-const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '../../..');
 const CATALOGUE_FILE = resolve(ROOT, 'doc/uisg/regressions.json');
 
 export type RegressionFamily = 'integrity' | 'traceability' | 'flow-state' | 'a11y-ergonomics';

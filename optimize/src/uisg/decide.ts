@@ -1,10 +1,7 @@
 import { readFileSync, writeFileSync, readdirSync, existsSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve } from 'node:path';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 const POLICY_FILE = resolve(ROOT, 'doc/uisg/policy.json');
 const BASELINES_DIR = resolve(ROOT, 'doc/uisg/baselines');
 

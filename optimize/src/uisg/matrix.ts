@@ -1,12 +1,9 @@
 import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { createRunId } from '../runner.js';
 import type { UisgGraph } from './types.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 const RUNS_FILE = resolve(ROOT, 'doc/uisg/runs.jsonl');
 const MATRIX_CACHE_FILE = resolve(ROOT, 'doc/uisg/matrix-cache.json');
 

@@ -1,11 +1,8 @@
 import { readFileSync, readdirSync, statSync } from 'node:fs';
-import { resolve, join, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve, join } from 'node:path';
 import type { UisgGraph, UisgNode } from './types.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 
 export interface ComponentRegistry {
     components: Map<string, { file: string; exports: string[] }>;

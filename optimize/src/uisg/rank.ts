@@ -1,6 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve, dirname } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { resolve, join } from 'node:path';
 import { loadGraph } from './cli.js';
 import { indexGraph, queryGraph, edgesFrom } from './query.js';
 import { analyzeGraph } from './analyze.js';
@@ -8,10 +7,8 @@ import { scanAll } from './scan.js';
 import { loadMetrics } from './metrics.js';
 import { validateGraph } from './validate.js';
 import type { UisgGraph, UisgNode, UisgNodeType } from './types.js';
+import { ROOT } from './paths.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const ROOT = resolve(__dirname, '../../..');
 const PRIORITY_FILE = resolve(ROOT, 'doc/uisg/priority.json');
 
 export interface RankedItem {

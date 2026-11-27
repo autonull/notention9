@@ -515,8 +515,8 @@ describe('diff', () => {
 });
 
 describe('adoptFlow', () => {
-    it('rejects adoption when bundles not found', () => {
-        const result = adoptFlow({
+    it('rejects adoption when bundles not found', async () => {
+        const result = await adoptFlow({
             flowId: 'flow.test',
             baselineRunId: 'nonexistent-1',
             variantRunId: 'nonexistent-2',
