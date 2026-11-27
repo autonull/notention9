@@ -1,30 +1,31 @@
 import type { SeamRole } from '@notention/core/ui/strategy';
 import type { Step, Target } from '../journey.js';
 import type { ParamDef } from '@notention/core/ui/strategy.js';
+import {
+    EDGE_TYPES,
+    HYPEREDGE_TYPES,
+    NODE_TYPES,
+    STATUS_VALUES,
+    CONFIDENCE_VALUES,
+    REVERSIBILITY_VALUES,
+    EFFECT_RISK_VALUES,
+    STEP_KIND_VALUES,
+    VARIANT_STATUS_VALUES,
+    SEAM_ROLE_VALUES,
+} from './constants.js';
 
 export const UISG_SCHEMA_VERSION = 4 as const;
 
-export type UisgStatus = 'implemented' | 'partial' | 'planned' | 'candidate' | 'experimental' | 'removed' | 'rejected';
-export type UisgNodeType = 'intent' | 'capability' | 'flow' | 'step' | 'surface' | 'predicate' | 'effect';
-export type UisgEdgeType =
-    | 'supports' | 'uses' | 'invokes' | 'contains' | 'renders'
-    | 'next' | 'alternative' | 'implementedBy' | 'guards' | 'effects'
-    | 'composes' | 'requires' | 'provides' | 'satisfies'
-    | 'dependsOn' | 'conflicts' | 'excludes'
-    | 'fallback' | 'precedes' | 'parallel'
-    | 'variantOf' | 'overrides'
-    | 'evidencedBy' | 'documents' | 'owns' | 'tests';
-export type UisgHyperedgeType =
-    | 'requiresAll' | 'requiresAny'
-    | 'composition' | 'parallelSet'
-    | 'alternativeSet' | 'conflictSet'
-    | 'journeyBundle' | 'variantSet';
-export type UisgConfidence = 'high' | 'medium' | 'low';
+export type UisgStatus = (typeof STATUS_VALUES)[number];
+export type UisgNodeType = (typeof NODE_TYPES)[number];
+export type UisgEdgeType = (typeof EDGE_TYPES)[number];
+export type UisgHyperedgeType = (typeof HYPEREDGE_TYPES)[number];
+export type UisgConfidence = (typeof CONFIDENCE_VALUES)[number];
 export type UisgRisk = 'normal' | 'caution' | 'destructive';
-export type UisgStepKind = 'show' | 'action' | 'choice' | 'confirm' | 'result';
+export type UisgStepKind = (typeof STEP_KIND_VALUES)[number];
 export type UisgAction = Extract<Step, { kind: 'act' }>['action'];
-export type UisgReversibility = 'reversible' | 'compensatable' | 'irreversible' | 'unknown';
-export type UisgEffectRisk = 'normal' | 'caution' | 'destructive' | 'consequential';
+export type UisgReversibility = (typeof REVERSIBILITY_VALUES)[number];
+export type UisgEffectRisk = (typeof EFFECT_RISK_VALUES)[number];
 
 export interface UisgBaseNode {
     id: string;

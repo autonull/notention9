@@ -1,12 +1,24 @@
 import { z } from 'zod';
 import { UISG_SCHEMA_VERSION } from './types.js';
 import type { UisgEdgeType, UisgGraph, UisgNode, UisgNodeType, UisgReversibility, UisgEffectRisk } from './types.js';
+import {
+    EDGE_TYPES,
+    HYPEREDGE_TYPES,
+    HYPEREDGE_MIN_NODES,
+    STATUS_VALUES,
+    CONFIDENCE_VALUES,
+    SEAM_ROLE_VALUES,
+    REVERSIBILITY_VALUES,
+    EFFECT_RISK_VALUES,
+    STEP_KIND_VALUES,
+    VARIANT_STATUS_VALUES,
+} from './constants.js';
 
-const StatusSchema = z.enum(['implemented', 'partial', 'planned', 'candidate', 'experimental', 'removed', 'rejected']);
-const ConfidenceSchema = z.enum(['high', 'medium', 'low']);
-const SeamRoleSchema = z.enum(['capture', 'elicit', 'match', 'display', 'layout', 'explain', 'ontology', 'intent', 'render']);
-const ReversibilitySchema = z.enum(['reversible', 'compensatable', 'irreversible', 'unknown']);
-const EffectRiskSchema = z.enum(['normal', 'caution', 'destructive', 'consequential']);
+const StatusSchema = z.enum(STATUS_VALUES);
+const ConfidenceSchema = z.enum(CONFIDENCE_VALUES);
+const SeamRoleSchema = z.enum(SEAM_ROLE_VALUES);
+const ReversibilitySchema = z.enum(REVERSIBILITY_VALUES);
+const EffectRiskSchema = z.enum(EFFECT_RISK_VALUES);
 
 const baseFields = {
     id: z.string().min(1),
@@ -35,7 +47,7 @@ const SurfaceVariantSchema = z.object({
     propsSchema: z.record(z.unknown()).optional(),
     strategyOverrides: z.record(SeamRoleSchema, z.string()).optional(),
     description: z.string().min(1),
-    status: z.enum(['experimental', 'candidate', 'promoted', 'archived']),
+    status: z.enum(VARIANT_STATUS_VALUES),
     promotedAt: z.string().optional(),
     metrics: VariantMetricsSchema.optional(),
 });
@@ -44,39 +56,11 @@ const NodeSchema = z.discriminatedUnion('type', [
     z.object({ ...baseFields, type: z.literal('intent'), actor: z.string().optional(), outcome: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('capability'), seam: SeamRoleSchema.optional(), strategy: z.string().optional(), skill: z.string().optional(), risk: z.enum(['normal', 'caution', 'destructive']).optional(), effect: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('flow'), entry: z.string().min(1), outcome: z.string().min(1), journey: z.string().optional() }),
-    z.object({ ...baseFields, type: z.literal('step'), kind: z.enum(['show', 'action', 'choice', 'confirm', 'result']), target: TargetSchema.optional(), action: z.enum(['click', 'fill', 'press', 'select']).optional(), value: z.string().optional(), statePath: z.string().optional(), stateEquals: z.unknown().optional(), guard: z.string().optional() }),
+    z.object({ ...baseFields, type: z.literal('step'), kind: z.enum(STEP_KIND_VALUES), target: TargetSchema.optional(), action: z.enum(['click', 'fill', 'press', 'select']).optional(), value: z.string().optional(), statePath: z.string().optional(), stateEquals: z.unknown().optional(), guard: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('surface'), component: z.string().optional(), route: z.string().optional(), configKey: z.string().optional(), seam: SeamRoleSchema.optional(), template: z.string().optional(), propsSchema: z.record(z.unknown()).optional(), generatedFrom: z.string().optional(), variants: z.record(z.string(), SurfaceVariantSchema).optional(), defaultVariant: z.string().optional() }),
     z.object({ ...baseFields, type: z.literal('predicate'), expression: z.string().min(1), registryId: z.string().min(1) }),
     z.object({ ...baseFields, type: z.literal('effect'), reversibility: ReversibilitySchema, risk: EffectRiskSchema, confirmationRequired: z.boolean(), failureModes: z.array(z.string()), registryId: z.string().min(1) }),
 ]);
-
-const EDGE_TYPES = [
-    'supports', 'uses', 'invokes', 'contains', 'renders',
-    'next', 'alternative', 'implementedBy', 'guards', 'effects',
-    'composes', 'requires', 'provides', 'satisfies',
-    'dependsOn', 'conflicts', 'excludes',
-    'fallback', 'precedes', 'parallel',
-    'variantOf', 'overrides',
-    'evidencedBy', 'documents', 'owns', 'tests',
-] as const;
-
-const HYPEREDGE_TYPES = [
-    'requiresAll', 'requiresAny',
-    'composition', 'parallelSet',
-    'alternativeSet', 'conflictSet',
-    'journeyBundle', 'variantSet',
-] as const;
-
-const HYPEREDGE_MIN_NODES: Record<(typeof HYPEREDGE_TYPES)[number], number> = {
-    requiresAll: 2,
-    requiresAny: 2,
-    composition: 2,
-    parallelSet: 2,
-    alternativeSet: 2,
-    conflictSet: 2,
-    journeyBundle: 2,
-    variantSet: 1,
-};
 
 const EdgeSchema = z.object({
     from: z.string().min(1),
@@ -119,7 +103,9 @@ export interface ValidationResult {
     issues: GraphIssue[];
 }
 
-const ALL_NODE_TYPES: UisgNodeType[] = ['intent', 'capability', 'flow', 'step', 'surface', 'predicate', 'effect'];
+import { NODE_TYPES } from './constants.js';
+
+const ALL_NODE_TYPES: UisgNodeType[] = [...NODE_TYPES];
 
 const EDGE_RULES: Record<UisgEdgeType, { from: UisgNodeType[]; to: UisgNodeType[] | 'reference' }> = {
     supports: { from: ['capability'], to: ['intent'] },
