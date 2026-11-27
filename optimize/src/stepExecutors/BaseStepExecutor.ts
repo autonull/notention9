@@ -39,6 +39,7 @@ export interface BaseExecutorContext {
     locator?: Locator;
     isModal: boolean;
     modalName?: string;
+    consoleEntries?: Array<{ type: string; text: string; location?: string }>;
 }
 
 export interface BaseExecutorOptions<StepKind extends Step['kind']> {
@@ -181,6 +182,14 @@ export class BaseStepExecutor {
         }
     }
 
+    /**
+     * Take screenshot
+     */
+    static async takeScreenshot(page: Page, fullPage: boolean = false): Promise<string> {
+        const buffer = await page.screenshot({ fullPage });
+        return buffer.toString('base64');
+    }
+
     // --- Factory ---
 
     /**
@@ -201,7 +210,7 @@ export class BaseStepExecutor {
         const { kind, validate, execute } = options;
 
         return {
-            async execute(page: Page, step: Step): Promise<StepExecutionResult> {
+            async execute(page: Page, step: Step, consoleEntries?: Array<{ type: string; text: string; location?: string }>): Promise<StepExecutionResult> {
                 // Validate step kind
                 if (validate) {
                     validate(step);
@@ -209,14 +218,22 @@ export class BaseStepExecutor {
                     BaseStepExecutor.validateStepKind(step, kind);
                 }
 
-                // Prepare context
-                const isModal = step.kind === 'act' 
-                    ? BaseStepExecutor.isModalTarget(step.target as Target)
-                    : step.target 
-                        ? BaseStepExecutor.isModalTarget(step.target as Target)
-                        : false;
+                // Type guard to narrow step type after validation
+                const isActStep = (s: Step): s is Extract<Step, { kind: 'act' }> => s.kind === 'act';
+                const hasTarget = (s: Step): s is Extract<Step, { target: Target }> => 'target' in s;
                 
-                const target = step.target as Target | undefined;
+                // Prepare context
+                let isModal = false;
+                let target: Target | undefined;
+                
+                if (isActStep(step)) {
+                    isModal = BaseStepExecutor.isModalTarget(step.target);
+                    target = step.target;
+                } else if (hasTarget(step)) {
+                    isModal = BaseStepExecutor.isModalTarget(step.target);
+                    target = step.target;
+                }
+                
                 const locator = target ? BaseStepExecutor.resolveTarget(page, target) : undefined;
                 const modalName = target && isModal ? target.modal : undefined;
 
@@ -227,6 +244,7 @@ export class BaseStepExecutor {
                     locator,
                     isModal,
                     modalName,
+                    consoleEntries,
                 };
 
                 return execute(context);
@@ -252,14 +270,6 @@ export const withAriaSnapshot = {
         return BaseStepExecutor.getAriaSnapshot(page, label);
     },
 };
-
-/**
- * Take screenshot
- */
-static async takeScreenshot(page: Page, fullPage: boolean = false): Promise<string> {
-    const buffer = await page.screenshot({ fullPage });
-    return buffer.toString('base64');
-}
 
 /**
  * Mixin for executors that need screenshot capture

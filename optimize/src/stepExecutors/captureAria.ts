@@ -6,12 +6,12 @@ import { BaseStepExecutor } from './BaseStepExecutor.js';
 export const captureAriaExecutor: StepExecutor = BaseStepExecutor.create({
     kind: 'captureAria',
     execute: async ({ page, step }) => {
-        const label = (step as { label: string }).label;
+        const s = step as Extract<Step, { kind: 'captureAria' }>;
         // Try Playwright's accessibility snapshot first
-        const snapshot = await page.accessibility.snapshot({ root: page.mainFrame() });
-        let ariaSnapshot = JSON.stringify(snapshot, null, 2);
+        const snapshot = await (page as any).accessibility?.snapshot?.();
+        let ariaSnapshot = snapshot ? JSON.stringify(snapshot, null, 2) : '';
         // Fall back to dev bridge snapshot if available
-        const devBridgeSnapshot = await BaseStepExecutor.getAriaSnapshot(page, label);
+        const devBridgeSnapshot = await BaseStepExecutor.getAriaSnapshot(page, s.label);
         if (devBridgeSnapshot) {
             ariaSnapshot = devBridgeSnapshot;
         }
