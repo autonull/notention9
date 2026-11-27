@@ -43,6 +43,8 @@ export function createCommand(config: {
     };
 }
 
+export { BaseCommand, type FlagDefinition, type CommandOptions, type ParsedArgs } from './BaseCommand.js';
+
 export class CommandRegistry {
     private registry: Registry<CommandRegistrable>;
 

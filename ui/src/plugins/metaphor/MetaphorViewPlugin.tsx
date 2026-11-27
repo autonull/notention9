@@ -1,12 +1,14 @@
 import {BasePlugin, PluginAPI, PluginManifest} from '../PluginSystem.js';
 import {metaphorRegistry} from '@notention/core';
-import {UIMetaphor} from '@notention/core';
+import {UIMetaphor, UnifiedMetaphor} from '@notention/core';
 import {ConditionalAutomationView} from './ConditionalAutomationView.js';
+import React from 'react';
 
 export interface MetaphorViewPluginAPI {
-    registerMetaphorView: (metaphorId: string, viewComponent: React.ComponentType<{note: any}>) => void;
-    getMetaphorView: (metaphorId: string) => React.ComponentType<{note: any}> | undefined;
-    getAllMetaphorViews: () => Record<string, React.ComponentType<{note: any}>>;
+    registerMetaphorView: (metaphorId: string, viewComponent: React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}>) => void;
+    getMetaphorView: (metaphorId: string) => React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}> | undefined;
+    getAllMetaphorViews: () => Record<string, React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}>>;
+    registerUnifiedMetaphor: (metaphor: UnifiedMetaphor) => void;
 }
 
 export interface MetaphorViewPluginManifest extends PluginManifest {
@@ -14,7 +16,7 @@ export interface MetaphorViewPluginManifest extends PluginManifest {
 }
 
 class MetaphorViewPlugin extends BasePlugin {
-    private metaphorViews: Map<string, React.ComponentType<{note: any}>> = new Map();
+    private metaphorViews: Map<string, React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}>> = new Map();
 
     manifest: MetaphorViewPluginManifest = {
         id: 'metaphor-view-plugin',
@@ -30,12 +32,13 @@ class MetaphorViewPlugin extends BasePlugin {
         // Extend the plugin API with metaphor view registration
         const extendedApi = {
             ...api,
-            registerMetaphorView: (metaphorId: string, viewComponent: React.ComponentType<{note: any}>) => {
+            registerMetaphorView: (metaphorId: string, viewComponent: React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}>) => {
                 this.metaphorViews.set(metaphorId, viewComponent);
                 api.registerComponent(`metaphor-view-${metaphorId}`, viewComponent);
             },
             getMetaphorView: (metaphorId: string) => this.metaphorViews.get(metaphorId),
             getAllMetaphorViews: () => Object.fromEntries(this.metaphorViews),
+            registerUnifiedMetaphor: (metaphor: UnifiedMetaphor) => this.registerUnifiedMetaphor(metaphor),
         };
 
         // Register built-in metaphor views
@@ -48,6 +51,12 @@ class MetaphorViewPlugin extends BasePlugin {
                 this.registerDefaultViewForMetaphor(metaphor);
             }
         });
+
+        // Register unified metaphors (from core registry)
+        const unifiedMetaphors = metaphorRegistry.getAllUnifiedMetaphors();
+        unifiedMetaphors.forEach(metaphor => {
+            this.registerUnifiedMetaphor(metaphor);
+        });
     }
 
     private registerBuiltInViews(): void {
@@ -59,9 +68,18 @@ class MetaphorViewPlugin extends BasePlugin {
         this.metaphorViews.clear();
     }
 
-    private registerDefaultViews(): void {
-        // Views will be registered here when components are created
-        // This is a placeholder for dynamic registration
+    /**
+     * Register a unified metaphor (with optional UI components)
+     * This is the primary way to add new metaphors with custom views
+     */
+    registerUnifiedMetaphor(metaphor: UnifiedMetaphor): void {
+        // If unified metaphor has a custom UI view, register it
+        if (metaphor.uiView) {
+            this.metaphorViews.set(metaphor.id, metaphor.uiView);
+        } else if (!this.metaphorViews.has(metaphor.id)) {
+            // Fall back to default view
+            this.registerDefaultViewForMetaphor(metaphor);
+        }
     }
 
     private registerDefaultViewForMetaphor(metaphor: UIMetaphor): void {
@@ -97,12 +115,12 @@ class MetaphorViewPlugin extends BasePlugin {
     }
 
     // Public method to get a view for a metaphor
-    getViewForMetaphor(metaphorId: string): React.ComponentType<{note: any}> | undefined {
+    getViewForMetaphor(metaphorId: string): React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}> | undefined {
         return this.metaphorViews.get(metaphorId);
     }
 
     // Public method to register a custom view
-    registerView(metaphorId: string, component: React.ComponentType<{note: any}>): void {
+    registerView(metaphorId: string, component: React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}>): void {
         this.metaphorViews.set(metaphorId, component);
     }
 }
@@ -111,7 +129,7 @@ class MetaphorViewPlugin extends BasePlugin {
 export const metaphorViewPlugin = new MetaphorViewPlugin();
 
 // Utility function to get metaphor view for a note
-export function getMetaphorViewForNote(note: any): React.ComponentType<{note: any}> | undefined {
+export function getMetaphorViewForNote(note: any): React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}> | undefined {
     const metaphorProp = note.properties.find((p: any) => p.key === 'metaphor' && p.operator === 'is');
     if (!metaphorProp || metaphorProp.values.length === 0) return undefined;
 

@@ -11,3 +11,4 @@ export * from './skillApprovalManager.js';
 export * from './SkillExecutor.js';
 export * from './metaphor/MetaphorRegistry.js';
 export * from './metaphor/MetaphorMapper.js';
+export * from './metaphor/UnifiedMetaphor.js';

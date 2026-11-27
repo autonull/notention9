@@ -7,17 +7,27 @@ import type { JourneySpec } from '../journey.js';
 import { writeFileSync, mkdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
+import { BaseCliHandler } from './BaseCliHandler.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-export async function handleGenerateTest(findingId: string, json: boolean, a11y: boolean): Promise<number> {
+export async function handleGenerateTest(args: string[]): Promise<number> {
+    const parsed = BaseCliHandler.parseArgs(args, [
+        { name: 'json', type: 'boolean', description: 'Output as JSON' },
+        { name: 'a11y', type: 'boolean', description: 'Accessibility finding' }
+    ]);
+
+    const findingId = parsed.positional[0];
+    if (!findingId) {
+        return BaseCliHandler.failure('Finding ID required');
+    }
+
     console.log(`🧪 Generating regression test for finding: ${findingId}`);
 
     const lookup = await findFindingById(findingId);
     if (!lookup) {
-        console.error(`Finding not found: ${findingId}`);
-        return 1;
+        return BaseCliHandler.failure(`Finding not found: ${findingId}`);
     }
 
     const { finding, runId: foundRunId } = lookup;
@@ -29,8 +39,7 @@ export async function handleGenerateTest(findingId: string, json: boolean, a11y:
 
     const bundle = await loadBundle(foundRunId);
     if (!bundle) {
-        console.error(`Bundle not found for run: ${foundRunId}`);
-        return 1;
+        return BaseCliHandler.failure(`Bundle not found for run: ${foundRunId}`);
     }
 
     const statePath = finding.location;
@@ -88,8 +97,12 @@ export async function handleGenerateTest(findingId: string, json: boolean, a11y:
     const outputPath = join(regressionsDir, `${finding.id}.journey.ts`);
     writeFileSync(outputPath, testCode);
 
-    console.log(`✅ Generated regression test: ${outputPath}`);
+    BaseCliHandler.printSuccess(`Generated regression test: ${outputPath}`);
     console.log(`Journey ID: ${regressionJourney.id}`);
     console.log(`Status: ${regressionJourney.status}`);
-    return 0;
+
+    if (parsed.getBooleanFlag('json')) {
+        BaseCliHandler.printJson({ success: true, outputPath, journeyId: regressionJourney.id, status: regressionJourney.status });
+    }
+    return BaseCliHandler.success();
 }

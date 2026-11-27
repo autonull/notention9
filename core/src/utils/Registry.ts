@@ -5,6 +5,7 @@
  */
 
 import { z } from 'zod';
+import { AlreadyRegisteredError, NotRegisteredError } from './errors/registry.js';
 
 /** Base interface for registrable items with config validation */
 export interface Registrable<C extends Record<string, unknown> = Record<string, unknown>> {
@@ -47,7 +48,7 @@ export class Registry<T extends Registrable> {
     /** Register an item */
     register(item: T): void {
         if (this.items.has(item.name) && !this.options.allowReplace) {
-            throw new Error(`${this.options.errorPrefix} '${item.name}' already registered`);
+            throw new AlreadyRegisteredError(this.options.errorPrefix, item.name);
         }
         this.items.set(item.name, item);
     }
@@ -145,7 +146,7 @@ export class FactoryRegistry<T> {
 
     register(name: string, factory: (...args: any[]) => T, description: string): void {
         if (this.factories.has(name)) {
-            throw new Error(`${this.options.errorPrefix} '${name}' already registered`);
+            throw new AlreadyRegisteredError(this.options.errorPrefix, name);
         }
         this.factories.set(name, { create: factory, description });
     }
@@ -157,8 +158,8 @@ export class FactoryRegistry<T> {
     create(name: string, ...args: any[]): T {
         const factory = this.factories.get(name);
         if (!factory) {
-            const available = Array.from(this.factories.keys()).join(', ');
-            throw new Error(`Unknown ${this.options.errorPrefix}: ${name}. Available: ${available}`);
+            const available = Array.from(this.factories.keys());
+            throw new NotRegisteredError(this.options.errorPrefix, name, available);
         }
         return factory.create(...args);
     }

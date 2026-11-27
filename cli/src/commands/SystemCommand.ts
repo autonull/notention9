@@ -1,13 +1,14 @@
-import { createCommand, commandRegistry, CommandContext } from './command.js';
+import { BaseCommand, type CommandContext } from './command.js';
+import { commandRegistry } from './command.js';
 import chalk from 'chalk';
 import boxen from 'boxen';
 import { log } from '../utils.js';
 
-export const StatusCommand = createCommand({
+export const StatusCommand = BaseCommand.create({
     name: '/status',
     description: 'Show current system status',
     usage: '/status',
-    run: async (_args: string[], context: CommandContext) => {
+    execute: async (_parsed, context: CommandContext) => {
         const mcpUrl = process.env.MCP_URL || 'http://localhost:3000/mcp/sse';
         const enableSim = process.env.SIM_ENABLED === 'true';
         const conf = context.session!.getConfig();
@@ -33,23 +34,38 @@ ${chalk.bold('Context:')}     ${activeCtx ? chalk.yellow(activeCtx.title) : chal
     }
 });
 
-export const ExitCommand = createCommand({
+export const ExitCommand = BaseCommand.create({
     name: '/exit',
     aliases: ['/quit'],
     description: 'Exit the CLI',
     usage: '/exit',
-    run: async () => {
+    execute: async () => {
         console.warn('Goodbye.');
         process.exit(0);
+        return true; // unreachable, but satisfies return type
     }
 });
 
-export const HelpCommand = createCommand({
+export const HelpCommand = BaseCommand.create({
     name: '/help',
     description: 'Show help message',
-    usage: '/help',
-    run: async () => {
+    usage: '/help [command]',
+    execute: async (parsed) => {
         const commands = commandRegistry.getAll();
+        const commandName = parsed.positional[0];
+
+        if (commandName) {
+            const cmd = commandRegistry.get(commandName.startsWith('/') ? commandName : `/${commandName}`);
+            if (cmd) {
+                console.log(`${chalk.white(cmd.name)} - ${cmd.description}`);
+                if (cmd.usage) console.log(`  Usage: ${cmd.usage}`);
+                if (cmd.aliases?.length) console.log(`  Aliases: ${cmd.aliases.join(', ')}`);
+                return true;
+            }
+            parsed.printError(`Unknown command: ${commandName}`);
+            return false;
+        }
+
         console.log(chalk.gray('Commands:'));
         commands.forEach(cmd => {
             const aliases = cmd.aliases?.length ? `, ${cmd.aliases.join(', ')}` : '';
@@ -59,11 +75,11 @@ export const HelpCommand = createCommand({
     }
 });
 
-export const ClearCommand = createCommand({
+export const ClearCommand = BaseCommand.create({
     name: '/clear',
     description: 'Clear the screen and history',
     usage: '/clear',
-    run: async (_args: string[], context: CommandContext) => {
+    execute: async (_parsed, context: CommandContext) => {
         context.session?.clearHistory();
         console.clear();
         return true;

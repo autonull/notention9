@@ -5,3 +5,4 @@ export { StrategyError, StrategyNotFoundError, StrategyExecutionError } from './
 export { ProviderError, ProviderNotConfiguredError, ProviderQuotaExceededError, ProviderTimeoutError, ProviderModelError } from './provider.js';
 export { StorageError, StorageMigrationError, StorageCorruptionError } from './storage.js';
 export { NetworkError, NetworkTimeoutError, NetworkOfflineError } from './network.js';
+export { RegistryError, AlreadyRegisteredError, NotRegisteredError } from './registry.js';

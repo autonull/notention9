@@ -119,7 +119,7 @@ export class SkillRegistry {
      */
     private toRegistrable(skill: RegisteredSkill): SkillRegistrable {
         if (this.isSkillInterface(skill as any)) {
-            return skill as SkillRegistrable;
+            return skill as unknown as SkillRegistrable;
         }
         // Convert SkillDefinition to SkillRegistrable
         const def = skill as SkillDefinition;

@@ -1,21 +1,29 @@
-import { createCommand } from './command.js';
+import { BaseCommand, type CommandContext } from './command.js';
 import { parseOptimizeIntent } from '@notention/optimize/intent';
 import { loadBundle, planReplay, verifyReplay } from '@notention/optimize/replay';
 import { getEvidenceDir } from '@notention/core';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-export const ReproduceCommand = createCommand({
+export const ReproduceCommand = BaseCommand.create({
     name: 'reproduce',
     description: 'Reproduce a finding or run',
     usage: 'reproduce <findingId|runId>',
-    validate: (args) => args.length > 0,
-    async run(args, context) {
-        const [target] = args;
+    flags: [
+        { name: 'json', type: 'boolean', description: 'Output as JSON' }
+    ],
+    execute: async (parsed, _context: CommandContext) => {
+        const target = parsed.positional[0];
+        if (!target) {
+            parsed.printError('Finding ID or runId required');
+            parsed.printUsage();
+            return false;
+        }
+
         const intent = parseOptimizeIntent(['reproduce', target]);
 
         if (!intent.target) {
-            console.error('Finding ID or runId required');
+            parsed.printError('Finding ID or runId required');
             return false;
         }
 
@@ -34,7 +42,7 @@ export const ReproduceCommand = createCommand({
         const evidenceDir = await getEvidenceDir();
 
         if (!existsSync(evidenceDir)) {
-            console.error('No evidence directory found');
+            parsed.printError('No evidence directory found');
             return false;
         }
 
@@ -75,7 +83,7 @@ export const ReproduceCommand = createCommand({
         }
 
         if (!foundRunId || !foundFinding) {
-            console.error(`Finding not found: ${intent.target}`);
+            parsed.printError(`Finding not found: ${intent.target}`);
             return false;
         }
 
@@ -84,7 +92,7 @@ export const ReproduceCommand = createCommand({
 
         const replayBundle = await loadBundle(foundRunId);
         if (!replayBundle) {
-            console.error(`Bundle not found for run: ${foundRunId}`);
+            parsed.printError(`Bundle not found for run: ${foundRunId}`);
             return false;
         }
 
@@ -104,8 +112,9 @@ export const ReproduceCommand = createCommand({
             env: { ...process.env, NOTENTION_REPORT_ONLY: '1', VITE_DEV_HOOKS: 'true' }
         });
 
-        if (result.status === 0) {
-            console.log(`✅ Reproduction completed. Replay Run ID: ${runId}`);
+        const success = result.status === 0;
+        if (success) {
+            parsed.printSuccess(`Reproduction completed. Replay Run ID: ${runId}`);
             const actualReplayRunId = `replay_${foundRunId}`;
             const verification = await verifyReplay(foundRunId, actualReplayRunId);
             if (verification.reproduced) {
@@ -118,8 +127,12 @@ export const ReproduceCommand = createCommand({
                 console.log('UNEXPECTED');
             }
         } else {
-            console.log(`❌ Reproduction failed. Replay Run ID: ${runId}`);
+            parsed.printError(`Reproduction failed. Replay Run ID: ${runId}`);
         }
-        return result.status === 0;
+
+        if (parsed.getBooleanFlag('json')) {
+            parsed.printJson({ success, runId, foundRunId, status: result.status });
+        }
+        return success;
     }
 });

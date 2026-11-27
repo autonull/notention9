@@ -1,7 +1,6 @@
-import { createCommand, CommandContext } from './command.js';
+import { BaseCommand, type CommandContext } from './command.js';
 import { log, withSpinner } from '../utils.js';
 import chalk from 'chalk';
-import { validators } from './validators.js';
 
 const SECRET_PATTERNS = [
     { type: 'AWS Access Key', regex: /AKIA[0-9A-Z]{16}/ },
@@ -10,12 +9,11 @@ const SECRET_PATTERNS = [
     { type: 'API Key', regex: /api_key\s*[:=]\s*\S+/i }
 ];
 
-export const SecurityCommand = createCommand({
+export const SecurityCommand = BaseCommand.create({
     name: '/security',
     description: 'Security scan for secrets in notes',
     usage: '/security scan',
-    validate: validators.oneOf(['scan'], 'subcommand'),
-    run: async (_args: string[], context: CommandContext) => {
+    execute: async (_parsed, context: CommandContext) => {
         log.info("Starting security scan...");
         try {
             const result = await withSpinner("Scanning notes for secrets...", async () => {

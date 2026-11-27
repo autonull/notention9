@@ -1,16 +1,16 @@
-import { createCommand, CommandContext } from './command.js';
+import { BaseCommand, type CommandContext } from './command.js';
 import { ProviderFactory } from '../providers/factory.js';
 import { configManager } from '../config-manager.js';
 import { log } from '../utils.js';
 import { switchProvider } from '../provider-switcher.js';
 import chalk from 'chalk';
 
-export const ConfigCommand = createCommand({
+export const ConfigCommand = BaseCommand.create({
     name: '/config',
     aliases: ['/cfg'],
     description: 'Show current configuration',
     usage: '/config',
-    run: async (_args: string[], context: CommandContext) => {
+    execute: async (_parsed, context: CommandContext) => {
         const config = context.session!.getConfig();
         const provider = context.session!.getProvider();
         const caps = provider.getCapabilities();
@@ -25,11 +25,11 @@ export const ConfigCommand = createCommand({
     }
 });
 
-export const ProvidersCommand = createCommand({
+export const ProvidersCommand = BaseCommand.create({
     name: '/providers',
     description: 'List available LLM providers',
     usage: '/providers',
-    run: async (_args: string[], context: CommandContext) => {
+    execute: async (_parsed, context: CommandContext) => {
         const current = context.session!.getConfig().provider;
         const supported = ProviderFactory.getSupportedProviders();
 
@@ -43,30 +43,31 @@ export const ProvidersCommand = createCommand({
     }
 });
 
-export const ProviderCommand = createCommand({
+export const ProviderCommand = BaseCommand.create({
     name: '/provider',
     description: 'Switch LLM provider',
     usage: '/provider <name> [model]',
-    validate: (args: string[]): boolean => {
-        if (args.length === 0) {
-            log.warn('Usage: /provider <name> [model]');
-            log.info('Use /providers to see available providers');
-            return false;
+    flags: [
+        { name: 'help', alias: 'h', type: 'boolean', description: 'Show help' }
+    ],
+    execute: async (parsed, context: CommandContext) => {
+        if (parsed.getBooleanFlag('help') || parsed.positional.length === 0) {
+            parsed.printUsage();
+            return true;
         }
         const supported = ProviderFactory.getSupportedProviders();
-        if (!supported.includes(args[0])) {
-            log.warn(`Provider must be one of: ${supported.join(', ')}`);
+        const providerName = parsed.positional[0];
+        if (!supported.includes(providerName)) {
+            parsed.printError(`Provider must be one of: ${supported.join(', ')}`);
             return false;
         }
-        return true;
-    },
-    run: async (args: string[], context: CommandContext) => {
+        const modelOverride = parsed.positional[1];
         await switchProvider({
-            providerName: args[0],
-            modelOverride: args[1],
+            providerName,
+            modelOverride,
             currentConfig: context.session!.getConfig(),
             onSuccess: (name) => log.success(`Switched to ${name}`),
-            onError: (err) => log.error('Provider switch failed', err)
+            onError: (err) => parsed.printError('Provider switch failed', err)
         });
         return true;
     }

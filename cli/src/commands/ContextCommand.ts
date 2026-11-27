@@ -1,16 +1,19 @@
-import { createCommand, CommandContext } from './command.js';
+import { BaseCommand, type CommandContext } from './command.js';
 import { CliClient } from '../client.js';
 import { log, withSpinner } from '../utils.js';
 import chalk from 'chalk';
-import { validators } from './validators.js';
 
-export const OpenCommand = createCommand({
+export const OpenCommand = BaseCommand.create({
     name: '/open',
     description: 'Set active context to a note',
     usage: '/open <note_id>',
-    validate: validators.minArgs(1),
-    run: async (args: string[], context: CommandContext) => {
-        const noteId = args[0];
+    execute: async (parsed, context: CommandContext) => {
+        const noteId = parsed.positional[0];
+        if (!noteId) {
+            parsed.printError('Note ID required');
+            parsed.printUsage();
+            return false;
+        }
 
         try {
             const result = await withSpinner(`Fetching note '${noteId}'...`, () => context.cli.callTool('read_notes', { query: noteId }));
@@ -26,17 +29,17 @@ export const OpenCommand = createCommand({
                 log.warn(`Note '${noteId}' not found.`);
             }
         } catch (e: unknown) {
-            log.error("Failed to open note", e);
+            parsed.printError("Failed to open note", e);
         }
         return true;
     }
 });
 
-export const CloseCommand = createCommand({
+export const CloseCommand = BaseCommand.create({
     name: '/close',
     description: 'Clear active context',
     usage: '/close',
-    run: async (_args: string[], context: CommandContext) => {
+    execute: async (_parsed, context: CommandContext) => {
         context.session!.setActiveContext(null);
         log.success("Context closed.");
         return true;

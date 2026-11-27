@@ -1,4 +1,5 @@
 import type {Note, AppSettings} from '../types/index.js';
+import { StorageError, StorageCorruptionError, StorageMigrationError, AlreadyRegisteredError } from '../utils/errors/index.js';
 
 // DO NOT BUMP VERSION until there are actual users.
 // We currently have NO users. Schema is at v0.
@@ -33,22 +34,26 @@ export function getStorageVersion(data: unknown): number {
 
 export function validateStorageSchema(data: unknown): StorageSchema {
     if (typeof data !== 'object' || data === null) {
-        throw new Error('Invalid storage: not an object');
+        throw new StorageCorruptionError('Invalid storage: not an object', undefined, data);
     }
 
     const version = getStorageVersion(data);
     if (version !== STORAGE_SCHEMA_VERSION) {
-        throw new Error(`Invalid storage schema version: expected ${STORAGE_SCHEMA_VERSION}, got ${version || 'none'}`);
+        throw new StorageMigrationError(
+            `Invalid storage schema version: expected ${STORAGE_SCHEMA_VERSION}, got ${version || 'none'}`,
+            version,
+            STORAGE_SCHEMA_VERSION
+        );
     }
 
     const {notes, settings} = data as {notes?: unknown; settings?: unknown};
 
     if (!Array.isArray(notes)) {
-        throw new Error('Invalid storage: notes must be an array');
+        throw new StorageCorruptionError('Invalid storage: notes must be an array', 'notes', notes);
     }
 
     if (typeof settings !== 'object' || settings === null) {
-        throw new Error('Invalid storage: settings must be an object');
+        throw new StorageCorruptionError('Invalid storage: settings must be an object', 'settings', settings);
     }
 
     return {
@@ -67,7 +72,11 @@ export function migrateStorageSchema(data: unknown, targetVersion = STORAGE_SCHE
     }
 
     if (currentVersion > targetVersion) {
-        throw new Error(`Cannot migrate from newer version ${currentVersion} to older version ${targetVersion}`);
+        throw new StorageMigrationError(
+            `Cannot migrate from newer version ${currentVersion} to older version ${targetVersion}`,
+            currentVersion,
+            targetVersion
+        );
     }
 
     const applicableMigrations: MigrationStep[] = [];
@@ -76,7 +85,11 @@ export function migrateStorageSchema(data: unknown, targetVersion = STORAGE_SCHE
     while (version < targetVersion) {
         const nextMigration = MIGRATIONS.find(m => m.fromVersion === version);
         if (!nextMigration) {
-            throw new Error(`No migration path from version ${version} to ${targetVersion}`);
+            throw new StorageMigrationError(
+                `No migration path from version ${version} to ${targetVersion}`,
+                version,
+                targetVersion
+            );
         }
         applicableMigrations.push(nextMigration);
         version = nextMigration.toVersion;
@@ -175,7 +188,7 @@ export function dryRunMigration(data: unknown, targetVersion = STORAGE_SCHEMA_VE
 export function registerMigration(step: MigrationStep): void {
     const existing = MIGRATIONS.find(m => m.fromVersion === step.fromVersion && m.toVersion === step.toVersion);
     if (existing) {
-        throw new Error(`Migration from ${step.fromVersion} to ${step.toVersion} already registered`);
+        throw new AlreadyRegisteredError('MigrationRegistry', `${step.fromVersion}->${step.toVersion}`);
     }
     MIGRATIONS.push(step);
     MIGRATIONS.sort((a, b) => a.fromVersion - b.fromVersion);

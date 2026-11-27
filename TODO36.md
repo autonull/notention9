@@ -129,9 +129,9 @@ React hook: `useUrlRouting()` wraps singleton instance via `getUrlRouter()`.
 - `optimize/src/stepExecutors/BaseStepExecutor.ts` — Base class with `resolveTarget`, `waitForReady`, `getStateSnapshot`, `getAriaSnapshot`, `takeScreenshot`, `waitFor`, `validateStepKind`
 - Refactored executors: `assertVisible`, `assertFocus`, `assertAccessibleName`, `assertRole`, `act`, `capture`, `captureAria`, `assertState`, `waitForState` (9/15 done)
 - Mixins: `withStateSnapshot`, `withAriaSnapshot`, `withScreenshot`, `withTarget`, `withWaitFor`
-| **WP-5** | **CLI Command Base Class** (#11) — Extract `BaseCommand` with flag parsing, JSON output, error handling | Low (1-2h) | Unifies `cli/src/commands` + `optimize/src/cliHandlers` |  |
-| **WP-6** | **Error Class Audit** (#13) — Replace generic `Error` throws with specific types (`ValidationError`, `StrategyError`, etc.) | Low (2-3h) | Better debugging, structured error handling |  |
-| **WP-7** | **Storage Migration Registration** (#14) — Add migration steps for future schema changes | Low (1h) | Prevents version-bump-only anti-pattern |  |
+| **WP-5** | **CLI Command Base Class** (#11) — Extract `BaseCommand` with flag parsing, JSON output, error handling | Low (1-2h) | Unifies `cli/src/commands` + `optimize/src/cliHandlers` | ✅ DONE |
+| **WP-6** | **Error Class Audit** (#13) — Replace generic `Error` throws with specific types (`ValidationError`, `StrategyError`, etc.) | Low (2-3h) | Better debugging, structured error handling | ✅ DONE |
+| **WP-7** | **Storage Migration Registration** (#14) — Add migration steps for future schema changes | Low (1h) | Prevents version-bump-only anti-pattern | ✅ DONE |
 
 ---
 
@@ -141,7 +141,7 @@ React hook: `useUrlRouting()` wraps singleton instance via `getUrlRouter()`.
 |----|------|--------|--------|
 | **WP-8** | **Property Widget Base Class** (#19) — `CurrencyWidget`/`DateWidget`/`EnumWidget`/`LocationWidget`/`TextWidget` share validation/formatting/accessibility | Medium (3-4h) | Reduces 5 widget files, consistent behavior |
 | **WP-9** | **UI Component Base Classes** (#17) — `BaseModal`, `BasePanel`, `BaseList`, `BaseEditor` with shared a11y, state, styling | Medium (4-6h) | Reduces boilerplate across 50+ components |
-| **WP-10** | **Metaphor System Unification** (#20) — Shared metaphor definition format between core (`MetaphorMapper`/`Registry`) and UI (`MetaphorRenderer`) | Low (2-3h) | Single source of truth for metaphors |
+| **WP-10** | **Metaphor System Unification** (#20) — Shared metaphor definition format between core (`MetaphorMapper`/`Registry`) and UI (`MetaphorRenderer`) | Low (2-3h) | Single source of truth for metaphors | ✅ DONE |
 
 ---
 
@@ -250,10 +250,10 @@ pnpm --filter @notention/optimize uisg:validate
 | 1 ✅ | T0-1, T0-2, WP-3 | CI green (routing), URL consolidation complete |
 | 2 ✅ | WP-1, WP-4, WP-5 | Unified registry complete, step executors, CLI base |
 | 3 ✅ | WP-2, WP-6, WP-7 | Strategy system complete, error classes, migrations |
-| 4 | WP-8, WP-10, WP-11 | Property widgets, metaphors, test utils |
+| 4 | WP-8, WP-11 | Property widgets, test utils |
 | 5 | WP-9, WP-12, WP-13, WP-14 | Component bases, UISG tests, browser verify, captions |
 
-**Total estimated effort**: ~40-50 hours across 5 sprints (Sprint 1-3 complete)
+**Total estimated effort**: ~40-50 hours across 5 sprints (Sprint 1-3 complete, WP-5,6,7,10 done)
 
 ---
 
@@ -262,7 +262,7 @@ pnpm --filter @notention/optimize uisg:validate
 - **No GitHub CI**: All optimize runs local. Commit `ux-report.json` for history.
 - **UISG-first workflow**: Every surface → `uisg.yaml` → generate → implement → experiment → promote.
 - **Accessibility**: All new components tested with `pnpm check:ui` (axe, dual-theme).
-- **Parallel tracks**: Tier 2 items (WP-4,5,6,7,10) are independent — can parallelize.
+- **Parallel tracks**: Tier 2 items (WP-4,5,6,7,10) are independent — can parallelize. (WP-4,5,6,7,10 ✅ DONE)
 - **DRY Principle**: Every repeated pattern (>3 occurrences) should be abstracted.
 - **Architecture First**: Consolidate infrastructure before adding features.
 
@@ -270,4 +270,4 @@ pnpm --filter @notention/optimize uisg:validate
 
 *Generated: 2026-11-27 (revised)*
 *Based on: TODO35.md completion + refactoring work + strategic analysis*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-3 URL Consolidation COMPLETE; WP-1 Registry Unification COMPLETE; WP-2 Strategy System COMPLETE; Sprint 1-3 complete*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-3 URL Consolidation COMPLETE; WP-1 Registry Unification COMPLETE; WP-2 Strategy System COMPLETE; WP-5 CLI Base COMPLETE; WP-6 Error Classes COMPLETE; WP-7 Migrations COMPLETE; WP-10 Metaphors COMPLETE; Sprint 1-3 complete*

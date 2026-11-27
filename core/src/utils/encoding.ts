@@ -1,5 +1,7 @@
+import { ValidationError } from './errors/index.js';
+
 export const hexToBytes = (hex: string): Uint8Array => {
-  if (hex.length % 2 !== 0) throw new Error('Invalid hex string');
+  if (hex.length % 2 !== 0) throw new ValidationError('Invalid hex string', { length: hex.length });
   const bytes = new Uint8Array(hex.length / 2);
   for (let i = 0; i < bytes.length; i++) {
     bytes[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);

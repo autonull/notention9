@@ -1,23 +1,38 @@
 import { loadBundle } from '../replay.js';
 import { runOptimizeTest, createRunId } from '../runner.js';
 import { verifyReplay } from '../replay.js';
+import { BaseCliHandler } from './BaseCliHandler.js';
 
-export async function handleReplay(runId: string, json: boolean, a11y: boolean): Promise<number> {
+export async function handleReplay(args: string[]): Promise<number> {
+    const parsed = BaseCliHandler.parseArgs(args, [
+        { name: 'json', type: 'boolean', description: 'Output as JSON' },
+        { name: 'a11y', type: 'boolean', description: 'Run accessibility checks' }
+    ]);
+
+    const runId = parsed.positional[0];
+    if (!runId) {
+        return BaseCliHandler.failure('Run ID required');
+    }
+
     console.log(`🔁 Replaying run: ${runId}`);
 
     const bundle = await loadBundle(runId);
     if (!bundle) {
-        console.error(`Bundle not found for run: ${runId}`);
-        return 1;
+        return BaseCliHandler.failure(`Bundle not found for run: ${runId}`);
     }
 
     const replayRunId = createRunId('replay');
     const { status } = runOptimizeTest({ runId: replayRunId, originalRunId: runId, grep: 'replay' });
 
-    if (status === 0) {
-        console.log(`✅ Replay completed. Replay Run ID: ${replayRunId}`);
+    const success = status === 0;
+    if (success) {
+        BaseCliHandler.printSuccess(`Replay completed. Replay Run ID: ${replayRunId}`);
     } else {
-        console.log(`❌ Replay failed. Replay Run ID: ${replayRunId}`);
+        BaseCliHandler.failure(`Replay failed. Replay Run ID: ${replayRunId}`);
     }
-    return status ?? 1;
+
+    if (parsed.getBooleanFlag('json')) {
+        BaseCliHandler.printJson({ success, runId: replayRunId, status });
+    }
+    return success ? BaseCliHandler.success() : BaseCliHandler.failure();
 }

@@ -7,6 +7,7 @@
 import { join, dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { StorageError, StorageCorruptionError } from './errors/index.js';
 
 // Re-export all shared utilities
 export * from './common.shared.js';
@@ -52,10 +53,14 @@ export function getCaseManifestPath(importMetaUrl: string): string {
 /** Read and parse JSON file */
 export function readJsonFile<T>(filePath: string): T {
     if (!existsSync(filePath)) {
-        throw new Error(`File not found: ${filePath}`);
+        throw new StorageCorruptionError(`File not found: ${filePath}`, filePath);
     }
     const content = readFileSync(filePath, 'utf-8');
-    return JSON.parse(content) as T;
+    try {
+        return JSON.parse(content) as T;
+    } catch (e) {
+        throw new StorageCorruptionError(`Failed to parse JSON: ${filePath}`, filePath, { cause: e });
+    }
 }
 
 /** Write JSON file with directory creation */

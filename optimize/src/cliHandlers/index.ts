@@ -5,3 +5,4 @@ export { handleReproduce } from './reproduce.js';
 export { handleMarkFixed } from './markFixed.js';
 export { handleFindings } from './findings.js';
 export { isA11yFinding, getReproductionJourneyId } from './utils.js';
+export { BaseCliHandler } from './BaseCliHandler.js';

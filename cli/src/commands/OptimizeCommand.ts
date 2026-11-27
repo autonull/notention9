@@ -1,20 +1,29 @@
-import { createCommand } from './command.js';
+import { BaseCommand, type CommandContext } from './command.js';
 import { parseOptimizeIntent } from '@notention/optimize/intent';
 import { spawnSync } from 'node:child_process';
 import { join } from 'path';
 
-export const OptimizeCommand = createCommand({
+export const OptimizeCommand = BaseCommand.create({
     name: 'optimize',
     description: 'Run an optimization journey',
     usage: 'optimize <journeyId> [--allow-draft]',
-    validate: (args) => args.length > 0,
-    async run(args, context) {
-        const [journeyId, ...flags] = args;
-        const allowDraft = flags.includes('--allow-draft');
+    flags: [
+        { name: 'allow-draft', type: 'boolean', description: 'Allow running draft journeys' },
+        { name: 'json', type: 'boolean', description: 'Output as JSON' }
+    ],
+    execute: async (parsed, _context: CommandContext) => {
+        const journeyId = parsed.positional[0];
+        if (!journeyId) {
+            parsed.printError('Journey ID required');
+            parsed.printUsage();
+            return false;
+        }
+
+        const allowDraft = parsed.getBooleanFlag('allow-draft');
 
         const intent = parseOptimizeIntent(['optimize', journeyId]);
         if (!intent.journey) {
-            console.error('Journey ID required');
+            parsed.printError('Journey ID required');
             return false;
         }
 
@@ -32,11 +41,16 @@ export const OptimizeCommand = createCommand({
             env: { ...process.env, NOTENTION_REPORT_ONLY: '1', VITE_DEV_HOOKS: 'true', NOTENTION_OPTIMIZE_RUN_ID: runId }
         });
 
-        if (result.status === 0) {
-            console.log(`✅ Journey passed. Run ID: ${runId}`);
+        const success = result.status === 0;
+        if (success) {
+            parsed.printSuccess(`Journey passed. Run ID: ${runId}`);
         } else {
-            console.log(`❌ Journey failed. Run ID: ${runId}`);
+            parsed.printError(`Journey failed. Run ID: ${runId}`);
         }
-        return result.status === 0;
+
+        if (parsed.getBooleanFlag('json')) {
+            parsed.printJson({ success, runId, status: result.status });
+        }
+        return success;
     }
 });

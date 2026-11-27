@@ -377,7 +377,7 @@ export async function loadLoopConfigSchema(): Promise<LoopConfigSchema> {
 export async function validateLoopConfig(config: unknown): Promise<void> {
     const { default: Ajv } = await import('ajv');
     const schema = await loadLoopConfigSchema();
-    const ajv = new Ajv({ allErrors: true, strict: false });
+    const ajv = new Ajv({ allErrors: true, validateSchema: false });
     const validate = ajv.compile({
         ...schema.definitions.loopConfig,
         definitions: schema.definitions,

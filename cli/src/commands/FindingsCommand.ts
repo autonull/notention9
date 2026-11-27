@@ -1,18 +1,18 @@
-import { createCommand } from './command.js';
-import { parseOptimizeIntent } from '@notention/optimize/intent';
+import { BaseCommand, type CommandContext } from './command.js';
 import { getEvidenceDir } from '@notention/core/constants/paths';
 import { readFileSync, existsSync, readdirSync } from 'fs';
 import { join } from 'path';
 
-export const FindingsCommand = createCommand({
+export const FindingsCommand = BaseCommand.create({
     name: 'findings',
     description: 'List findings from optimization runs',
     usage: 'findings [--json] [--a11y] [--status <open|fixed|verified>]',
-    async run(args, context) {
-        const json = args.includes('--json');
-        const a11y = args.includes('--a11y');
-        const statusIndex = args.indexOf('--status');
-        const status = statusIndex !== -1 ? args[statusIndex + 1] : undefined;
+    flags: [
+        { name: 'json', type: 'boolean', description: 'Output as JSON' },
+        { name: 'a11y', type: 'boolean', description: 'Show only accessibility findings' },
+        { name: 'status', type: 'string', description: 'Filter by status (open|fixed|verified)' }
+    ],
+    execute: async (parsed, _context: CommandContext) => {
         const evidenceDir = await getEvidenceDir();
 
         if (!existsSync(evidenceDir)) {
@@ -38,13 +38,14 @@ export const FindingsCommand = createCommand({
             return [];
         }).flat();
 
+        const status = parsed.getStringFlag('status');
         const filteredFindings = status
             ? allFindings.filter((f: any) => f.status === status)
             : allFindings;
 
-        if (json) {
-            console.log(JSON.stringify(filteredFindings, null, 2));
-        } else if (a11y) {
+        if (parsed.getBooleanFlag('json')) {
+            parsed.printJson(filteredFindings);
+        } else if (parsed.getBooleanFlag('a11y')) {
             console.log('Accessibility findings:');
             for (const finding of filteredFindings) {
                 if (finding.id?.startsWith('a11y-')) {

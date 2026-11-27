@@ -1,15 +1,22 @@
 import { listFindings } from '../findingRepository.js';
 import { isA11yFinding } from './utils.js';
+import { BaseCliHandler } from './BaseCliHandler.js';
 
-export async function handleFindings(json: boolean, a11y: boolean, status?: string): Promise<number> {
-    const findings = await listFindings(status);
+export async function handleFindings(args: string[]): Promise<number> {
+    const parsed = BaseCliHandler.parseArgs(args, [
+        { name: 'json', type: 'boolean', description: 'Output as JSON' },
+        { name: 'a11y', type: 'boolean', description: 'Show only accessibility findings' },
+        { name: 'status', type: 'string', description: 'Filter by status (open|fixed|verified)' }
+    ]);
 
-    if (json) {
-        console.log(JSON.stringify(findings, null, 2));
-        return 0;
+    const findings = await listFindings(parsed.getStringFlag('status'));
+
+    if (parsed.getBooleanFlag('json')) {
+        BaseCliHandler.printJson(findings);
+        return BaseCliHandler.success();
     }
 
-    if (a11y) {
+    if (parsed.getBooleanFlag('a11y')) {
         console.log('Accessibility findings:');
         for (const finding of findings) {
             if (isA11yFinding(finding)) {
@@ -23,7 +30,7 @@ export async function handleFindings(json: boolean, a11y: boolean, status?: stri
                 console.log();
             }
         }
-        return 0;
+        return BaseCliHandler.success();
     }
 
     console.log('Findings:');
@@ -39,9 +46,10 @@ export async function handleFindings(json: boolean, a11y: boolean, status?: stri
         console.log();
     }
 
+    const status = parsed.getStringFlag('status');
     if (status) {
         console.log(`Filtered by status: ${status}`);
     }
     console.log(`Total: ${findings.length} finding(s)`);
-    return 0;
+    return BaseCliHandler.success();
 }

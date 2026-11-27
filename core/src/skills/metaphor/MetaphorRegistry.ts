@@ -1,9 +1,11 @@
 import { UIMetaphor } from '../../types/metaphor.js';
+import { UnifiedMetaphor, toUIMetaphor } from './UnifiedMetaphor.js';
 import { logInfo, logWarn } from '../../utils/logging.js';
 import { DEFAULT_METAPHORS } from './DefaultMetaphors.js';
 
 export class MetaphorRegistry {
   private metaphors: Map<string, UIMetaphor> = new Map();
+  private unifiedMetaphors: Map<string, UnifiedMetaphor> = new Map();
   private static instance: MetaphorRegistry;
 
   constructor() {
@@ -18,14 +20,42 @@ export class MetaphorRegistry {
   }
 
   /**
-   * Register a new metaphor definition
+   * Register a new metaphor definition (core or unified)
    */
-  registerMetaphor(metaphor: UIMetaphor): void {
-    if (this.metaphors.has(metaphor.id)) {
-      logWarn(`Overwriting existing metaphor: ${metaphor.id}`, { id: metaphor.id });
+  registerMetaphor(metaphor: UIMetaphor | UnifiedMetaphor): void {
+    const coreMetaphor = toUIMetaphor(metaphor);
+    if (this.metaphors.has(coreMetaphor.id)) {
+      logWarn(`Overwriting existing metaphor: ${coreMetaphor.id}`, { id: coreMetaphor.id });
     }
-    this.metaphors.set(metaphor.id, metaphor);
-    logInfo(`Registered metaphor: ${metaphor.name}`, { id: metaphor.id });
+    this.metaphors.set(coreMetaphor.id, coreMetaphor);
+    
+    // Store unified version if provided
+    if ('uiView' in metaphor) {
+      this.unifiedMetaphors.set(coreMetaphor.id, metaphor as UnifiedMetaphor);
+    }
+    
+    logInfo(`Registered metaphor: ${coreMetaphor.name}`, { id: coreMetaphor.id });
+  }
+
+  /**
+   * Register a unified metaphor with UI components
+   */
+  registerUnifiedMetaphor(metaphor: UnifiedMetaphor): void {
+    this.registerMetaphor(metaphor);
+  }
+
+  /**
+   * Get a unified metaphor by ID (includes UI components)
+   */
+  getUnifiedMetaphor(id: string): UnifiedMetaphor | undefined {
+    return this.unifiedMetaphors.get(id);
+  }
+
+  /**
+   * Get all unified metaphors
+   */
+  getAllUnifiedMetaphors(): UnifiedMetaphor[] {
+    return Array.from(this.unifiedMetaphors.values());
   }
 
   /**
