@@ -1,22 +1,15 @@
 import type { Page } from '@playwright/test';
 import type { Step } from '../journey.js';
 import { StepExecutor, StepExecutionResult } from './index.js';
+import { BaseStepExecutor } from './BaseStepExecutor.js';
 
-async function getStateSnapshot(page: Page): Promise<unknown> {
-    return page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.());
-}
-
-async function getAriaSnapshot(page: Page, label: string): Promise<string | undefined> {
-    return page.evaluate(() => (globalThis as any).__NOTENTION__?.ariaSnapshot?.(label));
-}
-
-export const captureExecutor: StepExecutor = {
-    async execute(page: Page, step: Step): Promise<StepExecutionResult> {
-        if (step.kind !== 'capture') throw new Error('Invalid step for captureExecutor');
-        const ariaSnapshot = await getAriaSnapshot(page, step.label);
-        const screenshotBuffer = await page.screenshot({ fullPage: false });
-        const screenshot = screenshotBuffer.toString('base64');
-        const stateSnapshot = await getStateSnapshot(page);
+export const captureExecutor: StepExecutor = BaseStepExecutor.create({
+    kind: 'capture',
+    execute: async ({ page, step }) => {
+        const label = (step as { label: string }).label;
+        const ariaSnapshot = await BaseStepExecutor.getAriaSnapshot(page, label);
+        const screenshot = await BaseStepExecutor.takeScreenshot(page);
+        const stateSnapshot = await BaseStepExecutor.getStateSnapshot(page);
         return { ok: true, ariaSnapshot, screenshot, stateSnapshot };
     },
-};
+});

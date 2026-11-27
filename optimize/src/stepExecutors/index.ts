@@ -15,6 +15,7 @@ import { assertAccessibleNameExecutor } from './assertAccessibleName.js';
 import { assertRoleExecutor } from './assertRole.js';
 import { assertVisibleExecutor } from './assertVisible.js';
 import { seedExecutor } from './seed.js';
+import { BaseStepExecutor } from './BaseStepExecutor.js';
 
 export interface StepExecutor {
     execute(page: Page, step: Step, consoleEntries?: Array<{ type: string; text: string; location?: string }>): Promise<StepExecutionResult>;
@@ -43,6 +44,7 @@ export { assertAccessibleNameExecutor } from './assertAccessibleName.js';
 export { assertRoleExecutor } from './assertRole.js';
 export { assertVisibleExecutor } from './assertVisible.js';
 export { seedExecutor } from './seed.js';
+export { BaseStepExecutor } from './BaseStepExecutor.js';
 
 const executors: Record<string, StepExecutor> = {
     navigate: navigateExecutor,

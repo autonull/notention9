@@ -1,20 +1,19 @@
 import type { Page } from '@playwright/test';
 import type { Step } from '../journey.js';
 import { StepExecutor, StepExecutionResult } from './index.js';
+import { BaseStepExecutor } from './BaseStepExecutor.js';
 import { resolvePath, deepEqual } from '../pathUtils.js';
 
-async function getStateSnapshot(page: Page): Promise<unknown> {
-    return page.evaluate(() => (globalThis as any).__NOTENTION__?.state?.() ?? (globalThis as any).__UISG_SKELETON__?.state?.());
-}
-
-export const assertStateExecutor: StepExecutor = {
-    async execute(page: Page, step: Step): Promise<StepExecutionResult> {
-        if (step.kind !== 'assertState') throw new Error('Invalid step for assertStateExecutor');
-        const stateSnapshot = await getStateSnapshot(page);
-        const value = resolvePath(stateSnapshot, step.path);
-        if (!deepEqual(value, step.equals)) {
-            throw new Error(`assertState failed: path="${step.path}", expected=${JSON.stringify(step.equals)}, actual=${JSON.stringify(value)}`);
+export const assertStateExecutor: StepExecutor = BaseStepExecutor.create({
+    kind: 'assertState',
+    execute: async ({ page, step }) => {
+        const stateSnapshot = await BaseStepExecutor.getStateSnapshot(page);
+        const path = (step as { path: string }).path;
+        const equals = (step as { equals: unknown }).equals;
+        const value = resolvePath(stateSnapshot, path);
+        if (!deepEqual(value, equals)) {
+            throw new Error(`assertState failed: path="${path}", expected=${JSON.stringify(equals)}, actual=${JSON.stringify(value)}`);
         }
         return { ok: true, stateSnapshot };
     },
-};
+});

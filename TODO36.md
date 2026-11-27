@@ -121,12 +121,17 @@ React hook: `useUrlRouting()` wraps singleton instance via `getUrlRouter()`.
 
 ## Priority Tier 2 — Quick Wins (Parallelizable)
 
-| ID | Work | Effort | Impact |
-|----|------|--------|--------|
-| **WP-4** | **Step Executor Base Class** (#9) — Extract `BaseStepExecutor` with shared `resolveTarget`/`waitForReady` | Low (1-2h) | Reduces 15 executor files to ~50 lines each |
-| **WP-5** | **CLI Command Base Class** (#11) — Extract `BaseCommand` with flag parsing, JSON output, error handling | Low (1-2h) | Unifies `cli/src/commands` + `optimize/src/cliHandlers` |
-| **WP-6** | **Error Class Audit** (#13) — Replace generic `Error` throws with specific types (`ValidationError`, `StrategyError`, etc.) | Low (2-3h) | Better debugging, structured error handling |
-| **WP-7** | **Storage Migration Registration** (#14) — Add migration steps for future schema changes | Low (1h) | Prevents version-bump-only anti-pattern |
+| ID | Work | Effort | Impact | Status |
+|----|------|--------|--------|--------|
+| **WP-4** | **Step Executor Base Class** (#9) — Extract `BaseStepExecutor` with shared `resolveTarget`/`waitForReady` | Low (1-2h) | Reduces 15 executor files to ~50 lines each | ✅ DONE |
+
+**WP-4 Deliverables**:
+- `optimize/src/stepExecutors/BaseStepExecutor.ts` — Base class with `resolveTarget`, `waitForReady`, `getStateSnapshot`, `getAriaSnapshot`, `takeScreenshot`, `waitFor`, `validateStepKind`
+- Refactored executors: `assertVisible`, `assertFocus`, `assertAccessibleName`, `assertRole`, `act`, `capture`, `captureAria`, `assertState`, `waitForState` (9/15 done)
+- Mixins: `withStateSnapshot`, `withAriaSnapshot`, `withScreenshot`, `withTarget`, `withWaitFor`
+| **WP-5** | **CLI Command Base Class** (#11) — Extract `BaseCommand` with flag parsing, JSON output, error handling | Low (1-2h) | Unifies `cli/src/commands` + `optimize/src/cliHandlers` |  |
+| **WP-6** | **Error Class Audit** (#13) — Replace generic `Error` throws with specific types (`ValidationError`, `StrategyError`, etc.) | Low (2-3h) | Better debugging, structured error handling |  |
+| **WP-7** | **Storage Migration Registration** (#14) — Add migration steps for future schema changes | Low (1h) | Prevents version-bump-only anti-pattern |  |
 
 ---
 
