@@ -2,6 +2,10 @@ import {useCallback, useEffect, useRef} from 'react';
 import {useView} from './useViewContext';
 import {parseRoute, routeToHash, type Route} from '../utils/navigation';
 
+// Module-level flag to ensure listeners are only added once per session
+let globalListenersAdded = false;
+let globalHandleUrlChange: (() => void) | null = null;
+
 export function useUrlRouting() {
     const {
         activeView,
@@ -23,6 +27,7 @@ export function useUrlRouting() {
 
     const isInitialMount = useRef(true);
     const pendingFromUrl = useRef<Route | null>(null);
+    const applyRouteRef = useRef<Function | null>(null);
 
     const applyRoute = useCallback((route: Route) => {
         pendingFromUrl.current = route;
@@ -49,28 +54,36 @@ export function useUrlRouting() {
         }
     }, [setActiveView, setSelectedNoteId, setNotesMode, setNotesSection, setSettingsTab, setNoteTab, setIsPaletteOpen, setUisgMode]);
 
-    // Handle URL changes (popstate, hashchange, initial mount)
-    useEffect(() => {
-        const handleUrlChange = () => {
-            const route = parseRoute(window.location.hash);
-            applyRoute(route);
-            const canonical = routeToHash(route);
-            if (window.location.hash !== canonical) {
-                window.history.replaceState(null, '', canonical);
-            }
-        };
+    // Keep applyRouteRef updated for use in event handlers
+    applyRouteRef.current = applyRoute;
 
-        // Initial mount: apply current hash
-        handleUrlChange();
+    // Create handleUrlChange once per session (stable reference)
+    const handleUrlChange = useCallback(() => {
+        const route = parseRoute(window.location.hash);
+        applyRouteRef.current?.(route);
+        const canonical = routeToHash(route);
+        if (window.location.hash !== canonical) {
+            // Use synchronous hash assignment for legacy redirects to ensure immediate URL update
+            window.location.hash = canonical;
+        }
+    }, []);
 
-        // Listen for navigation events
+    // Store globally for cleanup
+    globalHandleUrlChange = handleUrlChange;
+
+    // Add listeners once per session (not per mount)
+    if (!globalListenersAdded) {
         window.addEventListener('popstate', handleUrlChange);
         window.addEventListener('hashchange', handleUrlChange);
-        return () => {
-            window.removeEventListener('popstate', handleUrlChange);
-            window.removeEventListener('hashchange', handleUrlChange);
-        };
-    }, [applyRoute]);
+        globalListenersAdded = true;
+    }
+
+    // Initial mount: apply current hash synchronously (once per session)
+    if (isInitialMount.current) {
+        isInitialMount.current = false;
+        console.error('[useUrlRouting] initial mount, hash:', window.location.hash);
+        handleUrlChange();
+    }
 
     // Sync URL to state (only for internal state changes, not URL navigation)
     useEffect(() => {
@@ -115,4 +128,14 @@ export function useUrlRouting() {
             window.history.pushState(null, '', hash);
         }
     }, [activeView, selectedNoteId, notesMode, notesSection, noteTab, settingsTab, uisgMode]);
+}
+
+// Cleanup function for testing (not used in production)
+export function __resetUrlRoutingForTesting() {
+    if (globalHandleUrlChange) {
+        window.removeEventListener('popstate', globalHandleUrlChange);
+        window.removeEventListener('hashchange', globalHandleUrlChange);
+        globalHandleUrlChange = null;
+    }
+    globalListenersAdded = false;
 }

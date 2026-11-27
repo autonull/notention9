@@ -118,6 +118,7 @@ export function SettingsView() {
 
                 <div className="grid min-h-0 flex-1 gap-6 pb-6 lg:grid-cols-[200px_minmax(0,1fr)] lg:gap-10">
                     <SettingsDirectory
+                        groups={SETTINGS_GROUPS}
                         showWizard={showWizard}
                         onWizardComplete={handleWizardComplete}
                         onWizardSkip={handleWizardSkip}
