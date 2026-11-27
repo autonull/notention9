@@ -5,124 +5,17 @@
 
 import { render, screen } from '@testing-library/react';
 import { HeaderMobile } from '../../components/layout/HeaderMobile';
-
+import { vi } from 'vitest';
 import { NotesProvider } from '@/components/contexts/NotesContext';
 import { SettingsProvider } from '@/components/contexts/SettingsContext';
-import { ToastProvider } from '@/components/contexts/ToastProvider';
-import { ViewProvider } from '@/components/contexts/ViewContext';
-import { StrategyProvider } from '@/hooks/useStrategyResolver';
-import { I18nProvider } from '@/components/i18n';
-import { vi } from 'vitest';
 
-// Mock hooks that require providers
-vi.mock('@/hooks/data/useNotesData', () => ({
-  useNotesData: () => ({
-    notes: [],
-    addNote: vi.fn(),
-    deleteNote: vi.fn(),
-    upsertNote: vi.fn(),
-    updateNote: vi.fn(),
-    restoreNote: vi.fn(),
-    permanentlyDeleteNote: vi.fn(),
-    notesLoading: false,
-    getSortedFilteredNotes: vi.fn(() => []),
-    isSyncing: false,
-    lastSyncTime: null,
-  }),
-}));
-
-vi.mock('@/hooks/useNotes', () => ({
-  useNotes: () => ({
-    notes: [],
-    addNote: vi.fn(),
-    deleteNote: vi.fn(),
-    upsertNote: vi.fn(),
-    updateNote: vi.fn(),
-    restoreNote: vi.fn(),
-    permanentlyDeleteNote: vi.fn(),
-    notesLoading: false,
-    getSortedFilteredNotes: vi.fn(() => []),
-  }),
-}));
-
-vi.mock('@/hooks/useViewContext', () => ({
-  useView: () => ({
-    activeView: 'notes',
-    setActiveView: vi.fn(),
-    selectedNoteId: null,
-    setSelectedNoteId: vi.fn(),
-    searchTerm: '',
-    sortOrder: 'updatedAt_desc',
-    isSidebarOpen: true,
-    setIsSidebarOpen: vi.fn(),
-    userLocation: null,
-    isPaletteOpen: false,
-    setIsPaletteOpen: vi.fn(),
-    isHelpOpen: false,
-    setIsHelpOpen: vi.fn(),
-    sidebarViewMode: 'list',
-    setSidebarViewMode: vi.fn(),
-    refreshUserLocation: vi.fn(),
-    matchingNoteId: null,
-    setMatchingNoteId: vi.fn(),
-    selectedChatPubkey: null,
-    setSelectedChatPubkey: vi.fn(),
-    notificationCount: 0,
-    matches: [],
-    addMatch: vi.fn(),
-    clearNotifications: vi.fn(),
-    chatNotificationCount: 0,
-    incrementChatNotification: vi.fn(),
-    resetChatNotification: vi.fn(),
-  }),
-  useViewNavigation: () => ({
-    navigate: vi.fn(),
-    goBack: vi.fn(),
-  }),
-}));
-
-vi.mock('@/hooks/useNetworkManagement', () => ({
-  useNetworkManagement: vi.fn(),
-}));
-
-vi.mock('@/hooks/useSettingsContext', () => ({
-  useSettings: () => ({
-    groups: [
-      { id: 'general', label: 'General', defaultExpanded: true, helpTopicId: 'settings-general', settings: [] },
-      { id: 'editor', label: 'Editor', defaultExpanded: false, helpTopicId: 'settings-editor', settings: [] },
-    ],
-    searchQuery: '',
-    setSearchQuery: vi.fn(),
-    export: vi.fn(),
-    import: vi.fn(),
-    showDiff: vi.fn(),
-    showWizard: false,
-  }),
-}));
-
-// Mock useMobile to return mobile state for testing
-vi.mock('@/hooks/useMobile', () => ({
-  useMobile: () => ({
-    isMobile: true,
-    isTablet: false,
-    isDesktop: false,
-    hasTouch: true,
-    orientation: 'portrait' as const,
-    safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 },
-  }),
-  useIsMobile: () => true,
-  useIsTablet: () => false,
-  useHasTouch: () => true,
-  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-}));
+vi.mock('@/hooks/useMobile', () => ({ useMobile: () => ({ isMobile: true, isTablet: false, isDesktop: false, hasTouch: true, orientation: 'portrait' as const, safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 } }), useIsMobile: () => true, useIsTablet: () => false, useHasTouch: () => true, useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }) }));
 
 test('surface.mobile-header renders', () => {
     render(
-      
       <SettingsProvider>
         <NotesProvider>
         <HeaderMobile onOpenSidebar={() => {}} logo={<div>Logo</div>} actions={<div>Actions</div>} />
-      
         </NotesProvider>
       </SettingsProvider>
     );

@@ -10,6 +10,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const ROOT = resolve(__dirname, '../../..');
 
+const DEFAULT_PROPS: Record<string, string> = {
+  ContextRailMobile: ' tabs={[{ id: "tab1", label: "Tab 1", panel: <div>Tab 1</div> }, { id: "tab2", label: "Tab 2", panel: <div>Tab 2</div> }]} activeIndex={0}',
+  MapViewMobile: ' fabContent={<div>FAB</div>}',
+  PropertyEditorMobile: ' header={<div>Header</div>} content={<div>Content</div>} footer={<div>Footer</div>}',
+  ArrangeMenuMobile: ' onDismiss={() => {}} actions={<div>Actions</div>} children={<div>Content</div>}',
+  HeaderMobile: ' onOpenSidebar={() => {}} logo={<div>Logo</div>} actions={<div>Actions</div>}',
+};
+
 export interface GeneratedSurface {
     surfaceId: string;
     target: TemplateTarget;
@@ -123,173 +131,82 @@ function createDynamicTemplate(surface: UisgSurface, graph: UisgGraph, shape: Te
                 const category = (s as any).category;
                 const importPath = category ? `../../components/${category}/${componentName}` : `../../components/${componentName}`;
                 
-                // Components that need full provider stack (useNotes, useHelp, useSettings, etc.)
                 const needsFullProviderStack = s.template === 'inline-promo' || s.template === 'empty-state' || s.template === 'help-system' || s.template === 'settings-wizard';
-                // Mobile components need NotesProvider + SettingsProvider for useMobile hooks
                 const needsMobileProviders = s.template === 'modal-fullscreen' || s.template === 'bottom-sheet' || s.template === 'bottom-tabs' || s.template === 'map-full' || s.template === 'header-compact';
+                
+                const testId = s.id.replace('surface.', '');
                 const forceShow = s.template === 'inline-promo' ? ' forceShow={true}' : '';
+                const defaultProp = DEFAULT_PROPS[componentName] ?? '';
                 
-                const allTemplatesNeedingMocks = needsFullProviderStack || needsMobileProviders;
+                const imports = [
+                  `import { render, screen } from '@testing-library/react';`,
+                  `import { ${componentName} } from '${importPath}';`,
+                  `import { vi } from 'vitest';`,
+                ];
                 
-                // Default props for components that need them
-                const defaultProps: Record<string, string> = {
-                  'ContextRailMobile': ' tabs={[{ id: \"tab1\", label: \"Tab 1\", panel: <div>Tab 1</div> }, { id: \"tab2\", label: \"Tab 2\", panel: <div>Tab 2</div> }]} activeIndex={0}',
-                  'MapViewMobile': ' fabContent={<div>FAB</div>}',
-                  'PropertyEditorMobile': ' header={<div>Header</div>} content={<div>Content</div>} footer={<div>Footer</div>}',
-                  'ArrangeMenuMobile': ' onDismiss={() => {}} actions={<div>Actions</div>} children={<div>Content</div>}',
-                  'HeaderMobile': ' onOpenSidebar={() => {}} logo={<div>Logo</div>} actions={<div>Actions</div>}',
-                };
+                const mocks: string[] = [];
+                let wrapperStart = '';
+                let wrapperEnd = '';
                 
-                const defaultProp = defaultProps[componentName] ?? '';
-                
-                const testImports = allTemplatesNeedingMocks ? `
-import { NotesProvider } from '@/components/contexts/NotesContext';
-import { SettingsProvider } from '@/components/contexts/SettingsContext';
-import { ToastProvider } from '@/components/contexts/ToastProvider';
-import { ViewProvider } from '@/components/contexts/ViewContext';
-import { StrategyProvider } from '@/hooks/useStrategyResolver';
-import { I18nProvider } from '@/components/i18n';
-import { vi } from 'vitest';
-
-// Mock hooks that require providers
-vi.mock('@/hooks/data/useNotesData', () => ({
-  useNotesData: () => ({
-    notes: [],
-    addNote: vi.fn(),
-    deleteNote: vi.fn(),
-    upsertNote: vi.fn(),
-    updateNote: vi.fn(),
-    restoreNote: vi.fn(),
-    permanentlyDeleteNote: vi.fn(),
-    notesLoading: false,
-    getSortedFilteredNotes: vi.fn(() => []),
-    isSyncing: false,
-    lastSyncTime: null,
-  }),
-}));
-
-vi.mock('@/hooks/useNotes', () => ({
-  useNotes: () => ({
-    notes: [],
-    addNote: vi.fn(),
-    deleteNote: vi.fn(),
-    upsertNote: vi.fn(),
-    updateNote: vi.fn(),
-    restoreNote: vi.fn(),
-    permanentlyDeleteNote: vi.fn(),
-    notesLoading: false,
-    getSortedFilteredNotes: vi.fn(() => []),
-  }),
-}));
-
-vi.mock('@/hooks/useViewContext', () => ({
-  useView: () => ({
-    activeView: 'notes',
-    setActiveView: vi.fn(),
-    selectedNoteId: null,
-    setSelectedNoteId: vi.fn(),
-    searchTerm: '',
-    sortOrder: 'updatedAt_desc',
-    isSidebarOpen: true,
-    setIsSidebarOpen: vi.fn(),
-    userLocation: null,
-    isPaletteOpen: false,
-    setIsPaletteOpen: vi.fn(),
-    isHelpOpen: false,
-    setIsHelpOpen: vi.fn(),
-    sidebarViewMode: 'list',
-    setSidebarViewMode: vi.fn(),
-    refreshUserLocation: vi.fn(),
-    matchingNoteId: null,
-    setMatchingNoteId: vi.fn(),
-    selectedChatPubkey: null,
-    setSelectedChatPubkey: vi.fn(),
-    notificationCount: 0,
-    matches: [],
-    addMatch: vi.fn(),
-    clearNotifications: vi.fn(),
-    chatNotificationCount: 0,
-    incrementChatNotification: vi.fn(),
-    resetChatNotification: vi.fn(),
-  }),
-  useViewNavigation: () => ({
-    navigate: vi.fn(),
-    goBack: vi.fn(),
-  }),
-}));
-
-vi.mock('@/hooks/useNetworkManagement', () => ({
-  useNetworkManagement: vi.fn(),
-}));
-
-vi.mock('@/hooks/useSettingsContext', () => ({
-  useSettings: () => ({
-    groups: [
-      { id: 'general', label: 'General', defaultExpanded: true, helpTopicId: 'settings-general', settings: [] },
-      { id: 'editor', label: 'Editor', defaultExpanded: false, helpTopicId: 'settings-editor', settings: [] },
-    ],
-    searchQuery: '',
-    setSearchQuery: vi.fn(),
-    export: vi.fn(),
-    import: vi.fn(),
-    showDiff: vi.fn(),
-    showWizard: false,
-  }),
-}));` : '';
-
-const mobileMockImports = needsMobileProviders ? `
-// Mock useMobile to return mobile state for testing
-vi.mock('@/hooks/useMobile', () => ({
-  useMobile: () => ({
-    isMobile: true,
-    isTablet: false,
-    isDesktop: false,
-    hasTouch: true,
-    orientation: 'portrait' as const,
-    safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 },
-  }),
-  useIsMobile: () => true,
-  useIsTablet: () => false,
-  useHasTouch: () => true,
-  useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }),
-}));` : '';
-                
-                const wrapperStart = needsFullProviderStack ? `
-      <I18nProvider>
+                if (needsFullProviderStack) {
+                  imports.push(
+                    `import { NotesProvider } from '@/components/contexts/NotesContext';`,
+                    `import { SettingsProvider } from '@/components/contexts/SettingsContext';`,
+                    `import { ToastProvider } from '@/components/contexts/ToastProvider';`,
+                    `import { ViewProvider } from '@/components/contexts/ViewContext';`,
+                    `import { StrategyProvider } from '@/hooks/useStrategyResolver';`,
+                    `import { I18nProvider } from '@/components/i18n';`
+                  );
+                  mocks.push(
+                    `vi.mock('@/hooks/data/useNotesData', () => ({ useNotesData: () => ({ notes: [], addNote: vi.fn(), deleteNote: vi.fn(), upsertNote: vi.fn(), updateNote: vi.fn(), restoreNote: vi.fn(), permanentlyDeleteNote: vi.fn(), notesLoading: false, getSortedFilteredNotes: vi.fn(() => []), isSyncing: false, lastSyncTime: null }) }));`,
+                    `vi.mock('@/hooks/useNotes', () => ({ useNotes: () => ({ notes: [], addNote: vi.fn(), deleteNote: vi.fn(), upsertNote: vi.fn(), updateNote: vi.fn(), restoreNote: vi.fn(), permanentlyDeleteNote: vi.fn(), notesLoading: false, getSortedFilteredNotes: vi.fn(() => []) }) }));`,
+                    `vi.mock('@/hooks/useViewContext', () => ({ useView: () => ({ activeView: 'notes', setActiveView: vi.fn(), selectedNoteId: null, setSelectedNoteId: vi.fn(), searchTerm: '', sortOrder: 'updatedAt_desc', isSidebarOpen: true, setIsSidebarOpen: vi.fn(), userLocation: null, isPaletteOpen: false, setIsPaletteOpen: vi.fn(), isHelpOpen: false, setIsHelpOpen: vi.fn(), sidebarViewMode: 'list', setSidebarViewMode: vi.fn(), refreshUserLocation: vi.fn(), matchingNoteId: null, setMatchingNoteId: vi.fn(), selectedChatPubkey: null, setSelectedChatPubkey: vi.fn(), notificationCount: 0, matches: [], addMatch: vi.fn(), clearNotifications: vi.fn(), chatNotificationCount: 0, incrementChatNotification: vi.fn(), resetChatNotification: vi.fn() }), useViewNavigation: () => ({ navigate: vi.fn(), goBack: vi.fn() }) }));`,
+                    `vi.mock('@/hooks/useNetworkManagement', () => ({ useNetworkManagement: vi.fn() }));`,
+                    `vi.mock('@/hooks/useSettingsContext', () => ({ useSettings: () => ({ groups: [{ id: 'general', label: 'General', defaultExpanded: true, helpTopicId: 'settings-general', settings: [] }, { id: 'editor', label: 'Editor', defaultExpanded: false, helpTopicId: 'settings-editor', settings: [] }], searchQuery: '', setSearchQuery: vi.fn(), export: vi.fn(), import: vi.fn(), showDiff: vi.fn(), showWizard: false }) }));`
+                  );
+                  wrapperStart = `      <I18nProvider>
         <SettingsProvider>
           <ToastProvider>
             <ViewProvider>
               <StrategyProvider>
-                <NotesProvider>` : needsMobileProviders ? `
-      <SettingsProvider>
-        <NotesProvider>` : '';
-                const wrapperEnd = needsFullProviderStack ? `
-                </NotesProvider>
+                <NotesProvider>`;
+                  wrapperEnd = `                </NotesProvider>
               </StrategyProvider>
             </ViewProvider>
           </ToastProvider>
         </SettingsProvider>
-      </I18nProvider>` : needsMobileProviders ? `
-        </NotesProvider>
-      </SettingsProvider>` : '';
+      </I18nProvider>`;
+                } else if (needsMobileProviders) {
+                  imports.push(
+                    `import { NotesProvider } from '@/components/contexts/NotesContext';`,
+                    `import { SettingsProvider } from '@/components/contexts/SettingsContext';`
+                  );
+                  mocks.push(
+                    `vi.mock('@/hooks/useMobile', () => ({ useMobile: () => ({ isMobile: true, isTablet: false, isDesktop: false, hasTouch: true, orientation: 'portrait' as const, safeAreaInsets: { top: 0, right: 0, bottom: 0, left: 0 } }), useIsMobile: () => true, useIsTablet: () => false, useHasTouch: () => true, useSafeAreaInsets: () => ({ top: 0, right: 0, bottom: 0, left: 0 }) }));`
+                  );
+                  wrapperStart = `      <SettingsProvider>
+        <NotesProvider>`;
+                  wrapperEnd = `        </NotesProvider>
+      </SettingsProvider>`;
+                }
+                
+                const mockCode = mocks.length > 0 ? `\n${mocks.join('\n')}` : '';
                 
                 return `// GENERATED by optimize/src/uisg/codegen.ts
 // DO NOT EDIT MANUALLY
 // Template: ${s.template}
 // Source surface: ${s.id}
 
-import { render, screen } from '@testing-library/react';
-import { ${componentName} } from '${importPath}';
-${testImports}
-${mobileMockImports}
+${imports.join('\n')}
+${mockCode}
 
 test('${s.id} renders', () => {
     render(
-      ${wrapperStart}
+${wrapperStart}
         <${componentName}${forceShow}${defaultProp} />
-      ${wrapperEnd}
+${wrapperEnd}
     );
-    expect(screen.getByTestId('${s.id.replace('surface.', '')}')).toBeInTheDocument();
+    expect(screen.getByTestId('${testId}')).toBeInTheDocument();
 });`;
             },
             generatePropsSchema: (s: UisgSurface, g: UisgGraph) => {
