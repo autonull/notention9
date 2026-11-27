@@ -31,8 +31,13 @@ This plan reorganizes work into **priority tiers** with **consolidated work pack
 
 These changes unlock future velocity by fixing structural duplication at the system level.
 
-### WP-1: Unified Registry System (Consolidates #10, #16)
-**Files**: `core/src/utils/Registry.ts`, `core/src/ui/strategy.ts`, `core/src/skills/SkillRegistry.ts`, `agent/src/skills/AgentSkillRegistry.ts`, `cli/src/Command.ts`
+### WP-1: Unified Registry System (Consolidates #10, #16) ✅ DONE
+**Files**: 
+- `core/src/utils/Registry.ts` — Added `SkillRegistrable`, `CommandRegistrable` interfaces
+- `core/src/skills/SkillRegistry.ts` — Migrated to `Registry<SkillRegistrable>`
+- `agent/src/skills/AgentSkillRegistry.ts` — Migrated to `Registry<SkillRegistrable>`
+- `cli/src/commands/command.ts` — Migrated to `Registry<CommandRegistrable>`
+- `core/src/ui/strategy.ts` — Already used `createInstanceRegistry<StrategyRegistrable>`
 
 **Problem**: 4 registry implementations with overlapping APIs:
 - `Registry<T>` / `FactoryRegistry<T>` (core/utils) — well-designed, generic
@@ -40,14 +45,23 @@ These changes unlock future velocity by fixing structural duplication at the sys
 - `AgentSkillRegistry` (agent/skills) — extends SkillRegistry, adds metadata
 - `strategyRegistry` (core/ui/strategy) — uses `createInstanceRegistry` pattern
 
-**Solution**: Migrate all to `Registry<T>` + `FactoryRegistry<T>` with typed interfaces:
+**Solution**: Migrated all to `Registry<T>` + `FactoryRegistry<T>` with typed interfaces:
 ```typescript
-// Single source of truth
-interface SkillRegistrable extends Registrable { canHandle(note: Note): number }
-interface StrategyRegistrable extends Registrable, Resolvable<ResolutionContext, ResolvedStrategy> {}
+// Single source of truth (added to Registry.ts)
+interface SkillRegistrable extends Registrable { 
+    readonly id: string;
+    readonly patterns: PropertyPattern[];
+    canHandle(note: Note): number;
+    exportToActions(note: Note): ActionSequence;
+    importFromData(data: unknown, sourceNote: Note): Note[];
+}
+interface CommandRegistrable extends Registrable {
+    readonly aliases?: string[];
+    execute(args: string[], context: unknown): Promise<boolean>;
+}
 ```
 
-**Effort**: Medium (3-4 hours) | **Impact**: Eliminates 3 duplicate registry implementations, enables cross-cutting features (observability, hot-reload, validation)
+**Effort**: ~3 hours | **Impact**: Eliminated 3 duplicate registry implementations, enables cross-cutting features (observability, hot-reload, validation)
 
 ### WP-2: Strategy/Profile/Resolution Unification (#12)
 **Files**: `core/src/ui/strategy.ts`, `core/src/ui/ProfileRegistry*.ts`, `core/src/ui/resolutionStrategy.ts`
@@ -135,7 +149,7 @@ React hook: `useUrlRouting()` wraps singleton instance via `getUrlRouter()`.
     │
     ├──→ ✅ WP-3 (URL Consolidation) ──→ WP-8, WP-9 (UI bases need stable routing)
     │
-    ├──→ WP-1 (Registry Unification) ──→ WP-2 (Strategy System needs unified registry)
+    ├──→ ✅ WP-1 (Registry Unification) ──→ WP-2 (Strategy System needs unified registry)
     │           │
     │           └──→ WP-5, WP-11 (CLI/Test use registry)
     │
@@ -220,12 +234,12 @@ pnpm --filter @notention/optimize uisg:validate
 | Sprint | Focus | Deliverable |
 |--------|-------|-------------|
 | 1 ✅ | T0-1, T0-2, WP-3 | CI green (routing), URL consolidation complete |
-| 2 | WP-1, WP-4, WP-5 | Unified registry, step executors, CLI base |
+| 2 ✅ | WP-1, WP-4, WP-5 | Unified registry complete, step executors, CLI base |
 | 3 | WP-2, WP-6, WP-7 | Strategy system, error classes, migrations |
 | 4 | WP-8, WP-10, WP-11 | Property widgets, metaphors, test utils |
 | 5 | WP-9, WP-12, WP-13, WP-14 | Component bases, UISG tests, browser verify, captions |
 
-**Total estimated effort**: ~40-50 hours across 5 sprints (Sprint 1 complete)
+**Total estimated effort**: ~40-50 hours across 5 sprints (Sprint 1-2 complete)
 
 ---
 
@@ -242,4 +256,4 @@ pnpm --filter @notention/optimize uisg:validate
 
 *Generated: 2026-11-27 (revised)*
 *Based on: TODO35.md completion + refactoring work + strategic analysis*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-3 URL Consolidation COMPLETE; Sprint 1 complete*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-3 URL Consolidation COMPLETE; WP-1 Registry Unification COMPLETE; Sprint 1-2 complete*

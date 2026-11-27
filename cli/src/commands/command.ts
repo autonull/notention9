@@ -1,5 +1,6 @@
 import { CliClient } from '../client.js';
 import { LlmSession } from '../llm.js';
+import { Registry, CommandRegistrable } from '@notention/core/utils/Registry.js';
 
 export interface CommandContext {
     cli: CliClient;
@@ -26,42 +27,54 @@ export function createCommand(config: {
     usage?: string;
     validate?: (args: string[]) => boolean;
     run: (args: string[], context: CommandContext) => Promise<boolean>;
-}): Command {
+}): CommandRegistrable {
     return {
         name: config.name,
-        aliases: config.aliases,
         description: config.description,
+        aliases: config.aliases,
         usage: config.usage,
-        validate: config.validate ?? (() => true),
-        async execute(args: string[], context: CommandContext) {
+        getDefaultConfig: () => ({}),
+        validateConfig: () => ({ valid: true, errors: [] }),
+        execute: async (args: string[], context: CommandContext) => {
             if (config.validate && !config.validate(args)) return true;
             return config.run(args, context);
-        }
+        },
+        validate: config.validate ?? (() => true),
     };
 }
 
 export class CommandRegistry {
-    private commands = new Map<string, Command>();
+    private registry: Registry<CommandRegistrable>;
 
-    register(command: Command): void {
-        this.commands.set(command.name, command);
+    constructor() {
+        this.registry = new Registry<CommandRegistrable>({ 
+            errorPrefix: 'CommandRegistry',
+            allowReplace: true 
+        });
+    }
+
+    register(command: CommandRegistrable): void {
+        this.registry.register(command);
         if (command.aliases) {
-            command.aliases.forEach(alias => this.commands.set(alias, command));
+            command.aliases.forEach(alias => {
+                const aliasCommand = { ...command, name: alias };
+                this.registry.register(aliasCommand);
+            });
         }
     }
 
-    get(name: string): Command | undefined {
-        return this.commands.get(name);
+    get(name: string): CommandRegistrable | undefined {
+        return this.registry.get(name);
     }
 
     has(name: string): boolean {
-        return this.commands.has(name);
+        return this.registry.has(name);
     }
 
-    getAll(): Command[] {
+    getAll(): CommandRegistrable[] {
         const seen = new Set<string>();
-        const result: Command[] = [];
-        this.commands.forEach(cmd => {
+        const result: CommandRegistrable[] = [];
+        this.registry.getAll().forEach(cmd => {
             if (!seen.has(cmd.name)) {
                 seen.add(cmd.name);
                 result.push(cmd);
@@ -71,7 +84,15 @@ export class CommandRegistry {
     }
 
     getNames(): string[] {
-        return Array.from(this.commands.keys());
+        return this.registry.listNames();
+    }
+
+    size(): number {
+        return this.registry.size();
+    }
+
+    clear(): void {
+        this.registry.clear();
     }
 }
 

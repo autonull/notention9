@@ -263,6 +263,38 @@ export interface FactoryPlugin<C extends Record<string, unknown> = Record<string
 /** Plugin Registry type alias */
 export type PluginRegistry<P extends InstancePlugin> = Registry<P>;
 
+// --- Skill-specific type aliases ---
+
+/** SkillRegistrable - Skill with registry metadata */
+export interface SkillRegistrable extends Registrable {
+    readonly id: string;
+    readonly patterns: Array<{
+        required: string[];
+        optional?: string[];
+        minProperties?: number;
+    }>;
+    canHandle(note: { properties: Array<{ key: string; value: unknown }> }): number;
+    exportToActions(note: { properties: Array<{ key: string; value: unknown }> }): { id: string; name: string; actions: unknown[] };
+    importFromData(data: unknown, sourceNote: { properties: Array<{ key: string; value: unknown }> }): Array<{ properties: Array<{ key: string; value: unknown }> }>;
+    preview?(note: { properties: Array<{ key: string; value: unknown }> }): string;
+}
+
+/** Skill Registry type alias */
+export type SkillRegistryType = Registry<SkillRegistrable>;
+
+// --- CLI Command type aliases ---
+
+/** CommandRegistrable - CLI Command with registry metadata */
+export interface CommandRegistrable extends Registrable {
+    readonly aliases?: string[];
+    readonly usage?: string;
+    execute(args: string[], context: unknown): Promise<boolean>;
+    validate?(args: string[]): boolean;
+}
+
+/** Command Registry type alias */
+export type CommandRegistryType = Registry<CommandRegistrable>;
+
 /** Singleton Registry Manager type alias */
 export type SingletonRegistry<T> = {
     get: () => T;
