@@ -63,24 +63,33 @@ interface CommandRegistrable extends Registrable {
 
 **Effort**: ~3 hours | **Impact**: Eliminated 3 duplicate registry implementations, enables cross-cutting features (observability, hot-reload, validation)
 
-### WP-2: Strategy/Profile/Resolution Unification (#12)
-**Files**: `core/src/ui/strategy.ts`, `core/src/ui/ProfileRegistry*.ts`, `core/src/ui/resolutionStrategy.ts`
+### WP-2: Strategy/Profile/Resolution Unification (#12) ✅ DONE
+**Files**: 
+- **Created**: `core/src/ui/StrategySystem.ts` — Unified StrategySystem class
+- **Refactored**: `core/src/ui/strategy.ts`, `core/src/ui/ProfileRegistry*.ts`, `core/src/ui/resolutionStrategy.ts` — Now work with StrategySystem
 
-**Problem**: Strategy registration, profile selection, and resolution are split across 3 files with circular dependencies.
+**Problem**: Strategy registration, profile selection, and resolution were split across 3+ files with circular dependencies.
 
-**Solution**: Create `StrategySystem` class encapsulating:
+**Solution**: Created `StrategySystem` class encapsulating all three:
 ```typescript
 class StrategySystem {
   readonly strategies = new Registry<StrategyRegistrable>();
   readonly profiles = new ProfileRegistry();
-  readonly resolution = new ResolutionEngine();
+  readonly resolution = getResolutionStrategyRegistry();
+  private revisionStore: RevisionStoreLike | null = null;
   
   registerStrategy(s: StrategyRegistrable) { this.strategies.register(s); }
-  resolve(seam: SeamRole, context: Context): ResolvedStrategy { ... }
+  async resolveStrategy(userId: string, seamRole: SeamRole): Promise<ResolvedStrategy | undefined>
+  resolveStrategySync(userId: string, seamRole: SeamRole): ResolvedStrategy | undefined
 }
 ```
 
-**Effort**: High (6-8 hours) | **Impact**: Single import for all strategy/profile logic, enables dynamic strategy loading, simplifies testing
+**Effort**: ~4 hours | **Impact**: Single import for all strategy/profile logic, enables dynamic strategy loading, simplifies testing, eliminates circular dependencies
+
+**Deliverables**:
+- `core/src/ui/StrategySystem.ts` — Unified StrategySystem with strategies, profiles, resolution
+- Uses existing `ProfileRegistry` (Node.js) and `ResolutionStrategy` registry
+- Singleton via `getStrategySystem()`, testable via `resetStrategySystemForTesting()`
 
 ### WP-3: URL/Navigation Consolidation (Consolidates #1, #2, #3, #18) ✅ DONE
 **Files**: `ui/src/hooks/useUrlRouting.ts`, `ui/src/utils/navigation.ts`, `ui/src/components/contexts/ViewNavigationContext.tsx` → **Created `ui/src/utils/UrlRouter.ts`**
@@ -149,7 +158,7 @@ React hook: `useUrlRouting()` wraps singleton instance via `getUrlRouter()`.
     │
     ├──→ ✅ WP-3 (URL Consolidation) ──→ WP-8, WP-9 (UI bases need stable routing)
     │
-    ├──→ ✅ WP-1 (Registry Unification) ──→ WP-2 (Strategy System needs unified registry)
+    ├──→ ✅ WP-1 (Registry Unification) ──→ ✅ WP-2 (Strategy System needs unified registry)
     │           │
     │           └──→ WP-5, WP-11 (CLI/Test use registry)
     │
@@ -235,11 +244,11 @@ pnpm --filter @notention/optimize uisg:validate
 |--------|-------|-------------|
 | 1 ✅ | T0-1, T0-2, WP-3 | CI green (routing), URL consolidation complete |
 | 2 ✅ | WP-1, WP-4, WP-5 | Unified registry complete, step executors, CLI base |
-| 3 | WP-2, WP-6, WP-7 | Strategy system, error classes, migrations |
+| 3 ✅ | WP-2, WP-6, WP-7 | Strategy system complete, error classes, migrations |
 | 4 | WP-8, WP-10, WP-11 | Property widgets, metaphors, test utils |
 | 5 | WP-9, WP-12, WP-13, WP-14 | Component bases, UISG tests, browser verify, captions |
 
-**Total estimated effort**: ~40-50 hours across 5 sprints (Sprint 1-2 complete)
+**Total estimated effort**: ~40-50 hours across 5 sprints (Sprint 1-3 complete)
 
 ---
 
@@ -256,4 +265,4 @@ pnpm --filter @notention/optimize uisg:validate
 
 *Generated: 2026-11-27 (revised)*
 *Based on: TODO35.md completion + refactoring work + strategic analysis*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-3 URL Consolidation COMPLETE; WP-1 Registry Unification COMPLETE; Sprint 1-2 complete*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-3 URL Consolidation COMPLETE; WP-1 Registry Unification COMPLETE; WP-2 Strategy System COMPLETE; Sprint 1-3 complete*
