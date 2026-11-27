@@ -68,23 +68,31 @@ class StrategySystem {
 
 **Effort**: High (6-8 hours) | **Impact**: Single import for all strategy/profile logic, enables dynamic strategy loading, simplifies testing
 
-### WP-3: URL/Navigation Consolidation (Consolidates #1, #2, #3, #18)
-**Files**: `ui/src/hooks/useUrlRouting.ts`, `ui/src/utils/navigation.ts`, `ui/src/components/contexts/ViewNavigationContext.tsx`
+### WP-3: URL/Navigation Consolidation (Consolidates #1, #2, #3, #18) ✅ DONE
+**Files**: `ui/src/hooks/useUrlRouting.ts`, `ui/src/utils/navigation.ts`, `ui/src/components/contexts/ViewNavigationContext.tsx` → **Created `ui/src/utils/UrlRouter.ts`**
 
 **Problem**: Hash parsing, route state, and URL sync split across 3 files with timing bugs.
 
-**Solution**: Single `UrlRouter` class:
+**Solution**: Single `UrlRouter` class implemented:
 ```typescript
 class UrlRouter {
   parse(hash: string): Route;
   serialize(route: Route): string;
-  sync(): void;                    // Sync state → URL
+  sync(route: Route): void;                    // Sync state → URL
   subscribe(fn: (route: Route) => void): () => void;
+  init(): Route;                               // Initialize listeners
+  getCurrentRoute(): Route;
+  destroy(): void;
 }
 ```
-React hook: `useUrlRouter()` wraps singleton instance.
+React hook: `useUrlRouting()` wraps singleton instance via `getUrlRouter()`.
 
-**Effort**: Medium (3-4 hours) | **Impact**: Fixes T0-1/T0-2, eliminates sync bugs, single source of truth for routing
+**Effort**: ~3 hours | **Impact**: Fixed T0-1/T0-2, eliminates sync bugs, single source of truth for routing
+
+**Deliverables**:
+- `ui/src/utils/UrlRouter.ts` — Core routing logic (parse, serialize, sync, subscribe, legacy redirects)
+- `ui/src/hooks/useUrlRouting.ts` — Simplified hook using UrlRouter singleton
+- `ui/src/components/contexts/ViewNavigationContext.tsx` — Uses UrlRouter for initial state
 
 ---
 
@@ -125,7 +133,7 @@ React hook: `useUrlRouter()` wraps singleton instance.
 ```
 ✅ T0-1, T0-2 (CI Blockers) — DONE
     │
-    ├──→ WP-3 (URL Consolidation) ──→ WP-8, WP-9 (UI bases need stable routing)
+    ├──→ ✅ WP-3 (URL Consolidation) ──→ WP-8, WP-9 (UI bases need stable routing)
     │
     ├──→ WP-1 (Registry Unification) ──→ WP-2 (Strategy System needs unified registry)
     │           │
@@ -211,10 +219,10 @@ pnpm --filter @notention/optimize uisg:validate
 
 | Sprint | Focus | Deliverable |
 |--------|-------|-------------|
-| 1 ✅ | T0-1, T0-2, WP-3 start | CI green (routing), URL consolidation begun |
+| 1 ✅ | T0-1, T0-2, WP-3 | CI green (routing), URL consolidation complete |
 | 2 | WP-1, WP-4, WP-5 | Unified registry, step executors, CLI base |
 | 3 | WP-2, WP-6, WP-7 | Strategy system, error classes, migrations |
-| 4 | WP-3 complete, WP-8, WP-10, WP-11 | URL consolidation done, property widgets, metaphors, test utils |
+| 4 | WP-8, WP-10, WP-11 | Property widgets, metaphors, test utils |
 | 5 | WP-9, WP-12, WP-13, WP-14 | Component bases, UISG tests, browser verify, captions |
 
 **Total estimated effort**: ~40-50 hours across 5 sprints (Sprint 1 complete)
@@ -234,4 +242,4 @@ pnpm --filter @notention/optimize uisg:validate
 
 *Generated: 2026-11-27 (revised)*
 *Based on: TODO35.md completion + refactoring work + strategic analysis*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; Architecture roadmap defined; Sprint 1 complete*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-3 URL Consolidation COMPLETE; Sprint 1 complete*

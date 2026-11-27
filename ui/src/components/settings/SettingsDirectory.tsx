@@ -1,7 +1,5 @@
 import { SettingsDirectoryProps } from './SettingsDirectoryProps';
 import { useState } from 'react';
-import { useHelp } from '@/hooks/useHelp';
-import { QuestionMarkCircleIcon } from '../ui/icons';
 
 interface SettingsTabConfig {
   id: string;
@@ -26,10 +24,6 @@ interface SettingsDirectoryPropsExtended extends SettingsDirectoryProps {
   onWizardSkip?: () => void;
 }
 
-const HelpIcon = ({ topicId }: { topicId?: string }) => (
-  topicId ? <QuestionMarkCircleIcon className="w-4 h-4 ml-1 text-[var(--app-muted)]" /> : null
-);
-
 const SettingRow = ({ setting }: { setting: { id: string; label: string } }) => (
   <div className="setting-row" data-testid={`setting-${setting.id}`}>{setting.label}</div>
 );
@@ -44,7 +38,6 @@ const SettingsWizard = ({ onComplete, onSkip }: { onComplete?: () => void; onSki
 
 export function SettingsDirectory(props: SettingsDirectoryPropsExtended) {
   const [searchQuery, setSearchQuery] = useState(props.searchQuery ?? '');
-  const help = useHelp();
   const groups = props.groups ?? [];
 
   return (
@@ -59,7 +52,7 @@ export function SettingsDirectory(props: SettingsDirectoryPropsExtended) {
       <div className="settings-groups">
         {groups.map((group: SettingsGroupConfig) => (
           <details key={group.id} open={true} data-testid={`settings-group-${group.id}`}>
-            <summary>{group.label} <HelpIcon topicId={group.helpTopicId} /></summary>
+            <summary>{group.label}</summary>
             {group.tabs.map((tab: SettingsTabConfig) => <SettingRow key={tab.id} setting={tab} />)}
           </details>
         ))}

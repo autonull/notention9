@@ -2,14 +2,14 @@ import React, { createContext, ReactNode, useState } from 'react';
 import { useLocalForage } from '../../hooks/useLocalForage';
 import type { NoteMode, NoteTab, NotesGroup, NotesSection, SettingsTab, SidebarViewMode, SortOrder, View } from '@notention/core';
 import { STORAGE_KEYS } from '../../config/storageKeys';
-import { parseRoute } from '../../utils/navigation';
+import { getUrlRouter } from '../../utils/UrlRouter';
 
 export type { NoteMode, NoteTab, NotesSection, SettingsTab };
 
 function getInitialView(): View {
     if (typeof window !== 'undefined') {
         try {
-            return parseRoute(window.location.hash).view;
+            return getUrlRouter().parse(window.location.hash).view;
         } catch {
             return 'notes';
         }
@@ -20,7 +20,7 @@ function getInitialView(): View {
 function getInitialSettingsTab(): SettingsTab {
     if (typeof window !== 'undefined') {
         try {
-            return parseRoute(window.location.hash).settingsTab;
+            return getUrlRouter().parse(window.location.hash).settingsTab;
         } catch {
             return 'general';
         }
