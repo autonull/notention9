@@ -41,7 +41,7 @@ export class ProfileRegistry extends BaseProfileRegistry {
     }
 
     // Reset registry for testing
-    reset(): void {
+    override reset(): void {
         this.profiles.clear();
         this.policies.clear();
         this.userConfigs.clear();
