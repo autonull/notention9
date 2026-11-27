@@ -1,0 +1,41 @@
+{
+  "name": "@notention/test-utils",
+  "version": "0.0.1",
+  "description": "Unified test utilities for Notention packages",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    },
+    "./playwright": {
+      "import": "./dist/playwright.js",
+      "types": "./dist/playwright.d.ts"
+    },
+    "./vitest": {
+      "import": "./dist/vitest.js",
+      "types": "./dist/vitest.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@notention/core": "workspace:*",
+    "vitest": "^2.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.0",
+    "@testing-library/jest-dom": "^6.4.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.5.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.65.0"
+  }
+}

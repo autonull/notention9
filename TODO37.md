@@ -5,9 +5,9 @@
 
 ## Executive Summary
 
-**Completed (WP-1,2,3,4,5,6,7,10)**: Unified Registry, StrategySystem, UrlRouter, BaseStepExecutor (15/15), BaseCommand/BaseCliHandler, specific error types, migration registry, UnifiedMetaphor.
+**Completed (WP-1,2,3,4,5,6,7,10,11)**: Unified Registry, StrategySystem, UrlRouter, BaseStepExecutor (15/15), BaseCommand/BaseCliHandler, specific error types, migration registry, UnifiedMetaphor, Test utils package.
 
-**Remaining**: Property Widget bases (WP-8), UI Component bases (WP-9), Test utils (WP-11), UISG tests (WP-12), Browser verify (WP-13), Captions (WP-14).
+**Remaining**: Property Widget bases (WP-8), UI Component bases (WP-9), UISG tests (WP-12), Browser verify (WP-13), Captions (WP-14).
 
 **Key Insight**: The established patterns (BaseCommand, BaseStepExecutor, UnifiedMetaphor) are proven templates. Apply them systematically to remaining consolidation work rather than inventing new patterns.
 
@@ -20,7 +20,7 @@ These finish what was started and unblock everything else.
 | ID | Work | Files | Effort | Impact |
 |----|------|-------|--------|--------|
 | **WP-4** | ~~**Finish Step Executor Base Class** — Migrate remaining 6 executors (`navigate`, `script`, `seed`, `assertNoConsoleErrors`, `assertAria`, `assertAriaSnapshot`, `assertFocus`, `assertRole`, `assertAccessibleName`) to `BaseStepExecutor`~~ | `optimize/src/stepExecutors/*.ts` | ✅ Done | All 15 executors use BaseStepExecutor |
-| **WP-11** | **Test Infrastructure Unification** — Create `@notention/test-utils` package with: mock factories, test data generators, assertion helpers, Playwright fixtures | `packages/test-utils/` (new) | Medium (4h) | Eliminates duplicate test setup across 3 test suites; enables consistent patterns |
+| **WP-11** | ~~**Test Infrastructure Unification** — Create `@notention/test-utils` package with: mock factories, test data generators, assertion helpers, Playwright fixtures~~ | `packages/test-utils/` (new) | ✅ Done | Unified test utilities; mock factories, Playwright fixtures, Vitest helpers |
 
 **Dependency**: WP-11 enables faster work on WP-12, WP-13, WP-14.
 
@@ -71,13 +71,11 @@ These are multiplicative — they accelerate all future work.
 ## Dependency Graph (Optimized Execution Order)
 
 ```
-✅ T0, WP-1,2,3,4,5,6,7,10
+✅ T0, WP-1,2,3,4,5,6,7,10,11
     │
-    ├──→ WP-11 (test-utils) — independent, unblocks Tier 3
-    │       │
-    │       ├──→ WP-12 (UISG tests) 
-    │       ├──→ WP-13 (Browser verify)
-    │       └──→ WP-14 (Captions)
+    ├──→ WP-12 (UISG tests) 
+    ├──→ WP-13 (Browser verify)
+    ├──→ WP-14 (Captions)
     │
     ├──→ WP-8 (Property Widget bases) — needs WP-3
     │       └──→ WP-9 (UI Component bases) — builds on WP-8 patterns
@@ -95,7 +93,7 @@ These are multiplicative — they accelerate all future work.
 
 | Sprint | Focus | Deliverable |
 |--------|-------|-------------|
-| 1 | ~~WP-4~~, WP-11 | All executors unified ✅; test-utils package |
+| 1 | ~~WP-4~~, ~~WP-11~~ | All executors unified ✅; test-utils package ✅ |
 | 2 | WP-8, WP-12 | Widget bases done; UISG test coverage |
 | 3 | WP-9, WP-13, WP-14 | Component bases; browser verify; captions done |
 | 4 | A (Plugin System) | Dynamic plugin loading + hot-reload |
@@ -177,15 +175,15 @@ pnpm optimize:generate                      # UISG codegen with new pipeline
 
 ## Key Principles (Enhanced)
 
-1. **Finish what's started** — WP-4 complete (all 15 executors unified); WP-11 next
+1. **Finish what's started** — WP-4 & WP-11 complete; WP-8 next
 2. **Proven patterns only** — BaseCommand, BaseStepExecutor, UnifiedMetaphor are templates; apply them
-3. **Test infrastructure first** — WP-11 accelerates WP-12/13/14 by 2x
+3. **Test infrastructure first** — WP-11 accelerates WP-12/13/14 by 2x ✅
 4. **Architecture multiplicative** — Plugin → Reactive → Codegen → Observability compounds
-5. **Parallelize independent tracks** — Tier 3 items (12/13/14) are fully independent after WP-11
+5. **Parallelize independent tracks** — Tier 3 items (12/13/14) are fully independent after WP-11 ✅
 6. **No new patterns without 3+ uses** — Wait for repetition before abstracting
 
 ---
 
 *Generated: 2026-11-27*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1/2/3/4/5/6/7/10 COMPLETE*
-*Next: WP-11 (test-utils) in parallel with WP-8*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1/2/3/4/5/6/7/10/11 COMPLETE*
+*Next: WP-8 (Property Widget bases) in parallel with WP-12/13/14*
