@@ -3,25 +3,25 @@
     "cellKey": "journey.a|hand-built|desktop|default|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-27T03:02:55.376Z"
+    "timestamp": "2026-11-27T03:05:59.407Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|default|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-27T03:02:55.377Z"
+    "timestamp": "2026-11-27T03:05:59.408Z"
   },
   {
     "cellKey": "journey.a|hand-built|desktop|brand-acme|mobile-390|&#39;",
     "runId": "run-desktop",
     "status": "passed",
-    "timestamp": "2026-11-27T03:02:55.377Z"
+    "timestamp": "2026-11-27T03:05:59.408Z"
   },
   {
     "cellKey": "journey.a|hand-built|mobile|brand-acme|mobile-390|&#39;",
     "runId": "run-mobile",
     "status": "passed",
-    "timestamp": "2026-11-27T03:02:55.377Z"
+    "timestamp": "2026-11-27T03:05:59.409Z"
   },
   {
     "cellKey": "uisg.skeleton.flow.ontology-conflict|generated|desktop|default|desktop-1440|&#39;",
