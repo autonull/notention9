@@ -1,17 +1,40 @@
 import React from 'react';
 import type {EnumWidgetProps} from './types';
+import {BaseSelect, PropertyWidgetWrapper, useBasePropertyWidget} from './BasePropertyWidget';
 
-export function EnumWidget({value, onChange, options = []}: EnumWidgetProps) {
+export function EnumWidget({
+    value,
+    onChange,
+    options = [],
+    error,
+    required,
+    label,
+    helperText,
+    validate,
+    disabled,
+}: EnumWidgetProps & {error?: string; required?: boolean; label?: string; helperText?: string; validate?: (value: string) => string | undefined; disabled?: boolean}) {
+    const {displayValue, handleChange, handleFocus, handleBlur} = useBasePropertyWidget({
+        value,
+        onChange,
+        error,
+        required,
+        validate,
+    });
+
     return (
-        <select
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-neutral-700 border border-neutral-600 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-            <option value="" disabled>Select...</option>
-            {options.map(opt => (
-                <option key={opt} value={opt}>{opt}</option>
-            ))}
-        </select>
+        <PropertyWidgetWrapper label={label} helperText={helperText} error={error} required={required}>
+            <BaseSelect
+                value={displayValue}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                disabled={disabled}
+            >
+                <option value="" disabled>Select...</option>
+                {options.map(opt => (
+                    <option key={opt} value={opt}>{opt}</option>
+                ))}
+            </BaseSelect>
+        </PropertyWidgetWrapper>
     );
 }

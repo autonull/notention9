@@ -1,13 +1,36 @@
 import React from 'react';
 import type {DateWidgetProps} from './types';
+import {BaseInput, PropertyWidgetWrapper, useBasePropertyWidget} from './BasePropertyWidget';
 
-export function DateWidget({value, onChange, type = 'date'}: DateWidgetProps) {
+export function DateWidget({
+    value,
+    onChange,
+    type = 'date',
+    error,
+    required,
+    label,
+    helperText,
+    validate,
+    disabled,
+}: DateWidgetProps & {error?: string; required?: boolean; label?: string; helperText?: string; validate?: (value: string) => string | undefined; disabled?: boolean}) {
+    const {displayValue, handleChange, handleFocus, handleBlur} = useBasePropertyWidget({
+        value,
+        onChange,
+        error,
+        required,
+        validate,
+    });
+
     return (
-        <input
-            type={type === 'datetime' ? 'datetime-local' : 'date'}
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-full bg-neutral-700 border border-neutral-600 rounded px-2 py-1.5 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
+        <PropertyWidgetWrapper label={label} helperText={helperText} error={error} required={required}>
+            <BaseInput
+                type={type === 'datetime' ? 'datetime-local' : 'date'}
+                value={displayValue}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                disabled={disabled}
+            />
+        </PropertyWidgetWrapper>
     );
 }

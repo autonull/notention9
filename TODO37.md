@@ -5,9 +5,9 @@
 
 ## Executive Summary
 
-**Completed (WP-1,2,3,4,5,6,7,10,11)**: Unified Registry, StrategySystem, UrlRouter, BaseStepExecutor (15/15), BaseCommand/BaseCliHandler, specific error types, migration registry, UnifiedMetaphor, Test utils package.
+**Completed (WP-1,2,3,4,5,6,7,8,10,11)**: Unified Registry, StrategySystem, UrlRouter, BaseStepExecutor (15/15), BaseCommand/BaseCliHandler, specific error types, migration registry, UnifiedMetaphor, Test utils package, Property Widget bases.
 
-**Remaining**: Property Widget bases (WP-8), UI Component bases (WP-9), UISG tests (WP-12), Browser verify (WP-13), Captions (WP-14).
+**Remaining**: UI Component bases (WP-9), UISG tests (WP-12), Browser verify (WP-13), Captions (WP-14).
 
 **Key Insight**: The established patterns (BaseCommand, BaseStepExecutor, UnifiedMetaphor) are proven templates. Apply them systematically to remaining consolidation work rather than inventing new patterns.
 
@@ -32,7 +32,7 @@ Apply the BaseClass pattern established in WP-4/WP-5.
 
 | ID | Work | Files | Effort | Impact |
 |----|------|-------|--------|--------|
-| **WP-8** | **Property Widget Base Class** — Extract `BasePropertyWidget` with: validation pipeline, formatting, accessibility, error display. Migrate 5 widgets. | `ui/src/components/widgets/*.tsx` | Medium (3h) | Single validation/formatting logic; consistent a11y |
+| **WP-8** | ~~**Property Widget Base Class** — Extract `BasePropertyWidget` with: validation pipeline, formatting, accessibility, error display. Migrate 5 widgets.~~ | `ui/src/components/properties/widgets/*.tsx` | ✅ Done | BasePropertyWidget + 5 migrated (Text, Enum, Date, Location, Currency) |
 | **WP-9** | **UI Component Base Classes** — Extract: `BaseModal` (portal, focus trap, escape), `BasePanel` (resizable, collapsible), `BaseList` (virtualized, selectable), `BaseEditor` (dirty tracking, autosave). | `ui/src/components/base/*.tsx` (new) | Medium (5h) | Eliminates 50+ components' boilerplate; consistent behavior |
 
 **Approach**: Create base classes first, then migrate one widget/component at a time. Use composition over inheritance where possible (React hooks pattern).
@@ -71,14 +71,13 @@ These are multiplicative — they accelerate all future work.
 ## Dependency Graph (Optimized Execution Order)
 
 ```
-✅ T0, WP-1,2,3,4,5,6,7,10,11
+✅ T0, WP-1,2,3,4,5,6,7,8,10,11
     │
     ├──→ WP-12 (UISG tests) 
     ├──→ WP-13 (Browser verify)
     ├──→ WP-14 (Captions)
     │
-    ├──→ WP-8 (Property Widget bases) — needs WP-3
-    │       └──→ WP-9 (UI Component bases) — builds on WP-8 patterns
+    ├──→ WP-9 (UI Component bases) — builds on WP-8 patterns
     │
     └──→ A (Plugin System) — independent, high leverage
             │
@@ -94,7 +93,7 @@ These are multiplicative — they accelerate all future work.
 | Sprint | Focus | Deliverable |
 |--------|-------|-------------|
 | 1 | ~~WP-4~~, ~~WP-11~~ | All executors unified ✅; test-utils package ✅ |
-| 2 | WP-8, WP-12 | Widget bases done; UISG test coverage |
+| 2 | ~~WP-8~~, WP-12 | Widget bases done ✅; UISG test coverage |
 | 3 | WP-9, WP-13, WP-14 | Component bases; browser verify; captions done |
 | 4 | A (Plugin System) | Dynamic plugin loading + hot-reload |
 | 5 | B (Reactive State) | Signals-based store replacing contexts |
@@ -175,7 +174,7 @@ pnpm optimize:generate                      # UISG codegen with new pipeline
 
 ## Key Principles (Enhanced)
 
-1. **Finish what's started** — WP-4 & WP-11 complete; WP-8 next
+1. **Finish what's started** — WP-4, WP-11, WP-8 complete; WP-9 next
 2. **Proven patterns only** — BaseCommand, BaseStepExecutor, UnifiedMetaphor are templates; apply them
 3. **Test infrastructure first** — WP-11 accelerates WP-12/13/14 by 2x ✅
 4. **Architecture multiplicative** — Plugin → Reactive → Codegen → Observability compounds

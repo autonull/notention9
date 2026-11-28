@@ -1,16 +1,39 @@
 import React from 'react';
 import type {TextWidgetProps} from './types';
+import {BaseInput, PropertyWidgetWrapper, useBasePropertyWidget} from './BasePropertyWidget';
 
-export function TextWidget({value, onChange, onKeyDown, placeholder}: TextWidgetProps) {
+export function TextWidget({
+    value,
+    onChange,
+    onKeyDown,
+    placeholder,
+    error,
+    required,
+    label,
+    helperText,
+    validate,
+    disabled,
+}: TextWidgetProps & {error?: string; required?: boolean; label?: string; helperText?: string; validate?: (value: string) => string | undefined; disabled?: boolean}) {
+    const {displayValue, handleChange, handleFocus, handleBlur} = useBasePropertyWidget({
+        value,
+        onChange,
+        error,
+        required,
+        validate,
+    });
+
     return (
-        <input
-            type="text"
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-            onKeyDown={onKeyDown}
-            placeholder={placeholder || "Value..."}
-            className="w-full bg-neutral-700 border border-neutral-600 rounded px-3 py-1.5 text-sm text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            autoFocus
-        />
+        <PropertyWidgetWrapper label={label} helperText={helperText} error={error} required={required}>
+            <BaseInput
+                type="text"
+                value={displayValue}
+                onChange={handleChange}
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onKeyDown={onKeyDown}
+                placeholder={placeholder || "Value..."}
+                disabled={disabled}
+            />
+        </PropertyWidgetWrapper>
     );
 }

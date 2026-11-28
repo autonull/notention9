@@ -1,8 +1,36 @@
 import React, {useState} from 'react';
 import type {WidgetProps} from './types';
+import {BaseInput, PropertyWidgetWrapper, useBasePropertyWidget} from './BasePropertyWidget';
 
-export function CurrencyWidget({value, onChange, onKeyDown}: WidgetProps) {
-    const [numValue, setNumValue] = useState(parseFloat(value) || 0);
+export function CurrencyWidget({
+    value,
+    onChange,
+    onKeyDown,
+    error,
+    required,
+    label,
+    helperText,
+    validate,
+    disabled,
+}: WidgetProps & {error?: string; required?: boolean; label?: string; helperText?: string; validate?: (value: string) => string | undefined; disabled?: boolean}) {
+    const [numValue, setNumValue] = useState(() => parseFloat(value) || 0);
+
+    const {displayValue, handleChange: baseHandleChange, handleFocus, handleBlur, error: baseError} = useBasePropertyWidget({
+        value: numValue.toString(),
+        onChange: (val) => {
+            const parsed = parseFloat(val);
+            if (!isNaN(parsed)) {
+                setNumValue(parsed);
+                onChange(parsed.toString());
+            } else if (val === '') {
+                setNumValue(0);
+                onChange('');
+            }
+        },
+        error,
+        required,
+        validate,
+    });
 
     const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const val = parseFloat(e.target.value);
@@ -10,38 +38,32 @@ export function CurrencyWidget({value, onChange, onKeyDown}: WidgetProps) {
         onChange(val.toString());
     };
 
-    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = parseFloat(e.target.value);
-        if (!isNaN(val)) {
-            setNumValue(val);
-            onChange(val.toString());
-        } else if (e.target.value === '') {
-            setNumValue(0);
-            onChange('');
-        }
-    };
-
     return (
-        <div className="space-y-2">
-            <div className="flex items-center gap-2">
-                <span className="text-neutral-400">$</span>
+        <PropertyWidgetWrapper label={label} helperText={helperText} error={baseError} required={required}>
+            <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                    <span className="text-neutral-400">$</span>
+                    <BaseInput
+                        type="number"
+                        value={displayValue}
+                        onChange={baseHandleChange}
+                        onFocus={handleFocus}
+                        onBlur={handleBlur}
+                        onKeyDown={onKeyDown}
+                        disabled={disabled}
+                    />
+                </div>
                 <input
-                    type="number"
+                    type="range"
+                    min="0"
+                    max="2000"
+                    step="10"
                     value={numValue}
-                    onChange={handleInput}
-                    onKeyDown={onKeyDown}
-                    className="flex-1 bg-neutral-700 border border-neutral-600 rounded px-2 py-1 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    onChange={handleSliderChange}
+                    className="w-full h-1 bg-neutral-600 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                    disabled={disabled}
                 />
             </div>
-            <input
-                type="range"
-                min="0"
-                max="2000"
-                step="10"
-                value={numValue}
-                onChange={handleSliderChange}
-                className="w-full h-1 bg-neutral-600 rounded-lg appearance-none cursor-pointer accent-blue-500"
-            />
-        </div>
+        </PropertyWidgetWrapper>
     );
 }

@@ -1,13 +1,29 @@
 import React, {useState} from 'react';
 import type {WidgetProps} from './types';
+import {BaseInput, PropertyWidgetWrapper, useBasePropertyWidget} from './BasePropertyWidget';
 
-export function LocationWidget({value, onChange, onKeyDown}: WidgetProps) {
+export function LocationWidget({
+    value,
+    onChange,
+    onKeyDown,
+    error,
+    required,
+    label,
+    helperText,
+    validate,
+    disabled,
+}: WidgetProps & {error?: string; required?: boolean; label?: string; helperText?: string; validate?: (value: string) => string | undefined; disabled?: boolean}) {
     const [suggestions, setSuggestions] = useState<string[]>([]);
-    const [isLoading, setIsLoading] = useState(false);
+    const {displayValue, handleChange, handleFocus, handleBlur} = useBasePropertyWidget({
+        value,
+        onChange,
+        error,
+        required,
+        validate,
+    });
 
-    const handleInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const val = e.target.value;
-        onChange(val);
+    const handleInputChange = (val: string) => {
+        handleChange(val);
 
         if (val.length > 2) {
             // Mock geocoding for UI demo
@@ -23,32 +39,35 @@ export function LocationWidget({value, onChange, onKeyDown}: WidgetProps) {
     };
 
     return (
-        <div className="relative">
-            <input
-                type="text"
-                value={value}
-                onChange={handleInput}
-                onKeyDown={onKeyDown}
-                placeholder="City, Region..."
-                className="w-full bg-neutral-700 border border-neutral-600 rounded px-3 py-1.5 text-sm text-white placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {suggestions.length > 0 && (
-                <div
-                    className="absolute top-full left-0 right-0 mt-1 bg-neutral-800 border border-neutral-700 rounded shadow-xl z-20">
-                    {suggestions.map((s, i) => (
-                        <button
-                            key={i}
-                            className="w-full text-left px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-700 hover:text-white"
-                            onClick={() => {
-                                onChange(s);
-                                setSuggestions([]);
-                            }}
-                        >
-                            📍 {s}
-                        </button>
-                    ))}
-                </div>
-            )}
-        </div>
+        <PropertyWidgetWrapper label={label} helperText={helperText} error={error} required={required}>
+            <div className="relative">
+                <BaseInput
+                    type="text"
+                    value={displayValue}
+                    onChange={handleInputChange}
+                    onFocus={handleFocus}
+                    onBlur={handleBlur}
+                    onKeyDown={onKeyDown}
+                    placeholder="City, Region..."
+                    disabled={disabled}
+                />
+                {suggestions.length > 0 && (
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-neutral-800 border border-neutral-700 rounded shadow-xl z-20">
+                        {suggestions.map((s, i) => (
+                            <button
+                                key={i}
+                                className="w-full text-left px-3 py-2 text-sm text-neutral-300 hover:bg-neutral-700 hover:text-white"
+                                onClick={() => {
+                                    handleChange(s);
+                                    setSuggestions([]);
+                                }}
+                            >
+                                📍 {s}
+                            </button>
+                        ))}
+                    </div>
+                )}
+            </div>
+        </PropertyWidgetWrapper>
     );
 }
