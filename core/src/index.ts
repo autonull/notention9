@@ -18,6 +18,7 @@ export { OntologyService } from './ontology/ontologyService.js';
 
 // Utils
 export * from './utils/index.js';
+export * from './utils/PluginSystem.js';
 
 export * from './patternRecognition/index.js';
 export * from './security/index.js';

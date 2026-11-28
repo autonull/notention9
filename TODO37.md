@@ -7,7 +7,9 @@
 
 **Completed (WP-1,2,3,4,5,6,7,8,9,10,11,12,13,14)**: Unified Registry, StrategySystem, UrlRouter, BaseStepExecutor (15/15), BaseCommand/BaseCliHandler, specific error types, migration registry, UnifiedMetaphor, Test utils package, Property Widget bases, UI Component bases, UISG tests, ProfileRegistry browser verify, Help Video captions verify.
 
-**Remaining**: None (all Tiers 1-3 complete)
+**Tier 4 Progress**: **A (Plugin System) — IN PROGRESS** — Core plugin infrastructure complete with dynamic loading, HMR, feature flags, extension points for strategies/profiles/metaphors/commands/UI.
+
+**Remaining**: B (Reactive State), C (Build-Time Codegen), D (Observability)
 
 **Key Insight**: The established patterns (BaseCommand, BaseStepExecutor, UnifiedMetaphor) are proven templates. Apply them systematically to remaining consolidation work rather than inventing new patterns.
 
@@ -59,12 +61,19 @@ These are multiplicative — they accelerate all future work.
 
 | ID | Work | Effort | Impact |
 |----|------|--------|--------|
-| **A** | **Plugin/Extension System** — Dynamic loading: `Plugin` interface with `strategies`, `profiles`, `commands`, `uiExtensions`. Hot-reload via HMR. Feature flags per plugin. | Medium (4h) | Enables 3rd-party extensions, isolates features, enables gradual rollout |
+| **A** | **Plugin/Extension System** — Dynamic loading: `Plugin` interface with `strategies`, `profiles`, `commands`, `uiExtensions`. Hot-reload via HMR. Feature flags per plugin. | Medium (4h) | ✅ **CORE COMPLETE** — PluginSystem with dynamic loading, HMR, feature flags, extension APIs, example plugin |
 | **B** | **Reactive State Layer** — Replace `useViewContext` + `useSettingsContext` + `useNotes` with single signals-based store (`@legendapp/state` or custom). Fine-grained subscriptions, DevTools time-travel. | Medium (6h) | Eliminates context nesting; 10x render optimization; debuggable state |
 | **C** | **Build-Time Codegen Pipeline** — Extend UISG codegen: Strategy resolution → decision trees, Property validation → TS types, Routes → type-safe navigation, Metaphors → component registry | Medium (4h) | Moves runtime cost to build; type-safe APIs; smaller bundles |
 | **D** | **Observability/Telemetry** — Structured events in `Registry`, `StrategySystem`, `UrlRouter`, `BaseCommand`, `BaseStepExecutor`. OpenTelemetry compatible. | Low (2h) | Production debugging; performance baselines; automated regression detection |
 
 **Sequencing**: A → B → C → D (each builds on previous). Can start A in parallel with Tier 2.
+
+**Plugin System Deliverables (A)**:
+- `core/src/utils/PluginSystem.ts` — Core plugin manager with full API surface
+- `ui/src/plugins/PluginSystemV2.ts` — UI integration with React hooks, HMR, component registry
+- `plugins/example-automation/` — Example plugin demonstrating all extension points
+- `cli/src/commands/PluginCommand.ts` — CLI command for plugin management
+- Tests in `core/src/utils/PluginSystem.test.ts` (15 passing)
 
 ---
 
@@ -89,13 +98,15 @@ These are multiplicative — they accelerate all future work.
 | 1 | ~~WP-4~~, ~~WP-11~~ | All executors unified ✅; test-utils package ✅ |
 | 2 | ~~WP-8~~, ~~WP-12~~ | Widget bases done ✅; UISG test coverage ✅ |
 | 3 | ~~WP-9~~, ~~WP-13~~, ~~WP-14~~ | Component bases ✅; browser verify ✅; captions ✅ |
-| 4 | A (Plugin System) | Dynamic plugin loading + hot-reload |
+| 4 | **A (Plugin System)** | ✅ **CORE COMPLETE** — Dynamic loading, HMR, feature flags, extension APIs |
 | 5 | B (Reactive State) | Signals-based store replacing contexts |
 | 6 | C (Build-Time Codegen) | Extended codegen pipeline |
 | 7 | D (Observability) | Telemetry in all core systems |
 
 **Total**: ~32 hours across 7 sprints (vs original 40-50 across 5)
 **Efficiency gain**: Parallel tracks + proven patterns + eliminated rework
+
+**Sprint 4 Status**: Core plugin infrastructure complete. Ready for integration testing and UI-level plugin management UI.
 
 ---
 
@@ -178,5 +189,6 @@ pnpm optimize:generate                      # UISG codegen with new pipeline
 ---
 
 *Generated: 2026-11-27*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1 through WP-14 COMPLETE (Tiers 1-3 done)*
-*Next: Tier 4 — A (Plugin System), B (Reactive State), C (Build-Time Codegen), D (Observability)*
+*Updated: 2026-11-27 — Tier 4 A (Plugin System) core complete*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1 through WP-14 COMPLETE (Tiers 1-3 done); Tier 4 A (Plugin System) CORE COMPLETE*
+*Next: Tier 4 — B (Reactive State), C (Build-Time Codegen), D (Observability)*

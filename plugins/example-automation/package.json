@@ -1,0 +1,30 @@
+{
+  "name": "@notention/plugin-example-automation",
+  "version": "1.0.0",
+  "description": "Example automation plugin for Notention",
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@notention/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "typescript": "^5.5.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

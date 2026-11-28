@@ -62,7 +62,7 @@ export interface ResolutionContext {
     strategyRegistry: Registry<StrategyRegistrable>;
     revisionStore?: {
         getActive(seamRole: string): Promise<Revision | undefined>;
-    };
+    } | null;
 }
 
 // --- Base Resolution Strategy Plugin ---

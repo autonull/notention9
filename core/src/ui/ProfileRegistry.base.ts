@@ -15,6 +15,7 @@ import {
     type ResolutionReason,
     type ResolvedStrategy,
 } from './profileTypes.js';
+import type { Revision } from '../schemas/sharedTypes.js';
 
 // Re-export ResolvedStrategy for subclasses
 export type { ResolvedStrategy } from './profileTypes.js';
@@ -26,8 +27,13 @@ import { resolveSeamId } from '../constants/seams.js';
 /**
  * Interface for revision store (optional, browser version throws)
  */
-interface RevisionStoreLike {
+export interface RevisionStoreLike {
     getActive(seamRole: string): Promise<any>;
+}
+
+/** Type matching ResolutionContext.revisionStore */
+export interface ResolutionRevisionStore {
+    getActive(seamRole: string): Promise<Revision | undefined>;
 }
 
 /**
@@ -118,6 +124,16 @@ export class BaseProfileRegistry {
 
     setUserConfig(config: UserProfileConfig): void {
         this.userConfigs.set(config.userId, { ...config, updatedAt: new Date().toISOString() });
+    }
+
+    setAssignment(experimentId: string, userId: string, assignment: ExperimentAssignment): void {
+        const key = `${experimentId}:${userId}`;
+        this.assignments.set(key, assignment);
+    }
+
+    getAssignment(experimentId: string, userId: string): ExperimentAssignment | undefined {
+        const key = `${experimentId}:${userId}`;
+        return this.assignments.get(key);
     }
 
     setActiveProfile(userId: string, profileId: string): boolean {

@@ -13,6 +13,7 @@ import { SetupCommand } from './SetupCommand.js';
 import { OptimizeCommand } from './OptimizeCommand.js';
 import { ReproduceCommand } from './ReproduceCommand.js';
 import { FindingsCommand } from './FindingsCommand.js';
+import { PluginCommand } from './PluginCommand.js';
 
 // Register all commands
 function registerCommands(): void {
@@ -34,6 +35,7 @@ function registerCommands(): void {
     commandRegistry.register(OptimizeCommand);
     commandRegistry.register(ReproduceCommand);
     commandRegistry.register(FindingsCommand);
+    commandRegistry.register(PluginCommand);
 }
 
 registerCommands();

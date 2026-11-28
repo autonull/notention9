@@ -13,7 +13,7 @@
  */
 
 import { z } from 'zod';
-import { Registry, createInstanceRegistry, StrategyRegistrable, Resolvable } from '../utils/Registry.js';
+import { Registry, createInstanceRegistry, Resolvable } from '../utils/Registry.js';
 import { Plugin } from '../utils/BasePlugin.js';
 
 // Re-export types
@@ -48,7 +48,7 @@ import type {
     ResolvedStrategy,
     SeamRole 
 } from './profileTypes.js';
-import type { Strategy, Seam, ParamSpec } from './strategy.js';
+import type { Strategy, Seam, ParamSpec, StrategyRegistrable } from './strategy.js';
 import type { ResolutionStrategy, ResolutionContext, ResolutionStrategyConfig } from './resolutionStrategy.js';
 import { 
     OverrideResolutionStrategy, 
@@ -66,7 +66,7 @@ import {
 } from './profileDefaults.js';
 import { resolveSeamId } from '../constants/seams.js';
 import { assignToVariant, matchConditions, selectProfileByPolicy } from '../utils/resolutionUtils.js';
-import { RevisionStoreLike } from './ProfileRegistry.base.js';
+import { RevisionStoreLike, ResolutionRevisionStore } from './ProfileRegistry.base.js';
 
 // --- Profile Registry ---
 
@@ -224,6 +224,16 @@ export class ProfileRegistry {
         return assignment;
     }
 
+    setAssignment(experimentId: string, userId: string, assignment: ExperimentAssignment): void {
+        const key = `${experimentId}:${userId}`;
+        this.assignments.set(key, assignment);
+    }
+
+    getAssignment(experimentId: string, userId: string): ExperimentAssignment | undefined {
+        const key = `${experimentId}:${userId}`;
+        return this.assignments.get(key);
+    }
+
     // Serialization for persistence
     toJSON(): {
         profiles: StrategyProfile[];
@@ -299,11 +309,12 @@ export class StrategySystem {
         errorPrefix: 'StrategySystem',
         allowReplace: true 
     });
-    readonly profiles = new ProfileRegistry();
+    readonly profiles: ProfileRegistry;
     readonly resolution = getResolutionStrategyRegistry();
-    private revisionStore: RevisionStoreLike | null = null;
+    private revisionStore: ResolutionRevisionStore | null = null;
 
-    constructor(options?: { revisionStore?: RevisionStoreLike }) {
+    constructor(options?: { revisionStore?: ResolutionRevisionStore }) {
+        this.profiles = new ProfileRegistry();
         this.revisionStore = options?.revisionStore ?? null;
     }
 
@@ -493,8 +504,22 @@ export class StrategySystem {
     }): StrategySystem {
         const system = new StrategySystem();
         
-        // Restore profiles
-        system.profiles = ProfileRegistry.fromJSON(data);
+        // Restore profiles into the existing instance
+        for (const profile of data.profiles) {
+            system.profiles.registerProfile(profile);
+        }
+        for (const policy of data.policies) {
+            system.profiles.registerPolicy(policy);
+        }
+        for (const config of data.userConfigs) {
+            system.profiles.setUserConfig(config);
+        }
+        for (const experiment of data.experiments) {
+            system.profiles.registerExperiment(experiment);
+        }
+        for (const assignment of data.assignments) {
+            system.profiles.setAssignment(assignment.experimentId, assignment.userId, assignment);
+        }
         
         // Note: strategies would need to be re-registered separately
         // since they contain executable code
