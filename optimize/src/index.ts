@@ -24,3 +24,4 @@ export * from './loop/index.js';
 export * from './discovery/index.js';
 export * from './optimizer/index.js';
 export * from './uisg/index.js';
+export * from './codegenPipeline.js';
