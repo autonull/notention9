@@ -17,6 +17,32 @@ import { MetaphorPlugin, metaphorPlugin } from './metaphor/MetaphorPlugin.js';
 // Types
 // ============================================================================
 
+/** Toolbar button configuration */
+export interface ToolbarButtonConfig {
+    id: string;
+    label: string;
+    icon?: React.ReactNode;
+    action: () => void;
+    tooltip?: string;
+    position?: 'left' | 'right' | 'center';
+}
+
+/** Sidebar widget configuration */
+export interface SidebarWidgetConfig {
+    id: string;
+    title: string;
+    component: React.ComponentType<any>;
+    position?: number;
+}
+
+/** Settings panel configuration */
+export interface SettingsPanelConfig {
+    id: string;
+    title: string;
+    component: React.ComponentType<any>;
+    tab?: string;
+}
+
 /** UI-specific plugin manifest extensions */
 export interface UiPluginManifest {
     /** React components to register */
@@ -24,28 +50,11 @@ export interface UiPluginManifest {
     /** Metaphor views to register */
     metaphorViews?: Record<string, React.ComponentType<{ note: any; metaphor?: any }>>;
     /** Toolbar buttons */
-    toolbarButtons?: Array<{
-        id: string;
-        label: string;
-        icon?: React.ReactNode;
-        action: () => void;
-        tooltip?: string;
-        position?: 'left' | 'right' | 'center';
-    }>;
+    toolbarButtons?: ToolbarButtonConfig[];
     /** Sidebar widgets */
-    sidebarWidgets?: Array<{
-        id: string;
-        title: string;
-        component: React.ComponentType<any>;
-        position?: number;
-    }>;
+    sidebarWidgets?: SidebarWidgetConfig[];
     /** Settings panels */
-    settingsPanels?: Array<{
-        id: string;
-        title: string;
-        component: React.ComponentType<any>;
-        tab?: string;
-    }>;
+    settingsPanels?: SettingsPanelConfig[];
 }
 
 /** Complete UI plugin definition */
@@ -449,19 +458,19 @@ export class PluginBuilder {
         return this;
     }
     
-    toolbarButton(button: UiPluginManifest['toolbarButtons'][0]): this {
+    toolbarButton(button: ToolbarButtonConfig): this {
         this.definition.ui!.toolbarButtons = this.definition.ui!.toolbarButtons ?? [];
         this.definition.ui!.toolbarButtons.push(button);
         return this;
     }
     
-    sidebarWidget(widget: UiPluginManifest['sidebarWidgets'][0]): this {
+    sidebarWidget(widget: SidebarWidgetConfig): this {
         this.definition.ui!.sidebarWidgets = this.definition.ui!.sidebarWidgets ?? [];
         this.definition.ui!.sidebarWidgets.push(widget);
         return this;
     }
     
-    settingsPanel(panel: UiPluginManifest['settingsPanels'][0]): this {
+    settingsPanel(panel: SettingsPanelConfig): this {
         this.definition.ui!.settingsPanels = this.definition.ui!.settingsPanels ?? [];
         this.definition.ui!.settingsPanels.push(panel);
         return this;
@@ -499,110 +508,13 @@ export function createPlugin(id: string, name: string, version: string, descript
 // Example Plugin Definitions
 // ============================================================================
 
-/** Example: Automation plugin */
-export const automationPluginDefinition = createPlugin(
-    'automation-plugin',
-    'Automation',
-    '1.0.0',
-    'Advanced automation features for notes',
-    'Notention Team',
-    'MIT'
-)
-    .feature('advanced-automation')
-    .feature('conditional-triggers')
-    .featureFlag({
-        key: 'advanced-automation',
-        name: 'Advanced Automation',
-        description: 'Enable advanced automation features',
-        defaultValue: false,
-    })
-    .featureFlag({
-        key: 'conditional-triggers',
-        name: 'Conditional Triggers',
-        description: 'Enable conditional automation triggers',
-        defaultValue: true,
-    })
-    .component('AutomationPanel', React.lazy(() => import('../components/automation/AutomationPanel')))
-    .component('ConditionalAutomationView', React.lazy(() => import('../plugins/metaphor/ConditionalAutomationView')))
-    .metaphorView('conditional-automation', React.lazy(() => import('../plugins/metaphor/ConditionalAutomationView')))
-    .sidebarWidget({
-        id: 'automation-rules',
-        title: 'Automation Rules',
-        component: React.lazy(() => import('../components/automation/AutomationRulesWidget')),
-        position: 10,
-    })
-    .toolbarButton({
-        id: 'automation-toggle',
-        label: 'Automation',
-        icon: '⚙️',
-        action: () => console.log('Toggle automation'),
-        position: 'right',
-    })
-    .route('/automation', React.lazy(() => import('../pages/AutomationPage')))
-    .build();
-
-/** Example: Collaboration plugin */
-export const collaborationPluginDefinition = createPlugin(
-    'collaboration-plugin',
-    'Collaboration',
-    '1.0.0',
-    'Real-time collaboration features',
-    'Notention Team',
-    'MIT'
-)
-    .feature('realtime-sync')
-    .feature('presence')
-    .featureFlag({
-        key: 'realtime-sync',
-        name: 'Real-time Sync',
-        description: 'Enable real-time synchronization',
-        defaultValue: false,
-        requiresRestart: true,
-    })
-    .component('PresenceIndicator', React.lazy(() => import('../components/collaboration/PresenceIndicator')))
-    .component('CollaborationSidebar', React.lazy(() => import('../components/collaboration/CollaborationSidebar')))
-    .sidebarWidget({
-        id: 'collaborators',
-        title: 'Collaborators',
-        component: React.lazy(() => import('../components/collaboration/CollaboratorsWidget')),
-        position: 5,
-    })
-    .build();
-
-/** Example: Analytics plugin */
-export const analyticsPluginDefinition = createPlugin(
-    'analytics-plugin',
-    'Analytics',
-    '1.0.0',
-    'Usage analytics and insights',
-    'Notention Team',
-    'MIT'
-)
-    .feature('usage-tracking')
-    .feature('performance-monitoring')
-    .featureFlag({
-        key: 'usage-tracking',
-        name: 'Usage Tracking',
-        description: 'Track feature usage',
-        defaultValue: true,
-    })
-    .settingsPanel({
-        id: 'analytics',
-        title: 'Analytics',
-        component: React.lazy(() => import('../components/analytics/AnalyticsPanel')),
-        tab: 'metrics',
-    })
-    .build();
-
 // ============================================================================
 // Plugin Registry (for discovery)
 // ============================================================================
 
 /** Built-in plugin definitions for easy discovery */
 export const BUILTIN_PLUGINS: UiPluginDefinition[] = [
-    automationPluginDefinition,
-    collaborationPluginDefinition,
-    analyticsPluginDefinition,
+    // Example plugins are defined in plugins/ directory
 ];
 
 /** Get all built-in plugin definitions */

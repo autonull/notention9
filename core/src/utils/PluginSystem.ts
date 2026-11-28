@@ -29,16 +29,6 @@ import { UIMetaphor } from '../types/metaphor.js';
 import { StrategyProfile, ProfilePolicy, StrategyExperiment } from '../ui/profileTypes.js';
 import type { View, NoteMode, NotesSection, NoteTab, SettingsTab } from '../types/ui.js';
 
-// Type augmentation for HMR
-declare global {
-    interface ImportMeta {
-        hot?: {
-            accept(module: string, callback: (module: any) => void): void;
-            dispose(callback: () => void): void;
-        };
-    }
-}
-
 // ============================================================================
 // Types
 // ============================================================================
@@ -339,7 +329,7 @@ interface UiComponentEntry {
     pluginId: string;
 }
 
-class PluginManager {
+export class PluginManager {
     private plugins = new Map<string, PluginState>();
     private featureFlags = new Map<string, FeatureFlagState>();
     private eventListeners = new Map<string, EventListener[]>();
@@ -451,14 +441,15 @@ class PluginManager {
             this.registerPlugin(definition, createInstance);
             
             // Set up HMR callback if in development
-            if (import.meta.hot) {
-                import.meta.hot.accept(moduleSpecifier, (newModule) => {
-                    if (newModule) {
-                        this.moduleCache.set(moduleSpecifier, newModule);
-                        this.handleHmrUpdate(definition.id, newModule.default ?? newModule.pluginDefinition ?? newModule);
-                    }
-                });
-            }
+            // Note: HMR types conflict with Vite, so we skip for now
+            // if (import.meta.hot) {
+            //     import.meta.hot.accept(moduleSpecifier, (newModule) => {
+            //         if (newModule) {
+            //             this.moduleCache.set(moduleSpecifier, newModule);
+            //             this.handleHmrUpdate(definition.id, newModule.default ?? newModule.pluginDefinition ?? newModule);
+            //         }
+            //     });
+            // }
         } catch (error) {
             this.error(`Failed to load plugin from ${moduleSpecifier}:`, error as Error);
             throw error;

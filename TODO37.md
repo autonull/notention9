@@ -62,7 +62,7 @@ These are multiplicative — they accelerate all future work.
 | ID | Work | Effort | Impact |
 |----|------|--------|--------|
 | **A** | **Plugin/Extension System** — Dynamic loading: `Plugin` interface with `strategies`, `profiles`, `commands`, `uiExtensions`. Hot-reload via HMR. Feature flags per plugin. | Medium (4h) | ✅ **CORE COMPLETE** — PluginSystem with dynamic loading, HMR, feature flags, extension APIs, example plugin |
-| **B** | **Reactive State Layer** — Replace `useViewContext` + `useSettingsContext` + `useNotes` with single signals-based store (`@legendapp/state` or custom). Fine-grained subscriptions, DevTools time-travel. | Medium (6h) | Eliminates context nesting; 10x render optimization; debuggable state |
+| **B** | **Reactive State Layer** — Replace `useViewContext` + `useSettingsContext` + `useNotes` with single signals-based store (custom implementation). Fine-grained subscriptions, DevTools time-travel. | Medium (6h) | ✅ **CORE COMPLETE** — Signals, Store, ReactiveStore with selectors, actions, persistence, DevTools; React hooks in ui/src/hooks/useReactiveStore.ts |
 | **C** | **Build-Time Codegen Pipeline** — Extend UISG codegen: Strategy resolution → decision trees, Property validation → TS types, Routes → type-safe navigation, Metaphors → component registry | Medium (4h) | Moves runtime cost to build; type-safe APIs; smaller bundles |
 | **D** | **Observability/Telemetry** — Structured events in `Registry`, `StrategySystem`, `UrlRouter`, `BaseCommand`, `BaseStepExecutor`. OpenTelemetry compatible. | Low (2h) | Production debugging; performance baselines; automated regression detection |
 
@@ -74,6 +74,11 @@ These are multiplicative — they accelerate all future work.
 - `plugins/example-automation/` — Example plugin demonstrating all extension points
 - `cli/src/commands/PluginCommand.ts` — CLI command for plugin management
 - Tests in `core/src/utils/PluginSystem.test.ts` (15 passing)
+
+**Reactive State Layer Deliverables (B)**:
+- `core/src/utils/signals.ts` — Minimal signal implementation (createSignal, createComputed, createEffect, createStore)
+- `core/src/utils/ReactiveStore.ts` — Full reactive store with navigation, selection, notification, UI, location, settings, notes state; typed selectors and actions; persistence; DevTools
+- `ui/src/hooks/useReactiveStore.ts` — React hooks for fine-grained subscriptions (useReactiveSelector, useReactiveSelectors, useNavigation, useSelection, useNotifications, useUIState, useLocation, useSettings, useNotes, useView, etc.)
 
 ---
 
@@ -99,7 +104,7 @@ These are multiplicative — they accelerate all future work.
 | 2 | ~~WP-8~~, ~~WP-12~~ | Widget bases done ✅; UISG test coverage ✅ |
 | 3 | ~~WP-9~~, ~~WP-13~~, ~~WP-14~~ | Component bases ✅; browser verify ✅; captions ✅ |
 | 4 | **A (Plugin System)** | ✅ **CORE COMPLETE** — Dynamic loading, HMR, feature flags, extension APIs |
-| 5 | B (Reactive State) | Signals-based store replacing contexts |
+| 5 | **B (Reactive State)** | ✅ **CORE COMPLETE** — Signals, Store, ReactiveStore, React hooks, DevTools |
 | 6 | C (Build-Time Codegen) | Extended codegen pipeline |
 | 7 | D (Observability) | Telemetry in all core systems |
 
@@ -107,6 +112,7 @@ These are multiplicative — they accelerate all future work.
 **Efficiency gain**: Parallel tracks + proven patterns + eliminated rework
 
 **Sprint 4 Status**: Core plugin infrastructure complete. Ready for integration testing and UI-level plugin management UI.
+**Sprint 5 Status**: Core reactive state layer complete. Ready for gradual migration of context consumers.
 
 ---
 
@@ -189,6 +195,6 @@ pnpm optimize:generate                      # UISG codegen with new pipeline
 ---
 
 *Generated: 2026-11-27*
-*Updated: 2026-11-27 — Tier 4 A (Plugin System) core complete*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1 through WP-14 COMPLETE (Tiers 1-3 done); Tier 4 A (Plugin System) CORE COMPLETE*
-*Next: Tier 4 — B (Reactive State), C (Build-Time Codegen), D (Observability)*
+*Updated: 2026-11-27 — Tier 4 A (Plugin System) core complete, Tier 4 B (Reactive State Layer) core complete*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1 through WP-14 COMPLETE (Tiers 1-3 done); Tier 4 A (Plugin System) CORE COMPLETE; Tier 4 B (Reactive State Layer) CORE COMPLETE*
+*Next: Tier 4 — C (Build-Time Codegen), D (Observability)*

@@ -15,7 +15,7 @@ export interface MetaphorViewPluginManifest extends PluginManifest {
     metaphorViews?: Record<string, React.ComponentType<{note: any}>>;
 }
 
-class MetaphorViewPlugin extends BasePlugin {
+export class MetaphorViewPlugin extends BasePlugin {
     private metaphorViews: Map<string, React.ComponentType<{note: any; metaphor?: UnifiedMetaphor}>> = new Map();
 
     manifest: MetaphorViewPluginManifest = {
