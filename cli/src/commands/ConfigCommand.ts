@@ -50,15 +50,15 @@ export const ProviderCommand = BaseCommand.create({
     flags: [
         { name: 'help', alias: 'h', type: 'boolean', description: 'Show help' }
     ],
-    execute: async (parsed, context: CommandContext) => {
-        if (parsed.getBooleanFlag('help') || parsed.positional.length === 0) {
-            parsed.printUsage();
+    execute: async function(this: BaseCommand, parsed, context: CommandContext) {
+        if (this.getBooleanFlag(parsed, 'help') || parsed.positional.length === 0) {
+            this.printUsage();
             return true;
         }
         const supported = ProviderFactory.getSupportedProviders();
         const providerName = parsed.positional[0];
         if (!supported.includes(providerName)) {
-            parsed.printError(`Provider must be one of: ${supported.join(', ')}`);
+            this.printError(`Provider must be one of: ${supported.join(', ')}`);
             return false;
         }
         const modelOverride = parsed.positional[1];
@@ -67,7 +67,7 @@ export const ProviderCommand = BaseCommand.create({
             modelOverride,
             currentConfig: context.session!.getConfig(),
             onSuccess: (name) => log.success(`Switched to ${name}`),
-            onError: (err) => parsed.printError('Provider switch failed', err)
+            onError: (err) => this.printError('Provider switch failed', err)
         });
         return true;
     }

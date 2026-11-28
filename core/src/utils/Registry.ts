@@ -6,7 +6,8 @@
 
 import { z } from 'zod';
 import { AlreadyRegisteredError, NotRegisteredError } from './errors/registry.js';
-import { observeRegistry, withObservabilitySync, EventSeverity } from '../observability/index.js';
+import { observeRegistry, EventSeverity, type RegistryEventAttributes } from '../observability/index.js';
+import { createObservabilityWrapper, type ObservabilityWrapper } from './ObservabilityMixin.js';
 
 /** Base interface for registrable items with config validation */
 export interface Registrable<C extends Record<string, unknown> = Record<string, unknown>> {
@@ -37,7 +38,7 @@ export interface RegistryOptions<T extends Registrable> {
 export class Registry<T extends Registrable> {
     private items = new Map<string, T>();
     private readonly options: Required<RegistryOptions<T>>;
-    private readonly observeOp: ReturnType<typeof withObservabilitySync<RegistryEventAttributes, any>>;
+    private readonly observe: ObservabilityWrapper<RegistryEventAttributes>;
 
     constructor(options: RegistryOptions<T> = {}) {
         this.options = {
@@ -46,23 +47,18 @@ export class Registry<T extends Registrable> {
             ...options,
         };
         
-        this.observeOp = withObservabilitySync<RegistryEventAttributes, any>({
+        this.observe = createObservabilityWrapper<RegistryEventAttributes>({
             observeFn: observeRegistry,
-            operation: '',
             staticAttrs: { 'registry.name': this.options.errorPrefix },
             errorKey: 'registry.error',
-            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
             durationKey: 'registry.duration.ms',
+            operationKey: 'registry.operation',
         });
-    }
-
-    private observe(operation: string, dynamicAttrs: Partial<RegistryEventAttributes>, fn: () => any) {
-        return this.observeOp({ ...dynamicAttrs, 'registry.operation': operation }, fn);
     }
 
     /** Register an item */
     register(item: T): void {
-        this.observe('register', { 'registry.item.name': item.name, 'registry.item.type': item.constructor.name }, () => {
+        this.observe.wrap('register', { 'registry.item.name': item.name, 'registry.item.type': item.constructor.name }, () => {
             if (this.items.has(item.name) && !this.options.allowReplace) {
                 throw new AlreadyRegisteredError(this.options.errorPrefix, item.name);
             }
@@ -72,52 +68,52 @@ export class Registry<T extends Registrable> {
 
     /** Unregister an item by name */
     unregister(name: string): boolean {
-        return this.observe('unregister', { 'registry.item.name': name }, () => this.items.delete(name));
+        return this.observe.wrap('unregister', { 'registry.item.name': name }, () => this.items.delete(name));
     }
 
     /** Get an item by name */
     get(name: string): T | undefined {
-        return this.observe('get', { 'registry.item.name': name }, () => this.items.get(name));
+        return this.observe.wrap('get', { 'registry.item.name': name }, () => this.items.get(name));
     }
 
     /** Get all registered items */
     getAll(): T[] {
-        return this.observe('getAll', {}, () => Array.from(this.items.values()));
+        return this.observe.wrap('getAll', {}, () => Array.from(this.items.values()));
     }
 
     /** List all registered names */
     listNames(): string[] {
-        return this.observe('listNames', {}, () => Array.from(this.items.keys()));
+        return this.observe.wrap('listNames', {}, () => Array.from(this.items.keys()));
     }
 
     /** Check if an item is registered */
     has(name: string): boolean {
-        return this.observe('has', { 'registry.item.name': name }, () => this.items.has(name));
+        return this.observe.wrap('has', { 'registry.item.name': name }, () => this.items.has(name));
     }
 
     /** Get count of registered items */
     size(): number {
-        return this.observe('size', {}, () => this.items.size);
+        return this.observe.wrap('size', {}, () => this.items.size);
     }
 
     /** Clear all items */
     clear(): void {
-        this.observe('clear', {}, () => { this.items.clear(); });
+        this.observe.wrap('clear', {}, () => { this.items.clear(); });
     }
 
     /** Find first item matching predicate */
     find(predicate: (item: T) => boolean): T | undefined {
-        return this.observe('find', {}, () => this.items.values().find(predicate));
+        return this.observe.wrap('find', {}, () => Array.from(this.items.values()).find(predicate));
     }
 
     /** Filter items by predicate */
     filter(predicate: (item: T) => boolean): T[] {
-        return this.observe('filter', {}, () => Array.from(this.items.values()).filter(predicate));
+        return this.observe.wrap('filter', {}, () => Array.from(this.items.values()).filter(predicate));
     }
 
     /** Get plugins filtered by config key */
     getByConfigKey(key: string, value: unknown): T[] {
-        return this.observe('filter', {}, () => this.filter(p => p.getDefaultConfig()[key] === value));
+        return this.observe.wrap('filter', {}, () => this.filter(p => p.getDefaultConfig()[key] === value));
     }
 
     /**
@@ -128,38 +124,18 @@ export class Registry<T extends Registrable> {
         context: Context,
         filter?: (item: T) => boolean
     ): Promise<Result | undefined> {
-        const startTime = performance.now();
-        try {
+        return this.observe.wrapAsync('resolveAll', {}, async () => {
             for (const item of this.items.values()) {
                 if (filter && !filter(item)) continue;
                 if ('resolve' in item && typeof item.resolve === 'function') {
                     const result = await item.resolve(context);
                     if (result !== undefined) {
-                        observeRegistry({
-                            'registry.name': this.options.errorPrefix,
-                            'registry.operation': 'resolveAll',
-                            'registry.item.name': item.name,
-                            'registry.duration.ms': performance.now() - startTime,
-                        });
                         return result;
                     }
                 }
             }
-            observeRegistry({
-                'registry.name': this.options.errorPrefix,
-                'registry.operation': 'resolveAll',
-                'registry.duration.ms': performance.now() - startTime,
-            });
             return undefined;
-        } catch (error) {
-            observeRegistry({
-                'registry.name': this.options.errorPrefix,
-                'registry.operation': 'resolveAll',
-                'registry.error': error instanceof Error ? error.message : String(error),
-                'registry.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 }
 
@@ -174,7 +150,7 @@ export interface FactoryRegistryOptions {
 export class FactoryRegistry<T> {
     private factories = new Map<string, { create: (...args: any[]) => T; description: string }>();
     private readonly options: Required<FactoryRegistryOptions>;
-    private readonly observeOp: ReturnType<typeof withObservabilitySync<RegistryEventAttributes, any>>;
+    private readonly observe: ObservabilityWrapper<RegistryEventAttributes>;
 
     constructor(options: FactoryRegistryOptions = {}) {
         this.options = {
@@ -182,22 +158,17 @@ export class FactoryRegistry<T> {
             ...options,
         };
         
-        this.observeOp = withObservabilitySync<RegistryEventAttributes, any>({
+        this.observe = createObservabilityWrapper<RegistryEventAttributes>({
             observeFn: observeRegistry,
-            operation: '',
             staticAttrs: { 'registry.name': this.options.errorPrefix },
             errorKey: 'registry.error',
-            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
             durationKey: 'registry.duration.ms',
+            operationKey: 'registry.operation',
         });
     }
 
-    private observe(operation: string, dynamicAttrs: Partial<RegistryEventAttributes>, fn: () => any) {
-        return this.observeOp({ ...dynamicAttrs, 'registry.operation': operation }, fn);
-    }
-
     register(name: string, factory: (...args: any[]) => T, description: string): void {
-        this.observe('register', { 'registry.item.name': name, 'registry.item.type': 'factory' }, () => {
+        this.observe.wrap('register', { 'registry.item.name': name, 'registry.item.type': 'factory' }, () => {
             if (this.factories.has(name)) {
                 throw new AlreadyRegisteredError(this.options.errorPrefix, name);
             }
@@ -206,11 +177,11 @@ export class FactoryRegistry<T> {
     }
 
     unregister(name: string): boolean {
-        return this.observe('unregister', { 'registry.item.name': name }, () => this.factories.delete(name));
+        return this.observe.wrap('unregister', { 'registry.item.name': name }, () => this.factories.delete(name));
     }
 
     create(name: string, ...args: any[]): T {
-        return this.observe('create', { 'registry.item.name': name }, () => {
+        return this.observe.wrap('create', { 'registry.item.name': name }, () => {
             const factory = this.factories.get(name);
             if (!factory) {
                 const available = Array.from(this.factories.keys());
@@ -221,19 +192,19 @@ export class FactoryRegistry<T> {
     }
 
     listNames(): string[] {
-        return this.observe('listNames', {}, () => Array.from(this.factories.keys()));
+        return this.observe.wrap('listNames', {}, () => Array.from(this.factories.keys()));
     }
 
     getDescription(name: string): string | undefined {
-        return this.observe('getDescription', { 'registry.item.name': name }, () => this.factories.get(name)?.description);
+        return this.observe.wrap('getDescription', { 'registry.item.name': name }, () => this.factories.get(name)?.description);
     }
 
     has(name: string): boolean {
-        return this.observe('has', { 'registry.item.name': name }, () => this.factories.has(name));
+        return this.observe.wrap('has', { 'registry.item.name': name }, () => this.factories.has(name));
     }
 
     clear(): void {
-        this.observe('clear', {}, () => { this.factories.clear(); });
+        this.observe.wrap('clear', {}, () => { this.factories.clear(); });
     }
 }
 

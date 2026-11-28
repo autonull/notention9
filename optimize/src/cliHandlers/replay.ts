@@ -31,7 +31,7 @@ export async function handleReplay(args: string[]): Promise<number> {
         BaseCliHandler.failure(`Replay failed. Replay Run ID: ${replayRunId}`);
     }
 
-    if (parsed.getBooleanFlag('json')) {
+    if (BaseCliHandler.getBooleanFlag(parsed, 'json')) {
         BaseCliHandler.printJson({ success, runId: replayRunId, status });
     }
     return success ? BaseCliHandler.success() : BaseCliHandler.failure();

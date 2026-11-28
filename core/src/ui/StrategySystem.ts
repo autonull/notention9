@@ -15,7 +15,8 @@
 import { z } from 'zod';
 import { Registry, createInstanceRegistry, Resolvable } from '../utils/Registry.js';
 import { Plugin } from '../utils/BasePlugin.js';
-import { observeStrategySystem, withObservabilitySync, EventSeverity } from '../utils/observability.js';
+import { observeStrategySystem, EventSeverity, type StrategySystemEventAttributes } from '../observability/index.js';
+import { createObservabilityWrapper, type ObservabilityWrapper } from '../utils/ObservabilityMixin.js';
 
 // Re-export types
 export type { 
@@ -77,7 +78,7 @@ export class ProfileRegistry {
     protected userConfigs = new Map<string, UserProfileConfig>();
     protected experiments = new Map<string, StrategyExperiment>();
     protected assignments = new Map<string, ExperimentAssignment>();
-    private readonly observeOp: ReturnType<typeof withObservabilitySync<StrategySystemEventAttributes, any>>;
+    private readonly observe: ObservabilityWrapper<StrategySystemEventAttributes>;
 
     constructor() {
         for (const profile of DEFAULT_PROFILES) {
@@ -86,75 +87,72 @@ export class ProfileRegistry {
         this.policies.set(DEFAULT_POLICY.id, DEFAULT_POLICY);
         this.experiments.set(DEFAULT_MATCH_DISPLAY_EXPERIMENT.id, DEFAULT_MATCH_DISPLAY_EXPERIMENT);
         
-        this.observeOp = withObservabilitySync<StrategySystemEventAttributes, any>({
+        this.observe = createObservabilityWrapper<StrategySystemEventAttributes>({
             observeFn: observeStrategySystem,
-            operation: '',
             staticAttrs: {},
             errorKey: 'strategysystem.error',
-            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
             durationKey: 'strategysystem.duration.ms',
+            operationKey: 'strategysystem.operation',
         });
     }
 
-    private observe(operation: string, dynamicAttrs: Partial<StrategySystemEventAttributes>, fn: () => any) {
-        return this.observeOp({ ...dynamicAttrs, 'strategysystem.operation': operation }, fn);
-    }
-
     reset(): void {
-        this.profiles.clear();
-        this.policies.clear();
-        this.userConfigs.clear();
-        this.experiments.clear();
-        this.assignments.clear();
-        
-        for (const profile of DEFAULT_PROFILES) {
-            this.profiles.set(profile.id, profile);
-        }
-        this.policies.set(DEFAULT_POLICY.id, DEFAULT_POLICY);
-        this.experiments.set(DEFAULT_MATCH_DISPLAY_EXPERIMENT.id, DEFAULT_MATCH_DISPLAY_EXPERIMENT);
+        this.observe.wrap('reset', {}, () => {
+            this.profiles.clear();
+            this.policies.clear();
+            this.userConfigs.clear();
+            this.experiments.clear();
+            this.assignments.clear();
+            
+            for (const profile of DEFAULT_PROFILES) {
+                this.profiles.set(profile.id, profile);
+            }
+            this.policies.set(DEFAULT_POLICY.id, DEFAULT_POLICY);
+            this.experiments.set(DEFAULT_MATCH_DISPLAY_EXPERIMENT.id, DEFAULT_MATCH_DISPLAY_EXPERIMENT);
+        });
     }
 
     // Profile management
     registerProfile(profile: StrategyProfile): void {
-        this.observe('registerProfile', { 'strategysystem.profile': profile.id }, () => {
+        this.observe.wrap('registerProfile', { 'strategysystem.profile': profile.id }, () => {
             this.profiles.set(profile.id, { ...profile, updatedAt: new Date().toISOString() });
         });
     }
 
     getProfile(id: string): StrategyProfile | undefined {
-        return this.observe('getProfile', { 'strategysystem.profile': id }, () => this.profiles.get(id));
+        return this.observe.wrap('getProfile', { 'strategysystem.profile': id }, () => this.profiles.get(id));
     }
 
     getAllProfiles(): StrategyProfile[] {
-        return this.observe('getAllProfiles', {}, () => Array.from(this.profiles.values()));
+        return this.observe.wrap('getAllProfiles', {}, () => Array.from(this.profiles.values()));
     }
 
     getDefaultProfile(): StrategyProfile | undefined {
-        return this.observe('getDefaultProfile', {}, () => 
+        return this.observe.wrap('getDefaultProfile', {}, () => 
             Array.from(this.profiles.values()).find(p => p.isDefault) ?? DEFAULT_PROFILES[0]
         );
     }
 
     // Policy management
     registerPolicy(policy: ProfilePolicy): void {
-        this.observe('registerPolicy', { 'strategysystem.profile': policy.id }, () => {
+        this.observe.wrap('registerPolicy', { 'strategysystem.profile': policy.id }, () => {
             this.policies.set(policy.id, { ...policy, updatedAt: new Date().toISOString() });
         });
     }
 
     getPolicy(id: string): ProfilePolicy | undefined {
-        return this.observe('getPolicy', { 'strategysystem.profile': id }, () => this.policies.get(id));
+        return this.observe.wrap('getPolicy', { 'strategysystem.profile': id }, () => this.policies.get(id));
     }
 
     getActivePolicy(): ProfilePolicy | undefined {
-        return this.observe('getActivePolicy', {}, () => 
+        return this.observe.wrap('getActivePolicy', {}, () => 
             Array.from(this.policies.values()).find(p => p.isEnabled)
         );
     }
 
     // User config management
     getUserConfig(userId: string): UserProfileConfig {
-        return this.observe('getUserConfig', { 'strategysystem.userId': userId }, () => {
+        return this.observe.wrap('getUserConfig', { 'strategysystem.userId': userId }, () => {
             let config = this.userConfigs.get(userId);
             if (!config) {
                 const defaultProfile = this.getDefaultProfile();
@@ -176,13 +174,13 @@ export class ProfileRegistry {
     }
 
     setUserConfig(config: UserProfileConfig): void {
-        this.observe('setUserConfig', { 'strategysystem.userId': config.userId }, () => {
+        this.observe.wrap('setUserConfig', { 'strategysystem.userId': config.userId }, () => {
             this.userConfigs.set(config.userId, { ...config, updatedAt: new Date().toISOString() });
         });
     }
 
     setActiveProfile(userId: string, profileId: string): boolean {
-        return this.observe('setActiveProfile', { 'strategysystem.userId': userId, 'strategysystem.profile': profileId }, () => {
+        return this.observe.wrap('setActiveProfile', { 'strategysystem.userId': userId, 'strategysystem.profile': profileId }, () => {
             const profile = this.profiles.get(profileId);
             if (!profile) return false;
 
@@ -196,7 +194,7 @@ export class ProfileRegistry {
     }
 
     setManualMode(userId: string, manual: boolean): void {
-        this.observe('setManualMode', { 'strategysystem.userId': userId }, () => {
+        this.observe.wrap('setManualMode', { 'strategysystem.userId': userId }, () => {
             const config = this.getUserConfig(userId);
             config.manualMode = manual;
             config.updatedAt = new Date().toISOString();
@@ -205,7 +203,7 @@ export class ProfileRegistry {
     }
 
     setOverride(userId: string, seamRole: SeamRole, strategyId: string): void {
-        this.observe('setOverride', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole, 'strategysystem.strategy': strategyId }, () => {
+        this.observe.wrap('setOverride', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole, 'strategysystem.strategy': strategyId }, () => {
             const config = this.getUserConfig(userId);
             (config.overrides.overrides as Record<string, string>)[seamRole] = strategyId;
             config.overrides.updatedAt = new Date().toISOString();
@@ -215,7 +213,7 @@ export class ProfileRegistry {
     }
 
     removeOverride(userId: string, seamRole: SeamRole): void {
-        this.observe('removeOverride', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole }, () => {
+        this.observe.wrap('removeOverride', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole }, () => {
             const config = this.getUserConfig(userId);
             delete (config.overrides.overrides as Record<string, string>)[seamRole];
             config.overrides.updatedAt = new Date().toISOString();
@@ -226,29 +224,31 @@ export class ProfileRegistry {
 
     // Experiment management
     registerExperiment(experiment: StrategyExperiment): void {
-        this.observe('registerExperiment', { 'strategysystem.profile': experiment.id }, () => {
+        this.observe.wrap('registerExperiment', { 'strategysystem.profile': experiment.id }, () => {
             this.experiments.set(experiment.id, { ...experiment, updatedAt: new Date().toISOString() });
         });
     }
 
     getExperiment(id: string): StrategyExperiment | undefined {
-        return this.observe('getExperiment', { 'strategysystem.profile': id }, () => this.experiments.get(id));
+        return this.observe.wrap('getExperiment', { 'strategysystem.profile': id }, () => this.experiments.get(id));
     }
 
     getActiveExperiments(): StrategyExperiment[] {
-        return this.observe('getActiveExperiments', {}, () => 
+        return this.observe.wrap('getActiveExperiments', {}, () => 
             Array.from(this.experiments.values()).filter(e => e.isActive)
         );
     }
 
     recordExposure(experimentId: string, userId: string): void {
-        const key = `${experimentId}:${userId}`;
-        const assignment = this.assignments.get(key);
-        if (assignment) {
-            assignment.exposureCount++;
-            assignment.lastExposureAt = new Date().toISOString();
-            this.assignments.set(key, assignment);
-        }
+        this.observe.wrap('recordExposure', { 'strategysystem.profile': experimentId, 'strategysystem.userId': userId }, () => {
+            const key = `${experimentId}:${userId}`;
+            const assignment = this.assignments.get(key);
+            if (assignment) {
+                assignment.exposureCount++;
+                assignment.lastExposureAt = new Date().toISOString();
+                this.assignments.set(key, assignment);
+            }
+        });
     }
 
     getOrCreateAssignment(experiment: StrategyExperiment, userId: string): ExperimentAssignment {
@@ -264,13 +264,17 @@ export class ProfileRegistry {
     }
 
     setAssignment(experimentId: string, userId: string, assignment: ExperimentAssignment): void {
-        const key = `${experimentId}:${userId}`;
-        this.assignments.set(key, assignment);
+        this.observe.wrap('setAssignment', { 'strategysystem.profile': experimentId, 'strategysystem.userId': userId }, () => {
+            const key = `${experimentId}:${userId}`;
+            this.assignments.set(key, assignment);
+        });
     }
 
     getAssignment(experimentId: string, userId: string): ExperimentAssignment | undefined {
-        const key = `${experimentId}:${userId}`;
-        return this.assignments.get(key);
+        return this.observe.wrap('getAssignment', { 'strategysystem.profile': experimentId, 'strategysystem.userId': userId }, () => {
+            const key = `${experimentId}:${userId}`;
+            return this.assignments.get(key);
+        });
     }
 
     // Serialization for persistence
@@ -281,13 +285,13 @@ export class ProfileRegistry {
         experiments: StrategyExperiment[];
         assignments: ExperimentAssignment[];
     } {
-        return {
+        return this.observe.wrap('toJSON', {}, () => ({
             profiles: Array.from(this.profiles.values()),
             policies: Array.from(this.policies.values()),
             userConfigs: Array.from(this.userConfigs.values()),
             experiments: Array.from(this.experiments.values()),
             assignments: Array.from(this.assignments.values()),
-        };
+        }));
     }
 
     static fromJSON(data: {
@@ -351,51 +355,46 @@ export class StrategySystem {
     readonly profiles: ProfileRegistry;
     readonly resolution = getResolutionStrategyRegistry();
     private revisionStore: ResolutionRevisionStore | null = null;
-    private readonly observeOp: ReturnType<typeof withObservabilitySync<StrategySystemEventAttributes, any>>;
+    private readonly observe: ObservabilityWrapper<StrategySystemEventAttributes>;
 
     constructor(options?: { revisionStore?: ResolutionRevisionStore }) {
         this.profiles = new ProfileRegistry();
         this.revisionStore = options?.revisionStore ?? null;
         
-        this.observeOp = withObservabilitySync<StrategySystemEventAttributes, any>({
+        this.observe = createObservabilityWrapper<StrategySystemEventAttributes>({
             observeFn: observeStrategySystem,
-            operation: '',
             staticAttrs: {},
             errorKey: 'strategysystem.error',
-            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
             durationKey: 'strategysystem.duration.ms',
+            operationKey: 'strategysystem.operation',
         });
-    }
-
-    private observe(operation: string, dynamicAttrs: Partial<StrategySystemEventAttributes>, fn: () => any) {
-        return this.observeOp({ ...dynamicAttrs, 'strategysystem.operation': operation }, fn);
     }
 
     // --- Strategy Registration ---
     registerStrategy(s: StrategyRegistrable): void {
-        this.observe('registerStrategy', { 'strategysystem.strategy': s.name, 'strategysystem.seam': s.seam.id }, () => {
+        this.observe.wrap('registerStrategy', { 'strategysystem.strategy': s.name, 'strategysystem.seam': s.seam.id }, () => {
             this.strategies.register(s);
         });
     }
 
     unregisterStrategy(name: string): boolean {
-        return this.observe('unregisterStrategy', { 'strategysystem.strategy': name }, () => this.strategies.unregister(name));
+        return this.observe.wrap('unregisterStrategy', { 'strategysystem.strategy': name }, () => this.strategies.unregister(name));
     }
 
     getStrategy(name: string): StrategyRegistrable | undefined {
-        return this.observe('getStrategy', { 'strategysystem.strategy': name }, () => this.strategies.get(name));
+        return this.observe.wrap('getStrategy', { 'strategysystem.strategy': name }, () => this.strategies.get(name));
     }
 
     getAllStrategies(): StrategyRegistrable[] {
-        return this.observe('getAllStrategies', {}, () => this.strategies.getAll());
+        return this.observe.wrap('getAllStrategies', {}, () => this.strategies.getAll());
     }
 
     getStrategiesForSeam(seamId: string): StrategyRegistrable[] {
-        return this.observe('getStrategiesForSeam', { 'strategysystem.seam': seamId }, () => this.strategies.filter(s => s.seam.id === seamId));
+        return this.observe.wrap('getStrategiesForSeam', { 'strategysystem.seam': seamId }, () => this.strategies.filter(s => s.seam.id === seamId));
     }
 
     getSeams(): Seam[] {
-        return this.observe('getSeams', {}, () => {
+        return this.observe.wrap('getSeams', {}, () => {
             const seamMap = new Map<string, Seam>();
             for (const strategy of this.strategies.getAll()) {
                 if (!seamMap.has(strategy.seam.id)) {
@@ -507,8 +506,7 @@ export class StrategySystem {
         seamRole: SeamRole,
         options?: { includeAsync?: boolean }
     ): Promise<ResolvedStrategy<P> | undefined> {
-        const startTime = performance.now();
-        try {
+        return this.observe.wrapAsync('resolveStrategy', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole }, async () => {
             const includeAsync = options?.includeAsync ?? !!this.revisionStore;
             const context = this.buildResolutionContext(userId, seamRole);
             
@@ -517,25 +515,8 @@ export class StrategySystem {
                 context,
                 includeAsync ? undefined : (s: any) => s.name !== 'revision'
             );
-            
-            observeStrategySystem({
-                'strategysystem.operation': 'resolveStrategy',
-                'strategysystem.userId': userId,
-                'strategysystem.seam': seamRole,
-                'strategysystem.strategy': result?.strategyId,
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
             return result;
-        } catch (error) {
-            observeStrategySystem({
-                'strategysystem.operation': 'resolveStrategy',
-                'strategysystem.userId': userId,
-                'strategysystem.seam': seamRole,
-                'strategysystem.error': error instanceof Error ? error.message : String(error),
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     /**
@@ -545,8 +526,7 @@ export class StrategySystem {
         userId: string,
         seamRole: SeamRole
     ): ResolvedStrategy<P> | undefined {
-        const startTime = performance.now();
-        try {
+        return this.observe.wrap('resolveStrategySync', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole }, () => {
             const context = this.buildResolutionContext(userId, seamRole, (s: any) => s.name !== 'revision');
             
             const strategies = this.resolution.getAll()
@@ -555,34 +535,11 @@ export class StrategySystem {
             for (const strategy of strategies) {
                 const result = strategy.resolve(context);
                 if (result) {
-                    observeStrategySystem({
-                        'strategysystem.operation': 'resolveStrategySync',
-                        'strategysystem.userId': userId,
-                        'strategysystem.seam': seamRole,
-                        'strategysystem.strategy': result.strategyId,
-                        'strategysystem.duration.ms': performance.now() - startTime,
-                    });
                     return result as ResolvedStrategy<P>;
                 }
             }
-            
-            observeStrategySystem({
-                'strategysystem.operation': 'resolveStrategySync',
-                'strategysystem.userId': userId,
-                'strategysystem.seam': seamRole,
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
             return undefined;
-        } catch (error) {
-            observeStrategySystem({
-                'strategysystem.operation': 'resolveStrategySync',
-                'strategysystem.userId': userId,
-                'strategysystem.seam': seamRole,
-                'strategysystem.error': error instanceof Error ? error.message : String(error),
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     // --- Serialization ---
@@ -592,12 +549,12 @@ export class StrategySystem {
         userConfigs: UserProfileConfig[];
         experiments: StrategyExperiment[];
         assignments: ExperimentAssignment[];
-        strategies: string[]; // strategy names
+        strategies: string[];
     } {
-        return {
+        return this.observe.wrap('toJSON', {}, () => ({
             ...this.profiles.toJSON(),
             strategies: this.strategies.listNames(),
-        };
+        }));
     }
 
     static fromJSON(data: {
@@ -635,9 +592,11 @@ export class StrategySystem {
 
     // --- Reset for testing ---
     reset(): void {
-        this.strategies.clear();
-        this.profiles.reset();
-        resetResolutionStrategyRegistry();
+        this.observe.wrap('reset', {}, () => {
+            this.strategies.clear();
+            this.profiles.reset();
+            resetResolutionStrategyRegistry();
+        });
     }
 
     // --- Set revision store ---
@@ -646,19 +605,17 @@ export class StrategySystem {
     }
 }
 
-// --- Singleton instance ---
-let _singletonInstance: StrategySystem | null = null;
+import { getSingleton, resetSingleton } from '../utils/singleton.js';
 
+// --- Singleton instance ---
 export function getStrategySystem(): StrategySystem {
-    if (!_singletonInstance) {
-        _singletonInstance = new StrategySystem();
-    }
-    return _singletonInstance;
+    return getSingleton(StrategySystem, () => new StrategySystem());
 }
 
 export function resetStrategySystemForTesting(): void {
-    if (_singletonInstance) {
-        _singletonInstance.reset();
-        _singletonInstance = null;
+    const system = getSingleton(StrategySystem, () => null as any);
+    if (system) {
+        system.reset();
+        resetSingleton(StrategySystem);
     }
 }

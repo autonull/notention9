@@ -9,14 +9,14 @@ export async function handleFindings(args: string[]): Promise<number> {
         { name: 'status', type: 'string', description: 'Filter by status (open|fixed|verified)' }
     ]);
 
-    const findings = await listFindings(parsed.getStringFlag('status'));
+    const findings = await listFindings(BaseCliHandler.getStringFlag(parsed, 'status'));
 
-    if (parsed.getBooleanFlag('json')) {
+    if (BaseCliHandler.getBooleanFlag(parsed, 'json')) {
         BaseCliHandler.printJson(findings);
         return BaseCliHandler.success();
     }
 
-    if (parsed.getBooleanFlag('a11y')) {
+    if (BaseCliHandler.getBooleanFlag(parsed, 'a11y')) {
         console.log('Accessibility findings:');
         for (const finding of findings) {
             if (isA11yFinding(finding)) {
@@ -46,7 +46,7 @@ export async function handleFindings(args: string[]): Promise<number> {
         console.log();
     }
 
-    const status = parsed.getStringFlag('status');
+    const status = BaseCliHandler.getStringFlag(parsed, 'status');
     if (status) {
         console.log(`Filtered by status: ${status}`);
     }

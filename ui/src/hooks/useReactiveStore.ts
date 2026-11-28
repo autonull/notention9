@@ -17,8 +17,7 @@
  */
 
 import { useSyncExternalStore, useMemo, useCallback, useEffect } from 'react';
-import { getReactiveStore, createReactiveStore, ReactiveStore, ReactiveStoreState, createReactiveDevTools } from '@notention/core';
-import { createSignal, createComputed, createEffect, batch } from '@notention/core/utils/signals';
+import { getReactiveStore, createReactiveStore, ReactiveStore, ReactiveStoreState, createReactiveDevTools, createSignal, createComputed, createEffect, batch } from '@notention/core';
 
 // ============================================================================
 // Types

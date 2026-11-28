@@ -46,6 +46,9 @@ export { assertVisibleExecutor } from './assertVisible.js';
 export { seedExecutor } from './seed.js';
 export { BaseStepExecutor } from './BaseStepExecutor.js';
 
+// Executor factory for creating new executors
+export { createExecutor, createSimpleExecutor, typedStep, withTarget, withWaitFor, withStateSnapshot, withAriaSnapshot, withScreenshot } from './executorFactory.js';
+
 const executors: Record<string, StepExecutor> = {
     navigate: navigateExecutor,
     act: actExecutor,

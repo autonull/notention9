@@ -26,6 +26,7 @@ export * from './export/index.js';
 // Utils
 export * from './utils/index.js';
 export * from './utils/common.js';
+export * from './utils/PluginSystem.js';
 
 // Fixtures
 export * from './fixtures/index.js';

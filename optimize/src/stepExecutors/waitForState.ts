@@ -1,24 +1,19 @@
-import type { Page } from '@playwright/test';
-import type { Step } from '../journey.js';
-import { StepExecutor, StepExecutionResult } from './index.js';
-import { BaseStepExecutor } from './BaseStepExecutor.js';
+import { createExecutor, typedStep, BaseStepExecutor, withWaitFor } from './executorFactory.js';
 import { resolvePath, deepEqual } from '../pathUtils.js';
 import { STATE_WAIT_DEFAULT_TIMEOUT_MS } from '../constants.js';
 
-export const waitForStateExecutor: StepExecutor = BaseStepExecutor.create({
+export const waitForStateExecutor = createExecutor({
     kind: 'waitForState',
     execute: async ({ page, step }) => {
-        const timeout = (step as { timeoutMs?: number }).timeoutMs ?? STATE_WAIT_DEFAULT_TIMEOUT_MS;
-        const path = (step as { path: string }).path;
-        const equals = (step as { equals: unknown }).equals;
+        const s = typedStep(step, 'waitForState');
         
-        await BaseStepExecutor.waitFor(
+        await withWaitFor.waitFor(
             async () => {
                 const stateSnapshot = await BaseStepExecutor.getStateSnapshot(page);
-                const value = resolvePath(stateSnapshot, path);
-                return deepEqual(value, equals);
+                const value = resolvePath(stateSnapshot, s.path);
+                return deepEqual(value, s.equals);
             },
-            timeout,
+            s.timeoutMs ?? STATE_WAIT_DEFAULT_TIMEOUT_MS,
             100
         );
         

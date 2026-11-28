@@ -1,12 +1,9 @@
-import type { Page } from '@playwright/test';
-import type { Step } from '../journey.js';
-import { StepExecutor, StepExecutionResult } from './index.js';
-import { BaseStepExecutor } from './BaseStepExecutor.js';
+import { createExecutor, typedStep } from './executorFactory.js';
 
-export const scriptExecutor: StepExecutor = BaseStepExecutor.create({
+export const scriptExecutor = createExecutor({
     kind: 'script',
     execute: async ({ page, step }) => {
-        const s = step as Extract<Step, { kind: 'script' }>;
+        const s = typedStep(step, 'script');
         await page.evaluate(s.code);
         return { ok: true };
     },

@@ -101,7 +101,7 @@ export async function handleGenerateTest(args: string[]): Promise<number> {
     console.log(`Journey ID: ${regressionJourney.id}`);
     console.log(`Status: ${regressionJourney.status}`);
 
-    if (parsed.getBooleanFlag('json')) {
+    if (BaseCliHandler.getBooleanFlag(parsed, 'json')) {
         BaseCliHandler.printJson({ success: true, outputPath, journeyId: regressionJourney.id, status: regressionJourney.status });
     }
     return BaseCliHandler.success();

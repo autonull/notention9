@@ -21,7 +21,7 @@ export async function handleOptimize(args: string[]): Promise<number> {
         console.error('Available ready journeys:', readyJourneys.join(', '));
         return BaseCliHandler.failure();
     }
-    if (journey.status === 'draft' && !parsed.getBooleanFlag('allow-draft')) {
+    if (journey.status === 'draft' && !BaseCliHandler.getBooleanFlag(parsed, 'allow-draft')) {
         return BaseCliHandler.failure(`Journey "${journeyId}" is a draft. Use --allow-draft to run it.`);
     }
 
@@ -37,7 +37,7 @@ export async function handleOptimize(args: string[]): Promise<number> {
         BaseCliHandler.failure(`Journey failed. Run ID: ${runId}`);
     }
 
-    if (parsed.getBooleanFlag('json')) {
+    if (BaseCliHandler.getBooleanFlag(parsed, 'json')) {
         BaseCliHandler.printJson({ success, runId, status });
     }
     return success ? BaseCliHandler.success() : BaseCliHandler.failure();

@@ -17,11 +17,11 @@ export const ExtractCommand = BaseCommand.create({
     name: '/extract',
     description: 'Extract semantic properties from text',
     usage: '/extract <text>',
-    execute: async (parsed, context: CommandContext) => {
+    execute: async function(this: BaseCommand, parsed, context: CommandContext) {
         const text = parsed.positional.join(' ');
         if (!text) {
-            parsed.printError('Text required');
-            parsed.printUsage();
+            this.printError('Text required');
+            this.printUsage();
             return false;
         }
         try {
@@ -38,7 +38,7 @@ export const ExtractCommand = BaseCommand.create({
                 log.warn("No properties extracted.");
             }
         } catch (e: unknown) {
-            parsed.printError("Failed to extract semantics", e);
+            this.printError("Failed to extract semantics", e);
         }
         return true;
     }

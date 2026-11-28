@@ -303,7 +303,7 @@ export function recordOperationResult(
 // ============================================================================
 
 /** Options for withObservability */
-export interface WithObservabilityOptions<Attrs extends Record<string, any>, Result = any> {
+export interface WithObservabilityOptions<Attrs extends Record<string, any>> {
     /** The observe function to call (e.g., observeRegistry) */
     observeFn: (attrs: Attrs) => void;
     /** Operation name */
@@ -315,9 +315,11 @@ export interface WithObservabilityOptions<Attrs extends Record<string, any>, Res
     /** Function to determine severity from error presence */
     getSeverity?: (error?: string) => EventSeverity;
     /** Optional function to extract additional attributes from the result */
-    resultAttrs?: (result: Result) => Partial<Attrs>;
+    resultAttrs?: (result: any) => Partial<Attrs>;
     /** Key name for duration field (e.g., 'registry.duration.ms') */
     durationKey?: string;
+    /** Key name for operation field (e.g., 'registry.operation') */
+    operationKey?: string;
 }
 
 /**
@@ -339,8 +341,8 @@ export interface WithObservabilityOptions<Attrs extends Record<string, any>, Res
  * );
  * ```
  */
-export function withObservability<Attrs extends Record<string, any>, T>(
-    options: WithObservabilityOptions<Attrs, T>
+export function withObservability<Attrs extends Record<string, any>>(
+    options: WithObservabilityOptions<Attrs>
 ) {
     const { observeFn, operation, staticAttrs = {}, errorKey, getSeverity, resultAttrs, durationKey } = options;
     
@@ -359,7 +361,7 @@ export function withObservability<Attrs extends Record<string, any>, T>(
                 [errorKey]: undefined,
                 'event.severity': getSeverity ? getSeverity(undefined) : EventSeverity.INFO,
                 ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
-            } as Attrs);
+            } as unknown as Attrs);
             return result;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
@@ -370,7 +372,7 @@ export function withObservability<Attrs extends Record<string, any>, T>(
                 [errorKey]: errorMessage,
                 'event.severity': getSeverity ? getSeverity(errorMessage) : EventSeverity.ERROR,
                 ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
-            } as Attrs);
+            } as unknown as Attrs);
             throw error;
         }
     };
@@ -379,8 +381,8 @@ export function withObservability<Attrs extends Record<string, any>, T>(
 /**
  * Synchronous version of withObservability.
  */
-export function withObservabilitySync<Attrs extends Record<string, any>, T>(
-    options: WithObservabilityOptions<Attrs, T>
+export function withObservabilitySync<Attrs extends Record<string, any>>(
+    options: WithObservabilityOptions<Attrs>
 ) {
     const { observeFn, operation, staticAttrs = {}, errorKey, getSeverity, resultAttrs, durationKey } = options;
     
@@ -409,7 +411,7 @@ export function withObservabilitySync<Attrs extends Record<string, any>, T>(
                 [errorKey]: undefined,
                 'event.severity': getSeverity ? getSeverity(undefined) : EventSeverity.INFO,
                 ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
-            } as Attrs);
+            } as unknown as Attrs);
             return result;
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : String(error);
@@ -420,7 +422,7 @@ export function withObservabilitySync<Attrs extends Record<string, any>, T>(
                 [errorKey]: errorMessage,
                 'event.severity': getSeverity ? getSeverity(errorMessage) : EventSeverity.ERROR,
                 ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
-            } as Attrs);
+            } as unknown as Attrs);
             throw error;
         }
     };

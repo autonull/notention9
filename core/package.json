@@ -291,6 +291,21 @@
       "node": "./dist/utils/candidateValidation.js",
       "browser": "./dist/browser/utils/candidateValidation.js"
     },
+    "./utils/singleton": {
+      "import": "./dist/utils/singleton.js",
+      "node": "./dist/utils/singleton.js",
+      "browser": "./dist/browser/utils/singleton.js"
+    },
+    "./utils/ObservabilityMixin": {
+      "import": "./dist/utils/ObservabilityMixin.js",
+      "node": "./dist/utils/ObservabilityMixin.js",
+      "browser": "./dist/browser/utils/ObservabilityMixin.js"
+    },
+    "./utils/signals": {
+      "import": "./dist/utils/signals.js",
+      "node": "./dist/utils/signals.js",
+      "browser": "./dist/browser/utils/signals.js"
+    },
     "./optimizer/types": {
       "import": "./dist/optimizer/index.js",
       "node": "./dist/optimizer/index.js",

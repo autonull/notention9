@@ -1,18 +1,14 @@
-import type { Page } from '@playwright/test';
-import type { Step } from '../journey.js';
-import { StepExecutor, StepExecutionResult } from './index.js';
-import { BaseStepExecutor } from './BaseStepExecutor.js';
+import { createExecutor, typedStep, BaseStepExecutor } from './executorFactory.js';
 import { resolvePath, deepEqual } from '../pathUtils.js';
 
-export const assertStateExecutor: StepExecutor = BaseStepExecutor.create({
+export const assertStateExecutor = createExecutor({
     kind: 'assertState',
     execute: async ({ page, step }) => {
+        const s = typedStep(step, 'assertState');
         const stateSnapshot = await BaseStepExecutor.getStateSnapshot(page);
-        const path = (step as { path: string }).path;
-        const equals = (step as { equals: unknown }).equals;
-        const value = resolvePath(stateSnapshot, path);
-        if (!deepEqual(value, equals)) {
-            throw new Error(`assertState failed: path="${path}", expected=${JSON.stringify(equals)}, actual=${JSON.stringify(value)}`);
+        const value = resolvePath(stateSnapshot, s.path);
+        if (!deepEqual(value, s.equals)) {
+            throw new Error(`assertState failed: path="${s.path}", expected=${JSON.stringify(s.equals)}, actual=${JSON.stringify(value)}`);
         }
         return { ok: true, stateSnapshot };
     },

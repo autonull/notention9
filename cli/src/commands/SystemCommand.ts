@@ -50,7 +50,7 @@ export const HelpCommand = BaseCommand.create({
     name: '/help',
     description: 'Show help message',
     usage: '/help [command]',
-    execute: async (parsed) => {
+    execute: async function(this: BaseCommand, parsed) {
         const commands = commandRegistry.getAll();
         const commandName = parsed.positional[0];
 
@@ -62,7 +62,7 @@ export const HelpCommand = BaseCommand.create({
                 if (cmd.aliases?.length) console.log(`  Aliases: ${cmd.aliases.join(', ')}`);
                 return true;
             }
-            parsed.printError(`Unknown command: ${commandName}`);
+            this.printError(`Unknown command: ${commandName}`);
             return false;
         }
 

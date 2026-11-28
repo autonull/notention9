@@ -67,6 +67,45 @@ export {
     getPIIStats,
 } from './utils/piiRedaction.js';
 
+// Utils - from utils/signals.js
+export {
+    createStore,
+    createSignal,
+    createComputed,
+    createEffect,
+    batch,
+    persistStore,
+    createDevTools,
+    type Store,
+    type Computed,
+} from './utils/signals.js';
+
+// Utils - from utils/singleton.js
+export {
+    getSingleton,
+    resetSingleton,
+    createSingleton,
+    createSingletonAccessor,
+    createSingletonReset,
+} from './utils/singleton.js';
+
+// Utils - from utils/ObservabilityMixin.js
+export {
+    createObservabilityWrapper,
+    type ObservabilityWrapper,
+    type ObservabilityConfig,
+} from './utils/ObservabilityMixin.js';
+
+// Utils - from utils/PluginSystem.js
+export {
+    getPluginManager,
+    resetPluginManager,
+    type PluginDefinition,
+    type PluginApi,
+    type FeatureFlagDefinition,
+    type PluginInstance,
+} from './utils/PluginSystem.js';
+
 // Utils - from utils/string.js
 export {
     levenshteinDistance,

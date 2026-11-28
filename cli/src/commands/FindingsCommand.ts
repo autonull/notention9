@@ -12,7 +12,7 @@ export const FindingsCommand = BaseCommand.create({
         { name: 'a11y', type: 'boolean', description: 'Show only accessibility findings' },
         { name: 'status', type: 'string', description: 'Filter by status (open|fixed|verified)' }
     ],
-    execute: async (parsed, _context: CommandContext) => {
+    execute: async function(this: BaseCommand, parsed, _context: CommandContext) {
         const evidenceDir = await getEvidenceDir();
 
         if (!existsSync(evidenceDir)) {
@@ -38,14 +38,14 @@ export const FindingsCommand = BaseCommand.create({
             return [];
         }).flat();
 
-        const status = parsed.getStringFlag('status');
+        const status = this.getStringFlag(parsed, 'status');
         const filteredFindings = status
             ? allFindings.filter((f: any) => f.status === status)
             : allFindings;
 
-        if (parsed.getBooleanFlag('json')) {
-            parsed.printJson(filteredFindings);
-        } else if (parsed.getBooleanFlag('a11y')) {
+        if (this.getBooleanFlag(parsed, 'json')) {
+            this.printJson(filteredFindings);
+        } else if (this.getBooleanFlag(parsed, 'a11y')) {
             console.log('Accessibility findings:');
             for (const finding of filteredFindings) {
                 if (finding.id?.startsWith('a11y-')) {

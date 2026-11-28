@@ -23,7 +23,7 @@ export async function handleMarkFixed(args: string[]): Promise<number> {
 
     const { runId: foundRunId } = lookup;
     console.log(`Found finding in run: ${foundRunId}`);
-    const sha = parsed.getStringFlag('commit') || 'manual';
+    const sha = BaseCliHandler.getStringFlag(parsed, 'commit') || 'manual';
     const updated = await updateFindingStatus(foundRunId, findingId, 'fixed', sha);
 
     const success = updated === true;
@@ -33,7 +33,7 @@ export async function handleMarkFixed(args: string[]): Promise<number> {
         BaseCliHandler.failure('Failed to mark finding as fixed');
     }
 
-    if (parsed.getBooleanFlag('json')) {
+    if (BaseCliHandler.getBooleanFlag(parsed, 'json')) {
         BaseCliHandler.printJson({ success, findingId, commit: sha });
     }
     return success ? BaseCliHandler.success() : BaseCliHandler.failure();

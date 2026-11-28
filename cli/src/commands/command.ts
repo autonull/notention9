@@ -1,6 +1,6 @@
 import { CliClient } from '../client.js';
 import { LlmSession } from '../llm.js';
-import { Registry, CommandRegistrable } from '@notention/core/utils/Registry.js';
+import { Registry, CommandRegistrable } from '@notention/core';
 
 export interface CommandContext {
     cli: CliClient;

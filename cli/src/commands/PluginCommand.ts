@@ -1,5 +1,4 @@
-import { BaseCommand } from './BaseCommand.js';
-import type { CommandContext } from './command.js';
+import { BaseCommand, type CommandContext } from './command.js';
 
 /** Plugin management command */
 export const PluginCommand = BaseCommand.create({
@@ -24,45 +23,43 @@ export const PluginCommand = BaseCommand.create({
         'plugin --info automation-plugin',
         'plugin --features',
     ],
-    execute: async (parsed, context) => {
-        const { printJson, printError, printSuccess, printInfo, printWarning, getBooleanFlag, getStringFlag } = new BaseCommand({} as any);
-        
+    execute: async function(this: BaseCommand, parsed, _context: CommandContext) {
         // In a real implementation, this would interact with the plugin manager
         // For now, show help
-        if (getBooleanFlag(parsed, 'list')) {
-            printInfo('Plugin listing not yet implemented in CLI');
-            printInfo('Use the UI plugin manager or dynamic imports');
+        if (this.getBooleanFlag(parsed, 'list')) {
+            this.printInfo('Plugin listing not yet implemented in CLI');
+            this.printInfo('Use the UI plugin manager or dynamic imports');
             return true;
         }
         
-        if (getStringFlag(parsed, 'enable')) {
-            printInfo(`Enabling plugin: ${getStringFlag(parsed, 'enable')}`);
+        if (this.getStringFlag(parsed, 'enable')) {
+            this.printInfo(`Enabling plugin: ${this.getStringFlag(parsed, 'enable')}`);
             return true;
         }
         
-        if (getStringFlag(parsed, 'disable')) {
-            printInfo(`Disabling plugin: ${getStringFlag(parsed, 'disable')}`);
+        if (this.getStringFlag(parsed, 'disable')) {
+            this.printInfo(`Disabling plugin: ${this.getStringFlag(parsed, 'disable')}`);
             return true;
         }
         
-        if (getStringFlag(parsed, 'load')) {
-            printInfo(`Loading plugin from: ${getStringFlag(parsed, 'load')}`);
+        if (this.getStringFlag(parsed, 'load')) {
+            this.printInfo(`Loading plugin from: ${this.getStringFlag(parsed, 'load')}`);
             return true;
         }
         
-        if (getStringFlag(parsed, 'info')) {
-            printInfo(`Plugin info for: ${getStringFlag(parsed, 'info')}`);
+        if (this.getStringFlag(parsed, 'info')) {
+            this.printInfo(`Plugin info for: ${this.getStringFlag(parsed, 'info')}`);
             return true;
         }
         
-        if (getBooleanFlag(parsed, 'features')) {
-            printInfo('Feature flags not yet implemented in CLI');
+        if (this.getBooleanFlag(parsed, 'features')) {
+            this.printInfo('Feature flags not yet implemented in CLI');
             return true;
         }
         
         // Default: show usage
-        printError('No subcommand specified');
-        printUsage();
+        this.printError('No subcommand specified');
+        this.printUsage();
         return false;
     },
     
@@ -71,28 +68,3 @@ export const PluginCommand = BaseCommand.create({
         return args.some(a => a.startsWith('-'));
     },
 });
-
-function printUsage(): void {
-    console.log(`
-Usage: plugin <subcommand> [options]
-
-Subcommands:
-  --list, -l           List all plugins
-  --enable <id>, -e    Enable a plugin
-  --disable <id>, -d   Disable a plugin
-  --load <path>        Load a plugin from file/module
-  --info <id>, -i      Show plugin details
-  --features, -f       List feature flags
-
-Options:
-  --json, -j           Output as JSON
-
-Examples:
-  plugin --list
-  plugin --enable automation-plugin
-  plugin --disable analytics-plugin
-  plugin --load ./my-plugin.ts
-  plugin --info automation-plugin
-  plugin --features
-`);
-}

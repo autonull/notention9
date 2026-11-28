@@ -1,5 +1,5 @@
 import type {NoteMode, NoteTab, NotesSection, SettingsTab, View} from '@notention/core';
-import { observeUrlRouter, withObservabilitySync, EventSeverity } from '@notention/core';
+import { observeUrlRouter, type UrlRouterEventAttributes, EventSeverity, createObservabilityWrapper, type ObservabilityWrapper } from '@notention/core';
 
 export interface Route {
     view: View;
@@ -63,23 +63,18 @@ export class UrlRouter {
     private currentRoute: Route = {...DEFAULT_ROUTE};
     private isInitialized = false;
     private handleUrlChangeBound: () => void;
-    private readonly observeOp: ReturnType<typeof withObservabilitySync<UrlRouterEventAttributes, any>>;
+    private readonly observe: ObservabilityWrapper<UrlRouterEventAttributes>;
 
     constructor() {
         this.handleUrlChangeBound = this.handleUrlChange.bind(this);
         
-        this.observeOp = withObservabilitySync<UrlRouterEventAttributes, any>({
+        this.observe = createObservabilityWrapper<UrlRouterEventAttributes>({
             observeFn: observeUrlRouter,
-            operation: '',
             staticAttrs: {},
             errorKey: 'urlrouter.error',
-            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
             durationKey: 'urlrouter.duration.ms',
+            operationKey: 'urlrouter.operation',
         });
-    }
-
-    private observe(operation: string, dynamicAttrs: Partial<UrlRouterEventAttributes>, fn: () => any, resultAttrs?: (result: any) => Partial<UrlRouterEventAttributes>) {
-        return this.observeOp({ ...dynamicAttrs, 'urlrouter.operation': operation }, fn, resultAttrs);
     }
 
     private routeAttrs(route: Route): Partial<UrlRouterEventAttributes> {
@@ -93,7 +88,7 @@ export class UrlRouter {
     }
 
     parse(hash: string): Route {
-        return this.observe('parse', {}, () => {
+        return this.observe.wrap('parse', {}, () => {
             const raw = hash.replace(/^#/, '').replace(/^\/+/, '');
             if (!raw) return {...DEFAULT_ROUTE};
 
@@ -144,7 +139,7 @@ export class UrlRouter {
     }
 
     serialize(route: Route): string {
-        return this.observe('serialize', this.routeAttrs(route), () => {
+        return this.observe.wrap('serialize', this.routeAttrs(route), () => {
             let result: string;
 
             if (route.view === 'settings') {
@@ -176,7 +171,7 @@ export class UrlRouter {
     }
 
     private handleUrlChange(): void {
-        this.observe('navigate', {}, () => {
+        this.observe.wrap('navigate', {}, () => {
             const route = this.parse(window.location.hash);
             this.currentRoute = route;
             const canonical = this.serialize(route);
@@ -188,7 +183,7 @@ export class UrlRouter {
     }
 
     init(): Route {
-        return this.observe('init', {}, () => {
+        return this.observe.wrap('init', {}, () => {
             if (!this.isInitialized) {
                 this.isInitialized = true;
                 window.addEventListener('popstate', this.handleUrlChangeBound);
@@ -200,7 +195,7 @@ export class UrlRouter {
     }
 
     sync(route: Route): void {
-        this.observe('sync', this.routeAttrs(route), () => {
+        this.observe.wrap('sync', this.routeAttrs(route), () => {
             const canonical = this.serialize(route);
             if (window.location.hash !== canonical) {
                 window.history.pushState(null, '', canonical);
@@ -209,18 +204,18 @@ export class UrlRouter {
     }
 
     subscribe(fn: (route: Route) => void): () => void {
-        this.observe('subscribe', {}, () => {
+        return this.observe.wrap('subscribe', {}, () => {
             this.listeners.add(fn);
             return () => this.listeners.delete(fn);
         });
     }
 
     getCurrentRoute(): Route {
-        return this.observe('getCurrentRoute', {}, () => ({...this.currentRoute}), (route) => ({ 'urlrouter.route.view': route.view }));
+        return this.observe.wrap('getCurrentRoute', {}, () => ({...this.currentRoute}), (route) => ({ 'urlrouter.route.view': route.view }));
     }
 
     destroy(): void {
-        this.observe('destroy', {}, () => {
+        this.observe.wrap('destroy', {}, () => {
             window.removeEventListener('popstate', this.handleUrlChangeBound);
             window.removeEventListener('hashchange', this.handleUrlChangeBound);
             this.listeners.clear();
@@ -235,18 +230,18 @@ export class UrlRouter {
     }
 }
 
+import { getSingleton, resetSingleton } from '@notention/core';
+
 let singletonInstance: UrlRouter | null = null;
 
 export function getUrlRouter(): UrlRouter {
-    if (!singletonInstance) {
-        singletonInstance = new UrlRouter();
-    }
-    return singletonInstance;
+    return getSingleton(UrlRouter, () => new UrlRouter());
 }
 
 export function resetUrlRouterForTesting(): void {
-    if (singletonInstance) {
-        singletonInstance.destroy();
-        singletonInstance = null;
+    const router = getSingleton(UrlRouter, () => null as any);
+    if (router) {
+        router.destroy();
+        resetSingleton(UrlRouter);
     }
 }

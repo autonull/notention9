@@ -1,16 +1,13 @@
-import type { Page } from '@playwright/test';
-import type { Step } from '../journey.js';
-import { StepExecutor, StepExecutionResult } from './index.js';
-import { BaseStepExecutor } from './BaseStepExecutor.js';
+import { createExecutor, typedStep, withTarget } from './executorFactory.js';
 
-export const assertRoleExecutor: StepExecutor = BaseStepExecutor.create({
+export const assertRoleExecutor = createExecutor({
     kind: 'assertRole',
     execute: async ({ locator, isModal, step }) => {
-        await BaseStepExecutor.waitForReady(locator!, isModal);
+        const s = typedStep(step, 'assertRole');
+        await withTarget.waitForReady(locator!, isModal);
         const role = await locator!.getAttribute('role');
-        const expectedRole = (step as { expectedRole: string }).expectedRole;
-        if (role !== expectedRole) {
-            throw new Error(`assertRole failed: expected "${expectedRole}", got "${role}"`);
+        if (role !== s.expectedRole) {
+            throw new Error(`assertRole failed: expected "${s.expectedRole}", got "${role}"`);
         }
         return { ok: true };
     },

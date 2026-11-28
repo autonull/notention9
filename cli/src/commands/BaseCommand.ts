@@ -1,5 +1,5 @@
 import type { CommandContext } from './command.js';
-import { observeBaseCommand } from '@notention/core';
+import { observeBaseCommand, type BaseCommandEventAttributes, EventSeverity, createObservabilityWrapper, type ObservabilityWrapper } from '@notention/core';
 
 export interface FlagDefinition {
     name: string;
@@ -56,10 +56,19 @@ export abstract class BaseCommand {
     protected readonly options: CommandOptions;
     protected readonly flagMap: Map<string, FlagDefinition> = new Map();
     protected readonly aliasMap: Map<string, string> = new Map();
+    protected readonly observe: ObservabilityWrapper<BaseCommandEventAttributes>;
 
     protected constructor(options: CommandOptions) {
         this.options = options;
         this.initializeFlagMaps();
+        
+        this.observe = createObservabilityWrapper<BaseCommandEventAttributes>({
+            observeFn: observeBaseCommand,
+            staticAttrs: { 'command.name': this.options.name },
+            errorKey: 'command.error',
+            durationKey: 'command.duration.ms',
+            operationKey: 'command.operation',
+        });
     }
 
     private initializeFlagMaps(): void {
@@ -75,8 +84,7 @@ export abstract class BaseCommand {
      * Parse raw command line arguments into positional args and flags
      */
     parseArgs(rawArgs: string[]): ParsedArgs {
-        const startTime = performance.now();
-        try {
+        return this.observe.wrap('parseArgs', {}, () => {
             const positional: string[] = [];
             const flags: Record<string, boolean | string | number> = {};
 
@@ -133,25 +141,8 @@ export abstract class BaseCommand {
                 }
             }
 
-            const result = { positional, flags };
-            
-            observeBaseCommand({
-                'command.name': this.options.name,
-                'command.operation': 'parseArgs',
-                'command.args.count': positional.length,
-                'command.flags': JSON.stringify(flags),
-                'command.duration.ms': performance.now() - startTime,
-            });
-            return result;
-        } catch (error) {
-            observeBaseCommand({
-                'command.name': this.options.name,
-                'command.operation': 'parseArgs',
-                'command.error': error instanceof Error ? error.message : String(error),
-                'command.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+            return { positional, flags };
+        }, (result: ParsedArgs) => ({ 'command.args.count': result.positional.length, 'command.flags': JSON.stringify(result.flags) }));
     }
 
     private parseFlagValue(value: string, type: 'string' | 'number'): string | number {
@@ -169,65 +160,41 @@ export abstract class BaseCommand {
      * Get a boolean flag value
      */
     getBooleanFlag(parsed: ParsedArgs, name: string): boolean {
-        const startTime = performance.now();
-        const def = this.flagMap.get(name);
-        const value = parsed.flags[name];
-        const result = (value as boolean) ?? (def?.default as boolean) ?? false;
-        
-        observeBaseCommand({
-            'command.name': this.options.name,
-            'command.operation': 'getFlag',
-            'command.duration.ms': performance.now() - startTime,
+        return this.observe.wrap('getFlag', {}, () => {
+            const def = this.flagMap.get(name);
+            const value = parsed.flags[name];
+            return (value as boolean) ?? (def?.default as boolean) ?? false;
         });
-        return result;
     }
 
     /**
      * Get a string flag value
      */
     getStringFlag(parsed: ParsedArgs, name: string): string | undefined {
-        const startTime = performance.now();
-        const value = parsed.flags[name];
-        const result = value === undefined ? undefined : String(value);
-        
-        observeBaseCommand({
-            'command.name': this.options.name,
-            'command.operation': 'getFlag',
-            'command.duration.ms': performance.now() - startTime,
+        return this.observe.wrap('getFlag', {}, () => {
+            const value = parsed.flags[name];
+            return value === undefined ? undefined : String(value);
         });
-        return result;
     }
 
     /**
      * Get a number flag value
      */
     getNumberFlag(parsed: ParsedArgs, name: string): number | undefined {
-        const startTime = performance.now();
-        const value = parsed.flags[name];
-        const result = value === undefined ? undefined : Number(value);
-        
-        observeBaseCommand({
-            'command.name': this.options.name,
-            'command.operation': 'getFlag',
-            'command.duration.ms': performance.now() - startTime,
+        return this.observe.wrap('getFlag', {}, () => {
+            const value = parsed.flags[name];
+            return value === undefined ? undefined : Number(value);
         });
-        return result;
     }
 
     /**
      * Get a flag value with type inference
      */
     getFlag<T extends boolean | string | number>(parsed: ParsedArgs, name: string): T | undefined {
-        const startTime = performance.now();
-        const value = parsed.flags[name];
-        const result = value as T | undefined;
-        
-        observeBaseCommand({
-            'command.name': this.options.name,
-            'command.operation': 'getFlag',
-            'command.duration.ms': performance.now() - startTime,
+        return this.observe.wrap('getFlag', {}, () => {
+            const value = parsed.flags[name];
+            return value as T | undefined;
         });
-        return result;
     }
 
     /**
@@ -241,8 +208,7 @@ export abstract class BaseCommand {
      * Print result - respects --json flag if defined
      */
     printResult(parsed: ParsedArgs, data: unknown, defaultFormatter?: (data: unknown) => void): void {
-        const startTime = performance.now();
-        try {
+        this.observe.wrap('printResult', {}, () => {
             if (this.getBooleanFlag(parsed, 'json')) {
                 this.printJson(data);
             } else if (defaultFormatter) {
@@ -250,21 +216,7 @@ export abstract class BaseCommand {
             } else {
                 this.printJson(data);
             }
-            
-            observeBaseCommand({
-                'command.name': this.options.name,
-                'command.operation': 'printResult',
-                'command.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeBaseCommand({
-                'command.name': this.options.name,
-                'command.operation': 'printResult',
-                'command.error': error instanceof Error ? error.message : String(error),
-                'command.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     /**
@@ -358,13 +310,13 @@ export abstract class BaseCommand {
      * Factory method to create a command compatible with the existing registry
      */
     static create(options: CommandOptions & {
-        execute: (parsed: ParsedArgs, context: CommandContext) => Promise<boolean>;
+        execute: (this: BaseCommand, parsed: ParsedArgs, context: CommandContext) => Promise<boolean>;
         validate?: (args: string[]) => boolean;
     }) {
         // We'll create a subclass dynamically
         const commandInstance = new (class extends BaseCommand {
             async execute(parsed: ParsedArgs, context: CommandContext): Promise<boolean> {
-                return options.execute(parsed, context);
+                return options.execute.call(this, parsed, context);
             }
         })(options);
 

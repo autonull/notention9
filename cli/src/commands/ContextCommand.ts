@@ -7,11 +7,11 @@ export const OpenCommand = BaseCommand.create({
     name: '/open',
     description: 'Set active context to a note',
     usage: '/open <note_id>',
-    execute: async (parsed, context: CommandContext) => {
+    execute: async function(this: BaseCommand, parsed, context: CommandContext) {
         const noteId = parsed.positional[0];
         if (!noteId) {
-            parsed.printError('Note ID required');
-            parsed.printUsage();
+            this.printError('Note ID required');
+            this.printUsage();
             return false;
         }
 
@@ -29,7 +29,7 @@ export const OpenCommand = BaseCommand.create({
                 log.warn(`Note '${noteId}' not found.`);
             }
         } catch (e: unknown) {
-            parsed.printError("Failed to open note", e);
+            this.printError("Failed to open note", e);
         }
         return true;
     }

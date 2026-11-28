@@ -12,18 +12,18 @@ export const ReproduceCommand = BaseCommand.create({
     flags: [
         { name: 'json', type: 'boolean', description: 'Output as JSON' }
     ],
-    execute: async (parsed, _context: CommandContext) => {
+    execute: async function(this: BaseCommand, parsed, _context: CommandContext) {
         const target = parsed.positional[0];
         if (!target) {
-            parsed.printError('Finding ID or runId required');
-            parsed.printUsage();
+            this.printError('Finding ID or runId required');
+            this.printUsage();
             return false;
         }
 
         const intent = parseOptimizeIntent(['reproduce', target]);
 
         if (!intent.target) {
-            parsed.printError('Finding ID or runId required');
+            this.printError('Finding ID or runId required');
             return false;
         }
 
@@ -42,7 +42,7 @@ export const ReproduceCommand = BaseCommand.create({
         const evidenceDir = await getEvidenceDir();
 
         if (!existsSync(evidenceDir)) {
-            parsed.printError('No evidence directory found');
+            this.printError('No evidence directory found');
             return false;
         }
 
@@ -83,7 +83,7 @@ export const ReproduceCommand = BaseCommand.create({
         }
 
         if (!foundRunId || !foundFinding) {
-            parsed.printError(`Finding not found: ${intent.target}`);
+            this.printError(`Finding not found: ${intent.target}`);
             return false;
         }
 
@@ -92,7 +92,7 @@ export const ReproduceCommand = BaseCommand.create({
 
         const replayBundle = await loadBundle(foundRunId);
         if (!replayBundle) {
-            parsed.printError(`Bundle not found for run: ${foundRunId}`);
+            this.printError(`Bundle not found for run: ${foundRunId}`);
             return false;
         }
 
@@ -114,7 +114,7 @@ export const ReproduceCommand = BaseCommand.create({
 
         const success = result.status === 0;
         if (success) {
-            parsed.printSuccess(`Reproduction completed. Replay Run ID: ${runId}`);
+            this.printSuccess(`Reproduction completed. Replay Run ID: ${runId}`);
             const actualReplayRunId = `replay_${foundRunId}`;
             const verification = await verifyReplay(foundRunId, actualReplayRunId);
             if (verification.reproduced) {
@@ -127,11 +127,11 @@ export const ReproduceCommand = BaseCommand.create({
                 console.log('UNEXPECTED');
             }
         } else {
-            parsed.printError(`Reproduction failed. Replay Run ID: ${runId}`);
+            this.printError(`Reproduction failed. Replay Run ID: ${runId}`);
         }
 
-        if (parsed.getBooleanFlag('json')) {
-            parsed.printJson({ success, runId, foundRunId, status: result.status });
+        if (this.getBooleanFlag(parsed, 'json')) {
+            this.printJson({ success, runId, foundRunId, status: result.status });
         }
         return success;
     }

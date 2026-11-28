@@ -30,3 +30,7 @@ export * from './Registry.js';
 export * from './resolutionUtils.js';
 export * from './mutex.js';
 export * from './piiRedaction.js';
+export * from './signals.js';
+export * from './singleton.js';
+export { createObservabilityWrapper, type ObservabilityWrapper } from './ObservabilityMixin.js';
+export * from '../observability/index.js';

@@ -11,19 +11,19 @@ export const OptimizeCommand = BaseCommand.create({
         { name: 'allow-draft', type: 'boolean', description: 'Allow running draft journeys' },
         { name: 'json', type: 'boolean', description: 'Output as JSON' }
     ],
-    execute: async (parsed, _context: CommandContext) => {
+    execute: async function(this: BaseCommand, parsed, _context: CommandContext) {
         const journeyId = parsed.positional[0];
         if (!journeyId) {
-            parsed.printError('Journey ID required');
-            parsed.printUsage();
+            this.printError('Journey ID required');
+            this.printUsage();
             return false;
         }
 
-        const allowDraft = parsed.getBooleanFlag('allow-draft');
+        const allowDraft = this.getBooleanFlag(parsed, 'allow-draft');
 
         const intent = parseOptimizeIntent(['optimize', journeyId]);
         if (!intent.journey) {
-            parsed.printError('Journey ID required');
+            this.printError('Journey ID required');
             return false;
         }
 
@@ -43,13 +43,13 @@ export const OptimizeCommand = BaseCommand.create({
 
         const success = result.status === 0;
         if (success) {
-            parsed.printSuccess(`Journey passed. Run ID: ${runId}`);
+            this.printSuccess(`Journey passed. Run ID: ${runId}`);
         } else {
-            parsed.printError(`Journey failed. Run ID: ${runId}`);
+            this.printError(`Journey failed. Run ID: ${runId}`);
         }
 
-        if (parsed.getBooleanFlag('json')) {
-            parsed.printJson({ success, runId, status: result.status });
+        if (this.getBooleanFlag(parsed, 'json')) {
+            this.printJson({ success, runId, status: result.status });
         }
         return success;
     }

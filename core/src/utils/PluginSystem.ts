@@ -1217,30 +1217,28 @@ export class PluginManager {
 
 // ============================================================================
 // Singleton Instance & Exports
-// ============================================================================
+import { getSingleton, resetSingleton } from './singleton.js';
 
-let pluginManagerInstance: PluginManager | null = null;
+// ============================================================================
 
 /** Get the singleton plugin manager instance */
 export function getPluginManager(): PluginManager {
-    if (!pluginManagerInstance) {
-        pluginManagerInstance = new PluginManager();
-    }
-    return pluginManagerInstance;
+    return getSingleton(PluginManager, () => new PluginManager());
 }
 
 /** Reset the plugin manager (for testing) */
 export function resetPluginManager(): void {
-    if (pluginManagerInstance) {
+    const manager = getSingleton(PluginManager, () => null as any);
+    if (manager) {
         // Deactivate all plugins
-        for (const state of pluginManagerInstance.getAllPlugins()) {
+        for (const state of manager.getAllPlugins()) {
             if (state.active) {
                 try {
                     state.instance.deactivate();
                 } catch {}
             }
         }
-        pluginManagerInstance = null;
+        resetSingleton(PluginManager);
     }
 }
 

@@ -49,6 +49,10 @@ const browserEntries = {
   // Utils
   'utils/index': 'src/utils/index.browser.ts',
   'utils/common': 'src/utils/common.browser.ts',
+  'utils/signals': 'src/utils/signals.ts',
+  'utils/singleton': 'src/utils/singleton.ts',
+  'utils/ObservabilityMixin': 'src/utils/ObservabilityMixin.ts',
+  'utils/PluginSystem': 'src/utils/PluginSystem.ts',
   'patternRecognition/index': 'src/patternRecognition/index.ts',
   'security/index': 'src/security/index.ts',
   'config': 'src/config.browser.ts',

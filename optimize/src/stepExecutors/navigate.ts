@@ -1,12 +1,9 @@
-import type { Page } from '@playwright/test';
-import type { Step } from '../journey.js';
-import { StepExecutor, StepExecutionResult } from './index.js';
-import { BaseStepExecutor } from './BaseStepExecutor.js';
+import { createExecutor, typedStep } from './executorFactory.js';
 
-export const navigateExecutor: StepExecutor = BaseStepExecutor.create({
+export const navigateExecutor = createExecutor({
     kind: 'navigate',
     execute: async ({ page, step }) => {
-        const s = step as Extract<Step, { kind: 'navigate' }>;
+        const s = typedStep(step, 'navigate');
         await page.goto(`#${s.hash}`);
         await page.waitForLoadState('domcontentloaded');
         return { ok: true };

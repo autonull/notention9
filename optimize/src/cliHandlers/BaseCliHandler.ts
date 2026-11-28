@@ -1,5 +1,3 @@
-import type { ParsedArgs } from '@notention/cli/commands/BaseCommand.js';
-
 /**
  * BaseCliHandler - Shared functionality for optimize CLI handlers
  * 
@@ -25,17 +23,24 @@ import type { ParsedArgs } from '@notention/cli/commands/BaseCommand.js';
  * }
  * ```
  */
+export interface ParsedArgs {
+    positional: string[];
+    flags: Record<string, boolean | string | number>;
+}
+
+export interface FlagDefinition {
+    name: string;
+    alias?: string;
+    type: 'boolean' | 'string' | 'number';
+    description: string;
+    default?: boolean | string | number;
+}
+
 export class BaseCliHandler {
     /**
      * Parse command line arguments using the same logic as BaseCommand
      */
-    static parseArgs(rawArgs: string[], flagDefinitions: Array<{
-        name: string;
-        alias?: string;
-        type: 'boolean' | 'string' | 'number';
-        description: string;
-        default?: boolean | string | number;
-    }>): ParsedArgs {
+    static parseArgs(rawArgs: string[], flagDefinitions: FlagDefinition[]): ParsedArgs {
         const flagMap = new Map<string, { type: 'boolean' | 'string' | 'number'; default?: boolean | string | number }>();
         const aliasMap = new Map<string, string>();
 

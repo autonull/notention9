@@ -1,4 +1,4 @@
-import { SkillRegistry, SkillRegistrable, SkillRegistryType } from '@notention/core';
+import { Registry, SkillRegistry, SkillRegistrable, SkillRegistryType } from '@notention/core';
 import type { Note, RegisteredSkill } from '@notention/core';
 import type { Skill, SkillMetadata } from './types.js';
 import { Logger } from '@notention/core';
@@ -19,7 +19,7 @@ export class AgentSkillRegistry {
      * Specialized register method for Agent skills with metadata
      */
     register(skill: Skill, metadata?: Partial<SkillMetadata>): void {
-        const registrable = skill as SkillRegistrable;
+        const registrable = skill as unknown as SkillRegistrable;
         this.registry.register(registrable);
 
         this.skillMetadata.set(skill.id, {

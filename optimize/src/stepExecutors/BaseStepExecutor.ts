@@ -31,7 +31,8 @@ import {
     STEP_MODAL_VISIBLE_TIMEOUT_MS,
     STEP_MODAL_ATTACHED_TIMEOUT_MS,
 } from '../constants.js';
-import { observeBaseStepExecutor } from '@notention/core';
+import { observeBaseStepExecutor, type BaseStepExecutorEventAttributes, EventSeverity } from '@notention/core';
+import { createObservabilityWrapper, type ObservabilityWrapper } from '@notention/core/utils/ObservabilityMixin.js';
 
 export interface BaseExecutorContext {
     page: Page;
@@ -56,36 +57,35 @@ export interface BaseExecutorOptions<StepKind extends Step['kind']> {
  * BaseStepExecutor class providing shared utilities
  */
 export class BaseStepExecutor {
+    private static readonly observe: ObservabilityWrapper<BaseStepExecutorEventAttributes> = 
+        createObservabilityWrapper<BaseStepExecutorEventAttributes>({
+            observeFn: observeBaseStepExecutor,
+            staticAttrs: { 'stepexecutor.stepKind': 'unknown' },
+            errorKey: 'stepexecutor.error',
+            durationKey: 'stepexecutor.duration.ms',
+            operationKey: 'stepexecutor.operation',
+        });
+
     // --- Target Resolution ---
 
     /**
      * Check if target is a modal target
      */
     static isModalTarget(target: Target): boolean {
-        const startTime = performance.now();
-        const result = 'modal' in target && !!target.modal;
-        observeBaseStepExecutor({
-            'stepexecutor.stepKind': 'unknown',
-            'stepexecutor.operation': 'isModalTarget',
-            'stepexecutor.target.type': result ? 'modal' : 'standard',
-            'stepexecutor.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return BaseStepExecutor.observe.wrap('isModalTarget', {}, () => {
+            const result = 'modal' in target && !!target.modal;
+            return { result, attrs: { 'stepexecutor.target.type': result ? 'modal' : 'standard' } };
+        }, ({ result: _result, attrs }) => ({ ...attrs, 'stepexecutor.target.type': attrs['stepexecutor.target.type'] })).result;
     }
 
     /**
      * Get modal locator
      */
     static getModalLocator(page: Page, modalName: string): Locator {
-        const startTime = performance.now();
-        const result = page.getByRole('dialog', { name: modalName });
-        observeBaseStepExecutor({
-            'stepexecutor.stepKind': 'unknown',
-            'stepexecutor.operation': 'getModalLocator',
-            'stepexecutor.target.type': 'modal',
-            'stepexecutor.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return BaseStepExecutor.observe.wrap('getModalLocator', {}, () => {
+            const result = page.getByRole('dialog', { name: modalName });
+            return { result, attrs: { 'stepexecutor.target.type': 'modal' } };
+        }, ({ result: _result, attrs }) => ({ ...attrs, 'stepexecutor.target.type': attrs['stepexecutor.target.type'] })).result;
     }
 
     /**
@@ -93,8 +93,7 @@ export class BaseStepExecutor {
      * Handles testId, role, label, and modal scoping
      */
     static resolveTarget(page: Page, target: Target): Locator {
-        const startTime = performance.now();
-        try {
+        return BaseStepExecutor.observe.wrap('resolveTarget', {}, () => {
             const isModal = BaseStepExecutor.isModalTarget(target);
             const scope = isModal
                 ? BaseStepExecutor.getModalLocator(page, target.modal!)
@@ -112,23 +111,8 @@ export class BaseStepExecutor {
                 throw new Error('Invalid target');
             }
             
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'resolveTarget',
-                'stepexecutor.target.type': 'testId' in target ? 'testId' : 'role' in target ? 'role' : 'label',
-                'stepexecutor.isModal': isModal,
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            return result;
-        } catch (error) {
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'resolveTarget',
-                'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+            return { result, attrs: { 'stepexecutor.target.type': 'testId' in target ? 'testId' : 'role' in target ? 'role' : 'label', 'stepexecutor.isModal': isModal } };
+        }, ({ result: _result, attrs }) => ({ ...attrs, 'stepexecutor.target.type': attrs['stepexecutor.target.type'], 'stepexecutor.isModal': attrs['stepexecutor.isModal'] })).result;
     }
 
     /**
@@ -167,29 +151,12 @@ export class BaseStepExecutor {
      * Uses different timeouts for modal vs non-modal
      */
     static async waitForReady(locator: Locator, isModal: boolean = false): Promise<void> {
-        const startTime = performance.now();
-        try {
+        return BaseStepExecutor.observe.wrapAsync('waitForReady', { 'stepexecutor.isModal': isModal }, async () => {
             const visibleTimeout = isModal ? STEP_MODAL_VISIBLE_TIMEOUT_MS : STEP_VISIBLE_TIMEOUT_MS;
             const attachedTimeout = isModal ? STEP_MODAL_ATTACHED_TIMEOUT_MS : STEP_ATTACHED_TIMEOUT_MS;
             await locator.waitFor({ state: 'visible', timeout: visibleTimeout });
             await locator.waitFor({ state: 'attached', timeout: attachedTimeout });
-            
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'waitForReady',
-                'stepexecutor.isModal': isModal,
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'waitForReady',
-                'stepexecutor.isModal': isModal,
-                'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     /**
@@ -200,22 +167,14 @@ export class BaseStepExecutor {
         timeoutMs: number,
         intervalMs: number = 100
     ): Promise<void> {
-        const startTime = performance.now();
-        try {
+        return BaseStepExecutor.observe.wrapAsync('waitFor', {}, async () => {
+            const startTime = Date.now();
             while (Date.now() - startTime < timeoutMs) {
                 if (await condition()) return;
                 await new Promise(r => setTimeout(r, intervalMs));
             }
             throw new Error(`waitFor timeout after ${timeoutMs}ms`);
-        } catch (error) {
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'waitFor',
-                'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     // --- State Snapshot ---
@@ -224,53 +183,25 @@ export class BaseStepExecutor {
      * Get application state snapshot from page
      */
     static async getStateSnapshot(page: Page): Promise<unknown> {
-        const startTime = performance.now();
-        try {
+        return BaseStepExecutor.observe.wrapAsync('getStateSnapshot', {}, async () => {
             const result = await page.evaluate(() => 
                 (globalThis as any).__NOTENTION__?.state?.() ?? 
                 (globalThis as any).__UISG_SKELETON__?.state?.()
             );
-            
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'getStateSnapshot',
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
             return result;
-        } catch (error) {
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'getStateSnapshot',
-                'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
+
+    // --- ARIA Snapshot ---
 
     /**
      * Get ARIA snapshot from page
      */
     static async getAriaSnapshot(page: Page, label: string): Promise<string | undefined> {
-        const startTime = performance.now();
-        try {
+        return BaseStepExecutor.observe.wrapAsync('getAriaSnapshot', {}, async () => {
             const result = await page.evaluate(() => (globalThis as any).__NOTENTION__?.ariaSnapshot?.(label));
-            
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'getAriaSnapshot',
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
             return result;
-        } catch (error) {
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'getAriaSnapshot',
-                'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     // --- Validation ---
@@ -279,52 +210,21 @@ export class BaseStepExecutor {
      * Validate step kind matches expected
      */
     static validateStepKind(step: Step, expectedKind: Step['kind']): void {
-        const startTime = performance.now();
-        try {
+        BaseStepExecutor.observe.wrap('validateStepKind', { 'stepexecutor.stepKind': step.kind }, () => {
             if (step.kind !== expectedKind) {
                 throw new Error(`Invalid step for ${expectedKind} executor: got ${step.kind}`);
             }
-            
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': step.kind,
-                'stepexecutor.operation': 'validateStepKind',
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': step.kind,
-                'stepexecutor.operation': 'validateStepKind',
-                'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     /**
      * Take screenshot
      */
     static async takeScreenshot(page: Page, fullPage: boolean = false): Promise<string> {
-        const startTime = performance.now();
-        try {
+        return BaseStepExecutor.observe.wrapAsync('takeScreenshot', {}, async () => {
             const buffer = await page.screenshot({ fullPage });
-            const result = buffer.toString('base64');
-            
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'takeScreenshot',
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            return result;
-        } catch (error) {
-            observeBaseStepExecutor({
-                'stepexecutor.stepKind': 'unknown',
-                'stepexecutor.operation': 'takeScreenshot',
-                'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                'stepexecutor.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+            return buffer.toString('base64');
+        });
     }
 
     // --- Factory ---
@@ -348,8 +248,7 @@ export class BaseStepExecutor {
 
         return {
             async execute(page: Page, step: Step, consoleEntries?: Array<{ type: string; text: string; location?: string }>): Promise<StepExecutionResult> {
-                const startTime = performance.now();
-                try {
+                return BaseStepExecutor.observe.wrapAsync('execute', { 'stepexecutor.stepKind': kind }, async () => {
                     // Validate step kind
                     if (validate) {
                         validate(step);
@@ -387,24 +286,11 @@ export class BaseStepExecutor {
                     };
 
                     const result = await execute(context);
-                    
-                    observeBaseStepExecutor({
-                        'stepexecutor.stepKind': kind,
-                        'stepexecutor.operation': 'execute',
-                        'stepexecutor.target.type': target ? ('testId' in target ? 'testId' : 'role' in target ? 'role' : 'label') : 'none',
-                        'stepexecutor.isModal': isModal,
-                        'stepexecutor.duration.ms': performance.now() - startTime,
-                    });
                     return result;
-                } catch (error) {
-                    observeBaseStepExecutor({
-                        'stepexecutor.stepKind': kind,
-                        'stepexecutor.operation': 'execute',
-                        'stepexecutor.error': error instanceof Error ? error.message : String(error),
-                        'stepexecutor.duration.ms': performance.now() - startTime,
-                    });
-                    throw error;
-                }
+                }, (_result) => ({
+                    'stepexecutor.target.type': 'none',
+                    'stepexecutor.isModal': false,
+                }));
             },
         };
     }

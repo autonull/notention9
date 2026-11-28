@@ -21,9 +21,9 @@ export async function handleReproduce(args: string[]): Promise<number> {
 
     console.log(`🔁 Reproducing: ${target}`);
 
-    if (parsed.getBooleanFlag('simulator')) {
-        console.log(`🎬 Running simulator regression${parsed.getBooleanFlag('headless') ? ' (headless)' : ''}...`);
-        return runSimulatorRegression(target, parsed.getBooleanFlag('json'), parsed.getBooleanFlag('headless'));
+    if (BaseCliHandler.getBooleanFlag(parsed, 'simulator')) {
+        console.log(`🎬 Running simulator regression${BaseCliHandler.getBooleanFlag(parsed, 'headless') ? ' (headless)' : ''}...`);
+        return runSimulatorRegression(target, BaseCliHandler.getBooleanFlag(parsed, 'json'), BaseCliHandler.getBooleanFlag(parsed, 'headless'));
     }
 
     const bundle = await loadBundle(target);
@@ -44,7 +44,7 @@ export async function handleReproduce(args: string[]): Promise<number> {
             BaseCliHandler.failure(`Replay failed. Replay Run ID: ${runId}`);
         }
 
-        if (parsed.getBooleanFlag('json')) {
+        if (BaseCliHandler.getBooleanFlag(parsed, 'json')) {
             BaseCliHandler.printJson({ success, runId, status });
         }
         return success ? BaseCliHandler.success() : BaseCliHandler.failure();
@@ -80,7 +80,7 @@ export async function handleReproduce(args: string[]): Promise<number> {
         BaseCliHandler.failure(`Reproduction failed. Replay Run ID: ${runId}`);
     }
 
-    if (parsed.getBooleanFlag('json')) {
+    if (BaseCliHandler.getBooleanFlag(parsed, 'json')) {
         BaseCliHandler.printJson({ success, runId, status });
     }
     return success ? BaseCliHandler.success() : BaseCliHandler.failure();
