@@ -53,7 +53,6 @@ import {
 
 // Re-export types
 export type {
-    EventSeverity,
     ObservabilityEventAttributes,
     ObservableSpan,
     ObservableTracer,
@@ -66,8 +65,10 @@ export type {
     BaseStepExecutorEventAttributes,
 } from './types.js';
 
+// EventSeverity is an enum (both type and value)
+export { EventSeverity } from './types.js';
+
 export {
-    EventSeverity,
     noopSpan,
     noopTracer,
     noopMeter,
@@ -295,4 +296,151 @@ export function recordOperationResult(
     } else {
         errorCounter.add(1, { operation, ...attributes });
     }
+}
+
+// ============================================================================
+// Generic Operation Wrapper
+// ============================================================================
+
+/** Options for withObservability */
+export interface WithObservabilityOptions<Attrs extends Record<string, any>, Result = any> {
+    /** The observe function to call (e.g., observeRegistry) */
+    observeFn: (attrs: Attrs) => void;
+    /** Operation name */
+    operation: string;
+    /** Static attributes to include in every call */
+    staticAttrs?: Partial<Attrs>;
+    /** Function to extract error key from attributes type */
+    errorKey: keyof Attrs;
+    /** Function to determine severity from error presence */
+    getSeverity?: (error?: string) => EventSeverity;
+    /** Optional function to extract additional attributes from the result */
+    resultAttrs?: (result: Result) => Partial<Attrs>;
+    /** Key name for duration field (e.g., 'registry.duration.ms') */
+    durationKey?: string;
+}
+
+/**
+ * Creates a wrapper function that automatically times execution and emits observability events.
+ * 
+ * @example
+ * ```typescript
+ * const observeOp = withObservability({
+ *     observeFn: observeRegistry,
+ *     operation: 'register',
+ *     staticAttrs: { 'registry.name': 'myRegistry' },
+ *     errorKey: 'registry.error',
+ * });
+ * 
+ * // Usage
+ * await observeOp(
+ *     { 'registry.item.name': item.name },
+ *     () => { this.items.set(item.name, item); }
+ * );
+ * ```
+ */
+export function withObservability<Attrs extends Record<string, any>, T>(
+    options: WithObservabilityOptions<Attrs, T>
+) {
+    const { observeFn, operation, staticAttrs = {}, errorKey, getSeverity, resultAttrs, durationKey } = options;
+    
+    return async function execute<Result>(
+        dynamicAttrs: Partial<Attrs>,
+        fn: () => Result | Promise<Result>
+    ): Promise<Result> {
+        const startTime = performance.now();
+        try {
+            const result = await fn();
+            const durationMs = performance.now() - startTime;
+            observeFn({
+                ...staticAttrs,
+                ...dynamicAttrs,
+                ...(resultAttrs ? resultAttrs(result) : {}),
+                [errorKey]: undefined,
+                'event.severity': getSeverity ? getSeverity(undefined) : EventSeverity.INFO,
+                ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
+            } as Attrs);
+            return result;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const durationMs = performance.now() - startTime;
+            observeFn({
+                ...staticAttrs,
+                ...dynamicAttrs,
+                [errorKey]: errorMessage,
+                'event.severity': getSeverity ? getSeverity(errorMessage) : EventSeverity.ERROR,
+                ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
+            } as Attrs);
+            throw error;
+        }
+    };
+}
+
+/**
+ * Synchronous version of withObservability.
+ */
+export function withObservabilitySync<Attrs extends Record<string, any>, T>(
+    options: WithObservabilityOptions<Attrs, T>
+) {
+    const { observeFn, operation, staticAttrs = {}, errorKey, getSeverity, resultAttrs, durationKey } = options;
+    
+    return function execute<Result>(
+        dynamicAttrs: Partial<Attrs>,
+        fn: () => Result,
+        resultAttrsOverride?: (result: Result) => Partial<Attrs>
+    ): Result {
+        const startTime = performance.now();
+        try {
+            const result = fn();
+            const durationMs = performance.now() - startTime;
+            
+            // Compute result attributes
+            let resultAttrsObj: Partial<Attrs> = {};
+            if (resultAttrsOverride) {
+                resultAttrsObj = resultAttrsOverride(result);
+            } else if (resultAttrs) {
+                resultAttrsObj = resultAttrs(result);
+            }
+            
+            observeFn({
+                ...staticAttrs,
+                ...dynamicAttrs,
+                ...resultAttrsObj,
+                [errorKey]: undefined,
+                'event.severity': getSeverity ? getSeverity(undefined) : EventSeverity.INFO,
+                ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
+            } as Attrs);
+            return result;
+        } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            const durationMs = performance.now() - startTime;
+            observeFn({
+                ...staticAttrs,
+                ...dynamicAttrs,
+                [errorKey]: errorMessage,
+                'event.severity': getSeverity ? getSeverity(errorMessage) : EventSeverity.ERROR,
+                ...(durationKey ? { [durationKey]: durationMs } as Partial<Attrs> : {}),
+            } as Attrs);
+            throw error;
+        }
+    };
+}
+
+/**
+ * Creates a simple timing wrapper for functions that don't need full observability.
+ * Returns [result, durationMs].
+ */
+export function timeFn<T>(fn: () => T): [T, number] {
+    const startTime = performance.now();
+    const result = fn();
+    return [result, performance.now() - startTime];
+}
+
+/**
+ * Async version of timeFn.
+ */
+export async function timeFnAsync<T>(fn: () => Promise<T>): Promise<[T, number]> {
+    const startTime = performance.now();
+    const result = await fn();
+    return [result, performance.now() - startTime];
 }

@@ -1,5 +1,5 @@
 import type {NoteMode, NoteTab, NotesSection, SettingsTab, View} from '@notention/core';
-import { observeUrlRouter } from '@notention/core';
+import { observeUrlRouter, withObservabilitySync, EventSeverity } from '@notention/core';
 
 export interface Route {
     view: View;
@@ -63,14 +63,37 @@ export class UrlRouter {
     private currentRoute: Route = {...DEFAULT_ROUTE};
     private isInitialized = false;
     private handleUrlChangeBound: () => void;
+    private readonly observeOp: ReturnType<typeof withObservabilitySync<UrlRouterEventAttributes, any>>;
 
     constructor() {
         this.handleUrlChangeBound = this.handleUrlChange.bind(this);
+        
+        this.observeOp = withObservabilitySync<UrlRouterEventAttributes, any>({
+            observeFn: observeUrlRouter,
+            operation: '',
+            staticAttrs: {},
+            errorKey: 'urlrouter.error',
+            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
+            durationKey: 'urlrouter.duration.ms',
+        });
+    }
+
+    private observe(operation: string, dynamicAttrs: Partial<UrlRouterEventAttributes>, fn: () => any, resultAttrs?: (result: any) => Partial<UrlRouterEventAttributes>) {
+        return this.observeOp({ ...dynamicAttrs, 'urlrouter.operation': operation }, fn, resultAttrs);
+    }
+
+    private routeAttrs(route: Route): Partial<UrlRouterEventAttributes> {
+        return {
+            'urlrouter.route.view': route.view,
+            'urlrouter.route.noteId': route.noteId ?? undefined,
+            'urlrouter.route.mode': route.mode,
+            'urlrouter.route.section': route.section,
+            'urlrouter.route.tab': route.tab,
+        };
     }
 
     parse(hash: string): Route {
-        const startTime = performance.now();
-        try {
+        return this.observe('parse', {}, () => {
             const raw = hash.replace(/^#/, '').replace(/^\/+/, '');
             if (!raw) return {...DEFAULT_ROUTE};
 
@@ -116,29 +139,12 @@ export class UrlRouter {
                 }
             }
 
-            observeUrlRouter({
-                'urlrouter.operation': 'parse',
-                'urlrouter.route.view': route.view,
-                'urlrouter.route.noteId': route.noteId ?? undefined,
-                'urlrouter.route.mode': route.mode,
-                'urlrouter.route.section': route.section,
-                'urlrouter.route.tab': route.tab,
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
             return route;
-        } catch (error) {
-            observeUrlRouter({
-                'urlrouter.operation': 'parse',
-                'urlrouter.error': error instanceof Error ? error.message : String(error),
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        }, (route) => this.routeAttrs(route));
     }
 
     serialize(route: Route): string {
-        const startTime = performance.now();
-        try {
+        return this.observe('serialize', this.routeAttrs(route), () => {
             let result: string;
 
             if (route.view === 'settings') {
@@ -165,29 +171,12 @@ export class UrlRouter {
                 result = `#/notes${query ? `?${query}` : ''}`;
             }
 
-            observeUrlRouter({
-                'urlrouter.operation': 'serialize',
-                'urlrouter.route.view': route.view,
-                'urlrouter.route.noteId': route.noteId ?? undefined,
-                'urlrouter.route.mode': route.mode,
-                'urlrouter.route.section': route.section,
-                'urlrouter.route.tab': route.tab,
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
             return result;
-        } catch (error) {
-            observeUrlRouter({
-                'urlrouter.operation': 'serialize',
-                'urlrouter.error': error instanceof Error ? error.message : String(error),
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     private handleUrlChange(): void {
-        const startTime = performance.now();
-        try {
+        this.observe('navigate', {}, () => {
             const route = this.parse(window.location.hash);
             this.currentRoute = route;
             const canonical = this.serialize(route);
@@ -195,111 +184,47 @@ export class UrlRouter {
                 window.location.hash = canonical;
             }
             this.listeners.forEach(fn => fn(route));
-            
-            observeUrlRouter({
-                'urlrouter.operation': 'navigate',
-                'urlrouter.route.view': route.view,
-                'urlrouter.route.noteId': route.noteId ?? undefined,
-                'urlrouter.route.mode': route.mode,
-                'urlrouter.route.section': route.section,
-                'urlrouter.route.tab': route.tab,
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeUrlRouter({
-                'urlrouter.operation': 'navigate',
-                'urlrouter.error': error instanceof Error ? error.message : String(error),
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-        }
+        }, (route) => this.routeAttrs(route));
     }
 
     init(): Route {
-        const startTime = performance.now();
-        try {
+        return this.observe('init', {}, () => {
             if (!this.isInitialized) {
                 this.isInitialized = true;
                 window.addEventListener('popstate', this.handleUrlChangeBound);
                 window.addEventListener('hashchange', this.handleUrlChangeBound);
                 this.handleUrlChange();
             }
-            const result = this.currentRoute;
-            
-            observeUrlRouter({
-                'urlrouter.operation': 'init',
-                'urlrouter.route.view': result.view,
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-            return result;
-        } catch (error) {
-            observeUrlRouter({
-                'urlrouter.operation': 'init',
-                'urlrouter.error': error instanceof Error ? error.message : String(error),
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+            return this.currentRoute;
+        }, (route) => ({ 'urlrouter.route.view': route.view }));
     }
 
     sync(route: Route): void {
-        const startTime = performance.now();
-        try {
+        this.observe('sync', this.routeAttrs(route), () => {
             const canonical = this.serialize(route);
             if (window.location.hash !== canonical) {
                 window.history.pushState(null, '', canonical);
             }
-            
-            observeUrlRouter({
-                'urlrouter.operation': 'sync',
-                'urlrouter.route.view': route.view,
-                'urlrouter.route.noteId': route.noteId ?? undefined,
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeUrlRouter({
-                'urlrouter.operation': 'sync',
-                'urlrouter.error': error instanceof Error ? error.message : String(error),
-                'urlrouter.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     subscribe(fn: (route: Route) => void): () => void {
-        const startTime = performance.now();
-        this.listeners.add(fn);
-        
-        observeUrlRouter({
-            'urlrouter.operation': 'subscribe',
-            'urlrouter.duration.ms': performance.now() - startTime,
+        this.observe('subscribe', {}, () => {
+            this.listeners.add(fn);
+            return () => this.listeners.delete(fn);
         });
-        
-        return () => this.listeners.delete(fn);
     }
 
     getCurrentRoute(): Route {
-        const startTime = performance.now();
-        const result = {...this.currentRoute};
-        
-        observeUrlRouter({
-            'urlrouter.operation': 'getCurrentRoute',
-            'urlrouter.route.view': result.view,
-            'urlrouter.duration.ms': performance.now() - startTime,
-        });
-        
-        return result;
+        return this.observe('getCurrentRoute', {}, () => ({...this.currentRoute}), (route) => ({ 'urlrouter.route.view': route.view }));
     }
 
     destroy(): void {
-        const startTime = performance.now();
-        window.removeEventListener('popstate', this.handleUrlChangeBound);
-        window.removeEventListener('hashchange', this.handleUrlChangeBound);
-        this.listeners.clear();
-        this.isInitialized = false;
-        
-        observeUrlRouter({
-            'urlrouter.operation': 'destroy',
-            'urlrouter.duration.ms': performance.now() - startTime,
+        this.observe('destroy', {}, () => {
+            window.removeEventListener('popstate', this.handleUrlChangeBound);
+            window.removeEventListener('hashchange', this.handleUrlChangeBound);
+            this.listeners.clear();
+            this.isInitialized = false;
         });
     }
 

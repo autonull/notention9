@@ -15,7 +15,7 @@
 import { z } from 'zod';
 import { Registry, createInstanceRegistry, Resolvable } from '../utils/Registry.js';
 import { Plugin } from '../utils/BasePlugin.js';
-import { observeStrategySystem } from '../utils/observability.js';
+import { observeStrategySystem, withObservabilitySync, EventSeverity } from '../utils/observability.js';
 
 // Re-export types
 export type { 
@@ -77,6 +77,7 @@ export class ProfileRegistry {
     protected userConfigs = new Map<string, UserProfileConfig>();
     protected experiments = new Map<string, StrategyExperiment>();
     protected assignments = new Map<string, ExperimentAssignment>();
+    private readonly observeOp: ReturnType<typeof withObservabilitySync<StrategySystemEventAttributes, any>>;
 
     constructor() {
         for (const profile of DEFAULT_PROFILES) {
@@ -84,6 +85,19 @@ export class ProfileRegistry {
         }
         this.policies.set(DEFAULT_POLICY.id, DEFAULT_POLICY);
         this.experiments.set(DEFAULT_MATCH_DISPLAY_EXPERIMENT.id, DEFAULT_MATCH_DISPLAY_EXPERIMENT);
+        
+        this.observeOp = withObservabilitySync<StrategySystemEventAttributes, any>({
+            observeFn: observeStrategySystem,
+            operation: '',
+            staticAttrs: {},
+            errorKey: 'strategysystem.error',
+            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
+            durationKey: 'strategysystem.duration.ms',
+        });
+    }
+
+    private observe(operation: string, dynamicAttrs: Partial<StrategySystemEventAttributes>, fn: () => any) {
+        return this.observeOp({ ...dynamicAttrs, 'strategysystem.operation': operation }, fn);
     }
 
     reset(): void {
@@ -102,259 +116,129 @@ export class ProfileRegistry {
 
     // Profile management
     registerProfile(profile: StrategyProfile): void {
-        const startTime = performance.now();
-        try {
+        this.observe('registerProfile', { 'strategysystem.profile': profile.id }, () => {
             this.profiles.set(profile.id, { ...profile, updatedAt: new Date().toISOString() });
-            observeStrategySystem({
-                'strategysystem.operation': 'registerProfile',
-                'strategysystem.profile': profile.id,
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeStrategySystem({
-                'strategysystem.operation': 'registerProfile',
-                'strategysystem.profile': profile.id,
-                'strategysystem.error': error instanceof Error ? error.message : String(error),
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     getProfile(id: string): StrategyProfile | undefined {
-        const startTime = performance.now();
-        const result = this.profiles.get(id);
-        observeStrategySystem({
-            'strategysystem.operation': 'getProfile',
-            'strategysystem.profile': id,
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getProfile', { 'strategysystem.profile': id }, () => this.profiles.get(id));
     }
 
     getAllProfiles(): StrategyProfile[] {
-        const startTime = performance.now();
-        const result = Array.from(this.profiles.values());
-        observeStrategySystem({
-            'strategysystem.operation': 'getAllProfiles',
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getAllProfiles', {}, () => Array.from(this.profiles.values()));
     }
 
     getDefaultProfile(): StrategyProfile | undefined {
-        const startTime = performance.now();
-        const result = Array.from(this.profiles.values()).find(p => p.isDefault) ?? DEFAULT_PROFILES[0];
-        observeStrategySystem({
-            'strategysystem.operation': 'getDefaultProfile',
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getDefaultProfile', {}, () => 
+            Array.from(this.profiles.values()).find(p => p.isDefault) ?? DEFAULT_PROFILES[0]
+        );
     }
 
     // Policy management
     registerPolicy(policy: ProfilePolicy): void {
-        const startTime = performance.now();
-        try {
+        this.observe('registerPolicy', { 'strategysystem.profile': policy.id }, () => {
             this.policies.set(policy.id, { ...policy, updatedAt: new Date().toISOString() });
-            observeStrategySystem({
-                'strategysystem.operation': 'registerPolicy',
-                'strategysystem.profile': policy.id,
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeStrategySystem({
-                'strategysystem.operation': 'registerPolicy',
-                'strategysystem.profile': policy.id,
-                'strategysystem.error': error instanceof Error ? error.message : String(error),
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     getPolicy(id: string): ProfilePolicy | undefined {
-        const startTime = performance.now();
-        const result = this.policies.get(id);
-        observeStrategySystem({
-            'strategysystem.operation': 'getPolicy',
-            'strategysystem.profile': id,
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getPolicy', { 'strategysystem.profile': id }, () => this.policies.get(id));
     }
 
     getActivePolicy(): ProfilePolicy | undefined {
-        const startTime = performance.now();
-        const result = Array.from(this.policies.values()).find(p => p.isEnabled);
-        observeStrategySystem({
-            'strategysystem.operation': 'getActivePolicy',
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getActivePolicy', {}, () => 
+            Array.from(this.policies.values()).find(p => p.isEnabled)
+        );
     }
 
     // User config management
     getUserConfig(userId: string): UserProfileConfig {
-        const startTime = performance.now();
-        let config = this.userConfigs.get(userId);
-        if (!config) {
-            const defaultProfile = this.getDefaultProfile();
-            config = {
-                userId,
-                activeProfileId: defaultProfile?.id ?? 'default',
-                overrides: {
+        return this.observe('getUserConfig', { 'strategysystem.userId': userId }, () => {
+            let config = this.userConfigs.get(userId);
+            if (!config) {
+                const defaultProfile = this.getDefaultProfile();
+                config = {
                     userId,
-                    overrides: {},
+                    activeProfileId: defaultProfile?.id ?? 'default',
+                    overrides: {
+                        userId,
+                        overrides: {},
+                        updatedAt: new Date().toISOString(),
+                    },
+                    manualMode: false,
                     updatedAt: new Date().toISOString(),
-                },
-                manualMode: false,
-                updatedAt: new Date().toISOString(),
-            };
-            this.userConfigs.set(userId, config);
-        }
-        observeStrategySystem({
-            'strategysystem.operation': 'getUserConfig',
-            'strategysystem.userId': userId,
-            'strategysystem.duration.ms': performance.now() - startTime,
+                };
+                this.userConfigs.set(userId, config);
+            }
+            return config;
         });
-        return config;
     }
 
     setUserConfig(config: UserProfileConfig): void {
-        const startTime = performance.now();
-        this.userConfigs.set(config.userId, { ...config, updatedAt: new Date().toISOString() });
-        observeStrategySystem({
-            'strategysystem.operation': 'setUserConfig',
-            'strategysystem.userId': config.userId,
-            'strategysystem.duration.ms': performance.now() - startTime,
+        this.observe('setUserConfig', { 'strategysystem.userId': config.userId }, () => {
+            this.userConfigs.set(config.userId, { ...config, updatedAt: new Date().toISOString() });
         });
     }
 
     setActiveProfile(userId: string, profileId: string): boolean {
-        const startTime = performance.now();
-        try {
+        return this.observe('setActiveProfile', { 'strategysystem.userId': userId, 'strategysystem.profile': profileId }, () => {
             const profile = this.profiles.get(profileId);
-            if (!profile) {
-                observeStrategySystem({
-                    'strategysystem.operation': 'setActiveProfile',
-                    'strategysystem.userId': userId,
-                    'strategysystem.profile': profileId,
-                    'strategysystem.error': 'Profile not found',
-                    'strategysystem.duration.ms': performance.now() - startTime,
-                });
-                return false;
-            }
+            if (!profile) return false;
 
             const config = this.getUserConfig(userId);
             config.activeProfileId = profileId;
             config.manualMode = true;
             config.updatedAt = new Date().toISOString();
             this.userConfigs.set(userId, config);
-            
-            observeStrategySystem({
-                'strategysystem.operation': 'setActiveProfile',
-                'strategysystem.userId': userId,
-                'strategysystem.profile': profileId,
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
             return true;
-        } catch (error) {
-            observeStrategySystem({
-                'strategysystem.operation': 'setActiveProfile',
-                'strategysystem.userId': userId,
-                'strategysystem.profile': profileId,
-                'strategysystem.error': error instanceof Error ? error.message : String(error),
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     setManualMode(userId: string, manual: boolean): void {
-        const startTime = performance.now();
-        const config = this.getUserConfig(userId);
-        config.manualMode = manual;
-        config.updatedAt = new Date().toISOString();
-        this.userConfigs.set(userId, config);
-        observeStrategySystem({
-            'strategysystem.operation': 'setManualMode',
-            'strategysystem.userId': userId,
-            'strategysystem.duration.ms': performance.now() - startTime,
+        this.observe('setManualMode', { 'strategysystem.userId': userId }, () => {
+            const config = this.getUserConfig(userId);
+            config.manualMode = manual;
+            config.updatedAt = new Date().toISOString();
+            this.userConfigs.set(userId, config);
         });
     }
 
     setOverride(userId: string, seamRole: SeamRole, strategyId: string): void {
-        const startTime = performance.now();
-        const config = this.getUserConfig(userId);
-        (config.overrides.overrides as Record<string, string>)[seamRole] = strategyId;
-        config.overrides.updatedAt = new Date().toISOString();
-        config.updatedAt = new Date().toISOString();
-        this.userConfigs.set(userId, config);
-        observeStrategySystem({
-            'strategysystem.operation': 'setOverride',
-            'strategysystem.userId': userId,
-            'strategysystem.seam': seamRole,
-            'strategysystem.strategy': strategyId,
-            'strategysystem.duration.ms': performance.now() - startTime,
+        this.observe('setOverride', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole, 'strategysystem.strategy': strategyId }, () => {
+            const config = this.getUserConfig(userId);
+            (config.overrides.overrides as Record<string, string>)[seamRole] = strategyId;
+            config.overrides.updatedAt = new Date().toISOString();
+            config.updatedAt = new Date().toISOString();
+            this.userConfigs.set(userId, config);
         });
     }
 
     removeOverride(userId: string, seamRole: SeamRole): void {
-        const startTime = performance.now();
-        const config = this.getUserConfig(userId);
-        delete (config.overrides.overrides as Record<string, string>)[seamRole];
-        config.overrides.updatedAt = new Date().toISOString();
-        config.updatedAt = new Date().toISOString();
-        this.userConfigs.set(userId, config);
-        observeStrategySystem({
-            'strategysystem.operation': 'removeOverride',
-            'strategysystem.userId': userId,
-            'strategysystem.seam': seamRole,
-            'strategysystem.duration.ms': performance.now() - startTime,
+        this.observe('removeOverride', { 'strategysystem.userId': userId, 'strategysystem.seam': seamRole }, () => {
+            const config = this.getUserConfig(userId);
+            delete (config.overrides.overrides as Record<string, string>)[seamRole];
+            config.overrides.updatedAt = new Date().toISOString();
+            config.updatedAt = new Date().toISOString();
+            this.userConfigs.set(userId, config);
         });
     }
 
     // Experiment management
     registerExperiment(experiment: StrategyExperiment): void {
-        const startTime = performance.now();
-        try {
+        this.observe('registerExperiment', { 'strategysystem.profile': experiment.id }, () => {
             this.experiments.set(experiment.id, { ...experiment, updatedAt: new Date().toISOString() });
-            observeStrategySystem({
-                'strategysystem.operation': 'registerExperiment',
-                'strategysystem.profile': experiment.id,
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeStrategySystem({
-                'strategysystem.operation': 'registerExperiment',
-                'strategysystem.profile': experiment.id,
-                'strategysystem.error': error instanceof Error ? error.message : String(error),
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     getExperiment(id: string): StrategyExperiment | undefined {
-        const startTime = performance.now();
-        const result = this.experiments.get(id);
-        observeStrategySystem({
-            'strategysystem.operation': 'getExperiment',
-            'strategysystem.profile': id,
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getExperiment', { 'strategysystem.profile': id }, () => this.experiments.get(id));
     }
 
     getActiveExperiments(): StrategyExperiment[] {
-        const startTime = performance.now();
-        const result = Array.from(this.experiments.values()).filter(e => e.isActive);
-        observeStrategySystem({
-            'strategysystem.operation': 'getActiveExperiments',
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getActiveExperiments', {}, () => 
+            Array.from(this.experiments.values()).filter(e => e.isActive)
+        );
     }
 
     recordExposure(experimentId: string, userId: string): void {
@@ -467,92 +351,59 @@ export class StrategySystem {
     readonly profiles: ProfileRegistry;
     readonly resolution = getResolutionStrategyRegistry();
     private revisionStore: ResolutionRevisionStore | null = null;
+    private readonly observeOp: ReturnType<typeof withObservabilitySync<StrategySystemEventAttributes, any>>;
 
     constructor(options?: { revisionStore?: ResolutionRevisionStore }) {
         this.profiles = new ProfileRegistry();
         this.revisionStore = options?.revisionStore ?? null;
+        
+        this.observeOp = withObservabilitySync<StrategySystemEventAttributes, any>({
+            observeFn: observeStrategySystem,
+            operation: '',
+            staticAttrs: {},
+            errorKey: 'strategysystem.error',
+            getSeverity: (err) => err ? EventSeverity.ERROR : EventSeverity.INFO,
+            durationKey: 'strategysystem.duration.ms',
+        });
+    }
+
+    private observe(operation: string, dynamicAttrs: Partial<StrategySystemEventAttributes>, fn: () => any) {
+        return this.observeOp({ ...dynamicAttrs, 'strategysystem.operation': operation }, fn);
     }
 
     // --- Strategy Registration ---
     registerStrategy(s: StrategyRegistrable): void {
-        const startTime = performance.now();
-        try {
+        this.observe('registerStrategy', { 'strategysystem.strategy': s.name, 'strategysystem.seam': s.seam.id }, () => {
             this.strategies.register(s);
-            observeStrategySystem({
-                'strategysystem.operation': 'registerStrategy',
-                'strategysystem.strategy': s.name,
-                'strategysystem.seam': s.seam.id,
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-        } catch (error) {
-            observeStrategySystem({
-                'strategysystem.operation': 'registerStrategy',
-                'strategysystem.strategy': s.name,
-                'strategysystem.seam': s.seam.id,
-                'strategysystem.error': error instanceof Error ? error.message : String(error),
-                'strategysystem.duration.ms': performance.now() - startTime,
-            });
-            throw error;
-        }
+        });
     }
 
     unregisterStrategy(name: string): boolean {
-        const startTime = performance.now();
-        const result = this.strategies.unregister(name);
-        observeStrategySystem({
-            'strategysystem.operation': 'unregisterStrategy',
-            'strategysystem.strategy': name,
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('unregisterStrategy', { 'strategysystem.strategy': name }, () => this.strategies.unregister(name));
     }
 
     getStrategy(name: string): StrategyRegistrable | undefined {
-        const startTime = performance.now();
-        const result = this.strategies.get(name);
-        observeStrategySystem({
-            'strategysystem.operation': 'getStrategy',
-            'strategysystem.strategy': name,
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getStrategy', { 'strategysystem.strategy': name }, () => this.strategies.get(name));
     }
 
     getAllStrategies(): StrategyRegistrable[] {
-        const startTime = performance.now();
-        const result = this.strategies.getAll();
-        observeStrategySystem({
-            'strategysystem.operation': 'getAllStrategies',
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getAllStrategies', {}, () => this.strategies.getAll());
     }
 
     getStrategiesForSeam(seamId: string): StrategyRegistrable[] {
-        const startTime = performance.now();
-        const result = this.strategies.filter(s => s.seam.id === seamId);
-        observeStrategySystem({
-            'strategysystem.operation': 'getStrategiesForSeam',
-            'strategysystem.seam': seamId,
-            'strategysystem.duration.ms': performance.now() - startTime,
-        });
-        return result;
+        return this.observe('getStrategiesForSeam', { 'strategysystem.seam': seamId }, () => this.strategies.filter(s => s.seam.id === seamId));
     }
 
     getSeams(): Seam[] {
-        const startTime = performance.now();
-        const seamMap = new Map<string, Seam>();
-        for (const strategy of this.strategies.getAll()) {
-            if (!seamMap.has(strategy.seam.id)) {
-                seamMap.set(strategy.seam.id, strategy.seam);
+        return this.observe('getSeams', {}, () => {
+            const seamMap = new Map<string, Seam>();
+            for (const strategy of this.strategies.getAll()) {
+                if (!seamMap.has(strategy.seam.id)) {
+                    seamMap.set(strategy.seam.id, strategy.seam);
+                }
             }
-        }
-        const result = Array.from(seamMap.values());
-        observeStrategySystem({
-            'strategysystem.operation': 'getSeams',
-            'strategysystem.duration.ms': performance.now() - startTime,
+            return Array.from(seamMap.values());
         });
-        return result;
     }
 
     // --- Profile Management (delegated) ---
