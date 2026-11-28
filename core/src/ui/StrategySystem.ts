@@ -15,6 +15,7 @@
 import { z } from 'zod';
 import { Registry, createInstanceRegistry, Resolvable } from '../utils/Registry.js';
 import { Plugin } from '../utils/BasePlugin.js';
+import { observeStrategySystem } from '../utils/observability.js';
 
 // Re-export types
 export type { 
@@ -101,36 +102,101 @@ export class ProfileRegistry {
 
     // Profile management
     registerProfile(profile: StrategyProfile): void {
-        this.profiles.set(profile.id, { ...profile, updatedAt: new Date().toISOString() });
+        const startTime = performance.now();
+        try {
+            this.profiles.set(profile.id, { ...profile, updatedAt: new Date().toISOString() });
+            observeStrategySystem({
+                'strategysystem.operation': 'registerProfile',
+                'strategysystem.profile': profile.id,
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+        } catch (error) {
+            observeStrategySystem({
+                'strategysystem.operation': 'registerProfile',
+                'strategysystem.profile': profile.id,
+                'strategysystem.error': error instanceof Error ? error.message : String(error),
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            throw error;
+        }
     }
 
     getProfile(id: string): StrategyProfile | undefined {
-        return this.profiles.get(id);
+        const startTime = performance.now();
+        const result = this.profiles.get(id);
+        observeStrategySystem({
+            'strategysystem.operation': 'getProfile',
+            'strategysystem.profile': id,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getAllProfiles(): StrategyProfile[] {
-        return Array.from(this.profiles.values());
+        const startTime = performance.now();
+        const result = Array.from(this.profiles.values());
+        observeStrategySystem({
+            'strategysystem.operation': 'getAllProfiles',
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getDefaultProfile(): StrategyProfile | undefined {
-        return Array.from(this.profiles.values()).find(p => p.isDefault) ?? DEFAULT_PROFILES[0];
+        const startTime = performance.now();
+        const result = Array.from(this.profiles.values()).find(p => p.isDefault) ?? DEFAULT_PROFILES[0];
+        observeStrategySystem({
+            'strategysystem.operation': 'getDefaultProfile',
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     // Policy management
     registerPolicy(policy: ProfilePolicy): void {
-        this.policies.set(policy.id, { ...policy, updatedAt: new Date().toISOString() });
+        const startTime = performance.now();
+        try {
+            this.policies.set(policy.id, { ...policy, updatedAt: new Date().toISOString() });
+            observeStrategySystem({
+                'strategysystem.operation': 'registerPolicy',
+                'strategysystem.profile': policy.id,
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+        } catch (error) {
+            observeStrategySystem({
+                'strategysystem.operation': 'registerPolicy',
+                'strategysystem.profile': policy.id,
+                'strategysystem.error': error instanceof Error ? error.message : String(error),
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            throw error;
+        }
     }
 
     getPolicy(id: string): ProfilePolicy | undefined {
-        return this.policies.get(id);
+        const startTime = performance.now();
+        const result = this.policies.get(id);
+        observeStrategySystem({
+            'strategysystem.operation': 'getPolicy',
+            'strategysystem.profile': id,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getActivePolicy(): ProfilePolicy | undefined {
-        return Array.from(this.policies.values()).find(p => p.isEnabled);
+        const startTime = performance.now();
+        const result = Array.from(this.policies.values()).find(p => p.isEnabled);
+        observeStrategySystem({
+            'strategysystem.operation': 'getActivePolicy',
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     // User config management
     getUserConfig(userId: string): UserProfileConfig {
+        const startTime = performance.now();
         let config = this.userConfigs.get(userId);
         if (!config) {
             const defaultProfile = this.getDefaultProfile();
@@ -147,59 +213,148 @@ export class ProfileRegistry {
             };
             this.userConfigs.set(userId, config);
         }
+        observeStrategySystem({
+            'strategysystem.operation': 'getUserConfig',
+            'strategysystem.userId': userId,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
         return config;
     }
 
     setUserConfig(config: UserProfileConfig): void {
+        const startTime = performance.now();
         this.userConfigs.set(config.userId, { ...config, updatedAt: new Date().toISOString() });
+        observeStrategySystem({
+            'strategysystem.operation': 'setUserConfig',
+            'strategysystem.userId': config.userId,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
     }
 
     setActiveProfile(userId: string, profileId: string): boolean {
-        const profile = this.profiles.get(profileId);
-        if (!profile) return false;
+        const startTime = performance.now();
+        try {
+            const profile = this.profiles.get(profileId);
+            if (!profile) {
+                observeStrategySystem({
+                    'strategysystem.operation': 'setActiveProfile',
+                    'strategysystem.userId': userId,
+                    'strategysystem.profile': profileId,
+                    'strategysystem.error': 'Profile not found',
+                    'strategysystem.duration.ms': performance.now() - startTime,
+                });
+                return false;
+            }
 
-        const config = this.getUserConfig(userId);
-        config.activeProfileId = profileId;
-        config.manualMode = true;
-        config.updatedAt = new Date().toISOString();
-        this.userConfigs.set(userId, config);
-        return true;
+            const config = this.getUserConfig(userId);
+            config.activeProfileId = profileId;
+            config.manualMode = true;
+            config.updatedAt = new Date().toISOString();
+            this.userConfigs.set(userId, config);
+            
+            observeStrategySystem({
+                'strategysystem.operation': 'setActiveProfile',
+                'strategysystem.userId': userId,
+                'strategysystem.profile': profileId,
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            return true;
+        } catch (error) {
+            observeStrategySystem({
+                'strategysystem.operation': 'setActiveProfile',
+                'strategysystem.userId': userId,
+                'strategysystem.profile': profileId,
+                'strategysystem.error': error instanceof Error ? error.message : String(error),
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            throw error;
+        }
     }
 
     setManualMode(userId: string, manual: boolean): void {
+        const startTime = performance.now();
         const config = this.getUserConfig(userId);
         config.manualMode = manual;
         config.updatedAt = new Date().toISOString();
         this.userConfigs.set(userId, config);
+        observeStrategySystem({
+            'strategysystem.operation': 'setManualMode',
+            'strategysystem.userId': userId,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
     }
 
     setOverride(userId: string, seamRole: SeamRole, strategyId: string): void {
+        const startTime = performance.now();
         const config = this.getUserConfig(userId);
         (config.overrides.overrides as Record<string, string>)[seamRole] = strategyId;
         config.overrides.updatedAt = new Date().toISOString();
         config.updatedAt = new Date().toISOString();
         this.userConfigs.set(userId, config);
+        observeStrategySystem({
+            'strategysystem.operation': 'setOverride',
+            'strategysystem.userId': userId,
+            'strategysystem.seam': seamRole,
+            'strategysystem.strategy': strategyId,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
     }
 
     removeOverride(userId: string, seamRole: SeamRole): void {
+        const startTime = performance.now();
         const config = this.getUserConfig(userId);
         delete (config.overrides.overrides as Record<string, string>)[seamRole];
         config.overrides.updatedAt = new Date().toISOString();
         config.updatedAt = new Date().toISOString();
         this.userConfigs.set(userId, config);
+        observeStrategySystem({
+            'strategysystem.operation': 'removeOverride',
+            'strategysystem.userId': userId,
+            'strategysystem.seam': seamRole,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
     }
 
     // Experiment management
     registerExperiment(experiment: StrategyExperiment): void {
-        this.experiments.set(experiment.id, { ...experiment, updatedAt: new Date().toISOString() });
+        const startTime = performance.now();
+        try {
+            this.experiments.set(experiment.id, { ...experiment, updatedAt: new Date().toISOString() });
+            observeStrategySystem({
+                'strategysystem.operation': 'registerExperiment',
+                'strategysystem.profile': experiment.id,
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+        } catch (error) {
+            observeStrategySystem({
+                'strategysystem.operation': 'registerExperiment',
+                'strategysystem.profile': experiment.id,
+                'strategysystem.error': error instanceof Error ? error.message : String(error),
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            throw error;
+        }
     }
 
     getExperiment(id: string): StrategyExperiment | undefined {
-        return this.experiments.get(id);
+        const startTime = performance.now();
+        const result = this.experiments.get(id);
+        observeStrategySystem({
+            'strategysystem.operation': 'getExperiment',
+            'strategysystem.profile': id,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getActiveExperiments(): StrategyExperiment[] {
-        return Array.from(this.experiments.values()).filter(e => e.isActive);
+        const startTime = performance.now();
+        const result = Array.from(this.experiments.values()).filter(e => e.isActive);
+        observeStrategySystem({
+            'strategysystem.operation': 'getActiveExperiments',
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     recordExposure(experimentId: string, userId: string): void {
@@ -320,33 +475,84 @@ export class StrategySystem {
 
     // --- Strategy Registration ---
     registerStrategy(s: StrategyRegistrable): void {
-        this.strategies.register(s);
+        const startTime = performance.now();
+        try {
+            this.strategies.register(s);
+            observeStrategySystem({
+                'strategysystem.operation': 'registerStrategy',
+                'strategysystem.strategy': s.name,
+                'strategysystem.seam': s.seam.id,
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+        } catch (error) {
+            observeStrategySystem({
+                'strategysystem.operation': 'registerStrategy',
+                'strategysystem.strategy': s.name,
+                'strategysystem.seam': s.seam.id,
+                'strategysystem.error': error instanceof Error ? error.message : String(error),
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            throw error;
+        }
     }
 
     unregisterStrategy(name: string): boolean {
-        return this.strategies.unregister(name);
+        const startTime = performance.now();
+        const result = this.strategies.unregister(name);
+        observeStrategySystem({
+            'strategysystem.operation': 'unregisterStrategy',
+            'strategysystem.strategy': name,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getStrategy(name: string): StrategyRegistrable | undefined {
-        return this.strategies.get(name);
+        const startTime = performance.now();
+        const result = this.strategies.get(name);
+        observeStrategySystem({
+            'strategysystem.operation': 'getStrategy',
+            'strategysystem.strategy': name,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getAllStrategies(): StrategyRegistrable[] {
-        return this.strategies.getAll();
+        const startTime = performance.now();
+        const result = this.strategies.getAll();
+        observeStrategySystem({
+            'strategysystem.operation': 'getAllStrategies',
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getStrategiesForSeam(seamId: string): StrategyRegistrable[] {
-        return this.strategies.filter(s => s.seam.id === seamId);
+        const startTime = performance.now();
+        const result = this.strategies.filter(s => s.seam.id === seamId);
+        observeStrategySystem({
+            'strategysystem.operation': 'getStrategiesForSeam',
+            'strategysystem.seam': seamId,
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getSeams(): Seam[] {
+        const startTime = performance.now();
         const seamMap = new Map<string, Seam>();
         for (const strategy of this.strategies.getAll()) {
             if (!seamMap.has(strategy.seam.id)) {
                 seamMap.set(strategy.seam.id, strategy.seam);
             }
         }
-        return Array.from(seamMap.values());
+        const result = Array.from(seamMap.values());
+        observeStrategySystem({
+            'strategysystem.operation': 'getSeams',
+            'strategysystem.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     // --- Profile Management (delegated) ---
@@ -450,14 +656,35 @@ export class StrategySystem {
         seamRole: SeamRole,
         options?: { includeAsync?: boolean }
     ): Promise<ResolvedStrategy<P> | undefined> {
-        const includeAsync = options?.includeAsync ?? !!this.revisionStore;
-        const context = this.buildResolutionContext(userId, seamRole);
-        
-        // Use the resolution strategy registry's resolveAll for first-match semantics
-        return this.resolution.resolveAll<ResolutionContext, ResolvedStrategy<P>>(
-            context,
-            includeAsync ? undefined : (s: any) => s.name !== 'revision'
-        );
+        const startTime = performance.now();
+        try {
+            const includeAsync = options?.includeAsync ?? !!this.revisionStore;
+            const context = this.buildResolutionContext(userId, seamRole);
+            
+            // Use the resolution strategy registry's resolveAll for first-match semantics
+            const result = await this.resolution.resolveAll<ResolutionContext, ResolvedStrategy<P>>(
+                context,
+                includeAsync ? undefined : (s: any) => s.name !== 'revision'
+            );
+            
+            observeStrategySystem({
+                'strategysystem.operation': 'resolveStrategy',
+                'strategysystem.userId': userId,
+                'strategysystem.seam': seamRole,
+                'strategysystem.strategy': result?.strategyId,
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            return result;
+        } catch (error) {
+            observeStrategySystem({
+                'strategysystem.operation': 'resolveStrategy',
+                'strategysystem.userId': userId,
+                'strategysystem.seam': seamRole,
+                'strategysystem.error': error instanceof Error ? error.message : String(error),
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            throw error;
+        }
     }
 
     /**
@@ -467,16 +694,44 @@ export class StrategySystem {
         userId: string,
         seamRole: SeamRole
     ): ResolvedStrategy<P> | undefined {
-        const context = this.buildResolutionContext(userId, seamRole, (s: any) => s.name !== 'revision');
-        
-        const strategies = this.resolution.getAll()
-            .filter(s => s.appliesTo(context.seamRole) && s.name !== 'revision');
+        const startTime = performance.now();
+        try {
+            const context = this.buildResolutionContext(userId, seamRole, (s: any) => s.name !== 'revision');
+            
+            const strategies = this.resolution.getAll()
+                .filter(s => s.appliesTo(context.seamRole) && s.name !== 'revision');
 
-        for (const strategy of strategies) {
-            const result = strategy.resolve(context);
-            if (result) return result as ResolvedStrategy<P>;
+            for (const strategy of strategies) {
+                const result = strategy.resolve(context);
+                if (result) {
+                    observeStrategySystem({
+                        'strategysystem.operation': 'resolveStrategySync',
+                        'strategysystem.userId': userId,
+                        'strategysystem.seam': seamRole,
+                        'strategysystem.strategy': result.strategyId,
+                        'strategysystem.duration.ms': performance.now() - startTime,
+                    });
+                    return result as ResolvedStrategy<P>;
+                }
+            }
+            
+            observeStrategySystem({
+                'strategysystem.operation': 'resolveStrategySync',
+                'strategysystem.userId': userId,
+                'strategysystem.seam': seamRole,
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            return undefined;
+        } catch (error) {
+            observeStrategySystem({
+                'strategysystem.operation': 'resolveStrategySync',
+                'strategysystem.userId': userId,
+                'strategysystem.seam': seamRole,
+                'strategysystem.error': error instanceof Error ? error.message : String(error),
+                'strategysystem.duration.ms': performance.now() - startTime,
+            });
+            throw error;
         }
-        return undefined;
     }
 
     // --- Serialization ---

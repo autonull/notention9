@@ -1,4 +1,5 @@
 import type { CommandContext } from './command.js';
+import { observeBaseCommand } from '@notention/core';
 
 export interface FlagDefinition {
     name: string;
@@ -74,63 +75,83 @@ export abstract class BaseCommand {
      * Parse raw command line arguments into positional args and flags
      */
     parseArgs(rawArgs: string[]): ParsedArgs {
-        const positional: string[] = [];
-        const flags: Record<string, boolean | string | number> = {};
+        const startTime = performance.now();
+        try {
+            const positional: string[] = [];
+            const flags: Record<string, boolean | string | number> = {};
 
-        for (let i = 0; i < rawArgs.length; i++) {
-            const arg = rawArgs[i];
+            for (let i = 0; i < rawArgs.length; i++) {
+                const arg = rawArgs[i];
 
-            if (arg.startsWith('--')) {
-                const flagName = arg.slice(2);
-                const flagDef = this.flagMap.get(flagName);
-                if (!flagDef) {
-                    // Unknown flag - treat as positional
-                    positional.push(arg);
-                    continue;
-                }
+                if (arg.startsWith('--')) {
+                    const flagName = arg.slice(2);
+                    const flagDef = this.flagMap.get(flagName);
+                    if (!flagDef) {
+                        // Unknown flag - treat as positional
+                        positional.push(arg);
+                        continue;
+                    }
 
-                if (flagDef.type === 'boolean') {
-                    flags[flagName] = true;
-                } else if (i + 1 < rawArgs.length && !rawArgs[i + 1].startsWith('-')) {
-                    const value = rawArgs[++i];
-                    flags[flagName] = this.parseFlagValue(value, flagDef.type);
-                } else if (flagDef.default !== undefined) {
-                    flags[flagName] = flagDef.default;
+                    if (flagDef.type === 'boolean') {
+                        flags[flagName] = true;
+                    } else if (i + 1 < rawArgs.length && !rawArgs[i + 1].startsWith('-')) {
+                        const value = rawArgs[++i];
+                        flags[flagName] = this.parseFlagValue(value, flagDef.type);
+                    } else if (flagDef.default !== undefined) {
+                        flags[flagName] = flagDef.default;
+                    } else {
+                        throw new Error(`Flag --${flagName} requires a value`);
+                    }
+                } else if (arg.startsWith('-') && arg.length === 2) {
+                    // Short flag
+                    const alias = arg[1];
+                    const flagName = this.aliasMap.get(alias);
+                    if (!flagName) {
+                        positional.push(arg);
+                        continue;
+                    }
+                    const flagDef = this.flagMap.get(flagName)!;
+                    if (flagDef.type === 'boolean') {
+                        flags[flagName] = true;
+                    } else if (i + 1 < rawArgs.length && !rawArgs[i + 1].startsWith('-')) {
+                        const value = rawArgs[++i];
+                        flags[flagName] = this.parseFlagValue(value, flagDef.type);
+                    } else if (flagDef.default !== undefined) {
+                        flags[flagName] = flagDef.default;
+                    } else {
+                        throw new Error(`Flag -${alias} (--${flagName}) requires a value`);
+                    }
                 } else {
-                    throw new Error(`Flag --${flagName} requires a value`);
-                }
-            } else if (arg.startsWith('-') && arg.length === 2) {
-                // Short flag
-                const alias = arg[1];
-                const flagName = this.aliasMap.get(alias);
-                if (!flagName) {
                     positional.push(arg);
-                    continue;
                 }
-                const flagDef = this.flagMap.get(flagName)!;
-                if (flagDef.type === 'boolean') {
-                    flags[flagName] = true;
-                } else if (i + 1 < rawArgs.length && !rawArgs[i + 1].startsWith('-')) {
-                    const value = rawArgs[++i];
-                    flags[flagName] = this.parseFlagValue(value, flagDef.type);
-                } else if (flagDef.default !== undefined) {
-                    flags[flagName] = flagDef.default;
-                } else {
-                    throw new Error(`Flag -${alias} (--${flagName}) requires a value`);
+            }
+
+            // Apply defaults for boolean flags not explicitly set
+            for (const [name, def] of this.flagMap) {
+                if (def.type === 'boolean' && !(name in flags)) {
+                    flags[name] = def.default ?? false;
                 }
-            } else {
-                positional.push(arg);
             }
-        }
 
-        // Apply defaults for boolean flags not explicitly set
-        for (const [name, def] of this.flagMap) {
-            if (def.type === 'boolean' && !(name in flags)) {
-                flags[name] = def.default ?? false;
-            }
+            const result = { positional, flags };
+            
+            observeBaseCommand({
+                'command.name': this.options.name,
+                'command.operation': 'parseArgs',
+                'command.args.count': positional.length,
+                'command.flags': JSON.stringify(flags),
+                'command.duration.ms': performance.now() - startTime,
+            });
+            return result;
+        } catch (error) {
+            observeBaseCommand({
+                'command.name': this.options.name,
+                'command.operation': 'parseArgs',
+                'command.error': error instanceof Error ? error.message : String(error),
+                'command.duration.ms': performance.now() - startTime,
+            });
+            throw error;
         }
-
-        return { positional, flags };
     }
 
     private parseFlagValue(value: string, type: 'string' | 'number'): string | number {
@@ -148,35 +169,65 @@ export abstract class BaseCommand {
      * Get a boolean flag value
      */
     getBooleanFlag(parsed: ParsedArgs, name: string): boolean {
+        const startTime = performance.now();
         const def = this.flagMap.get(name);
         const value = parsed.flags[name];
-        return (value as boolean) ?? (def?.default as boolean) ?? false;
+        const result = (value as boolean) ?? (def?.default as boolean) ?? false;
+        
+        observeBaseCommand({
+            'command.name': this.options.name,
+            'command.operation': 'getFlag',
+            'command.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /**
      * Get a string flag value
      */
     getStringFlag(parsed: ParsedArgs, name: string): string | undefined {
+        const startTime = performance.now();
         const value = parsed.flags[name];
-        if (value === undefined) return undefined;
-        return String(value);
+        const result = value === undefined ? undefined : String(value);
+        
+        observeBaseCommand({
+            'command.name': this.options.name,
+            'command.operation': 'getFlag',
+            'command.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /**
      * Get a number flag value
      */
     getNumberFlag(parsed: ParsedArgs, name: string): number | undefined {
+        const startTime = performance.now();
         const value = parsed.flags[name];
-        if (value === undefined) return undefined;
-        return Number(value);
+        const result = value === undefined ? undefined : Number(value);
+        
+        observeBaseCommand({
+            'command.name': this.options.name,
+            'command.operation': 'getFlag',
+            'command.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /**
      * Get a flag value with type inference
      */
     getFlag<T extends boolean | string | number>(parsed: ParsedArgs, name: string): T | undefined {
+        const startTime = performance.now();
         const value = parsed.flags[name];
-        return value as T | undefined;
+        const result = value as T | undefined;
+        
+        observeBaseCommand({
+            'command.name': this.options.name,
+            'command.operation': 'getFlag',
+            'command.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /**
@@ -190,12 +241,29 @@ export abstract class BaseCommand {
      * Print result - respects --json flag if defined
      */
     printResult(parsed: ParsedArgs, data: unknown, defaultFormatter?: (data: unknown) => void): void {
-        if (this.getBooleanFlag(parsed, 'json')) {
-            this.printJson(data);
-        } else if (defaultFormatter) {
-            defaultFormatter(data);
-        } else {
-            this.printJson(data);
+        const startTime = performance.now();
+        try {
+            if (this.getBooleanFlag(parsed, 'json')) {
+                this.printJson(data);
+            } else if (defaultFormatter) {
+                defaultFormatter(data);
+            } else {
+                this.printJson(data);
+            }
+            
+            observeBaseCommand({
+                'command.name': this.options.name,
+                'command.operation': 'printResult',
+                'command.duration.ms': performance.now() - startTime,
+            });
+        } catch (error) {
+            observeBaseCommand({
+                'command.name': this.options.name,
+                'command.operation': 'printResult',
+                'command.error': error instanceof Error ? error.message : String(error),
+                'command.duration.ms': performance.now() - startTime,
+            });
+            throw error;
         }
     }
 

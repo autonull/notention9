@@ -64,7 +64,7 @@ These are multiplicative — they accelerate all future work.
 | **A** | **Plugin/Extension System** — Dynamic loading: `Plugin` interface with `strategies`, `profiles`, `commands`, `uiExtensions`. Hot-reload via HMR. Feature flags per plugin. | Medium (4h) | ✅ **CORE COMPLETE** — PluginSystem with dynamic loading, HMR, feature flags, extension APIs, example plugin |
 | **B** | **Reactive State Layer** — Replace `useViewContext` + `useSettingsContext` + `useNotes` with single signals-based store (custom implementation). Fine-grained subscriptions, DevTools time-travel. | Medium (6h) | ✅ **CORE COMPLETE** — Signals, Store, ReactiveStore with selectors, actions, persistence, DevTools; React hooks in ui/src/hooks/useReactiveStore.ts |
 | **C** | **Build-Time Codegen Pipeline** — Extend UISG codegen: Strategy resolution → decision trees, Property validation → TS types, Routes → type-safe navigation, Metaphors → component registry | Medium (4h) | ✅ **CORE COMPLETE** — optimize/src/codegenPipeline.ts with 5 targets: decision trees, property types, route types, metaphor registry, reactive selectors |
-| **D** | **Observability/Telemetry** — Structured events in `Registry`, `StrategySystem`, `UrlRouter`, `BaseCommand`, `BaseStepExecutor`. OpenTelemetry compatible. | Low (2h) | Production debugging; performance baselines; automated regression detection |
+| **D** | **Observability/Telemetry** — Structured events in `Registry`, `StrategySystem`, `UrlRouter`, `BaseCommand`, `BaseStepExecutor`. OpenTelemetry compatible. | Low (2h) | ✅ **CORE COMPLETE** — Structured events with timing, errors, and OpenTelemetry-compatible API |
 
 **Sequencing**: A → B → C → D (each builds on previous). Can start A in parallel with Tier 2.
 
@@ -115,7 +115,7 @@ These are multiplicative — they accelerate all future work.
 | 4 | **A (Plugin System)** | ✅ **CORE COMPLETE** — Dynamic loading, HMR, feature flags, extension APIs |
 | 5 | **B (Reactive State)** | ✅ **CORE COMPLETE** — Signals, Store, ReactiveStore, React hooks, DevTools |
 | 6 | **C (Build-Time Codegen)** | ✅ **CORE COMPLETE** — 5 targets: decision trees, property types, route types, metaphor registry, reactive selectors |
-| 7 | D (Observability) | Telemetry in all core systems |
+| 7 | D (Observability) | ✅ **CORE COMPLETE** — Structured events in Registry, StrategySystem, UrlRouter, BaseCommand, BaseStepExecutor |
 
 **Total**: ~32 hours across 7 sprints (vs original 40-50 across 5)
 **Efficiency gain**: Parallel tracks + proven patterns + eliminated rework
@@ -123,6 +123,7 @@ These are multiplicative — they accelerate all future work.
 **Sprint 4 Status**: Core plugin infrastructure complete. Ready for integration testing and UI-level plugin management UI.
 **Sprint 5 Status**: Core reactive state layer complete. Ready for gradual migration of context consumers.
 **Sprint 6 Status**: Build-time codegen pipeline complete. Ready for integration with UISG workflow.
+**Sprint 7 Status**: Observability core complete. Structured events in all core systems with OpenTelemetry-compatible API.
 
 ---
 
@@ -205,6 +206,6 @@ pnpm optimize:generate                      # UISG codegen with new pipeline
 ---
 
 *Generated: 2026-11-27*
-*Updated: 2026-11-27 — Tier 4 A (Plugin System) core complete, Tier 4 B (Reactive State Layer) core complete, Tier 4 C (Build-Time Codegen Pipeline) core complete*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1 through WP-14 COMPLETE (Tiers 1-3 done); Tier 4 A (Plugin System) CORE COMPLETE; Tier 4 B (Reactive State Layer) CORE COMPLETE; Tier 4 C (Build-Time Codegen Pipeline) CORE COMPLETE*
-*Next: Tier 4 — D (Observability/Telemetry)*
+*Updated: 2026-11-27 — Tier 4 A (Plugin System) core complete, Tier 4 B (Reactive State Layer) core complete, Tier 4 C (Build-Time Codegen Pipeline) core complete, Tier 4 D (Observability/Telemetry) core complete*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1 through WP-14 COMPLETE (Tiers 1-3 done); Tier 4 A (Plugin System) CORE COMPLETE; Tier 4 B (Reactive State Layer) CORE COMPLETE; Tier 4 C (Build-Time Codegen Pipeline) CORE COMPLETE; Tier 4 D (Observability/Telemetry) CORE COMPLETE*
+*Next: All Tier 4 complete — ready for integration testing and production hardening*

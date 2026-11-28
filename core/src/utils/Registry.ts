@@ -6,6 +6,7 @@
 
 import { z } from 'zod';
 import { AlreadyRegisteredError, NotRegisteredError } from './errors/registry.js';
+import { observeRegistry, EventSeverity } from '../observability/index.js';
 
 /** Base interface for registrable items with config validation */
 export interface Registrable<C extends Record<string, unknown> = Record<string, unknown>> {
@@ -47,63 +48,151 @@ export class Registry<T extends Registrable> {
 
     /** Register an item */
     register(item: T): void {
-        if (this.items.has(item.name) && !this.options.allowReplace) {
-            throw new AlreadyRegisteredError(this.options.errorPrefix, item.name);
+        const startTime = performance.now();
+        try {
+            if (this.items.has(item.name) && !this.options.allowReplace) {
+                throw new AlreadyRegisteredError(this.options.errorPrefix, item.name);
+            }
+            this.items.set(item.name, item);
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'register',
+                'registry.item.name': item.name,
+                'registry.item.type': item.constructor.name,
+                'registry.duration.ms': performance.now() - startTime,
+            });
+        } catch (error) {
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'register',
+                'registry.item.name': item.name,
+                'registry.error': error instanceof Error ? error.message : String(error),
+                'registry.duration.ms': performance.now() - startTime,
+            });
+            throw error;
         }
-        this.items.set(item.name, item);
     }
 
     /** Unregister an item by name */
     unregister(name: string): boolean {
-        return this.items.delete(name);
+        const startTime = performance.now();
+        const result = this.items.delete(name);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'unregister',
+            'registry.item.name': name,
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** Get an item by name */
     get(name: string): T | undefined {
-        return this.items.get(name);
+        const startTime = performance.now();
+        const result = this.items.get(name);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'get',
+            'registry.item.name': name,
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** Get all registered items */
     getAll(): T[] {
-        return Array.from(this.items.values());
+        const startTime = performance.now();
+        const result = Array.from(this.items.values());
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'getAll',
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** List all registered names */
     listNames(): string[] {
-        return Array.from(this.items.keys());
+        const startTime = performance.now();
+        const result = Array.from(this.items.keys());
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'listNames',
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** Check if an item is registered */
     has(name: string): boolean {
-        return this.items.has(name);
+        const startTime = performance.now();
+        const result = this.items.has(name);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'has',
+            'registry.item.name': name,
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** Get count of registered items */
     size(): number {
-        return this.items.size;
+        const startTime = performance.now();
+        const result = this.items.size;
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'size',
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** Clear all items */
     clear(): void {
+        const startTime = performance.now();
         this.items.clear();
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'clear',
+            'registry.duration.ms': performance.now() - startTime,
+        });
     }
 
     /** Find first item matching predicate */
     find(predicate: (item: T) => boolean): T | undefined {
-        for (const item of this.items.values()) {
-            if (predicate(item)) return item;
-        }
-        return undefined;
+        const startTime = performance.now();
+        const result = this.items.values().find(predicate);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'find',
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** Filter items by predicate */
     filter(predicate: (item: T) => boolean): T[] {
-        return Array.from(this.items.values()).filter(predicate);
+        const startTime = performance.now();
+        const result = Array.from(this.items.values()).filter(predicate);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'filter',
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /** Get plugins filtered by config key */
     getByConfigKey(key: string, value: unknown): T[] {
-        return this.filter(p => p.getDefaultConfig()[key] === value);
+        const startTime = performance.now();
+        const result = this.filter(p => p.getDefaultConfig()[key] === value);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'filter',
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     /**
@@ -114,14 +203,38 @@ export class Registry<T extends Registrable> {
         context: Context,
         filter?: (item: T) => boolean
     ): Promise<Result | undefined> {
-        for (const item of this.items.values()) {
-            if (filter && !filter(item)) continue;
-            if ('resolve' in item && typeof item.resolve === 'function') {
-                const result = await item.resolve(context);
-                if (result !== undefined) return result;
+        const startTime = performance.now();
+        try {
+            for (const item of this.items.values()) {
+                if (filter && !filter(item)) continue;
+                if ('resolve' in item && typeof item.resolve === 'function') {
+                    const result = await item.resolve(context);
+                    if (result !== undefined) {
+                        observeRegistry({
+                            'registry.name': this.options.errorPrefix,
+                            'registry.operation': 'resolveAll',
+                            'registry.item.name': item.name,
+                            'registry.duration.ms': performance.now() - startTime,
+                        });
+                        return result;
+                    }
+                }
             }
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'resolveAll',
+                'registry.duration.ms': performance.now() - startTime,
+            });
+            return undefined;
+        } catch (error) {
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'resolveAll',
+                'registry.error': error instanceof Error ? error.message : String(error),
+                'registry.duration.ms': performance.now() - startTime,
+            });
+            throw error;
         }
-        return undefined;
     }
 }
 
@@ -145,39 +258,114 @@ export class FactoryRegistry<T> {
     }
 
     register(name: string, factory: (...args: any[]) => T, description: string): void {
-        if (this.factories.has(name)) {
-            throw new AlreadyRegisteredError(this.options.errorPrefix, name);
+        const startTime = performance.now();
+        try {
+            if (this.factories.has(name)) {
+                throw new AlreadyRegisteredError(this.options.errorPrefix, name);
+            }
+            this.factories.set(name, { create: factory, description });
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'register',
+                'registry.item.name': name,
+                'registry.item.type': 'factory',
+                'registry.duration.ms': performance.now() - startTime,
+            });
+        } catch (error) {
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'register',
+                'registry.item.name': name,
+                'registry.error': error instanceof Error ? error.message : String(error),
+                'registry.duration.ms': performance.now() - startTime,
+            });
+            throw error;
         }
-        this.factories.set(name, { create: factory, description });
     }
 
     unregister(name: string): boolean {
-        return this.factories.delete(name);
+        const startTime = performance.now();
+        const result = this.factories.delete(name);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'unregister',
+            'registry.item.name': name,
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     create(name: string, ...args: any[]): T {
-        const factory = this.factories.get(name);
-        if (!factory) {
-            const available = Array.from(this.factories.keys());
-            throw new NotRegisteredError(this.options.errorPrefix, name, available);
+        const startTime = performance.now();
+        try {
+            const factory = this.factories.get(name);
+            if (!factory) {
+                const available = Array.from(this.factories.keys());
+                throw new NotRegisteredError(this.options.errorPrefix, name, available);
+            }
+            const result = factory.create(...args);
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'create',
+                'registry.item.name': name,
+                'registry.duration.ms': performance.now() - startTime,
+            });
+            return result;
+        } catch (error) {
+            observeRegistry({
+                'registry.name': this.options.errorPrefix,
+                'registry.operation': 'create',
+                'registry.item.name': name,
+                'registry.error': error instanceof Error ? error.message : String(error),
+                'registry.duration.ms': performance.now() - startTime,
+            });
+            throw error;
         }
-        return factory.create(...args);
     }
 
     listNames(): string[] {
-        return Array.from(this.factories.keys());
+        const startTime = performance.now();
+        const result = Array.from(this.factories.keys());
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'listNames',
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     getDescription(name: string): string | undefined {
-        return this.factories.get(name)?.description;
+        const startTime = performance.now();
+        const result = this.factories.get(name)?.description;
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'getDescription',
+            'registry.item.name': name,
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     has(name: string): boolean {
-        return this.factories.has(name);
+        const startTime = performance.now();
+        const result = this.factories.has(name);
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'has',
+            'registry.item.name': name,
+            'registry.duration.ms': performance.now() - startTime,
+        });
+        return result;
     }
 
     clear(): void {
+        const startTime = performance.now();
         this.factories.clear();
+        observeRegistry({
+            'registry.name': this.options.errorPrefix,
+            'registry.operation': 'clear',
+            'registry.duration.ms': performance.now() - startTime,
+        });
     }
 }
 

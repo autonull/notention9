@@ -29,3 +29,4 @@ export * from './candidateValidation.js';
 export * from './PluginSystem.js';
 export * from './signals.js';
 export * from './ReactiveStore.js';
+export * from '../observability/index.js';

@@ -90,3 +90,4 @@ models/
 data/
 optimize/test-*.mjs
 doc/uisg/matrix-*
+core/src/generated/
