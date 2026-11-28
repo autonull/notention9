@@ -5,9 +5,9 @@
 
 ## Executive Summary
 
-**Completed (WP-1,2,3,4,5,6,7,8,9,10,11)**: Unified Registry, StrategySystem, UrlRouter, BaseStepExecutor (15/15), BaseCommand/BaseCliHandler, specific error types, migration registry, UnifiedMetaphor, Test utils package, Property Widget bases, UI Component bases.
+**Completed (WP-1,2,3,4,5,6,7,8,9,10,11,12,13,14)**: Unified Registry, StrategySystem, UrlRouter, BaseStepExecutor (15/15), BaseCommand/BaseCliHandler, specific error types, migration registry, UnifiedMetaphor, Test utils package, Property Widget bases, UI Component bases, UISG tests, ProfileRegistry browser verify, Help Video captions verify.
 
-**Remaining**: UISG tests (WP-12), Browser verify (WP-13), Captions (WP-14).
+**Remaining**: None (all Tiers 1-3 complete)
 
 **Key Insight**: The established patterns (BaseCommand, BaseStepExecutor, UnifiedMetaphor) are proven templates. Apply them systematically to remaining consolidation work rather than inventing new patterns.
 
@@ -45,9 +45,9 @@ Independent, can parallelize.
 
 | ID | Work | Files | Effort | Impact |
 |----|------|-------|--------|--------|
-| **WP-12** | **UISG Template Test Coverage** — Add to generated tests: axe assertions, visual snapshots (playwright), edge cases (empty, overflow, RTL), property validation | `ui/test/uisg/*.test.ts` | Low (2h) | Catches regressions in generated components |
-| **WP-13** | **ProfileRegistry Browser Verification** — Verify: localStorage persistence, revision store mock, cross-tab sync, hydration race conditions | `ui/test/profileRegistry.browser.test.ts` | Low (1h) | Confirms cross-platform parity |
-| **WP-14** | **Help Video Captions Verification** — Verify: WebVTT generation → `HelpVideoPlayer` → journey integration → caption sync | `ui/src/components/HelpVideoPlayer.tsx`, journey files | Low (2h) | Completes TODO35.md item |
+| **WP-12** | ~~**UISG Template Test Coverage** — Add to generated tests: axe assertions, visual snapshots (playwright), edge cases (empty, overflow, RTL), property validation~~ | `ui/test/uisg/template.test.ts` | ✅ Done | Axe, snapshots, edge cases, property validation |
+| **WP-13** | ~~**ProfileRegistry Browser Verification** — Verify: localStorage persistence, revision store mock, cross-tab sync, hydration race conditions~~ | `ui/test/profileRegistry/profileRegistry.browser.test.ts` | ✅ Done | localStorage, revisions, cross-tab, hydration |
+| **WP-14** | ~~**Help Video Captions Verification** — Verify: WebVTT generation → `HelpVideoPlayer` → journey integration → caption sync~~ | `ui/test/help/captions.test.ts` | ✅ Done | WebVTT, player, journey, caption sync |
 
 **Strategy**: Run WP-12/13/14 in parallel after WP-11 provides test utilities.
 
@@ -71,11 +71,7 @@ These are multiplicative — they accelerate all future work.
 ## Dependency Graph (Optimized Execution Order)
 
 ```
-✅ T0, WP-1,2,3,4,5,6,7,8,9,10,11
-    │
-    ├──→ WP-12 (UISG tests) 
-    ├──→ WP-13 (Browser verify)
-    ├──→ WP-14 (Captions)
+✅ T0, WP-1,2,3,4,5,6,7,8,9,10,11,12,13,14
     │
     └──→ A (Plugin System) — independent, high leverage
             │
@@ -91,8 +87,8 @@ These are multiplicative — they accelerate all future work.
 | Sprint | Focus | Deliverable |
 |--------|-------|-------------|
 | 1 | ~~WP-4~~, ~~WP-11~~ | All executors unified ✅; test-utils package ✅ |
-| 2 | ~~WP-8~~, WP-12 | Widget bases done ✅; UISG test coverage |
-| 3 | ~~WP-9~~, WP-13, WP-14 | Component bases ✅; browser verify; captions done |
+| 2 | ~~WP-8~~, ~~WP-12~~ | Widget bases done ✅; UISG test coverage ✅ |
+| 3 | ~~WP-9~~, ~~WP-13~~, ~~WP-14~~ | Component bases ✅; browser verify ✅; captions ✅ |
 | 4 | A (Plugin System) | Dynamic plugin loading + hot-reload |
 | 5 | B (Reactive State) | Signals-based store replacing contexts |
 | 6 | C (Build-Time Codegen) | Extended codegen pipeline |
@@ -172,15 +168,15 @@ pnpm optimize:generate                      # UISG codegen with new pipeline
 
 ## Key Principles (Enhanced)
 
-1. **Finish what's started** — WP-4, WP-11, WP-8, WP-9 complete; WP-12/13/14 next
+1. **Finish what's started** — WP-1 through WP-14 complete; Tier 4 (A-D) next
 2. **Proven patterns only** — BaseCommand, BaseStepExecutor, UnifiedMetaphor are templates; apply them
 3. **Test infrastructure first** — WP-11 accelerates WP-12/13/14 by 2x ✅
 4. **Architecture multiplicative** — Plugin → Reactive → Codegen → Observability compounds
-5. **Parallelize independent tracks** — Tier 3 items (12/13/14) are fully independent after WP-11 ✅
+5. **Parallelize independent tracks** — Tier 3 items (12/13/14) fully independent after WP-11 ✅
 6. **No new patterns without 3+ uses** — Wait for repetition before abstracting
 
 ---
 
 *Generated: 2026-11-27*
-*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1/2/3/4/5/6/7/8/9/10/11 COMPLETE*
-*Next: WP-12 (UISG tests), WP-13 (Browser verify), WP-14 (Captions) in parallel*
+*Status: Core refactoring complete; Tier 0 CI blockers RESOLVED; WP-1 through WP-14 COMPLETE (Tiers 1-3 done)*
+*Next: Tier 4 — A (Plugin System), B (Reactive State), C (Build-Time Codegen), D (Observability)*
